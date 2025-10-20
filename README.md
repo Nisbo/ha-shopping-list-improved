@@ -25,6 +25,35 @@
 
 
 
+# Beispiel für eine Panel Ansicht (Eine Karte pro Seite)
+```
+type: custom:ha-shopping-list-improved
+quantity: beginning
+acknowledged: end
+chips: >-
+  Butter, Pepsi, Bier, Schweppes, Honig Senf Sauce, Lachs, Red Bull, Zahnpasta,
+  Meerrettich, Olivenöl, Brötchen, Käse, Salami, Spülmittel, Klopapier, Salat,
+  MiFri, Ketchup, Rucola, Advocado, Obatzter, Limes, TroFu, NaFu, Milch,
+  Zahnpasta, Pizza, Sahne, Schmand, Fond, Eier, Sekt, Vodka, Mett, Zwiebeln,
+  Kartoffeln
+chip_click: single
+show_quantity_box: true
+show_quantity_one: false
+show_submit_button: true
+show_input_mask: true
+sub_text: Ich habe <u>Hunger</u>, lass uns einkaufen gehen. &#128516;
+chips_position: full
+local_chips: true
+chips_width: 400
+list_font_size: 21
+chip_font_size: 16
+chip_merge: combined
+highlight_words: Butter, Brötchen, Eier, Pepsi
+
+```
+
+
+
 <img width="1613" height="946" alt="grafik" src="https://github.com/user-attachments/assets/62ee8518-3714-4f72-9d50-4158f9ce2526" />
 
 <img width="531" height="894" alt="grafik" src="https://github.com/user-attachments/assets/25ea5ae9-2774-48c2-84bc-1f1fb9eb2869" />
