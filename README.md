@@ -1,13 +1,25 @@
-# ha-shopping-list-improved
+# Improved Shopping List Card (ha-shopping-list-improved)
 
+## Vorwort
 Wie ist das Addon entstanden? Ganz einfach, ich habe eine Möglichkeit gesucht meine Einkaufsliste über Home Assistant zu führen.
 Die eingebaute Liste ist leider nur ganz rudimentär. Hatte es dann mit Tandoor versucht. Dieses ist zwar ganz nett, aber bietet nicht das was ich wollte.
 Es gab noch ein weiteres Shoppinglist Addon, aber das war in der Pflege zu kompliziert und die jeden Artikel musste man eine eigene Karte anlegen.
 
 Im Endeffekt blieb mir also nicht anderes übrig, als selbst was zu programmieren. Herrausforderung hierbei war, dass der WAF erhalten bleibt. :D 
 
-# Was ist Improved HA Shopping List ?
+## Was ist Improved Shopping List Card ?
+Improved Shopping List Card ist eine Karte für Home Assistant, welche die originale Einkaufsliste von Home Assistant in der Hinsicht erweitert, dass die Nutzung um ein vielfaches vereinfacht bzw verbessert wurde.
 
+### Was kann Improved Shopping List Card ?
+- Anzeige als normale Karte oder als Panel (Seite mit nur einer Karte)
+- Alphabetische Sortierung der Einträge
+- Möglichkeit gekaufte (erledigte) Artikel auszublenden, ans Ende zu verschieben bzw in der Sortierung zu belassen
+- Gekaufte Artikel werden farblich markiert
+- Möglichkeit mittels + und - die Anzahl zu ändern
+- Chips um Artikel schnell wieder hinzuzufügen
+- Lokale (Browser) und Standard Chips (über die Config)
+- Highlighting für spezielle Chips
+- Entfernen von Artikeln
 
 # Installation HACS
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
