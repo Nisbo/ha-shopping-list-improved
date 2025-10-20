@@ -29,12 +29,10 @@ die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vie
 - 🗑️ **Einfaches Entfernen** von Artikeln durch den Minus Button  
 - ⚙️ **Anpassbares Design**: Farben, Schriftgrößen, Chip-Positionen u. v. m.
 
----
 
 > 💡 **Tipp:**  
 > Schau dir die Screenshots weiter unten an, um zu sehen, was alles möglich ist!
 
----
 
 
 ---
