@@ -1,6 +1,3 @@
-# Improved Shopping List Card (ha-shopping-list-improved)
-
-
 # 🛒 Improved Shopping List Card (`ha-shopping-list-improved`)
 
 ## 📖 Vorwort
@@ -21,29 +18,26 @@ die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vie
 
 ## ⚙️ Funktionsübersicht
 
-## Vorwort
-Wie ist das Addon entstanden? Ganz einfach, ich habe eine Möglichkeit gesucht meine Einkaufsliste über Home Assistant zu führen.
-Die eingebaute Liste ist leider nur ganz rudimentär. Hatte es dann mit Tandoor versucht. Dieses ist zwar ganz nett, aber bietet nicht das was ich wollte.
-Es gab noch ein weiteres Shoppinglist Addon, aber das war in der Pflege zu kompliziert und die jeden Artikel musste man eine eigene Karte anlegen.
+- 🧩 Anzeige als **normale Karte** oder im **Panel-Mode** (Seite mit nur einer Karte)  
+- 🔤 **Alphabetische Sortierung** der Einträge  
+- 👀 Möglichkeit, **erledigte Artikel auszublenden**, ans Ende zu verschieben oder in der Sortierung zu belassen  
+- 🎨 **Farbige Markierung** erledigter Artikel  
+- ➕ **Anzahl ändern** über + und −  
+- 🏷️ **Chips** zum schnellen Hinzufügen häufig genutzter Artikel  
+- 🌐 Unterstützung für **Standard- (Config)** und **lokale (Browser-)Chips**  
+- ✴️ **Highlighting** für spezielle Artikel (z. B. *Butter*, *Bananen*, *Mehl*)  
+- 🗑️ **Einfaches Entfernen** von Artikeln durch den Minus Button  
+- ⚙️ **Anpassbares Design**: Farben, Schriftgrößen, Chip-Positionen u. v. m.
 
-Im Endeffekt blieb mir also nicht anderes übrig, als selbst was zu programmieren. Herrausforderung hierbei war, dass der WAF erhalten bleibt. :D 
+---
 
-## Was ist Improved Shopping List Card ?
-Improved Shopping List Card ist eine Karte für Home Assistant, welche die originale Einkaufsliste von Home Assistant in der Hinsicht erweitert, dass die Nutzung um ein vielfaches vereinfacht bzw verbessert wurde.
+> 💡 **Tipp:**  
+> Schau dir die Screenshots weiter unten an, um zu sehen, was alles möglich ist!
 
-### Was kann Improved Shopping List Card ?
-- Anzeige als normale Karte oder als Panel (Seite mit nur einer Karte)
-- Alphabetische Sortierung der Einträge
-- Möglichkeit gekaufte (erledigte) Artikel auszublenden, ans Ende zu verschieben bzw in der Sortierung zu belassen
-- Gekaufte Artikel werden farblich markiert
-- Möglichkeit mittels + und - die Anzahl zu ändern
-- Chips um Artikel schnell wieder hinzuzufügen
-- Lokale (Browser) und Standard Chips (über die Config)
-- Highlighting für spezielle Chips
-- Entfernen von Artikeln
-- Einstellbares Design (Chipsfarbe, Schriftgröße, Position der Chips)
+---
 
-Schaut euch am die Screenshots weiter unten an, um zu sehen, was so alles möglich ist.
+
+---
 
 # Installation HACS
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
@@ -97,6 +91,7 @@ highlight_words: Butter, Brötchen, Eier, Pepsi
 
 ```
 
+## 📷 Screenshots
 
 
 <img width="1613" height="946" alt="grafik" src="https://github.com/user-attachments/assets/62ee8518-3714-4f72-9d50-4158f9ce2526" />
