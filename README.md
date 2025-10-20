@@ -20,6 +20,9 @@ Improved Shopping List Card ist eine Karte für Home Assistant, welche die origi
 - Lokale (Browser) und Standard Chips (über die Config)
 - Highlighting für spezielle Chips
 - Entfernen von Artikeln
+- Einstellbares Design (Chipsfarbe, Schriftgröße, Position der Chips)
+
+Schaut euch am die Screenshots weiter unten an, um zu sehen, was so alles möglich ist.
 
 # Installation HACS
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
