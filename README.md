@@ -14,6 +14,10 @@ Die größte Herausforderung dabei war: **der WAF musste erhalten bleiben 😄**
 Die **Improved Shopping List Card** ist eine erweiterte Karte für Home Assistant,  
 die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vielfaches vereinfacht.
 
+> ⚠️ **Hinweis:**  
+> Diese Karte basiert auf der **originalen Home Assistant Einkaufsliste** (`shopping_list`) und nutzt deren Datenstruktur.  
+> Alle Einträge, die du in dieser Karte hinzufügst, erscheinen auch in der Standard-Einkaufsliste – und umgekehrt.
+
 ---
 
 ## ⚙️ Funktionsübersicht
