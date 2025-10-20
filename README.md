@@ -1,5 +1,14 @@
 # ha-shopping-list-improved
 
+Wie ist das Addon entstanden? Ganz einfach, ich habe eine Möglichkeit gesucht meine Einkaufsliste über Home Assistant zu führen.
+Die eingebaute Liste ist leider nur ganz rudimentär. Hatte es dann mit Tandoor versucht. Dieses ist zwar ganz nett, aber bietet nicht das was ich wollte.
+Es gab noch ein weiteres Shoppinglist Addon, aber das war in der Pflege zu kompliziert und die jeden Artikel musste man eine eigene Karte anlegen.
+
+Im Endeffekt blieb mir also nicht anderes übrig, als selbst was zu programmieren. Herrausforderung hierbei war, dass der WAF erhalten bleibt. :D 
+
+# Was ist Improved HA Shopping List ?
+
+
 # Installation HACS
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
