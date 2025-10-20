@@ -37,7 +37,13 @@ die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vie
 > 💡 **Tipp:**  
 > Schau dir die Screenshots weiter unten an, um zu sehen, was alles möglich ist!
 
+---
 
+## Was geht (noch) nicht ?
+
+- englische Übersetzung bzw Sprachunterstützug allgemein.
+- Kategorien für Shops (hier fehlt mir noch die Idee wie ich das am besten umsetze)
+- alle Artikel (nicht nur die erledigten) auf einmal zu löschen
 
 ---
 
