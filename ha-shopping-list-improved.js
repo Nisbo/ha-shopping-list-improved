@@ -185,11 +185,14 @@ class HaShoppingListImproved extends HTMLElement {
                 switch (schema.name) {
                     case "highlight_words": return "Hervorgehobene Wörter";
                     case "highlight_color": return "Farbe für Hervorhebung";
-                    case "chip_merge": return "Chips kombinieren";
-                    case "local_chips": return "Lokale Chips erlauben ?";
-                    case "chip_font_size": return "Schriftgröße der Chips (px)";
-                    case "chip_color": return "Farbe der Lokalen (Browser) Chips";
-                    case "chip_color_default": return "Farbe der Standard Chips";
+
+			        case "chip_merge": return this.localize("editor.labels.chip_merge");
+			        case "local_chips": return this.localize("editor.labels.local_chips");
+			        case "chip_font_size": return this.localize("editor.labels.chip_font_size");
+			        case "chip_color": return this.localize("editor.labels.chip_color");
+			        case "chip_color_default": return this.localize("editor.labels.chip_color_default");
+			        case "highlight_words": return this.localize("editor.labels.highlight_words");
+
                     case "list_font_size": return "Schriftgröße der Listeneinträge (px)";
                     case "chips_width": return "Breite der Chips (nur bei 'full')";
                     case "chips_position": return "Position der Chips";
