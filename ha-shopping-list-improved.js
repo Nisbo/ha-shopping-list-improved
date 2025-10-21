@@ -201,8 +201,13 @@ class HaShoppingListImproved extends HTMLElement {
             ],
 
             computeLabel: (schema) => {
-				const lang = window.hass?.language || "en"; // HA Sprache
-				console.debug("[DEBUG] HA language:", window.hass?.language, "=> verwendete Sprache:", lang);
+				const lang2 = window.hass?.language || "en"; // HA Sprache
+				console.debug("[DEBUG] HA language2:", window.hass?.language, "=> verwendete Sprache:", lang2);
+
+const lang = this._hass?.language || "en"; // HA-Sprache aus der Karte
+    console.log("[DEBUG] HA language:", this._hass?.language, "=> verwendete Sprache:", lang);
+
+				
                 switch (schema.name) {
                     case "highlight_words": return "Hervorgehobene Wörter";
                     case "highlight_color": return "Farbe für Hervorhebung";
