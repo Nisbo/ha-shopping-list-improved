@@ -9,8 +9,8 @@
 
 const TRANSLATIONS = {
     de: {
-        "editor.labels.chip_merge": "Chips kombinierenX",
-        "editor.labels.local_chips": "Lokale Chips erlauben?X",
+        "editor.labels.chip_merge": "Chips kombinierenXXX",
+        "editor.labels.local_chips": "Lokale Chips erlauben?XXX",
         "editor.labels.chip_font_size": "Schriftgröße der Chips (px)",
         "editor.labels.chip_color": "Farbe der Lokalen (Browser) Chips",
         "editor.labels.chip_color_default": "Farbe der Standard Chips",
@@ -18,8 +18,8 @@ const TRANSLATIONS = {
 
     },
     en: {
-        "editor.labels.chip_merge": "Combine chipsX",
-        "editor.labels.local_chips": "Allow local chips?X",
+        "editor.labels.chip_merge": "Combine chipsXXX",
+        "editor.labels.local_chips": "Allow local chips?XXX",
         "editor.labels.chip_font_size": "Chip font size (px)",
         "editor.labels.chip_color": "Color of local (browser) chips",
         "editor.labels.chip_color_default": "Color of standard chips",
@@ -38,7 +38,7 @@ function detectLanguage() {
 }
 
 // --- translate-Funktion ---
-function translate(key, nix) {
+function translate(key) {
     const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
     if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key]; // Fallback Englisch
@@ -214,22 +214,15 @@ class HaShoppingListImproved extends HTMLElement {
             { name: "sub_text", selector: { text: {} }, default: " "}
             ],
 
-            computeLabel: (schema, hass) => {
-    			
-				//const lang2 = window.hass?.language || "en"; // HA Sprache
-				//console.debug("[DEBUG] HA language2:", window.hass?.language, "=> verwendete Sprache:", lang2);
+            computeLabel: (schema) => {
 
-const lang = hass?.language || "en"; // HA-Sprache aus der Karte
-    console.log("[DEBUG] HA language:", hass?.language, "=> verwendete Sprache:", lang);
-
-				
                 switch (schema.name) {
                     case "highlight_words": return "Hervorgehobene Wörter";
                     case "highlight_color": return "Farbe für Hervorhebung";
                     case "chip_merge1": return "Chips kombinieren";
                     case "local_chips1": return "Lokale Chips erlauben ?";
-						case "chip_merge": return translate("editor.labels.chip_merge", lang);
-case "local_chips": return translate("editor.labels.local_chips", lang);
+case "chip_merge": return translate("editor.labels.chip_merge");
+case "local_chips": return translate("editor.labels.local_chips");
                     case "chip_font_size": return "Schriftgröße der Chips (px)";
                     case "chip_color": return "Farbe der Lokalen (Browser) Chips";
                     case "chip_color_default": return "Farbe der Standard Chips";
