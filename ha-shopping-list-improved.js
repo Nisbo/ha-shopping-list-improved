@@ -14,21 +14,6 @@ class HaShoppingListImproved extends HTMLElement {
         this._clearCompleted = this._clearCompleted.bind(this);
     }
 
-    /**
-     * Übersetzung
-     * @param {string} key Pfad zur Übersetzung, z.B. "editor.labels.chip_merge"
-     */
-// Helper: Localize function
-localize(key) {
-    // Prüfe, ob HA und die Übersetzungen verfügbar sind
-    if (!this._hass || !this._hass.resources) return key;
-    
-    const lang = this._hass.selectedLanguage || this._hass.language || "en";
-    const resources = this._hass.resources[lang] || {};
-    return resources[key] || key;
-}
-
-	
     set hass(hass) {
         this._hass = hass;
         this.render();
@@ -978,4 +963,3 @@ window.customCards.push({
 	preview: true, 
 	description: 'Verbesserte Einkaufsliste mit alphabetischer Sortierung von Einträgen und History, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.'
 });
-
