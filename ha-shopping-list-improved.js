@@ -9,8 +9,8 @@
 
 const TRANSLATIONS = {
     de: {
-        "editor.labels.chip_merge": "Chips kombinieren",
-        "editor.labels.local_chips": "Lokale Chips erlauben?",
+        "editor.labels.chip_merge": "Chips kombinierenX",
+        "editor.labels.local_chips": "Lokale Chips erlauben?X",
         "editor.labels.chip_font_size": "Schriftgröße der Chips (px)",
         "editor.labels.chip_color": "Farbe der Lokalen (Browser) Chips",
         "editor.labels.chip_color_default": "Farbe der Standard Chips",
@@ -18,8 +18,8 @@ const TRANSLATIONS = {
 
     },
     en: {
-        "editor.labels.chip_merge": "Combine chips",
-        "editor.labels.local_chips": "Allow local chips?",
+        "editor.labels.chip_merge": "Combine chipsX",
+        "editor.labels.local_chips": "Allow local chips?X",
         "editor.labels.chip_font_size": "Chip font size (px)",
         "editor.labels.chip_color": "Color of local (browser) chips",
         "editor.labels.chip_color_default": "Color of standard chips",
@@ -202,6 +202,7 @@ class HaShoppingListImproved extends HTMLElement {
 
             computeLabel: (schema) => {
 				const lang = window.hass?.language || "en"; // HA Sprache
+				console.debug("[DEBUG] HA language:", window.hass?.language, "=> verwendete Sprache:", lang);
                 switch (schema.name) {
                     case "highlight_words": return "Hervorgehobene Wörter";
                     case "highlight_color": return "Farbe für Hervorhebung";
