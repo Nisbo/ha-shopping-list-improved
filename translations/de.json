@@ -1,1 +1,33 @@
+{
+  "editor": {
+    "chips_position": {
+      "auto": "Automatisch (abhängig von Bildschirmgröße)",
+      "bottom": "Immer unten",
+      "right": "Immer rechts",
+      "full": "Rechts, mehrspaltig (nur Panel-Mode)"
+    },
+    "chip_merge": {
+      "combined": "Standard und Browser-Chips kombinieren (Standard)",
+      "standard_first": "Standard-Chips zuerst",
+      "browser_first": "Browser-Chips zuerst"
+    },
+    "labels": {
+      "chip_merge": "Chips kombinieren",
+      "local_chips": "Lokale Chips erlauben?",
+      "chip_font_size": "Schriftgröße der Chips (px)",
+      "chip_color": "Farbe der lokalen (Browser) Chips",
+      "chip_color_default": "Farbe der Standard-Chips",
+      "chip_color_highlight": "Farbe der hervorgehobenen Chips",
+      "highlight_words": "Liste der hervorgehobenen Wörter"
+    },
+    "helpers": {
+      "chip_merge": "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
+      "list_font_size": "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
+      "chip_font_size": "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
+      "chip_color": "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’ oder ‘rgba(100,100,100,0.3)’."
+    }
+  },
+  "tip": "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
+  "info": "Diese Karte basiert auf der originalen Home Assistant Einkaufsliste."
+}
 
