@@ -14,6 +14,17 @@ class HaShoppingListImproved extends HTMLElement {
         this._clearCompleted = this._clearCompleted.bind(this);
     }
 
+    /**
+     * Übersetzung
+     * @param {string} key Pfad zur Übersetzung, z.B. "editor.labels.chip_merge"
+     */
+    localize(key) {
+        const lang = (document.documentElement.lang || "en").split("-")[0];
+        const translations = window.loadCardTranslations?.("ha-shopping-list-improved") || {};
+        let value = key.split('.').reduce((obj, k) => (obj || {})[k], translations[lang]);
+        return value || key; // fallback: key selbst
+    }
+	
     set hass(hass) {
         this._hass = hass;
         this.render();
