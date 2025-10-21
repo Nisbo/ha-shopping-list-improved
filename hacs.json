@@ -1,18 +1,13 @@
 {
   "name": "Improved Shopping List Card",
   "url": "https://github.com/Nisbo/ha-shopping-list-improved",
-  "content_in_root": false,
-  "content": [
-    "ha-shopping-list-improved.js",
-    "translations/de.json",
-    "translations/en.json"
-  ],
+  "content_in_root": true,
+  "filename": "ha-shopping-list-improved.js",
   "render_readme": true,
   "translations": true,
   "country": "de",
   "homeassistant": "2025.10.0",
   "domains": [],
   "iot_class": "local_polling",
-  "type": "plugin",
-  "filename": "ha-shopping-list-improved.js"
+  "type": "plugin"
 }
