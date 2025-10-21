@@ -28,11 +28,25 @@ const TRANSLATIONS = {
     }
 };
 
-function translate(key, lang = "en") {
+
+// --- HA-Sprache über home-assistant element ---
+function detectLanguage() {
+    const hass = document.querySelector("home-assistant")?.hass;
+    const lang = hass?.language || "en"; // Fallback auf Englisch
+    console.debug("[i] HA language:", hass?.language, "=> verwendete Sprache:", lang);
+    return lang;
+}
+
+// --- translate-Funktion ---
+function translate(key, nix) {
+    const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
-    if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key];
+    if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key]; // Fallback Englisch
     return key;
 }
+
+
+
 
 class HaShoppingListImproved extends HTMLElement {
     constructor(){
