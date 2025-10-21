@@ -4,8 +4,6 @@
   "content_in_root": true,
   "filename": "ha-shopping-list-improved.js",
   "render_readme": true,
-  "translations": true,
-  "country": "de",
   "homeassistant": "2025.10.0",
   "domains": [],
   "iot_class": "local_polling",
