@@ -28,6 +28,11 @@ const TRANSLATIONS = {
     }
 };
 
+function translate(key, lang = "en") {
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
+    if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key];
+    return key;
+}
 
 class HaShoppingListImproved extends HTMLElement {
     constructor(){
@@ -36,16 +41,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._clearCompleted = this._clearCompleted.bind(this);
     }
 
-	localize(key) {
-	    const lang = this._hass?.language || "en"; // Sprache von HA oder Standard "en"
-	    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
-	        return TRANSLATIONS[lang][key];
-	    } else if (TRANSLATIONS["en"][key]) {
-	        return TRANSLATIONS["en"][key]; // Fallback auf Englisch
-	    } else {
-	        return key; // Fallback auf Key selbst
-	    }
-	}
+
 
 
     set hass(hass) {
@@ -205,13 +201,14 @@ class HaShoppingListImproved extends HTMLElement {
             ],
 
             computeLabel: (schema) => {
+				const lang = window.hass?.language || "en"; // HA Sprache
                 switch (schema.name) {
                     case "highlight_words": return "Hervorgehobene Wörter";
                     case "highlight_color": return "Farbe für Hervorhebung";
                     case "chip_merge1": return "Chips kombinieren";
                     case "local_chips1": return "Lokale Chips erlauben ?";
-						case "chip_merge": return this.localize("editor.labels.chip_merge");
-case "local_chips": return this.localize("editor.labels.local_chips");
+						case "chip_merge": return translate("editor.labels.chip_merge", lang);
+case "local_chips": return translate("editor.labels.local_chips", lang);
                     case "chip_font_size": return "Schriftgröße der Chips (px)";
                     case "chip_color": return "Farbe der Lokalen (Browser) Chips";
                     case "chip_color_default": return "Farbe der Standard Chips";
