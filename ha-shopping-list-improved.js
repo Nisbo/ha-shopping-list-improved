@@ -206,7 +206,7 @@ class HaShoppingListImproved extends HTMLElement {
 				//console.debug("[DEBUG] HA language2:", window.hass?.language, "=> verwendete Sprache:", lang2);
 
 const lang = hass?.language || "en"; // HA-Sprache aus der Karte
-    console.log("[DEBUG] HA language:", this._hass?.language, "=> verwendete Sprache:", lang);
+    console.log("[DEBUG] HA language:", hass?.language, "=> verwendete Sprache:", lang);
 
 				
                 switch (schema.name) {
