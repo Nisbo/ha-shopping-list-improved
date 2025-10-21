@@ -7,12 +7,46 @@
   ha-shopping-list-improved.js
 */
 
+const TRANSLATIONS = {
+    de: {
+        "editor.labels.chip_merge": "Chips kombinieren",
+        "editor.labels.local_chips": "Lokale Chips erlauben?",
+        "editor.labels.chip_font_size": "Schriftgröße der Chips (px)",
+        "editor.labels.chip_color": "Farbe der Lokalen (Browser) Chips",
+        "editor.labels.chip_color_default": "Farbe der Standard Chips",
+        "editor.labels.highlight_words": "Hervorgehobene Wörter"
+
+    },
+    en: {
+        "editor.labels.chip_merge": "Combine chips",
+        "editor.labels.local_chips": "Allow local chips?",
+        "editor.labels.chip_font_size": "Chip font size (px)",
+        "editor.labels.chip_color": "Color of local (browser) chips",
+        "editor.labels.chip_color_default": "Color of standard chips",
+        "editor.labels.highlight_words": "Highlight words"
+
+    }
+};
+
+
 class HaShoppingListImproved extends HTMLElement {
     constructor(){
         super();
         this._onAdd = this._onAdd.bind(this);
         this._clearCompleted = this._clearCompleted.bind(this);
     }
+
+	localize(key) {
+	    const lang = this._hass?.language || "en"; // Sprache von HA oder Standard "en"
+	    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
+	        return TRANSLATIONS[lang][key];
+	    } else if (TRANSLATIONS["en"][key]) {
+	        return TRANSLATIONS["en"][key]; // Fallback auf Englisch
+	    } else {
+	        return key; // Fallback auf Key selbst
+	    }
+	}
+
 
     set hass(hass) {
         this._hass = hass;
@@ -174,8 +208,10 @@ class HaShoppingListImproved extends HTMLElement {
                 switch (schema.name) {
                     case "highlight_words": return "Hervorgehobene Wörter";
                     case "highlight_color": return "Farbe für Hervorhebung";
-                    case "chip_merge": return "Chips kombinieren";
-                    case "local_chips": return "Lokale Chips erlauben ?";
+                    case "chip_merge1": return "Chips kombinieren";
+                    case "local_chips1": return "Lokale Chips erlauben ?";
+						case "chip_merge": return this.localize("editor.labels.chip_merge");
+case "local_chips": return this.localize("editor.labels.local_chips");
                     case "chip_font_size": return "Schriftgröße der Chips (px)";
                     case "chip_color": return "Farbe der Lokalen (Browser) Chips";
                     case "chip_color_default": return "Farbe der Standard Chips";
