@@ -1,5 +1,6 @@
 {
   "name": "Improved Shopping List Card",
+  "description": "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
   "url": "https://github.com/Nisbo/ha-shopping-list-improved",
   "content_in_root": true,
   "filename": "ha-shopping-list-improved.js",
