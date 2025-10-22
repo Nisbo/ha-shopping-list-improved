@@ -9,24 +9,50 @@
 
 const TRANSLATIONS = {
     de: {
-        "editor.labels.chip_merge": "Chips kombinierenXXX",
-        "editor.labels.local_chips": "Lokale Chips erlauben?XXX",
+        "editor.labels.highlight_words": "Hervorgehobene Wörter",
+        "editor.labels.highlight_color": "Farbe für Hervorhebung",
+        "editor.labels.chip_merge": "Chips kombinieren",
+        "editor.labels.local_chips": "Lokale Chips erlauben?",
         "editor.labels.chip_font_size": "Schriftgröße der Chips (px)",
         "editor.labels.chip_color": "Farbe der Lokalen (Browser) Chips",
         "editor.labels.chip_color_default": "Farbe der Standard Chips",
-        "editor.labels.highlight_words": "Hervorgehobene Wörter"
-
+        "editor.labels.list_font_size": "Schriftgröße der Listeneinträge (px)",
+        "editor.labels.chips_width": "Breite der Chips (nur bei 'full')",
+        "editor.labels.chips_position": "Position der Chips",
+        "editor.labels.quantity": "Position der Artikelanzahl",
+        "editor.labels.acknowledged": "Erledigte Artikel",
+        "editor.labels.chip_click": "Verhalten beim Klick auf einen Chip",
+        "editor.labels.show_quantity_box": "Anzahlfeld anzeigen",
+        "editor.labels.show_submit_button": "Hinzufügen-Button anzeigen",
+        "editor.labels.show_input_mask": "Eingabe-Maske anzeigen",
+        "editor.labels.show_quantity_one": "Anzahl 1 anzeigen",
+        "editor.labels.sub_text": "Hinweistext unter der Eingabe",
+        "editor.labels.chips": "Standard-Chips (Komma oder Semikolon getrennt)"
     },
+
     en: {
-        "editor.labels.chip_merge": "Combine chipsXXX",
-        "editor.labels.local_chips": "Allow local chips?XXX",
+        "editor.labels.highlight_words": "Highlight words",
+        "editor.labels.highlight_color": "Highlight color",
+        "editor.labels.chip_merge": "Combine chips",
+        "editor.labels.local_chips": "Allow local chips?",
         "editor.labels.chip_font_size": "Chip font size (px)",
         "editor.labels.chip_color": "Color of local (browser) chips",
         "editor.labels.chip_color_default": "Color of standard chips",
-        "editor.labels.highlight_words": "Highlight words"
-
+        "editor.labels.list_font_size": "List item font size (px)",
+        "editor.labels.chips_width": "Chip width (only for 'full')",
+        "editor.labels.chips_position": "Chip position",
+        "editor.labels.quantity": "Position of item quantity",
+        "editor.labels.acknowledged": "Completed items",
+        "editor.labels.chip_click": "Chip click behavior",
+        "editor.labels.show_quantity_box": "Show quantity box",
+        "editor.labels.show_submit_button": "Show add button",
+        "editor.labels.show_input_mask": "Show input mask",
+        "editor.labels.show_quantity_one": "Show quantity 1",
+        "editor.labels.sub_text": "Hint text below the input field",
+        "editor.labels.chips": "Default chips (comma or semicolon separated)"
     }
 };
+
 
 
 // --- HA-Sprache über home-assistant element ---
@@ -215,31 +241,7 @@ class HaShoppingListImproved extends HTMLElement {
             ],
 
             computeLabel: (schema) => {
-
-                switch (schema.name) {
-                    case "highlight_words": return "Hervorgehobene Wörter";
-                    case "highlight_color": return "Farbe für Hervorhebung";
-                    case "chip_merge1": return "Chips kombinieren";
-                    case "local_chips1": return "Lokale Chips erlauben ?";
-case "chip_merge": return translate("editor.labels.chip_merge");
-case "local_chips": return translate("editor.labels.local_chips");
-                    case "chip_font_size": return "Schriftgröße der Chips (px)";
-                    case "chip_color": return "Farbe der Lokalen (Browser) Chips";
-                    case "chip_color_default": return "Farbe der Standard Chips";
-                    case "list_font_size": return "Schriftgröße der Listeneinträge (px)";
-                    case "chips_width": return "Breite der Chips (nur bei 'full')";
-                    case "chips_position": return "Position der Chips";
-                    case "quantity": return "Position der Artikelanzahl";
-                    case "acknowledged": return "Erledigte Artikel";
-                    case "chip_click": return "Verhalten beim Klick auf einen Chip";
-                    case "show_quantity_box": return "Anzahlfeld anzeigen";
-                    case "show_submit_button": return "Hinzufügen-Button anzeigen";
-                    case "show_input_mask": return "Eingabe-Maske anzeigen";
-                    case "show_quantity_one": return "Anzahl 1 anzeigen";
-                    case "sub_text": return "Hinweistext unter der Eingabe";
-                    case "chips": return "Standard-Chips (Komma oder Semikolon getrennt)";
-                }
-                return undefined;
+                return translate(`editor.labels.${schema.name}`);
             },
 
             computeHelper: (schema) => {
