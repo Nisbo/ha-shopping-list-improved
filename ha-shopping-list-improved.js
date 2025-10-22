@@ -27,7 +27,27 @@ const TRANSLATIONS = {
         "editor.labels.show_input_mask": "Eingabe-Maske anzeigen",
         "editor.labels.show_quantity_one": "Anzahl 1 anzeigen",
         "editor.labels.sub_text": "Hinweistext unter der Eingabe",
-        "editor.labels.chips": "Standard-Chips (Komma oder Semikolon getrennt)"
+        "editor.labels.chips": "Standard-Chips (Komma oder Semikolon getrennt)",
+
+		"editor.helpers.highlight_words": "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
+        "editor.helpers.highlight_color": "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+        "editor.helpers.chip_merge": "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
+        "editor.helpers.list_font_size": "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
+        "editor.helpers.chip_font_size": "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
+        "editor.helpers.chip_color": "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
+        "editor.helpers.chip_color_default": "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
+        "editor.helpers.local_chips": "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar.",
+        "editor.helpers.chips_width": "Breite der Chip-Box in Pixeln. Wirkt nur bei 'chips_position' = 'full'.",
+        "editor.helpers.chips_position": "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
+        "editor.helpers.quantity": "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
+        "editor.helpers.acknowledged": "Steuert, ob erledigte Artikel angezeigt werden.",
+        "editor.helpers.chip_click": "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
+        "editor.helpers.show_quantity_box": "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
+        "editor.helpers.show_submit_button": "Zeigt den Hinzufügen-Button an oder nicht.",
+        "editor.helpers.show_input_mask": "Zeigt die komplette Eingabemaske an oder nicht.",
+        "editor.helpers.show_quantity_one": "Zeigt auch Anzahl 1 an (sonst nur Name).",
+        "editor.helpers.sub_text": "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
+        "editor.helpers.chips": "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'."
     },
 
     en: {
@@ -49,7 +69,28 @@ const TRANSLATIONS = {
         "editor.labels.show_input_mask": "Show input mask",
         "editor.labels.show_quantity_one": "Show quantity 1",
         "editor.labels.sub_text": "Hint text below the input field",
-        "editor.labels.chips": "Default chips (comma or semicolon separated)"
+        "editor.labels.chips": "Default chips (comma or semicolon separated)",
+
+		"editor.helpers.highlight_words": "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
+		"editor.helpers.highlight_color": "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+		"editor.helpers.chip_merge": "Determines how standard and browser chips are combined and displayed.",
+		"editor.helpers.list_font_size": "Sets the font size for items in the list. Default: 14px.",
+		"editor.helpers.chip_font_size": "Sets the font size for the quick-selection chips. Default: 12px.",
+		"editor.helpers.chip_color": "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
+		"editor.helpers.chip_color_default": "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
+		"editor.helpers.local_chips": "Local chips are stored only in the browser and are not synced to other devices. They will be lost when the browser cache is cleared.",
+		"editor.helpers.chips_width": "Width of the chip container in pixels. Only applies when 'chips_position' is set to 'full' (Panel mode).",
+		"editor.helpers.chips_position": "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
+		"editor.helpers.quantity": "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
+		"editor.helpers.acknowledged": "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
+		"editor.helpers.chip_click": "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
+		"editor.helpers.show_quantity_box": "Shows the small quantity input box (top left) or hides it.",
+		"editor.helpers.show_submit_button": "Shows the Add button. If hidden, press Enter to add an item.",
+		"editor.helpers.show_input_mask": "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
+		"editor.helpers.show_quantity_one": "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
+		"editor.helpers.sub_text": "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
+		"editor.helpers.chips": "Defines default chips, e.g. 'Milk,Eggs,Bread'."
+
     }
 };
 
@@ -245,33 +286,12 @@ class HaShoppingListImproved extends HTMLElement {
             },
 
             computeHelper: (schema) => {
-                switch (schema.name) {
-                    case "highlight_words": return "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.";
-                    case "highlight_color": return "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.";
-                    case "chip_merge": return "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.";
-                    case "list_font_size": return "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.";
-                    case "chip_font_size": return "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.";
-                    case "chip_color": return "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’";
-                    case "chip_color_default": return "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’";
-                    case "local_chips": return "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar. Desweiteren verschwinden sie, wenn der Browsercache gelöscht wird.";
-                    case "chips_width": return "Breite der Chip-Box in Pixeln. Wirkt nur, wenn 'chips_position' auf 'full' (Für Panel Mode / 1 Karte pro Seite) gesetzt ist.";
-                    case "chips_position": return "Legt fest, wo die Chips angezeigt werden (Auto: Ist abhänging von der Bildschirmgröße. Beim Handy 'unten', bei PC und Tablet werden die Chips 'rechts' angezeigt.)";
-                    case "quantity": return "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') dem Artikel steht. Dies wirkt sich nur auf neue Einträge aus.";
-                    case "acknowledged": return "Steuert, wo bzw ob erledigte Artikel angezeigt werden.";
-                    case "chip_click": return "Bestimmt, ob Chips (Artikel) per Klick oder Doppelklick hinzugefügt werden. Tipp: Jeder weitere Klick/Doppelklick auf einen Chip erhöht die Anzahl um 1. Standard-Chips haben zur besseren Unterscheidung einen blauen Hintergrund.";
-                    case "show_quantity_box": return "Zeigt das Eingabefeld für die Anzahl (oben links) an oder nicht.";
-                    case "show_submit_button": return "Zeigt den Hinzufügen-Button an oder nicht. Wenn der Button ausgeblendet ist, kann man den Artikel mit ENTER hinzufügen.";
-                    case "show_input_mask": return "Zeigt die komplette Eingabe-Maske an oder nicht. So kann man z.B. die Einträge auf eine vordefinierte Liste (Chips) an Artikeln beschränken.";
-                    case "show_quantity_one": return "Zeigt auch Anzahl 1 an (Sonst wird bei Anzahl 1 nur der Name vom Artikel angezeigt. Dies wirkt sich nur auf neue Einträge aus.)";
-                    case "sub_text": return "Text unter dem Eingabefeld zur Erklärung oder Tipps. HTML ist erlaubt. Tipp: Trage ein Leerzeichen ein, um das Feld auszublenden.";
-                    case "chips": return "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.";
-                }
-                return undefined;
+                return translate(`editor.helpers.${schema.name}`);
             },
 
             assertConfig: (config) => {
                 if (config.other_option) {
-                    throw new Error("'other_option' ist nicht erlaubt.");
+                    throw new Error("'other_option' is not allowed.");
                 }
             }
         };
