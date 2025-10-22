@@ -9,6 +9,11 @@
 
 const TRANSLATIONS = {
     de: {
+        "editor.placeholders.quantity": "Anzahl",
+        "editor.placeholders.item": "Artikel...",
+        "editor.labels.add_button": "Hinzufügen",
+        "editor.labels.clear_button": "Erledigte löschen",
+
 		"editor.options.chips_position.auto": "Automatisch (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom": "Immer unten",
 		"editor.options.chips_position.right": "Immer rechts",
@@ -67,6 +72,11 @@ const TRANSLATIONS = {
     },
 
     en: {
+        "editor.placeholders.quantity": "Quantity",
+        "editor.placeholders.item": "Item...",
+        "editor.labels.add_button": "Add",
+        "editor.labels.clear_button": "Clear completed",
+
 		"editor.options.chips_position.auto": "Automatic (depends on screen size)",
 		"editor.options.chips_position.bottom": "Always at bottom",
 		"editor.options.chips_position.right": "Always at right",
@@ -211,51 +221,50 @@ class HaShoppingListImproved extends HTMLElement {
     static getConfigForm() {
     return {
         schema: [
-{
-    name: "chips_position",
-    selector: {
-        select: {
-            options: [
-                { value: "auto", label: translate("editor.options.chips_position.auto") },
-                { value: "bottom", label: translate("editor.options.chips_position.bottom") },
-                { value: "right", label: translate("editor.options.chips_position.right") },
-                { value: "full", label: translate("editor.options.chips_position.full") }
-            ]
-        }
-    },
-    default: "auto"
-},
-{
-    name: "chips_width",
-    selector: { number: { min: 100, max: 800, step: 10 } },
-    default: 300
-},
-{
-    name: "chip_click",
-    selector: {
-        select: {
-            options: [
-                { value: "single", label: translate("editor.options.chip_click.single") },
-                { value: "dblclick", label: translate("editor.options.chip_click.dblclick") }
-            ]
-        }
-    },
-    default: "single"
-},
-{
-    name: "chip_merge",
-    selector: {
-        select: {
-            options: [
-                { value: "combined", label: translate("editor.options.chip_merge.combined") },
-                { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
-                { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") }
-            ]
-        }
-    },
-    default: "combined"
-},
-
+            {
+                name: "chips_position",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "auto", label: translate("editor.options.chips_position.auto") },
+                            { value: "bottom", label: translate("editor.options.chips_position.bottom") },
+                            { value: "right", label: translate("editor.options.chips_position.right") },
+                            { value: "full", label: translate("editor.options.chips_position.full") }
+                        ]
+                    }
+                },
+                default: "auto"
+            },
+            {
+                name: "chips_width",
+                selector: { number: { min: 100, max: 800, step: 10 } },
+                default: 300
+            },
+            {
+                name: "chip_click",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "single", label: translate("editor.options.chip_click.single") },
+                            { value: "dblclick", label: translate("editor.options.chip_click.dblclick") }
+                        ]
+                    }
+                },
+                default: "single"
+            },
+            {
+                name: "chip_merge",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "combined", label: translate("editor.options.chip_merge.combined") },
+                            { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
+                            { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") }
+                        ]
+                    }
+                },
+                default: "combined"
+            },
             { name: "chips", selector: { text: {} }, default: "" },
             { name: "highlight_words", selector: { text: {} }, default: "" },
 
@@ -276,32 +285,31 @@ class HaShoppingListImproved extends HTMLElement {
                 selector: { text: {} },
                 default: "red"
             },
-{
-    name: "quantity",
-    selector: {
-        select: {
-            options: [
-                { value: "beginning", label: translate("editor.options.quantity.beginning") },
-                { value: "end", label: translate("editor.options.quantity.end") }
-            ]
-        }
-    },
-    default: "end"
-},
-{
-    name: "acknowledged",
-    selector: {
-        select: {
-            options: [
-                { value: "show", label: translate("editor.options.acknowledged.show") },
-                { value: "hide", label: translate("editor.options.acknowledged.hide") },
-                { value: "end", label: translate("editor.options.acknowledged.end") }
-            ]
-        }
-    },
-    default: "show"
-},
-
+            {
+                name: "quantity",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "beginning", label: translate("editor.options.quantity.beginning") },
+                            { value: "end", label: translate("editor.options.quantity.end") }
+                        ]
+                    }
+                },
+                default: "end"
+            },
+            {
+                name: "acknowledged",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "show", label: translate("editor.options.acknowledged.show") },
+                            { value: "hide", label: translate("editor.options.acknowledged.hide") },
+                            { value: "end", label: translate("editor.options.acknowledged.end") }
+                        ]
+                    }
+                },
+                default: "show"
+            },
             { name: "local_chips", selector: { boolean: {} }, default: true },
             { name: "show_quantity_box", selector: { boolean: {} }, default: true },
             { name: "show_submit_button", selector: { boolean: {} }, default: true },
@@ -331,30 +339,30 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
 	connectedCallback() {
-        // Shadow DOM nur einmal erstellen
+        // Shadow DOM - create only once
         if (!this._shadow) {
             this._shadow = this.attachShadow({ mode: 'open' });
         } else {
-            // Bestehenden Shadow DOM leeren, damit beim Hot-Reload neu gerendert wird
+            // Clear Shadow DOM, to allow new rendering while hot reloading
             this._shadow.innerHTML = '';
         }
 
-        // Items & History initialisieren
+        // Items & History
         this._items = [];
         this._previous = this._loadHistory();
 
-        // Skeleton rendern (HTML + Styles)
+        // render Skeleton (HTML + Styles)
         this._renderSkeleton();
         this._refresh();
 
-        // Event-Listener für externe Updates
+        // Event-Listener for external Updates
         this._eventListener = (e) => {
             if (e.detail && e.detail.action) this._refresh();
         };
 
 	    window.addEventListener('shopping_list_updated', this._eventListener);
 
-        // HA Events abonnieren
+        // subscribe HA Events
         if (this._hass?.connection?.subscribeEvents) {
             this._hass.connection.subscribeEvents(() => this._refresh(), "shopping_list_updated");
         }
@@ -368,7 +376,6 @@ class HaShoppingListImproved extends HTMLElement {
         const style = document.createElement('style');
         // _chipPosition = "auto" | "bottom" | "right"
         const containerClass = `list-history-container ${this._chipPosition}`;
-
 
         style.textContent = `
             :host { font-family: var(--font-family, Roboto, Noto, sans-serif); display:block; }
@@ -406,7 +413,7 @@ class HaShoppingListImproved extends HTMLElement {
             .list-history-container {
                 display: flex;
                 gap: 12px;
-                flex-direction: column; /* default: Chips unten */
+                flex-direction: column; /* default: Chips bottom */
             }
 
             #list {
@@ -414,7 +421,7 @@ class HaShoppingListImproved extends HTMLElement {
                 overflow-y: auto;
             }
 
-            /* Default: horizontal fließend unten */
+            /* Default: bottom */
             .history {
                 display: flex;
                 flex-wrap: wrap;
@@ -422,21 +429,21 @@ class HaShoppingListImproved extends HTMLElement {
                 overflow-y: auto;
             }
 
-            /* Auto: Chips rechts bei großen Screens */
+            /* Auto: Chips right if size > 700px */
             @media (min-width: 700px) {
-                .list-history-container.auto {
-                flex-direction: row;
-                align-items: flex-start;
+                    .list-history-container.auto {
+                    flex-direction: row;
+                    align-items: flex-start;
                 }
                 .list-history-container.auto .history {
-                flex-direction: column;
-                overflow-y: auto;
-                margin-top: 0;
-                flex-wrap: nowrap;
+                    flex-direction: column;
+                    overflow-y: auto;
+                    margin-top: 0;
+                    flex-wrap: nowrap;
                 }
             }
 
-            /* Right: Immer rechts (untereinander) */
+            /* Right: Always right (in rows) */
             .list-history-container.right {
                 flex-direction: row;
                 align-items: flex-start;
@@ -448,12 +455,12 @@ class HaShoppingListImproved extends HTMLElement {
                 flex-wrap: nowrap;
             }
 
-            /* Bottom: Immer unten */
+            /* Bottom: Always bottom */
             .list-history-container.bottom {
                 flex-direction: column;
             }
 
-            /* Full: Immer rechts, mehrspaltig */
+            /* Full: Always right (multi column) */
             .list-history-container.full {
                 flex-direction: row;
                 align-items: flex-start;
@@ -475,7 +482,7 @@ class HaShoppingListImproved extends HTMLElement {
                 <div class="input-row ${this._showInputMask ? '' : 'hidden'}">
                     ${this._showQuantitySelection
                     ?   `
-                        <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="Anzahl">
+                        <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="${translate("editor.placeholders.quantity")}">
                         <datalist id="quantityOptions">
                             <option value="1"><option value="2"><option value="3"><option value="4"><option value="5">
                             <option value="6"><option value="7"><option value="8"><option value="9"><option value="10">
@@ -486,8 +493,8 @@ class HaShoppingListImproved extends HTMLElement {
                         <input type="hidden" id="quantitySelect" value="1">
                         `
                     }
-                    <input id="itemInput" type="text" placeholder="Artikel..." autocomplete="off">
-                    <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">Hinzufügen</button>
+                    <input id="itemInput" type="text" placeholder="${translate("editor.placeholders.item")}" autocomplete="off">
+                    <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">${translate("editor.labels.add_button")}</button>
                 </div>
 
                 <div class="small">
@@ -500,7 +507,7 @@ class HaShoppingListImproved extends HTMLElement {
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                    <button id="clearBtn">Erledigte löschen</button>
+                    <button id="clearBtn">${translate("editor.labels.clear_button")}</button>
                 </div>
             </div>
         `;
