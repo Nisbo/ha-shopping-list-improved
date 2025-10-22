@@ -3,9 +3,7 @@
 ## 📖 Vorwort / Foreword
 
 ### 🇩🇪 Deutsch
-Wie ist dieses Add-on entstanden? Ganz einfach: Ich habe eine Möglichkeit gesucht, meine Einkaufsliste direkt über **Home Assistant** zu führen.  
-Die eingebaute Liste ist leider sehr rudimentär. Dann habe ich **Tandoor** ausprobiert – ganz nett, aber es bot nicht das, was ich wollte.  
-Ein weiteres Shopping-List-Add-on gab es zwar, aber dessen Pflege war zu umständlich, und für jeden Artikel musste man eine eigene Karte anlegen.
+Wie ist dieses Add-on entstanden? Ganz einfach: Ich habe eine Möglichkeit gesucht, meine Einkaufsliste direkt über **Home Assistant** zu führen. Die eingebaute Liste ist leider sehr rudimentär. Dann habe ich **Tandoor** ausprobiert – ganz nett, aber es bot nicht das, was ich wollte. Ein weiteres Shopping-List-Add-on gab es zwar, aber dessen Pflege war zu umständlich, und für jeden Artikel musste man eine eigene Karte anlegen.
 
 Im Endeffekt blieb mir also nichts anderes übrig, als selbst etwas zu programmieren.  
 Die größte Herausforderung dabei war: **der WAF musste erhalten bleiben 😄**
@@ -13,9 +11,7 @@ Die größte Herausforderung dabei war: **der WAF musste erhalten bleiben 😄**
 ---
 
 ### 🇬🇧 English
-How did this add-on come about? Simple: I was looking for a way to manage my shopping list directly through **Home Assistant**.  
-The built-in list is unfortunately very basic. Then I tried **Tandoor** – quite nice, but it didn’t offer what I wanted.  
-There was another shopping list add-on, but maintaining it was cumbersome, and you had to create a separate card for every item.
+How did this add-on come about? Simple: I was looking for a way to manage my shopping list directly through **Home Assistant**. The built-in list is unfortunately very basic. Then I tried **Tandoor** – quite nice, but it didn’t offer what I wanted. There was another shopping list add-on, but maintaining it was cumbersome, and you had to create a separate card for every item.
 
 In the end, I had no choice but to develop something myself.  
 The biggest challenge was: **keeping the WAF intact 😄**
@@ -25,7 +21,7 @@ The biggest challenge was: **keeping the WAF intact 😄**
 ## 💡 Was ist die *Improved Shopping List Card*? / What is the *Improved Shopping List Card*?
 
 ### 🇩🇪 Deutsch
-Die **Improved Shopping List Card** ist eine erweiterte Karte für Home Assistant,  
+Die **Improved Shopping List Card** ist eine Karte für Home Assistant,  
 die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vielfaches vereinfacht.
 
 > ⚠️ **Hinweis:**  
@@ -35,7 +31,7 @@ die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vie
 ---
 
 ### 🇬🇧 English
-The **Improved Shopping List Card** is an enhanced card for Home Assistant,  
+The **Improved Shopping List Card** is a card for Home Assistant,  
 which significantly improves the original shopping list and makes it much easier to use.
 
 > ⚠️ **Note:**  
@@ -92,11 +88,16 @@ which significantly improves the original shopping list and makes it much easier
 
 ---
 
-## Was geht (noch) nicht ?
+## ❌ Was geht (noch) nicht? / Limitations 🇩🇪 / 🇬🇧
 
-- englische Übersetzung bzw Sprachunterstützug allgemein.
-- Kategorien für Shops (hier fehlt mir noch die Idee wie ich das am besten umsetze)
-- alle Artikel (nicht nur die erledigten) auf einmal zu löschen
+### 🇩🇪 Deutsch
+- Kategorien für Shops (hier fehlt mir noch die Idee, wie ich das am besten umsetze)  
+- Alle Artikel (nicht nur die erledigten) auf einmal löschen
+
+### 🇬🇧 English
+- Categories for shops (still figuring out the best way to implement this)  
+- Delete all items at once (not just completed ones)
+
 
 ---
 
