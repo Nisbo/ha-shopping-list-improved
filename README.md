@@ -1,6 +1,6 @@
 # 🛒 Improved Shopping List Card (`ha-shopping-list-improved`)
 
-## 📖 Vorwort / Foreword
+## 📖 🇩🇪 Vorwort / 🇬🇧 Foreword
 
 ### 🇩🇪 Deutsch
 Wie ist dieses Add-on entstanden? Ganz einfach: Ich habe eine Möglichkeit gesucht, meine Einkaufsliste direkt über **Home Assistant** zu führen. Die eingebaute Liste ist leider sehr rudimentär. Dann habe ich **Tandoor** ausprobiert – ganz nett, aber es bot nicht das, was ich wollte. Ein weiteres Shopping-List-Add-on gab es zwar, aber dessen Pflege war zu umständlich, und für jeden Artikel musste man eine eigene Karte anlegen.
@@ -18,7 +18,7 @@ The biggest challenge was: **keeping the WAF intact 😄**
 
 ---
 
-## 💡 Was ist die *Improved Shopping List Card*? / What is the *Improved Shopping List Card*?
+## 💡 🇩🇪 Was ist die *Improved Shopping List Card*? / 🇬🇧 What is the *Improved Shopping List Card*?
 
 ### 🇩🇪 Deutsch
 Die **Improved Shopping List Card** ist eine Karte für Home Assistant,  
@@ -51,7 +51,7 @@ which significantly improves the original shopping list and makes it much easier
 
 ---
 
-## ⚙️ Funktionsübersicht / Features
+## ⚙️ 🇩🇪 Funktionsübersicht / 🇬🇧 Features
 
 ### 🇩🇪 Deutsch
 - 🧩 Anzeige als **normale Karte** oder im **Panel-Mode** (Seite mit nur einer Karte)  
@@ -88,7 +88,7 @@ which significantly improves the original shopping list and makes it much easier
 
 ---
 
-## ❌ Was geht (noch) nicht? / Limitations 🇩🇪 / 🇬🇧
+## ❌ 🇩🇪 Was geht (noch) nicht? / 🇬🇧 Limitations
 
 ### 🇩🇪 Deutsch
 - Kategorien für Shops (hier fehlt mir noch die Idee, wie ich das am besten umsetze)  
