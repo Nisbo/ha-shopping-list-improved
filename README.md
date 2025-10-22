@@ -1,14 +1,8 @@
 # 🛒 Improved Shopping List Card (`ha-shopping-list-improved`)
 
-![36BEAE63-5A5B-4642-8118-FBF62A201483_1_201_a](https://github.com/user-attachments/assets/9f98127a-df6b-44e2-8444-6d429d04a505)
+## 📖 Vorwort / Foreword
 
-| 1 | 2 |
-| ---- | ----- |
-| ![17721741-9434-47A2-BB8F-FB2D2811C039_1_102_o](https://github.com/user-attachments/assets/5916d87d-f18a-4b5f-96ad-a9fbd0d0fbac) | ![FD780BD5-35D2-4686-9AA6-00CC4EBF05F3_1_102_o](https://github.com/user-attachments/assets/4762f5b5-2851-41fd-ba65-5495808c1134) |
-
-
-
-## 📖 Vorwort
+### 🇩🇪 Deutsch
 Wie ist dieses Add-on entstanden? Ganz einfach: Ich habe eine Möglichkeit gesucht, meine Einkaufsliste direkt über **Home Assistant** zu führen.  
 Die eingebaute Liste ist leider sehr rudimentär. Dann habe ich **Tandoor** ausprobiert – ganz nett, aber es bot nicht das, was ich wollte.  
 Ein weiteres Shopping-List-Add-on gab es zwar, aber dessen Pflege war zu umständlich, und für jeden Artikel musste man eine eigene Karte anlegen.
@@ -18,7 +12,19 @@ Die größte Herausforderung dabei war: **der WAF musste erhalten bleiben 😄**
 
 ---
 
-## 💡 Was ist die *Improved Shopping List Card*?
+### 🇬🇧 English
+How did this add-on come about? Simple: I was looking for a way to manage my shopping list directly through **Home Assistant**.  
+The built-in list is unfortunately very basic. Then I tried **Tandoor** – quite nice, but it didn’t offer what I wanted.  
+There was another shopping list add-on, but maintaining it was cumbersome, and you had to create a separate card for every item.
+
+In the end, I had no choice but to develop something myself.  
+The biggest challenge was: **keeping the WAF intact 😄**
+
+---
+
+## 💡 Was ist die *Improved Shopping List Card*? / What is the *Improved Shopping List Card*?
+
+### 🇩🇪 Deutsch
 Die **Improved Shopping List Card** ist eine erweiterte Karte für Home Assistant,  
 die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vielfaches vereinfacht.
 
@@ -28,8 +34,30 @@ die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vie
 
 ---
 
-## ⚙️ Funktionsübersicht
+### 🇬🇧 English
+The **Improved Shopping List Card** is an enhanced card for Home Assistant,  
+which significantly improves the original shopping list and makes it much easier to use.
 
+> ⚠️ **Note:**  
+> This card is based on the **original Home Assistant shopping list** (`shopping_list`) and uses its data structure.  
+> All items you add in this card will also appear in the standard shopping list – and vice versa.
+
+
+---
+
+![36BEAE63-5A5B-4642-8118-FBF62A201483_1_201_a](https://github.com/user-attachments/assets/9f98127a-df6b-44e2-8444-6d429d04a505)
+
+| Mobile View | in German |
+| ---- | ----- |
+| ![17721741-9434-47A2-BB8F-FB2D2811C039_1_102_o](https://github.com/user-attachments/assets/5916d87d-f18a-4b5f-96ad-a9fbd0d0fbac) | ![FD780BD5-35D2-4686-9AA6-00CC4EBF05F3_1_102_o](https://github.com/user-attachments/assets/4762f5b5-2851-41fd-ba65-5495808c1134) |
+
+
+
+---
+
+## ⚙️ Funktionsübersicht / Features
+
+### 🇩🇪 Deutsch
 - 🧩 Anzeige als **normale Karte** oder im **Panel-Mode** (Seite mit nur einer Karte)  
 - 🔤 **Alphabetische Sortierung** der Einträge  
 - 👀 Möglichkeit, **erledigte Artikel auszublenden**, ans Ende zu verschieben oder in der Sortierung zu belassen  
@@ -41,9 +69,26 @@ die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vie
 - 🗑️ **Einfaches Entfernen** von Artikeln durch den Minus Button  
 - ⚙️ **Anpassbares Design**: Farben, Schriftgrößen, Chip-Positionen u. v. m.
 
-
 > 💡 **Tipp:**  
 > Schau dir die Screenshots weiter unten an, um zu sehen, was alles möglich ist!
+
+---
+
+### 🇬🇧 English
+- 🧩 Display as a **normal card** or in **panel mode** (page with only one card)  
+- 🔤 **Alphabetical sorting** of items  
+- 👀 Ability to **hide completed items**, move them to the end, or leave them in the order  
+- 🎨 **Colored marking** of completed items  
+- ➕ **Change quantity** via + and − buttons  
+- 🏷️ **Chips** for quickly adding frequently used items  
+- 🌐 Support for **standard (config)** and **local (browser) chips**  
+- ✴️ **Highlighting** for specific items (e.g., *butter*, *bananas*, *flour*)  
+- 🗑️ **Easy removal** of items using the minus button  
+- ⚙️ **Customizable design**: colors, font sizes, chip positions, and more
+
+> 💡 **Tip:**  
+> Check the screenshots below to see what’s possible!
+
 
 ---
 
