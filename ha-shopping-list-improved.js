@@ -9,6 +9,8 @@
 
 const TRANSLATIONS = {
     de: {
+        "card.description": "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
+
         "editor.placeholders.quantity": "Anzahl",
         "editor.placeholders.item": "Artikel...",
         "editor.labels.add_button": "Hinzufügen",
@@ -20,8 +22,8 @@ const TRANSLATIONS = {
         "editor.labels.minus_btn": "Menge verringern oder löschen",
         "editor.labels.confirm_remove": "Item entfernen: {item}?",
         "editor.labels.confirm_clear_done": "Alle als erledigt markierten Artikel löschen?",
-        "editor.labels.confirm_remove_history": "Eintrag '{item}' aus History löschen?",
-        "editor.labels.chip_highlighted": "Hervorgehobenes Wort",
+        "editor.labels.confirm_remove_history": "Chip '{item}' aus History löschen?",
+        "editor.labels.chip_highlighted": "Hervorgehobener Chip",
         "editor.labels.chip_standard": "Standard-Chip",
         "editor.labels.alert_cannot_delete_standard": "Dieser Standard-Chip kann nicht gelöscht werden",
 
@@ -83,6 +85,8 @@ const TRANSLATIONS = {
     },
 
     en: {
+        "card.description": "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
+
         "editor.placeholders.quantity": "Quantity",
         "editor.placeholders.item": "Item...",
         "editor.labels.add_button": "Add",
@@ -94,8 +98,8 @@ const TRANSLATIONS = {
         "editor.labels.minus_btn": "Decrease quantity or remove",
         "editor.labels.confirm_remove": "Remove item: {item}?",
         "editor.labels.confirm_clear_done": "Delete all completed items?",
-        "editor.labels.confirm_remove_history": "Delete entry '{item}' from history?",
-        "editor.labels.chip_highlighted": "Highlighted word",
+        "editor.labels.confirm_remove_history": "Delete chip '{item}' from history?",
+        "editor.labels.chip_highlighted": "Highlighted Chip",
         "editor.labels.chip_standard": "Standard chip",
         "editor.labels.alert_cannot_delete_standard": "This standard chip cannot be deleted",
 
@@ -1091,5 +1095,5 @@ window.customCards.push({
 	type: 'ha-shopping-list-improved', 
 	name: 'Improved Shopping List', 
 	preview: true, 
-	description: 'Verbesserte Einkaufsliste mit alphabetischer Sortierung von Einträgen und History, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.'
+	description: translate("card.description")
 });
