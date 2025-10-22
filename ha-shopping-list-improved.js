@@ -1,11 +1,185 @@
 /*
  * Improved Shopping List Card
- * Version: 1.0.0
- * @description Verbesserte Shopping List Card für Home Assistant.
+ * Version: 1.1.0
+ * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
   ha-shopping-list-improved.js
 */
+
+const TRANSLATIONS = {
+    de: {
+        "card.description"                              : "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
+
+        "editor.placeholders.quantity"                  : "Anzahl",
+        "editor.placeholders.item"                      : "Artikel...",
+        "editor.labels.add_button"                      : "Hinzufügen",
+        "editor.labels.clear_button"                    : "Erledigte löschen",
+        "editor.labels.no_items"                        : "Keine Einträge",
+        "editor.labels.confirm_remove"                  : "‘{item}’ aus der Liste entfernen ?",
+        "editor.labels.complete_btn"                    : "Markieren als erledigt",
+        "editor.labels.plus_btn"                        : "Menge erhöhen",
+        "editor.labels.minus_btn"                       : "Menge verringern oder löschen",
+        "editor.labels.confirm_remove"                  : "Item entfernen: {item}?",
+        "editor.labels.confirm_clear_done"              : "Alle als erledigt markierten Artikel löschen?",
+        "editor.labels.confirm_remove_history"          : "Chip '{item}' aus History löschen?",
+        "editor.labels.chip_highlighted"                : "Hervorgehobener Chip",
+        "editor.labels.chip_standard"                   : "Standard-Chip",
+        "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
+
+		"editor.options.chips_position.auto"            : "Automatisch (abhängig von Bildschirmgröße)",
+		"editor.options.chips_position.bottom"          : "Immer unten",
+		"editor.options.chips_position.right"           : "Immer rechts",
+		"editor.options.chips_position.full"            : "Rechts, mehrspaltig (nur Panel-Mode)",
+		"editor.options.chip_click.single"              : "Klick",
+		"editor.options.chip_click.dblclick"            : "Doppelklick",
+		"editor.options.chip_merge.combined"            : "Standard und Browser-Chips kombinieren (Standard)",
+		"editor.options.chip_merge.standard_first"      : "Standard-Chips zuerst",
+		"editor.options.chip_merge.browser_first"       : "Browser-Chips zuerst",
+		"editor.options.quantity.beginning"             : "Anzahl vorne z.B. '10x Butter'",
+		"editor.options.quantity.end"                   : "Anzahl hinten z.B. 'Butter (10)'",
+		"editor.options.acknowledged.show"              : "Erledigte Artikel anzeigen",
+		"editor.options.acknowledged.hide"              : "Erledigte Artikel ausblenden",
+		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende anzeigen",
+        "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
+		
+        "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
+        "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
+        "editor.labels.chip_merge"                      : "Chips kombinieren",
+        "editor.labels.local_chips"                     : "Lokale Chips erlauben?",
+        "editor.labels.chip_font_size"                  : "Schriftgröße der Chips (px)",
+        "editor.labels.chip_color"                      : "Farbe der Lokalen (Browser) Chips",
+        "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
+        "editor.labels.list_font_size"                  : "Schriftgröße der Listeneinträge (px)",
+        "editor.labels.chips_width"                     : "Breite der Chips (nur bei 'full')",
+        "editor.labels.chips_position"                  : "Position der Chips",
+        "editor.labels.quantity"                        : "Position der Artikelanzahl",
+        "editor.labels.acknowledged"                    : "Erledigte Artikel",
+        "editor.labels.chip_click"                      : "Verhalten beim Klick auf einen Chip",
+        "editor.labels.show_quantity_box"               : "Anzahlfeld anzeigen",
+        "editor.labels.show_submit_button"              : "Hinzufügen-Button anzeigen",
+        "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
+        "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
+        "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
+        "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
+
+		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
+        "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+        "editor.helpers.chip_merge"                     : "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
+        "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
+        "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
+        "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
+        "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
+        "editor.helpers.local_chips"                    : "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar.",
+        "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Wirkt nur bei 'chips_position' = 'full'.",
+        "editor.helpers.chips_position"                 : "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
+        "editor.helpers.quantity"                       : "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
+        "editor.helpers.acknowledged"                   : "Steuert, ob erledigte Artikel angezeigt werden.",
+        "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
+        "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
+        "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
+        "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
+        "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
+        "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
+        "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'."
+    },
+
+    en: {
+        "card.description"                              : "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
+
+        "editor.placeholders.quantity"                  : "Quantity",
+        "editor.placeholders.item"                      : "Item...",
+        "editor.labels.add_button"                      : "Add",
+        "editor.labels.clear_button"                    : "Clear completed",
+        "editor.labels.no_items"                        : "No items",
+        "editor.labels.confirm_remove"                  : "Remove ‘{item}’ from the list?",
+        "editor.labels.complete_btn"                    : "Mark as done",
+        "editor.labels.plus_btn"                        : "Increase quantity",
+        "editor.labels.minus_btn"                       : "Decrease quantity or remove",
+        "editor.labels.confirm_remove"                  : "Remove item: {item}?",
+        "editor.labels.confirm_clear_done"              : "Delete all completed items?",
+        "editor.labels.confirm_remove_history"          : "Delete chip '{item}' from history?",
+        "editor.labels.chip_highlighted"                : "Highlighted Chip",
+        "editor.labels.chip_standard"                   : "Standard chip",
+        "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
+
+		"editor.options.chips_position.auto"            : "Automatic (depends on screen size)",
+		"editor.options.chips_position.bottom"          : "Always at bottom",
+		"editor.options.chips_position.right"           : "Always at right",
+		"editor.options.chips_position.full"            : "Right, multi-column (panel mode only)",
+		"editor.options.chip_click.single"              : "Click",
+		"editor.options.chip_click.dblclick"            : "Double-click",
+		"editor.options.chip_merge.combined"            : "Combine standard and browser chips (default)",
+		"editor.options.chip_merge.standard_first"      : "Standard chips first",
+		"editor.options.chip_merge.browser_first"       : "Browser chips first",
+		"editor.options.quantity.beginning"             : "Quantity at beginning, e.g. '10x Butter'",
+		"editor.options.quantity.end"                   : "Quantity at end, e.g. 'Butter (10)'",
+		"editor.options.acknowledged.show"              : "Show completed items",
+		"editor.options.acknowledged.hide"              : "Hide completed items",
+		"editor.options.acknowledged.end"               : "Show completed items at the end",
+        "editor.defaults.sub_text"                      : "Hint: Use chips to quickly add items again.",
+		
+        "editor.labels.highlight_words"                 : "Highlight words",
+        "editor.labels.highlight_color"                 : "Highlight color",
+        "editor.labels.chip_merge"                      : "Combine chips",
+        "editor.labels.local_chips"                     : "Allow local chips?",
+        "editor.labels.chip_font_size"                  : "Chip font size (px)",
+        "editor.labels.chip_color"                      : "Color of local (browser) chips",
+        "editor.labels.chip_color_default"              : "Color of standard chips",
+        "editor.labels.list_font_size"                  : "List item font size (px)",
+        "editor.labels.chips_width"                     : "Chip width (only for 'full')",
+        "editor.labels.chips_position"                  : "Chip position",
+        "editor.labels.quantity"                        : "Position of item quantity",
+        "editor.labels.acknowledged"                    : "Completed items",
+        "editor.labels.chip_click"                      : "Chip click behavior",
+        "editor.labels.show_quantity_box"               : "Show quantity box",
+        "editor.labels.show_submit_button"              : "Show add button",
+        "editor.labels.show_input_mask"                 : "Show input mask",
+        "editor.labels.show_quantity_one"               : "Show quantity 1",
+        "editor.labels.sub_text"                        : "Hint text below the input field",
+        "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
+
+		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
+		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+		"editor.helpers.chip_merge"                     : "Determines how standard and browser chips are combined and displayed.",
+		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
+		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
+		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
+		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
+		"editor.helpers.local_chips"                    : "Local chips are stored only in the browser and are not synced to other devices. They will be lost when the browser cache is cleared.",
+		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when 'chips_position' is set to 'full' (Panel mode).",
+		"editor.helpers.chips_position"                 : "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
+		"editor.helpers.quantity"                       : "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
+		"editor.helpers.acknowledged"                   : "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
+		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
+		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
+		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
+		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
+		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
+		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
+		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'."
+    }
+};
+
+const debugMode = false;
+
+// Detect HA-Language via home-assistant element
+function detectLanguage() {
+    const hass = document.querySelector("home-assistant")?.hass;
+    const lang = hass?.language || "en"; // Fallback to Englisch
+    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] HA language:", hass?.language, "=> used language:", lang);
+    return lang;
+}
+
+
+// translate-Funktion 
+function translate(key) {
+    const lang = detectLanguage();
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
+    if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key]; // Fallback Englisch
+    return key;
+}
+
 
 class HaShoppingListImproved extends HTMLElement {
     constructor(){
@@ -28,7 +202,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showQuantitySelection = (config.show_quantity_box === false) ? false : true;
         this._showSubmitButton      = (config.show_submit_button === false) ? false : true;
         this._showInputMask         = (config.show_input_mask === false) ? false : true;
-        this._subText               = (config.sub_text === undefined) ? "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen." : config.sub_text;
+        this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
         this._chipPosition          = ["bottom", "right", "full", "auto"].includes(config.chips_position) ? config.chips_position : "auto";
@@ -64,7 +238,7 @@ class HaShoppingListImproved extends HTMLElement {
             quantity: "end",
             acknowledged: "show",
             chip_click: "single",
-            sub_text: "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
+            sub_text: translate("editor.defaults.sub_text"),
             chip_merge: "combined"
         };
     }
@@ -73,18 +247,18 @@ class HaShoppingListImproved extends HTMLElement {
     static getConfigForm() {
     return {
         schema: [
-            { 
-                name: "chips_position", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "auto", label: "Automatisch (abhängig von Bildschirmgröße)" },
-                    { value: "bottom", label: "Immer unten" },
-                    { value: "right", label: "Immer rechts" },
-                    { value: "full", label: "Rechts, mehrspaltig (nur Panel-Mode)" }
-                    ] 
-                } 
-                }, 
+            {
+                name: "chips_position",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "auto", label: translate("editor.options.chips_position.auto") },
+                            { value: "bottom", label: translate("editor.options.chips_position.bottom") },
+                            { value: "right", label: translate("editor.options.chips_position.right") },
+                            { value: "full", label: translate("editor.options.chips_position.full") }
+                        ]
+                    }
+                },
                 default: "auto"
             },
             {
@@ -92,16 +266,16 @@ class HaShoppingListImproved extends HTMLElement {
                 selector: { number: { min: 100, max: 800, step: 10 } },
                 default: 300
             },
-            { 
-                name: "chip_click", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "single", label: "Klick" },
-                    { value: "dblclick", label: "Doppelklick" }
-                    ]
-                } 
-                }, 
+            {
+                name: "chip_click",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "single", label: translate("editor.options.chip_click.single") },
+                            { value: "dblclick", label: translate("editor.options.chip_click.dblclick") }
+                        ]
+                    }
+                },
                 default: "single"
             },
             {
@@ -109,9 +283,9 @@ class HaShoppingListImproved extends HTMLElement {
                 selector: {
                     select: {
                         options: [
-                            { value: "combined", label: "Standard und Browser-Chips kombinieren (Standard)" },
-                            { value: "standard_first", label: "Standard-Chips zuerst" },
-                            { value: "browser_first", label: "Browser-Chips zuerst" }
+                            { value: "combined", label: translate("editor.options.chip_merge.combined") },
+                            { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
+                            { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") }
                         ]
                     }
                 },
@@ -137,29 +311,29 @@ class HaShoppingListImproved extends HTMLElement {
                 selector: { text: {} },
                 default: "red"
             },
-            { 
-                name: "quantity", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "beginning", label: "Anzahl vorne z.B. '10x Butter'" },
-                    { value: "end", label: "Anzahl hinten z.B. 'Butter (10)'" }
-                    ]
-                } 
-                }, 
+            {
+                name: "quantity",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "beginning", label: translate("editor.options.quantity.beginning") },
+                            { value: "end", label: translate("editor.options.quantity.end") }
+                        ]
+                    }
+                },
                 default: "end"
             },
-            { 
-                name: "acknowledged", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "show", label: "Erledigte Artikel anzeigen" },
-                    { value: "hide", label: "Erledigte Artikel ausblenden" },
-                    { value: "end", label: "Erledigte Artikel am Ende anzeigen" }
-                    ]
-                } 
-                }, 
+            {
+                name: "acknowledged",
+                selector: {
+                    select: {
+                        options: [
+                            { value: "show", label: translate("editor.options.acknowledged.show") },
+                            { value: "hide", label: translate("editor.options.acknowledged.hide") },
+                            { value: "end", label: translate("editor.options.acknowledged.end") }
+                        ]
+                    }
+                },
                 default: "show"
             },
             { name: "local_chips", selector: { boolean: {} }, default: true },
@@ -171,58 +345,16 @@ class HaShoppingListImproved extends HTMLElement {
             ],
 
             computeLabel: (schema) => {
-                switch (schema.name) {
-                    case "highlight_words": return "Hervorgehobene Wörter";
-                    case "highlight_color": return "Farbe für Hervorhebung";
-                    case "chip_merge": return "Chips kombinieren";
-                    case "local_chips": return "Lokale Chips erlauben ?";
-                    case "chip_font_size": return "Schriftgröße der Chips (px)";
-                    case "chip_color": return "Farbe der Lokalen (Browser) Chips";
-                    case "chip_color_default": return "Farbe der Standard Chips";
-                    case "list_font_size": return "Schriftgröße der Listeneinträge (px)";
-                    case "chips_width": return "Breite der Chips (nur bei 'full')";
-                    case "chips_position": return "Position der Chips";
-                    case "quantity": return "Position der Artikelanzahl";
-                    case "acknowledged": return "Erledigte Artikel";
-                    case "chip_click": return "Verhalten beim Klick auf einen Chip";
-                    case "show_quantity_box": return "Anzahlfeld anzeigen";
-                    case "show_submit_button": return "Hinzufügen-Button anzeigen";
-                    case "show_input_mask": return "Eingabe-Maske anzeigen";
-                    case "show_quantity_one": return "Anzahl 1 anzeigen";
-                    case "sub_text": return "Hinweistext unter der Eingabe";
-                    case "chips": return "Standard-Chips (Komma oder Semikolon getrennt)";
-                }
-                return undefined;
+                return translate(`editor.labels.${schema.name}`);
             },
 
             computeHelper: (schema) => {
-                switch (schema.name) {
-                    case "highlight_words": return "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.";
-                    case "highlight_color": return "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.";
-                    case "chip_merge": return "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.";
-                    case "list_font_size": return "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.";
-                    case "chip_font_size": return "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.";
-                    case "chip_color": return "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’";
-                    case "chip_color_default": return "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’";
-                    case "local_chips": return "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar. Desweiteren verschwinden sie, wenn der Browsercache gelöscht wird.";
-                    case "chips_width": return "Breite der Chip-Box in Pixeln. Wirkt nur, wenn 'chips_position' auf 'full' (Für Panel Mode / 1 Karte pro Seite) gesetzt ist.";
-                    case "chips_position": return "Legt fest, wo die Chips angezeigt werden (Auto: Ist abhänging von der Bildschirmgröße. Beim Handy 'unten', bei PC und Tablet werden die Chips 'rechts' angezeigt.)";
-                    case "quantity": return "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') dem Artikel steht. Dies wirkt sich nur auf neue Einträge aus.";
-                    case "acknowledged": return "Steuert, wo bzw ob erledigte Artikel angezeigt werden.";
-                    case "chip_click": return "Bestimmt, ob Chips (Artikel) per Klick oder Doppelklick hinzugefügt werden. Tipp: Jeder weitere Klick/Doppelklick auf einen Chip erhöht die Anzahl um 1. Standard-Chips haben zur besseren Unterscheidung einen blauen Hintergrund.";
-                    case "show_quantity_box": return "Zeigt das Eingabefeld für die Anzahl (oben links) an oder nicht.";
-                    case "show_submit_button": return "Zeigt den Hinzufügen-Button an oder nicht. Wenn der Button ausgeblendet ist, kann man den Artikel mit ENTER hinzufügen.";
-                    case "show_input_mask": return "Zeigt die komplette Eingabe-Maske an oder nicht. So kann man z.B. die Einträge auf eine vordefinierte Liste (Chips) an Artikeln beschränken.";
-                    case "show_quantity_one": return "Zeigt auch Anzahl 1 an (Sonst wird bei Anzahl 1 nur der Name vom Artikel angezeigt. Dies wirkt sich nur auf neue Einträge aus.)";
-                    case "sub_text": return "Text unter dem Eingabefeld zur Erklärung oder Tipps. HTML ist erlaubt. Tipp: Trage ein Leerzeichen ein, um das Feld auszublenden.";
-                    case "chips": return "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.";
-                }
-                return undefined;
+                return translate(`editor.helpers.${schema.name}`);
             },
 
             assertConfig: (config) => {
                 if (config.other_option) {
-                    throw new Error("'other_option' ist nicht erlaubt.");
+                    throw new Error("'other_option' is not allowed.");
                 }
             }
         };
@@ -233,30 +365,30 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
 	connectedCallback() {
-        // Shadow DOM nur einmal erstellen
+        // Shadow DOM - create only once
         if (!this._shadow) {
             this._shadow = this.attachShadow({ mode: 'open' });
         } else {
-            // Bestehenden Shadow DOM leeren, damit beim Hot-Reload neu gerendert wird
+            // Clear Shadow DOM, to allow new rendering while hot reloading
             this._shadow.innerHTML = '';
         }
 
-        // Items & History initialisieren
+        // Items & History
         this._items = [];
         this._previous = this._loadHistory();
 
-        // Skeleton rendern (HTML + Styles)
+        // render Skeleton (HTML + Styles)
         this._renderSkeleton();
         this._refresh();
 
-        // Event-Listener für externe Updates
+        // Event-Listener for external Updates
         this._eventListener = (e) => {
             if (e.detail && e.detail.action) this._refresh();
         };
 
 	    window.addEventListener('shopping_list_updated', this._eventListener);
 
-        // HA Events abonnieren
+        // subscribe HA Events
         if (this._hass?.connection?.subscribeEvents) {
             this._hass.connection.subscribeEvents(() => this._refresh(), "shopping_list_updated");
         }
@@ -270,7 +402,6 @@ class HaShoppingListImproved extends HTMLElement {
         const style = document.createElement('style');
         // _chipPosition = "auto" | "bottom" | "right"
         const containerClass = `list-history-container ${this._chipPosition}`;
-
 
         style.textContent = `
             :host { font-family: var(--font-family, Roboto, Noto, sans-serif); display:block; }
@@ -308,7 +439,7 @@ class HaShoppingListImproved extends HTMLElement {
             .list-history-container {
                 display: flex;
                 gap: 12px;
-                flex-direction: column; /* default: Chips unten */
+                flex-direction: column; /* default: Chips bottom */
             }
 
             #list {
@@ -316,7 +447,7 @@ class HaShoppingListImproved extends HTMLElement {
                 overflow-y: auto;
             }
 
-            /* Default: horizontal fließend unten */
+            /* Default: bottom */
             .history {
                 display: flex;
                 flex-wrap: wrap;
@@ -324,21 +455,21 @@ class HaShoppingListImproved extends HTMLElement {
                 overflow-y: auto;
             }
 
-            /* Auto: Chips rechts bei großen Screens */
+            /* Auto: Chips right if size > 700px */
             @media (min-width: 700px) {
-                .list-history-container.auto {
-                flex-direction: row;
-                align-items: flex-start;
+                    .list-history-container.auto {
+                    flex-direction: row;
+                    align-items: flex-start;
                 }
                 .list-history-container.auto .history {
-                flex-direction: column;
-                overflow-y: auto;
-                margin-top: 0;
-                flex-wrap: nowrap;
+                    flex-direction: column;
+                    overflow-y: auto;
+                    margin-top: 0;
+                    flex-wrap: nowrap;
                 }
             }
 
-            /* Right: Immer rechts (untereinander) */
+            /* Right: Always right (in rows) */
             .list-history-container.right {
                 flex-direction: row;
                 align-items: flex-start;
@@ -350,12 +481,12 @@ class HaShoppingListImproved extends HTMLElement {
                 flex-wrap: nowrap;
             }
 
-            /* Bottom: Immer unten */
+            /* Bottom: Always bottom */
             .list-history-container.bottom {
                 flex-direction: column;
             }
 
-            /* Full: Immer rechts, mehrspaltig */
+            /* Full: Always right (multi column) */
             .list-history-container.full {
                 flex-direction: row;
                 align-items: flex-start;
@@ -377,7 +508,7 @@ class HaShoppingListImproved extends HTMLElement {
                 <div class="input-row ${this._showInputMask ? '' : 'hidden'}">
                     ${this._showQuantitySelection
                     ?   `
-                        <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="Anzahl">
+                        <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="${translate("editor.placeholders.quantity")}">
                         <datalist id="quantityOptions">
                             <option value="1"><option value="2"><option value="3"><option value="4"><option value="5">
                             <option value="6"><option value="7"><option value="8"><option value="9"><option value="10">
@@ -388,8 +519,8 @@ class HaShoppingListImproved extends HTMLElement {
                         <input type="hidden" id="quantitySelect" value="1">
                         `
                     }
-                    <input id="itemInput" type="text" placeholder="Artikel..." autocomplete="off">
-                    <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">Hinzufügen</button>
+                    <input id="itemInput" type="text" placeholder="${translate("editor.placeholders.item")}" autocomplete="off">
+                    <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">${translate("editor.labels.add_button")}</button>
                 </div>
 
                 <div class="small">
@@ -402,7 +533,7 @@ class HaShoppingListImproved extends HTMLElement {
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                    <button id="clearBtn">Erledigte löschen</button>
+                    <button id="clearBtn">${translate("editor.labels.clear_button")}</button>
                 </div>
             </div>
         `;
@@ -432,7 +563,7 @@ class HaShoppingListImproved extends HTMLElement {
                 id: i.id
             }));
 
-            // Sortierung: alphabetisch nach Name, Menge ignorieren
+            // Sort function: A --> Z, ignore quantity
             this._items.sort((a, b) => {
                 let nameA = a.name;
                 let nameB = b.name;
@@ -448,9 +579,9 @@ class HaShoppingListImproved extends HTMLElement {
                 return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
             });
 
-            console.debug("[DEBUG] Geladene Items:", this._items.map(i => i.name));
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
             
-            // acknowledged-Logik
+            // acknowledged-Logic
             if (this._acknowledgedMode === "hide") {
                 this._items = this._items.filter(i => !i.complete);
             } else if (this._acknowledgedMode === "end") {
@@ -461,14 +592,14 @@ class HaShoppingListImproved extends HTMLElement {
             
             this._renderList();
         } catch (err) {
-            console.error("ShoppingList: konnte Items nicht laden via API", err);
+            console.error("[ha-shopping-list-improved]: unable to load items via API", err);
         }
     }
 
     _renderList() {
         this._listEl.innerHTML = '';
         if (!this._items.length) {
-            this._listEl.innerHTML = '<li class="small">Keine Einträge</li>';
+            this._listEl.innerHTML = `<li class="small">${translate("editor.labels.no_items")}</li>`;
             return;
         }
 
@@ -493,10 +624,10 @@ class HaShoppingListImproved extends HTMLElement {
             const left = document.createElement('div');
             left.className = 'left';
 
-            // Erledigt Checkbox / Haken
+            // Acknowledged Checkbox / hook
             const completeBtn = document.createElement('button');
             completeBtn.innerHTML = item.complete ? '\u2714' : '\u2610';
-            completeBtn.title = 'Markieren als erledigt';
+            completeBtn.title = translate("editor.labels.complete_btn");
             completeBtn.style.cursor = 'pointer';
             completeBtn.style.border = 'none';
             completeBtn.style.background = 'transparent';
@@ -508,7 +639,7 @@ class HaShoppingListImproved extends HTMLElement {
             nameSpan.className = 'name';
             nameSpan.textContent = item.name;
 
-            // Bearbeiten-Funktion
+            // Edit-Function
             nameSpan.addEventListener('dblclick', () => {
                 if (item.complete) return;
                 const input = document.createElement('input');
@@ -547,7 +678,7 @@ class HaShoppingListImproved extends HTMLElement {
                         await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                         await this._refresh();
                     } catch (err) {
-                        console.error('Bearbeiten fehlgeschlagen:', err);
+                        console.error('[ha-shopping-list-improved] Edit failed:', err);
                     }
                 };
             });
@@ -555,29 +686,29 @@ class HaShoppingListImproved extends HTMLElement {
             left.appendChild(completeBtn);
             left.appendChild(nameSpan);
 
-            // Aktionen: Plus und Minus (evtl. Mülleimer)
+            // Actions: Plus or Minus
             const actions = document.createElement('div');
             actions.className = 'actions';
 
             const plusBtn = document.createElement('button');
             plusBtn.innerHTML = '+';
-            plusBtn.title = 'Menge erhöhen';
+            plusBtn.title = translate("editor.labels.plus_btn");
             plusBtn.style.border = 'none';
             plusBtn.style.background = 'transparent';
             plusBtn.style.cursor = 'pointer';
             plusBtn.style.fontSize = '18px';
             plusBtn.style.marginLeft = '8px';
             plusBtn.addEventListener('click', async () => {
-                if (plusBtn._processing) return;   // Klick ignorieren, wenn gerade busy
+                if (plusBtn._processing) return;   // ignore click, if busy
                 plusBtn._processing = true;
 
-                // Anzahl vorne oder hinten entfernen und Anzahl ermitteln
+                // remove and count current quantity
                 let nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
                 let currentQty = 1;
                 const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
                 if (match) currentQty = parseInt(match[1], 10);
 
-                // Neue Anzahl (alt +1)
+                // new quantity (old +1)
                 const newQty = currentQty + 1;
                 const formatted = (this._quantityPosition === "beginning")
                     ? `${newQty}× ${nameOnly}`
@@ -588,7 +719,7 @@ class HaShoppingListImproved extends HTMLElement {
                     await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                     await this._refresh();
                 } catch (err) {
-                    console.error('Fehler beim Erhöhen der Menge:', err);
+                    console.error('[ha-shopping-list-improved] Unable to increase the quantity:', err);
                 }
 
                 plusBtn._processing = false;
@@ -596,7 +727,7 @@ class HaShoppingListImproved extends HTMLElement {
 
             const minusBtn = document.createElement('button');
             minusBtn.innerHTML = '−';
-            minusBtn.title = 'Menge verringern oder löschen';
+            minusBtn.title = translate("editor.labels.minus_btn");
             minusBtn.style.border = 'none';
             minusBtn.style.background = 'transparent';
             minusBtn.style.cursor = 'pointer';
@@ -606,17 +737,17 @@ class HaShoppingListImproved extends HTMLElement {
                 if (minusBtn._processing) return;
                 minusBtn._processing = true;
 
-                // Anzahl vorne oder hinten entfernen und Anzahl ermitteln
+                // remove and count current quantity
                 let nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
                 let currentQty = 1;
                 const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
                 if (match) currentQty = parseInt(match[1], 10);
 
-                // Bereits Einträge vorhanden
+                // if there are already more than 1, reduce quantity
                 if (currentQty > 1) {
-                    // Neue Anzahl (alt -1)
+                    // new quantity (old -1)
                     const newQty = currentQty - 1;
-                    const showQty = newQty > 1 || this._showQuantityOne; // Anzahl nur anzeigen wenn >1 oder explizit erlaubt
+                    const showQty = newQty > 1 || this._showQuantityOne; // show quantity only if >1 or if configured
 
                     let formatted;
                     if (showQty) {
@@ -632,15 +763,16 @@ class HaShoppingListImproved extends HTMLElement {
                         await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                         await this._refresh();
                     } catch (err) {
-                        console.error('Fehler beim Verringern der Menge:', err);
+                        console.error('[ha-shopping-list-improved] Unable to decrease quantity:', err);
                     }
                 } else {
-                    if (confirm(`'${nameOnly}' aus der Liste entfernen ?`)) {
+                    const msg = translate("editor.labels.confirm_remove").replace("{item}", nameOnly);
+                    if (confirm(msg)) {
                         try {
                             await this._hass.callService('shopping_list', 'remove_item', { name: item.name });
                             await this._refresh();
                         } catch (err) {
-                            console.error('Fehler beim Löschen:', err);
+                            console.error('[ha-shopping-list-improved] Unable to remove :', err);
                         }
                     }
                 }
@@ -659,7 +791,7 @@ class HaShoppingListImproved extends HTMLElement {
 
 	async _onAdd(){
         if (this._addingBusy) {
-            console.warn("[DEBUG] Klick ignoriert: noch busy (Add)");
+            console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
             return;
         }
 	    this._addingBusy = true;
@@ -668,14 +800,14 @@ class HaShoppingListImproved extends HTMLElement {
             let inputName = this._inputEl.value.trim();
             if (!inputName) return;
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
-            const quantityPosition = this._quantityPosition; // "beginning" oder "end"
+            const quantityPosition = this._quantityPosition; // "beginning" or "end"
 
-            console.debug("[DEBUG] Hinzufügen:", inputName, "Menge:", inputQty);
-            console.debug("[DEBUG] Aktuelle this._items:", this._items);
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Count Items: this._items:", this._items);
 
             if (!Array.isArray(this._items)) this._items = [];
 
-            // Prüfen ob Item bereits existiert
+            // check if item excists (ignore quantity in name)
             const existing = this._items.find(i => {
                 let nameClean = i.name;
                 if (quantityPosition === "beginning") {
@@ -689,7 +821,7 @@ class HaShoppingListImproved extends HTMLElement {
 		    let finalName = inputName;
 
             if (existing) {
-                console.debug("[DEBUG] Existierendes Item gefunden:", existing.name);
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
 
                 let currentQty = 1;
                 if (quantityPosition === "beginning") {
@@ -702,7 +834,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                 const newQty = currentQty + inputQty;
 
-                // Menge anzeigen nur wenn >1 oder explizit erlaubt (showQuantityOne)
+                // show quantity only if >1 or if configured
                 const showQty = newQty > 1 || this._showQuantityOne;
 
                 if (showQty) {
@@ -715,12 +847,12 @@ class HaShoppingListImproved extends HTMLElement {
                     finalName = inputName;
                 }
 
-                // Altes Item entfernen
+                // remove old Item
                 try {
                     await this._hass.callService("shopping_list", "remove_item", { name: existing.name });
-                    console.debug("[DEBUG] Altes Item entfernt:", existing.name);
+                    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] OLd Item removed:", existing.name);
                 } catch (err) {
-                    console.error("[DEBUG] Fehler beim Entfernen:", err);
+                    console.error("[ha-shopping-list-improved] Error while removing:", err);
                 }
             } else if (inputQty > 1 || this._showQuantityOne) {
                 if (quantityPosition === "beginning") {
@@ -730,16 +862,16 @@ class HaShoppingListImproved extends HTMLElement {
                 }
             }
 
-            // Neues/aktualisiertes Item hinzufügen
+            // Add new/updated Item
             try {
                 await this._hass.callService("shopping_list","add_item",{ name: finalName });
-                console.debug("[DEBUG] Neues Item hinzugefügt:", finalName);
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] New Item added:", finalName);
                 this._addToHistory(inputName);
                 this._inputEl.value = '';
                 this._qtyEl.value = '';
                 await this._refresh();
             } catch(err){
-                console.error("[DEBUG] Fehler beim Hinzufügen:", err);
+                console.error("[ha-shopping-list-improved] Unable to add:", err);
             }
 
         } finally {
@@ -756,27 +888,28 @@ class HaShoppingListImproved extends HTMLElement {
         }
         await this._refresh();
         } catch(err) { 
-            console.error('Toggle complete failed', err); 
+            console.error('[ha-shopping-list-improved] Toggle complete failed', err); 
         }
     }
 
     async _removeItem(item){
-        if (!confirm(`Item entfernen: ${item.name}?`)) return;
+        const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", item.name);
+        if (!confirm(msgRemove)) return;
         try{
             await this._hass.callService('shopping_list','remove_item',{ name: item.name });
             await this._refresh();
         } catch(err) { 
-            console.error('Remove failed', err); 
+            console.error('[ha-shopping-list-improved] Remove failed', err); 
         }
     }
 
     async _clearCompleted(){
-        if (!confirm('Alle als erledigt markierten Artikel löschen?')) return;
+        if (!confirm(translate("editor.labels.confirm_clear_done"))) return;
         try{
             await this._hass.callService('shopping_list','clear_completed_items',{});
             await this._refresh();
         } catch(err) { 
-            console.error('Clear failed', err); 
+            console.error('[ha-shopping-list-improved] Clear failed', err); 
         }
     }
 
@@ -811,18 +944,18 @@ class HaShoppingListImproved extends HTMLElement {
             chip.className = 'chip';
             chip.textContent = chipText;
 
-            // Priorität der Farben: Highlight > Standard > Lokal
+            // Color Priority: Highlight > Standard > Local
             if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
                 chip.style.background = this._highlightColor;
-                chip.title = 'Hervorgehobenes Wort';
+                chip.title = translate("editor.labels.chip_highlighted");
             } else if (this._defaultChips?.includes(chipText)) {
                 chip.style.background = this._chipColorDefault;
-                chip.title = 'Standard-Chip';
+                chip.title = translate("editor.labels.chip_standard");
             } else {
                 chip.style.background = this._chipColor;
             }
 
-            // Klick- oder Doppelklick-Logik
+            // Click or Double-Click-Logic
             const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
             chip.addEventListener(clickEvent, async () => {
                 if (this._addingBusy) return;
@@ -834,13 +967,13 @@ class HaShoppingListImproved extends HTMLElement {
                 });
 
                 if (!existingItem) {
-                    // Noch nicht vorhanden: hinzufügen
+                    // not exists --> add new
                     this._inputEl.value = name;
                     this._qtyEl.value = '';
                     await this._onAdd();
-                    this._inputEl.value = ""; // Feld leeren nach Hinzufügen
+                    this._inputEl.value = ""; // clear field after adding
                 } else {
-                    // Bereits vorhanden: Menge erhöhen um 1
+                    // exists --> increase quantity by 1
                     let currentQty = 1;
                     const matchQty = existingItem.name.match(/^(\d+)×\s*/) || existingItem.name.match(/\((\d+)\)$/);
                     if (matchQty) currentQty = parseInt(matchQty[1], 10);
@@ -853,7 +986,7 @@ class HaShoppingListImproved extends HTMLElement {
                         formatted = `${name} (${newQty})`;
                     }
 
-                    this._inputEl.value = ""; // Feld leeren nach Hinzufügen
+                    this._inputEl.value = ""; // clear field after adding
                     this._qtyEl.value = '';
 
                     try {
@@ -862,14 +995,14 @@ class HaShoppingListImproved extends HTMLElement {
                         await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                         await this._refresh();
                     } catch (err) {
-                        console.error('Fehler beim Erhöhen der Menge:', err);
+                        console.error('[ha-shopping-list-improved] Error while increasing quantity:', err);
                     } finally {
                         this._addingBusy = false;
                     }
                 }
             });
 
-            // Longpress zum Löschen für lokale History
+            // Longpress to delete local History
             if (localChips.includes(chipText)) {
                 let timer;
                 chip.addEventListener('mousedown', e => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
@@ -879,8 +1012,8 @@ class HaShoppingListImproved extends HTMLElement {
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
             } else {
                 let timer;
-                chip.addEventListener('mousedown', e => { timer = setTimeout(() => alert("Dieser Standard-Chip kann nicht gelöscht werden"), 5000); });
-                chip.addEventListener('touchstart', e => { timer = setTimeout(() => alert("Dieser Standard-Chip kann nicht gelöscht werden"), 5000); });
+                chip.addEventListener('mousedown', e => { timer = setTimeout(() => alert(translate("editor.labels.alert_cannot_delete_standard")), 5000); });
+                chip.addEventListener('touchstart', e => { timer = setTimeout(() => alert(translate("editor.labels.alert_cannot_delete_standard")), 5000); });
                 chip.addEventListener('mouseup', e => { clearTimeout(timer); });
                 chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
@@ -891,7 +1024,8 @@ class HaShoppingListImproved extends HTMLElement {
 	}
 
     _removeHistoryItem(name){
-        if (!confirm(`Eintrag '${name}' aus History löschen?`)) return;
+        const msgHistory = translate("editor.labels.confirm_remove_history").replace("{item}", name);
+        if (!confirm(msgHistory)) return;
         const idx = this._previous.findIndex(x=> x.toLowerCase()===name.toLowerCase());
         if (idx!==-1){ 
             this._previous.splice(idx,1); 
@@ -919,7 +1053,7 @@ class HaShoppingListImproved extends HTMLElement {
         name = (name || '').trim();
         if(!name) return;
         
-        // Standard-Chips nicht in lokale History aufnehmen
+        // Dont add Standard-Chips to local History
         if (this._defaultChips?.includes(name) || !this._allowLocalChips) return;
         
         const idx = this._previous.findIndex(x=> x.toLowerCase() === name.toLowerCase());
@@ -931,7 +1065,7 @@ class HaShoppingListImproved extends HTMLElement {
     }
     
 
-	// Warte dass Home Assistant das shopping_list_updated-Event feuert.
+	// Wait that Home Assistant is firering the shopping_list_updated-Event
 	_waitForShoppingListUpdate(timeout = 1000) {
         return new Promise((resolve) => {
             let done = false;
@@ -946,7 +1080,7 @@ class HaShoppingListImproved extends HTMLElement {
             const handler = () => finish();
             window.addEventListener("shopping_list_updated", handler);
 
-            // Fallback: nach Timeout trotzdem weiter
+            // Fallback: after Timeout continue
             setTimeout(() => finish(), timeout);
         });
 	}
@@ -961,6 +1095,5 @@ window.customCards.push({
 	type: 'ha-shopping-list-improved', 
 	name: 'Improved Shopping List', 
 	preview: true, 
-	description: 'Verbesserte Einkaufsliste mit alphabetischer Sortierung von Einträgen und History, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.'
+	description: translate("card.description")
 });
-
