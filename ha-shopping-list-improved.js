@@ -9,165 +9,165 @@
 
 const TRANSLATIONS = {
     de: {
-        "card.description": "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
+        "card.description"                              : "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
 
-        "editor.placeholders.quantity": "Anzahl",
-        "editor.placeholders.item": "Artikel...",
-        "editor.labels.add_button": "Hinzufügen",
-        "editor.labels.clear_button": "Erledigte löschen",
-        "editor.labels.no_items": "Keine Einträge",
-        "editor.labels.confirm_remove": "‘{item}’ aus der Liste entfernen ?",
-        "editor.labels.complete_btn": "Markieren als erledigt",
-        "editor.labels.plus_btn": "Menge erhöhen",
-        "editor.labels.minus_btn": "Menge verringern oder löschen",
-        "editor.labels.confirm_remove": "Item entfernen: {item}?",
-        "editor.labels.confirm_clear_done": "Alle als erledigt markierten Artikel löschen?",
-        "editor.labels.confirm_remove_history": "Chip '{item}' aus History löschen?",
-        "editor.labels.chip_highlighted": "Hervorgehobener Chip",
-        "editor.labels.chip_standard": "Standard-Chip",
-        "editor.labels.alert_cannot_delete_standard": "Dieser Standard-Chip kann nicht gelöscht werden",
+        "editor.placeholders.quantity"                  : "Anzahl",
+        "editor.placeholders.item"                      : "Artikel...",
+        "editor.labels.add_button"                      : "Hinzufügen",
+        "editor.labels.clear_button"                    : "Erledigte löschen",
+        "editor.labels.no_items"                        : "Keine Einträge",
+        "editor.labels.confirm_remove"                  : "‘{item}’ aus der Liste entfernen ?",
+        "editor.labels.complete_btn"                    : "Markieren als erledigt",
+        "editor.labels.plus_btn"                        : "Menge erhöhen",
+        "editor.labels.minus_btn"                       : "Menge verringern oder löschen",
+        "editor.labels.confirm_remove"                  : "Item entfernen: {item}?",
+        "editor.labels.confirm_clear_done"              : "Alle als erledigt markierten Artikel löschen?",
+        "editor.labels.confirm_remove_history"          : "Chip '{item}' aus History löschen?",
+        "editor.labels.chip_highlighted"                : "Hervorgehobener Chip",
+        "editor.labels.chip_standard"                   : "Standard-Chip",
+        "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
 
-		"editor.options.chips_position.auto": "Automatisch (abhängig von Bildschirmgröße)",
-		"editor.options.chips_position.bottom": "Immer unten",
-		"editor.options.chips_position.right": "Immer rechts",
-		"editor.options.chips_position.full": "Rechts, mehrspaltig (nur Panel-Mode)",
-		"editor.options.chip_click.single": "Klick",
-		"editor.options.chip_click.dblclick": "Doppelklick",
-		"editor.options.chip_merge.combined": "Standard und Browser-Chips kombinieren (Standard)",
-		"editor.options.chip_merge.standard_first": "Standard-Chips zuerst",
-		"editor.options.chip_merge.browser_first": "Browser-Chips zuerst",
-		"editor.options.quantity.beginning": "Anzahl vorne z.B. '10x Butter'",
-		"editor.options.quantity.end": "Anzahl hinten z.B. 'Butter (10)'",
-		"editor.options.acknowledged.show": "Erledigte Artikel anzeigen",
-		"editor.options.acknowledged.hide": "Erledigte Artikel ausblenden",
-		"editor.options.acknowledged.end": "Erledigte Artikel am Ende anzeigen",
-        "editor.defaults.sub_text": "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
+		"editor.options.chips_position.auto"            : "Automatisch (abhängig von Bildschirmgröße)",
+		"editor.options.chips_position.bottom"          : "Immer unten",
+		"editor.options.chips_position.right"           : "Immer rechts",
+		"editor.options.chips_position.full"            : "Rechts, mehrspaltig (nur Panel-Mode)",
+		"editor.options.chip_click.single"              : "Klick",
+		"editor.options.chip_click.dblclick"            : "Doppelklick",
+		"editor.options.chip_merge.combined"            : "Standard und Browser-Chips kombinieren (Standard)",
+		"editor.options.chip_merge.standard_first"      : "Standard-Chips zuerst",
+		"editor.options.chip_merge.browser_first"       : "Browser-Chips zuerst",
+		"editor.options.quantity.beginning"             : "Anzahl vorne z.B. '10x Butter'",
+		"editor.options.quantity.end"                   : "Anzahl hinten z.B. 'Butter (10)'",
+		"editor.options.acknowledged.show"              : "Erledigte Artikel anzeigen",
+		"editor.options.acknowledged.hide"              : "Erledigte Artikel ausblenden",
+		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende anzeigen",
+        "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
 		
-        "editor.labels.highlight_words": "Hervorgehobene Wörter",
-        "editor.labels.highlight_color": "Farbe für Hervorhebung",
-        "editor.labels.chip_merge": "Chips kombinieren",
-        "editor.labels.local_chips": "Lokale Chips erlauben?",
-        "editor.labels.chip_font_size": "Schriftgröße der Chips (px)",
-        "editor.labels.chip_color": "Farbe der Lokalen (Browser) Chips",
-        "editor.labels.chip_color_default": "Farbe der Standard Chips",
-        "editor.labels.list_font_size": "Schriftgröße der Listeneinträge (px)",
-        "editor.labels.chips_width": "Breite der Chips (nur bei 'full')",
-        "editor.labels.chips_position": "Position der Chips",
-        "editor.labels.quantity": "Position der Artikelanzahl",
-        "editor.labels.acknowledged": "Erledigte Artikel",
-        "editor.labels.chip_click": "Verhalten beim Klick auf einen Chip",
-        "editor.labels.show_quantity_box": "Anzahlfeld anzeigen",
-        "editor.labels.show_submit_button": "Hinzufügen-Button anzeigen",
-        "editor.labels.show_input_mask": "Eingabe-Maske anzeigen",
-        "editor.labels.show_quantity_one": "Anzahl 1 anzeigen",
-        "editor.labels.sub_text": "Hinweistext unter der Eingabe",
-        "editor.labels.chips": "Standard-Chips (Komma oder Semikolon getrennt)",
+        "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
+        "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
+        "editor.labels.chip_merge"                      : "Chips kombinieren",
+        "editor.labels.local_chips"                     : "Lokale Chips erlauben?",
+        "editor.labels.chip_font_size"                  : "Schriftgröße der Chips (px)",
+        "editor.labels.chip_color"                      : "Farbe der Lokalen (Browser) Chips",
+        "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
+        "editor.labels.list_font_size"                  : "Schriftgröße der Listeneinträge (px)",
+        "editor.labels.chips_width"                     : "Breite der Chips (nur bei 'full')",
+        "editor.labels.chips_position"                  : "Position der Chips",
+        "editor.labels.quantity"                        : "Position der Artikelanzahl",
+        "editor.labels.acknowledged"                    : "Erledigte Artikel",
+        "editor.labels.chip_click"                      : "Verhalten beim Klick auf einen Chip",
+        "editor.labels.show_quantity_box"               : "Anzahlfeld anzeigen",
+        "editor.labels.show_submit_button"              : "Hinzufügen-Button anzeigen",
+        "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
+        "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
+        "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
+        "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
 
-		"editor.helpers.highlight_words": "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
-        "editor.helpers.highlight_color": "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
-        "editor.helpers.chip_merge": "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
-        "editor.helpers.list_font_size": "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
-        "editor.helpers.chip_font_size": "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
-        "editor.helpers.chip_color": "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
-        "editor.helpers.chip_color_default": "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
-        "editor.helpers.local_chips": "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar.",
-        "editor.helpers.chips_width": "Breite der Chip-Box in Pixeln. Wirkt nur bei 'chips_position' = 'full'.",
-        "editor.helpers.chips_position": "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
-        "editor.helpers.quantity": "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
-        "editor.helpers.acknowledged": "Steuert, ob erledigte Artikel angezeigt werden.",
-        "editor.helpers.chip_click": "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
-        "editor.helpers.show_quantity_box": "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
-        "editor.helpers.show_submit_button": "Zeigt den Hinzufügen-Button an oder nicht.",
-        "editor.helpers.show_input_mask": "Zeigt die komplette Eingabemaske an oder nicht.",
-        "editor.helpers.show_quantity_one": "Zeigt auch Anzahl 1 an (sonst nur Name).",
-        "editor.helpers.sub_text": "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
-        "editor.helpers.chips": "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'."
+		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
+        "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+        "editor.helpers.chip_merge"                     : "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
+        "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
+        "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
+        "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
+        "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
+        "editor.helpers.local_chips"                    : "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar.",
+        "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Wirkt nur bei 'chips_position' = 'full'.",
+        "editor.helpers.chips_position"                 : "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
+        "editor.helpers.quantity"                       : "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
+        "editor.helpers.acknowledged"                   : "Steuert, ob erledigte Artikel angezeigt werden.",
+        "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
+        "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
+        "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
+        "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
+        "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
+        "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
+        "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'."
     },
 
     en: {
-        "card.description": "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
+        "card.description"                              : "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
 
-        "editor.placeholders.quantity": "Quantity",
-        "editor.placeholders.item": "Item...",
-        "editor.labels.add_button": "Add",
-        "editor.labels.clear_button": "Clear completed",
-        "editor.labels.no_items": "No items",
-        "editor.labels.confirm_remove": "Remove ‘{item}’ from the list?",
-        "editor.labels.complete_btn": "Mark as done",
-        "editor.labels.plus_btn": "Increase quantity",
-        "editor.labels.minus_btn": "Decrease quantity or remove",
-        "editor.labels.confirm_remove": "Remove item: {item}?",
-        "editor.labels.confirm_clear_done": "Delete all completed items?",
-        "editor.labels.confirm_remove_history": "Delete chip '{item}' from history?",
-        "editor.labels.chip_highlighted": "Highlighted Chip",
-        "editor.labels.chip_standard": "Standard chip",
-        "editor.labels.alert_cannot_delete_standard": "This standard chip cannot be deleted",
+        "editor.placeholders.quantity"                  : "Quantity",
+        "editor.placeholders.item"                      : "Item...",
+        "editor.labels.add_button"                      : "Add",
+        "editor.labels.clear_button"                    : "Clear completed",
+        "editor.labels.no_items"                        : "No items",
+        "editor.labels.confirm_remove"                  : "Remove ‘{item}’ from the list?",
+        "editor.labels.complete_btn"                    : "Mark as done",
+        "editor.labels.plus_btn"                        : "Increase quantity",
+        "editor.labels.minus_btn"                       : "Decrease quantity or remove",
+        "editor.labels.confirm_remove"                  : "Remove item: {item}?",
+        "editor.labels.confirm_clear_done"              : "Delete all completed items?",
+        "editor.labels.confirm_remove_history"          : "Delete chip '{item}' from history?",
+        "editor.labels.chip_highlighted"                : "Highlighted Chip",
+        "editor.labels.chip_standard"                   : "Standard chip",
+        "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 
-		"editor.options.chips_position.auto": "Automatic (depends on screen size)",
-		"editor.options.chips_position.bottom": "Always at bottom",
-		"editor.options.chips_position.right": "Always at right",
-		"editor.options.chips_position.full": "Right, multi-column (panel mode only)",
-		"editor.options.chip_click.single": "Click",
-		"editor.options.chip_click.dblclick": "Double-click",
-		"editor.options.chip_merge.combined": "Combine standard and browser chips (default)",
-		"editor.options.chip_merge.standard_first": "Standard chips first",
-		"editor.options.chip_merge.browser_first": "Browser chips first",
-		"editor.options.quantity.beginning": "Quantity at beginning, e.g. '10x Butter'",
-		"editor.options.quantity.end": "Quantity at end, e.g. 'Butter (10)'",
-		"editor.options.acknowledged.show": "Show completed items",
-		"editor.options.acknowledged.hide": "Hide completed items",
-		"editor.options.acknowledged.end": "Show completed items at the end",
-        "editor.defaults.sub_text": "Tip: Use chips to quickly add items again.",
+		"editor.options.chips_position.auto"            : "Automatic (depends on screen size)",
+		"editor.options.chips_position.bottom"          : "Always at bottom",
+		"editor.options.chips_position.right"           : "Always at right",
+		"editor.options.chips_position.full"            : "Right, multi-column (panel mode only)",
+		"editor.options.chip_click.single"              : "Click",
+		"editor.options.chip_click.dblclick"            : "Double-click",
+		"editor.options.chip_merge.combined"            : "Combine standard and browser chips (default)",
+		"editor.options.chip_merge.standard_first"      : "Standard chips first",
+		"editor.options.chip_merge.browser_first"       : "Browser chips first",
+		"editor.options.quantity.beginning"             : "Quantity at beginning, e.g. '10x Butter'",
+		"editor.options.quantity.end"                   : "Quantity at end, e.g. 'Butter (10)'",
+		"editor.options.acknowledged.show"              : "Show completed items",
+		"editor.options.acknowledged.hide"              : "Hide completed items",
+		"editor.options.acknowledged.end"               : "Show completed items at the end",
+        "editor.defaults.sub_text"                      : "Hint: Use chips to quickly add items again.",
 		
-        "editor.labels.highlight_words": "Highlight words",
-        "editor.labels.highlight_color": "Highlight color",
-        "editor.labels.chip_merge": "Combine chips",
-        "editor.labels.local_chips": "Allow local chips?",
-        "editor.labels.chip_font_size": "Chip font size (px)",
-        "editor.labels.chip_color": "Color of local (browser) chips",
-        "editor.labels.chip_color_default": "Color of standard chips",
-        "editor.labels.list_font_size": "List item font size (px)",
-        "editor.labels.chips_width": "Chip width (only for 'full')",
-        "editor.labels.chips_position": "Chip position",
-        "editor.labels.quantity": "Position of item quantity",
-        "editor.labels.acknowledged": "Completed items",
-        "editor.labels.chip_click": "Chip click behavior",
-        "editor.labels.show_quantity_box": "Show quantity box",
-        "editor.labels.show_submit_button": "Show add button",
-        "editor.labels.show_input_mask": "Show input mask",
-        "editor.labels.show_quantity_one": "Show quantity 1",
-        "editor.labels.sub_text": "Hint text below the input field",
-        "editor.labels.chips": "Default chips (comma or semicolon separated)",
+        "editor.labels.highlight_words"                 : "Highlight words",
+        "editor.labels.highlight_color"                 : "Highlight color",
+        "editor.labels.chip_merge"                      : "Combine chips",
+        "editor.labels.local_chips"                     : "Allow local chips?",
+        "editor.labels.chip_font_size"                  : "Chip font size (px)",
+        "editor.labels.chip_color"                      : "Color of local (browser) chips",
+        "editor.labels.chip_color_default"              : "Color of standard chips",
+        "editor.labels.list_font_size"                  : "List item font size (px)",
+        "editor.labels.chips_width"                     : "Chip width (only for 'full')",
+        "editor.labels.chips_position"                  : "Chip position",
+        "editor.labels.quantity"                        : "Position of item quantity",
+        "editor.labels.acknowledged"                    : "Completed items",
+        "editor.labels.chip_click"                      : "Chip click behavior",
+        "editor.labels.show_quantity_box"               : "Show quantity box",
+        "editor.labels.show_submit_button"              : "Show add button",
+        "editor.labels.show_input_mask"                 : "Show input mask",
+        "editor.labels.show_quantity_one"               : "Show quantity 1",
+        "editor.labels.sub_text"                        : "Hint text below the input field",
+        "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
 
-		"editor.helpers.highlight_words": "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
-		"editor.helpers.highlight_color": "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
-		"editor.helpers.chip_merge": "Determines how standard and browser chips are combined and displayed.",
-		"editor.helpers.list_font_size": "Sets the font size for items in the list. Default: 14px.",
-		"editor.helpers.chip_font_size": "Sets the font size for the quick-selection chips. Default: 12px.",
-		"editor.helpers.chip_color": "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
-		"editor.helpers.chip_color_default": "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
-		"editor.helpers.local_chips": "Local chips are stored only in the browser and are not synced to other devices. They will be lost when the browser cache is cleared.",
-		"editor.helpers.chips_width": "Width of the chip container in pixels. Only applies when 'chips_position' is set to 'full' (Panel mode).",
-		"editor.helpers.chips_position": "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
-		"editor.helpers.quantity": "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
-		"editor.helpers.acknowledged": "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
-		"editor.helpers.chip_click": "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
-		"editor.helpers.show_quantity_box": "Shows the small quantity input box (top left) or hides it.",
-		"editor.helpers.show_submit_button": "Shows the Add button. If hidden, press Enter to add an item.",
-		"editor.helpers.show_input_mask": "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
-		"editor.helpers.show_quantity_one": "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
-		"editor.helpers.sub_text": "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
-		"editor.helpers.chips": "Defines default chips, e.g. 'Milk,Eggs,Bread'."
-
+		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
+		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+		"editor.helpers.chip_merge"                     : "Determines how standard and browser chips are combined and displayed.",
+		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
+		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
+		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
+		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
+		"editor.helpers.local_chips"                    : "Local chips are stored only in the browser and are not synced to other devices. They will be lost when the browser cache is cleared.",
+		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when 'chips_position' is set to 'full' (Panel mode).",
+		"editor.helpers.chips_position"                 : "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
+		"editor.helpers.quantity"                       : "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
+		"editor.helpers.acknowledged"                   : "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
+		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
+		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
+		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
+		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
+		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
+		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
+		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'."
     }
 };
 
+const debugMode = false;
 
 // Detect HA-Language via home-assistant element
 function detectLanguage() {
     const hass = document.querySelector("home-assistant")?.hass;
     const lang = hass?.language || "en"; // Fallback to Englisch
-    console.debug("[ha-shopping-list-improved][DEBUG] HA language:", hass?.language, "=> used language:", lang);
+    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] HA language:", hass?.language, "=> used language:", lang);
     return lang;
 }
 
@@ -579,7 +579,7 @@ class HaShoppingListImproved extends HTMLElement {
                 return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
             });
 
-            console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
             
             // acknowledged-Logic
             if (this._acknowledgedMode === "hide") {
@@ -802,8 +802,8 @@ class HaShoppingListImproved extends HTMLElement {
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
             const quantityPosition = this._quantityPosition; // "beginning" or "end"
 
-            console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
-            console.debug("[ha-shopping-list-improved][DEBUG] Count Items: this._items:", this._items);
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Count Items: this._items:", this._items);
 
             if (!Array.isArray(this._items)) this._items = [];
 
@@ -821,7 +821,7 @@ class HaShoppingListImproved extends HTMLElement {
 		    let finalName = inputName;
 
             if (existing) {
-                console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
 
                 let currentQty = 1;
                 if (quantityPosition === "beginning") {
@@ -850,7 +850,7 @@ class HaShoppingListImproved extends HTMLElement {
                 // remove old Item
                 try {
                     await this._hass.callService("shopping_list", "remove_item", { name: existing.name });
-                    console.debug("[ha-shopping-list-improved][DEBUG] OLd Item removed:", existing.name);
+                    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] OLd Item removed:", existing.name);
                 } catch (err) {
                     console.error("[ha-shopping-list-improved] Error while removing:", err);
                 }
@@ -865,7 +865,7 @@ class HaShoppingListImproved extends HTMLElement {
             // Add new/updated Item
             try {
                 await this._hass.callService("shopping_list","add_item",{ name: finalName });
-                console.debug("[ha-shopping-list-improved][DEBUG] New Item added:", finalName);
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] New Item added:", finalName);
                 this._addToHistory(inputName);
                 this._inputEl.value = '';
                 this._qtyEl.value = '';
