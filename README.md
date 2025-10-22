@@ -104,30 +104,33 @@ which significantly improves the original shopping list and makes it much easier
 # Installation HACS
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
+# Parameter
 
-| Parameter               | Typ           | Standardwert                     | Beschreibung                                                                                     |
+| Parameter               | Type          | Default                          | Description                                                                                     |
 |-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
-| `chips_position`        | `string`      | `"auto"`                         | Position der Chips: `auto`, `right`, `bottom`, `full`.                                          |
-| `chips_width`           | `number`      | `250`                            | Breite vom Chips-Bereich in Pixel, nur relevant bei `chips_position: "full"`.                           |
-| `quantity`              | `string`      | `"end"`                          | Position der Mengenangabe: `beginning` oder `end`.                                              |
-| `acknowledged`          | `string`      | `"show"`                         | Anzeigen/Ausblenden von erledigten Artikeln: `show`, `hide`, `end`.                             |
-| `chip_click`            | `string`      | `"single"`                       | Reaktion auf Klick: `"single"` für einfachen Klick, `"dblclick"` für Doppelklick.               |
-| `sub_text`              | `string`      | `"Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen."` | Hilfstext unter der Eingabeleiste.                                |
-| `chip_merge`            | `string`      | `"combined"`                     | Reihenfolge der Chips: `combined`, `standard_first`, `browser_first`.                           |
-| `chip_font_size`        | `number`      | `12`                             | Schriftgröße der Chips in Pixel.                                                                |
-| `list_font_size`        | `number`      | `14`                             | Schriftgröße der Listeneinträge in Pixel.                                                      |
-| `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`       | Farbe der lokalen (Browser) Chips. rgba und HEX möglich.                                                             |
-| `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`       | Farbe der Standard-Chips. rgba und HEX möglich.                                                                      |
-| `highlight_words`       | `array`       | `[]`                             | Liste von Schlüsselwörtern, die hervorgehoben werden, wenn sie in einem Chip vorkommen. Entweder als Komma oder Semikolon-getrennte Liste.      |
-| `highlight_color`       | `string`      | `"rgba(255,80,80,0.8)"`         | Farbe für hervorgehobene Schlüsselwörter. rgba und HEX möglich.                                                     |
-| `local_chips`           | `boolean`     | `true`                           | Ob lokale (Browser-)Chips erlaubt sind.                                                        |
-| `chips`                 | `string`      | `[]`                            | Standard-Chips, entweder als Komma oder Semikolon-getrennte Liste.                          |
+| `chips_position`        | `string`      | `"auto"`                         | Position of the chips: `auto`, `right`, `bottom`, `full`.                                       |
+| `chips_width`           | `number`      | `250`                            | Width of the chips area in pixels, only relevant when `chips_position: "full"`.                |
+| `quantity`              | `string`      | `"end"`                          | Position of the quantity: `beginning` or `end`.                                                |
+| `acknowledged`          | `string`      | `"show"`                         | Show/hide completed items: `show`, `hide`, `end`.                                              |
+| `chip_click`            | `string`      | `"single"`                       | Click behavior: `"single"` for single click, `"dblclick"` for double click.                   |
+| `sub_text`              | `string`      | `"Tip: Use chips to quickly re-add items."` | Helper text below the input field.                                           |
+| `chip_merge`            | `string`      | `"combined"`                     | Order of chips: `combined`, `standard_first`, `browser_first`.                                 |
+| `chip_font_size`        | `number`      | `12`                             | Font size of the chips in pixels.                                                              |
+| `list_font_size`        | `number`      | `14`                             | Font size of the list items in pixels.                                                        |
+| `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`       | Color of local (browser) chips. Supports rgba and HEX.                                         |
+| `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`       | Color of standard chips. Supports rgba and HEX.                                                |
+| `highlight_words`       | `string`       | ` `                             | List of keywords to highlight when present in a chip. Comma- or semicolon-separated list.     |
+| `highlight_color`       | `string`      | `"rgba(255,80,80,0.8)"`         | Color for highlighted keywords. Supports rgba and HEX.                                         |
+| `local_chips`           | `boolean`     | `true`                           | Whether local (browser) chips are allowed.                                                     |
+| `chips`                 | `string`      | ` `                             | Default chips, as a comma- or semicolon-separated list.                                        |
 
 
 
+# Example
 
-# Beispiel für eine Panel Ansicht (Eine Karte pro Seite)
+Panel
 ```
+
 type: custom:ha-shopping-list-improved
 quantity: beginning
 acknowledged: end
@@ -153,10 +156,43 @@ highlight_words: Butter, Brötchen, Eier, Pepsi
 
 ```
 
+Mobile View
+
+```
+type: custom:ha-shopping-list-improved
+quantity: beginning
+acknowledged: show
+chip_click: single
+show_quantity_box: true
+show_quantity_one: false
+show_submit_button: true
+show_input_mask: true
+chips_position: bottom
+chips: >-
+  Butter, Pepsi, Bier, Lachs, Olivenöl, Brötchen, Käse, Salami, Spülmittel,
+  Klopapier, Salat, MiFri, Ketchup, Rucola, Advocado, Obatzter, Limes, TroFu,
+  NaFu, Milch, Zahnpasta, Pizza, Sahne, Schmand, Fond, Eier, Sekt, Vodka, Mett,
+  Zwiebeln, Kartoffeln
+highlight_words: Butter, Eier, NaFu, TroFu
+chip_merge: combined
+chips_width: 300
+list_font_size: 14
+chip_font_size: 12
+local_chips: true
+chip_color: rgba(100,100,100,0.3)
+highlight_color: "#D9534F"
+chip_color_default: rgba(100,100,255,0.3)
+sub_text: "Hint: Use chips to quickly add items again."
+
+```
+
+
 ## 📷 Screenshots
 
 
 <img width="1613" height="946" alt="grafik" src="https://github.com/user-attachments/assets/62ee8518-3714-4f72-9d50-4158f9ce2526" />
+
+
 
 <img width="531" height="894" alt="grafik" src="https://github.com/user-attachments/assets/25ea5ae9-2774-48c2-84bc-1f1fb9eb2869" />
 
