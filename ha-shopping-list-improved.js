@@ -1,7 +1,7 @@
 /*
  * Improved Shopping List Card
- * Version: 1.0.0
- * @description Verbesserte Shopping List Card für Home Assistant.
+ * Version: 1.1.0
+ * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
   ha-shopping-list-improved.js
@@ -23,6 +23,7 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.show": "Erledigte Artikel anzeigen",
 		"editor.options.acknowledged.hide": "Erledigte Artikel ausblenden",
 		"editor.options.acknowledged.end": "Erledigte Artikel am Ende anzeigen",
+        "editor.defaults.sub_text": "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
 		
         "editor.labels.highlight_words": "Hervorgehobene Wörter",
         "editor.labels.highlight_color": "Farbe für Hervorhebung",
@@ -80,6 +81,7 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.show": "Show completed items",
 		"editor.options.acknowledged.hide": "Hide completed items",
 		"editor.options.acknowledged.end": "Show completed items at the end",
+        "editor.defaults.sub_text": "Tip: Use chips to quickly add items again.",
 		
         "editor.labels.highlight_words": "Highlight words",
         "editor.labels.highlight_color": "Highlight color",
@@ -125,16 +127,16 @@ const TRANSLATIONS = {
 };
 
 
-
-// --- HA-Sprache über home-assistant element ---
+// Detect HA-Language via home-assistant element
 function detectLanguage() {
     const hass = document.querySelector("home-assistant")?.hass;
-    const lang = hass?.language || "en"; // Fallback auf Englisch
-    console.debug("[i] HA language:", hass?.language, "=> verwendete Sprache:", lang);
+    const lang = hass?.language || "en"; // Fallback to Englisch
+    console.debug("[i] HA language:", hass?.language, "=> used language:", lang);
     return lang;
 }
 
-// --- translate-Funktion ---
+
+// translate-Funktion 
 function translate(key) {
     const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
@@ -143,17 +145,12 @@ function translate(key) {
 }
 
 
-
-
 class HaShoppingListImproved extends HTMLElement {
     constructor(){
         super();
         this._onAdd = this._onAdd.bind(this);
         this._clearCompleted = this._clearCompleted.bind(this);
     }
-
-
-
 
     set hass(hass) {
         this._hass = hass;
@@ -169,7 +166,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showQuantitySelection = (config.show_quantity_box === false) ? false : true;
         this._showSubmitButton      = (config.show_submit_button === false) ? false : true;
         this._showInputMask         = (config.show_input_mask === false) ? false : true;
-        this._subText               = (config.sub_text === undefined) ? "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen." : config.sub_text;
+        this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
         this._chipPosition          = ["bottom", "right", "full", "auto"].includes(config.chips_position) ? config.chips_position : "auto";
@@ -205,7 +202,7 @@ class HaShoppingListImproved extends HTMLElement {
             quantity: "end",
             acknowledged: "show",
             chip_click: "single",
-            sub_text: "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
+            sub_text: translate("editor.defaults.sub_text"),
             chip_merge: "combined"
         };
     }
