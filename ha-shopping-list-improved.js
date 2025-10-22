@@ -13,6 +13,17 @@ const TRANSLATIONS = {
         "editor.placeholders.item": "Artikel...",
         "editor.labels.add_button": "Hinzufügen",
         "editor.labels.clear_button": "Erledigte löschen",
+        "editor.labels.no_items": "Keine Einträge",
+        "editor.labels.confirm_remove": "‘{item}’ aus der Liste entfernen ?",
+        "editor.labels.complete_btn": "Markieren als erledigt",
+        "editor.labels.plus_btn": "Menge erhöhen",
+        "editor.labels.minus_btn": "Menge verringern oder löschen",
+        "editor.labels.confirm_remove": "Item entfernen: {item}?",
+        "editor.labels.confirm_clear_done": "Alle als erledigt markierten Artikel löschen?",
+        "editor.labels.confirm_remove_history": "Eintrag '{item}' aus History löschen?",
+        "editor.labels.chip_highlighted": "Hervorgehobenes Wort",
+        "editor.labels.chip_standard": "Standard-Chip",
+        "editor.labels.alert_cannot_delete_standard": "Dieser Standard-Chip kann nicht gelöscht werden",
 
 		"editor.options.chips_position.auto": "Automatisch (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom": "Immer unten",
@@ -76,6 +87,17 @@ const TRANSLATIONS = {
         "editor.placeholders.item": "Item...",
         "editor.labels.add_button": "Add",
         "editor.labels.clear_button": "Clear completed",
+        "editor.labels.no_items": "No items",
+        "editor.labels.confirm_remove": "Remove ‘{item}’ from the list?",
+        "editor.labels.complete_btn": "Mark as done",
+        "editor.labels.plus_btn": "Increase quantity",
+        "editor.labels.minus_btn": "Decrease quantity or remove",
+        "editor.labels.confirm_remove": "Remove item: {item}?",
+        "editor.labels.confirm_clear_done": "Delete all completed items?",
+        "editor.labels.confirm_remove_history": "Delete entry '{item}' from history?",
+        "editor.labels.chip_highlighted": "Highlighted word",
+        "editor.labels.chip_standard": "Standard chip",
+        "editor.labels.alert_cannot_delete_standard": "This standard chip cannot be deleted",
 
 		"editor.options.chips_position.auto": "Automatic (depends on screen size)",
 		"editor.options.chips_position.bottom": "Always at bottom",
@@ -141,7 +163,7 @@ const TRANSLATIONS = {
 function detectLanguage() {
     const hass = document.querySelector("home-assistant")?.hass;
     const lang = hass?.language || "en"; // Fallback to Englisch
-    console.debug("[i] HA language:", hass?.language, "=> used language:", lang);
+    console.debug("[ha-shopping-list-improved][DEBUG] HA language:", hass?.language, "=> used language:", lang);
     return lang;
 }
 
@@ -537,7 +559,7 @@ class HaShoppingListImproved extends HTMLElement {
                 id: i.id
             }));
 
-            // Sortierung: alphabetisch nach Name, Menge ignorieren
+            // Sort function: A --> Z, ignore quantity
             this._items.sort((a, b) => {
                 let nameA = a.name;
                 let nameB = b.name;
@@ -553,9 +575,9 @@ class HaShoppingListImproved extends HTMLElement {
                 return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
             });
 
-            console.debug("[DEBUG] Geladene Items:", this._items.map(i => i.name));
+            console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
             
-            // acknowledged-Logik
+            // acknowledged-Logic
             if (this._acknowledgedMode === "hide") {
                 this._items = this._items.filter(i => !i.complete);
             } else if (this._acknowledgedMode === "end") {
@@ -566,14 +588,14 @@ class HaShoppingListImproved extends HTMLElement {
             
             this._renderList();
         } catch (err) {
-            console.error("ShoppingList: konnte Items nicht laden via API", err);
+            console.error("[ha-shopping-list-improved]: unable to load items via API", err);
         }
     }
 
     _renderList() {
         this._listEl.innerHTML = '';
         if (!this._items.length) {
-            this._listEl.innerHTML = '<li class="small">Keine Einträge</li>';
+            this._listEl.innerHTML = `<li class="small">${translate("editor.labels.no_items")}</li>`;
             return;
         }
 
@@ -598,10 +620,10 @@ class HaShoppingListImproved extends HTMLElement {
             const left = document.createElement('div');
             left.className = 'left';
 
-            // Erledigt Checkbox / Haken
+            // Acknowledged Checkbox / hook
             const completeBtn = document.createElement('button');
             completeBtn.innerHTML = item.complete ? '\u2714' : '\u2610';
-            completeBtn.title = 'Markieren als erledigt';
+            completeBtn.title = translate("editor.labels.complete_btn");
             completeBtn.style.cursor = 'pointer';
             completeBtn.style.border = 'none';
             completeBtn.style.background = 'transparent';
@@ -613,7 +635,7 @@ class HaShoppingListImproved extends HTMLElement {
             nameSpan.className = 'name';
             nameSpan.textContent = item.name;
 
-            // Bearbeiten-Funktion
+            // Edit-Function
             nameSpan.addEventListener('dblclick', () => {
                 if (item.complete) return;
                 const input = document.createElement('input');
@@ -652,7 +674,7 @@ class HaShoppingListImproved extends HTMLElement {
                         await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                         await this._refresh();
                     } catch (err) {
-                        console.error('Bearbeiten fehlgeschlagen:', err);
+                        console.error('[ha-shopping-list-improved] Edit failed:', err);
                     }
                 };
             });
@@ -660,29 +682,29 @@ class HaShoppingListImproved extends HTMLElement {
             left.appendChild(completeBtn);
             left.appendChild(nameSpan);
 
-            // Aktionen: Plus und Minus (evtl. Mülleimer)
+            // Actions: Plus or Minus
             const actions = document.createElement('div');
             actions.className = 'actions';
 
             const plusBtn = document.createElement('button');
             plusBtn.innerHTML = '+';
-            plusBtn.title = 'Menge erhöhen';
+            plusBtn.title = translate("editor.labels.plus_btn");
             plusBtn.style.border = 'none';
             plusBtn.style.background = 'transparent';
             plusBtn.style.cursor = 'pointer';
             plusBtn.style.fontSize = '18px';
             plusBtn.style.marginLeft = '8px';
             plusBtn.addEventListener('click', async () => {
-                if (plusBtn._processing) return;   // Klick ignorieren, wenn gerade busy
+                if (plusBtn._processing) return;   // ignore click, if busy
                 plusBtn._processing = true;
 
-                // Anzahl vorne oder hinten entfernen und Anzahl ermitteln
+                // remove and count current quantity
                 let nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
                 let currentQty = 1;
                 const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
                 if (match) currentQty = parseInt(match[1], 10);
 
-                // Neue Anzahl (alt +1)
+                // new quantity (old +1)
                 const newQty = currentQty + 1;
                 const formatted = (this._quantityPosition === "beginning")
                     ? `${newQty}× ${nameOnly}`
@@ -693,7 +715,7 @@ class HaShoppingListImproved extends HTMLElement {
                     await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                     await this._refresh();
                 } catch (err) {
-                    console.error('Fehler beim Erhöhen der Menge:', err);
+                    console.error('[ha-shopping-list-improved] Unable to increase the quantity:', err);
                 }
 
                 plusBtn._processing = false;
@@ -701,7 +723,7 @@ class HaShoppingListImproved extends HTMLElement {
 
             const minusBtn = document.createElement('button');
             minusBtn.innerHTML = '−';
-            minusBtn.title = 'Menge verringern oder löschen';
+            minusBtn.title = translate("editor.labels.minus_btn");
             minusBtn.style.border = 'none';
             minusBtn.style.background = 'transparent';
             minusBtn.style.cursor = 'pointer';
@@ -711,17 +733,17 @@ class HaShoppingListImproved extends HTMLElement {
                 if (minusBtn._processing) return;
                 minusBtn._processing = true;
 
-                // Anzahl vorne oder hinten entfernen und Anzahl ermitteln
+                // remove and count current quantity
                 let nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
                 let currentQty = 1;
                 const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
                 if (match) currentQty = parseInt(match[1], 10);
 
-                // Bereits Einträge vorhanden
+                // if there are already more than 1, reduce quantity
                 if (currentQty > 1) {
-                    // Neue Anzahl (alt -1)
+                    // new quantity (old -1)
                     const newQty = currentQty - 1;
-                    const showQty = newQty > 1 || this._showQuantityOne; // Anzahl nur anzeigen wenn >1 oder explizit erlaubt
+                    const showQty = newQty > 1 || this._showQuantityOne; // show quantity only if >1 or if configured
 
                     let formatted;
                     if (showQty) {
@@ -737,15 +759,16 @@ class HaShoppingListImproved extends HTMLElement {
                         await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                         await this._refresh();
                     } catch (err) {
-                        console.error('Fehler beim Verringern der Menge:', err);
+                        console.error('[ha-shopping-list-improved] Unable to decrease quantity:', err);
                     }
                 } else {
-                    if (confirm(`'${nameOnly}' aus der Liste entfernen ?`)) {
+                    const msg = translate("editor.labels.confirm_remove").replace("{item}", nameOnly);
+                    if (confirm(msg)) {
                         try {
                             await this._hass.callService('shopping_list', 'remove_item', { name: item.name });
                             await this._refresh();
                         } catch (err) {
-                            console.error('Fehler beim Löschen:', err);
+                            console.error('[ha-shopping-list-improved] Unable to remove :', err);
                         }
                     }
                 }
@@ -764,7 +787,7 @@ class HaShoppingListImproved extends HTMLElement {
 
 	async _onAdd(){
         if (this._addingBusy) {
-            console.warn("[DEBUG] Klick ignoriert: noch busy (Add)");
+            console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
             return;
         }
 	    this._addingBusy = true;
@@ -773,14 +796,14 @@ class HaShoppingListImproved extends HTMLElement {
             let inputName = this._inputEl.value.trim();
             if (!inputName) return;
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
-            const quantityPosition = this._quantityPosition; // "beginning" oder "end"
+            const quantityPosition = this._quantityPosition; // "beginning" or "end"
 
-            console.debug("[DEBUG] Hinzufügen:", inputName, "Menge:", inputQty);
-            console.debug("[DEBUG] Aktuelle this._items:", this._items);
+            console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
+            console.debug("[ha-shopping-list-improved][DEBUG] Count Items: this._items:", this._items);
 
             if (!Array.isArray(this._items)) this._items = [];
 
-            // Prüfen ob Item bereits existiert
+            // check if item excists (ignore quantity in name)
             const existing = this._items.find(i => {
                 let nameClean = i.name;
                 if (quantityPosition === "beginning") {
@@ -794,7 +817,7 @@ class HaShoppingListImproved extends HTMLElement {
 		    let finalName = inputName;
 
             if (existing) {
-                console.debug("[DEBUG] Existierendes Item gefunden:", existing.name);
+                console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
 
                 let currentQty = 1;
                 if (quantityPosition === "beginning") {
@@ -807,7 +830,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                 const newQty = currentQty + inputQty;
 
-                // Menge anzeigen nur wenn >1 oder explizit erlaubt (showQuantityOne)
+                // show quantity only if >1 or if configured
                 const showQty = newQty > 1 || this._showQuantityOne;
 
                 if (showQty) {
@@ -820,12 +843,12 @@ class HaShoppingListImproved extends HTMLElement {
                     finalName = inputName;
                 }
 
-                // Altes Item entfernen
+                // remove old Item
                 try {
                     await this._hass.callService("shopping_list", "remove_item", { name: existing.name });
-                    console.debug("[DEBUG] Altes Item entfernt:", existing.name);
+                    console.debug("[ha-shopping-list-improved][DEBUG] OLd Item removed:", existing.name);
                 } catch (err) {
-                    console.error("[DEBUG] Fehler beim Entfernen:", err);
+                    console.error("[ha-shopping-list-improved] Error while removing:", err);
                 }
             } else if (inputQty > 1 || this._showQuantityOne) {
                 if (quantityPosition === "beginning") {
@@ -835,16 +858,16 @@ class HaShoppingListImproved extends HTMLElement {
                 }
             }
 
-            // Neues/aktualisiertes Item hinzufügen
+            // Add new/updated Item
             try {
                 await this._hass.callService("shopping_list","add_item",{ name: finalName });
-                console.debug("[DEBUG] Neues Item hinzugefügt:", finalName);
+                console.debug("[ha-shopping-list-improved][DEBUG] New Item added:", finalName);
                 this._addToHistory(inputName);
                 this._inputEl.value = '';
                 this._qtyEl.value = '';
                 await this._refresh();
             } catch(err){
-                console.error("[DEBUG] Fehler beim Hinzufügen:", err);
+                console.error("[ha-shopping-list-improved] Unable to add:", err);
             }
 
         } finally {
@@ -861,27 +884,28 @@ class HaShoppingListImproved extends HTMLElement {
         }
         await this._refresh();
         } catch(err) { 
-            console.error('Toggle complete failed', err); 
+            console.error('[ha-shopping-list-improved] Toggle complete failed', err); 
         }
     }
 
     async _removeItem(item){
-        if (!confirm(`Item entfernen: ${item.name}?`)) return;
+        const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", item.name);
+        if (!confirm(msgRemove)) return;
         try{
             await this._hass.callService('shopping_list','remove_item',{ name: item.name });
             await this._refresh();
         } catch(err) { 
-            console.error('Remove failed', err); 
+            console.error('[ha-shopping-list-improved] Remove failed', err); 
         }
     }
 
     async _clearCompleted(){
-        if (!confirm('Alle als erledigt markierten Artikel löschen?')) return;
+        if (!confirm(translate("editor.labels.confirm_clear_done"))) return;
         try{
             await this._hass.callService('shopping_list','clear_completed_items',{});
             await this._refresh();
         } catch(err) { 
-            console.error('Clear failed', err); 
+            console.error('[ha-shopping-list-improved] Clear failed', err); 
         }
     }
 
@@ -916,18 +940,18 @@ class HaShoppingListImproved extends HTMLElement {
             chip.className = 'chip';
             chip.textContent = chipText;
 
-            // Priorität der Farben: Highlight > Standard > Lokal
+            // Color Priority: Highlight > Standard > Local
             if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
                 chip.style.background = this._highlightColor;
-                chip.title = 'Hervorgehobenes Wort';
+                chip.title = translate("editor.labels.chip_highlighted");
             } else if (this._defaultChips?.includes(chipText)) {
                 chip.style.background = this._chipColorDefault;
-                chip.title = 'Standard-Chip';
+                chip.title = translate("editor.labels.chip_standard");
             } else {
                 chip.style.background = this._chipColor;
             }
 
-            // Klick- oder Doppelklick-Logik
+            // Click or Double-Click-Logic
             const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
             chip.addEventListener(clickEvent, async () => {
                 if (this._addingBusy) return;
@@ -939,13 +963,13 @@ class HaShoppingListImproved extends HTMLElement {
                 });
 
                 if (!existingItem) {
-                    // Noch nicht vorhanden: hinzufügen
+                    // not exists --> add new
                     this._inputEl.value = name;
                     this._qtyEl.value = '';
                     await this._onAdd();
-                    this._inputEl.value = ""; // Feld leeren nach Hinzufügen
+                    this._inputEl.value = ""; // clear field after adding
                 } else {
-                    // Bereits vorhanden: Menge erhöhen um 1
+                    // exists --> increase quantity by 1
                     let currentQty = 1;
                     const matchQty = existingItem.name.match(/^(\d+)×\s*/) || existingItem.name.match(/\((\d+)\)$/);
                     if (matchQty) currentQty = parseInt(matchQty[1], 10);
@@ -958,7 +982,7 @@ class HaShoppingListImproved extends HTMLElement {
                         formatted = `${name} (${newQty})`;
                     }
 
-                    this._inputEl.value = ""; // Feld leeren nach Hinzufügen
+                    this._inputEl.value = ""; // clear field after adding
                     this._qtyEl.value = '';
 
                     try {
@@ -967,14 +991,14 @@ class HaShoppingListImproved extends HTMLElement {
                         await this._hass.callService('shopping_list', 'add_item', { name: formatted });
                         await this._refresh();
                     } catch (err) {
-                        console.error('Fehler beim Erhöhen der Menge:', err);
+                        console.error('[ha-shopping-list-improved] Error while increasing quantity:', err);
                     } finally {
                         this._addingBusy = false;
                     }
                 }
             });
 
-            // Longpress zum Löschen für lokale History
+            // Longpress to delete local History
             if (localChips.includes(chipText)) {
                 let timer;
                 chip.addEventListener('mousedown', e => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
@@ -984,8 +1008,8 @@ class HaShoppingListImproved extends HTMLElement {
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
             } else {
                 let timer;
-                chip.addEventListener('mousedown', e => { timer = setTimeout(() => alert("Dieser Standard-Chip kann nicht gelöscht werden"), 5000); });
-                chip.addEventListener('touchstart', e => { timer = setTimeout(() => alert("Dieser Standard-Chip kann nicht gelöscht werden"), 5000); });
+                chip.addEventListener('mousedown', e => { timer = setTimeout(() => alert(translate("editor.labels.alert_cannot_delete_standard")), 5000); });
+                chip.addEventListener('touchstart', e => { timer = setTimeout(() => alert(translate("editor.labels.alert_cannot_delete_standard")), 5000); });
                 chip.addEventListener('mouseup', e => { clearTimeout(timer); });
                 chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
@@ -996,7 +1020,8 @@ class HaShoppingListImproved extends HTMLElement {
 	}
 
     _removeHistoryItem(name){
-        if (!confirm(`Eintrag '${name}' aus History löschen?`)) return;
+        const msgHistory = translate("editor.labels.confirm_remove_history").replace("{item}", name);
+        if (!confirm(msgHistory)) return;
         const idx = this._previous.findIndex(x=> x.toLowerCase()===name.toLowerCase());
         if (idx!==-1){ 
             this._previous.splice(idx,1); 
@@ -1024,7 +1049,7 @@ class HaShoppingListImproved extends HTMLElement {
         name = (name || '').trim();
         if(!name) return;
         
-        // Standard-Chips nicht in lokale History aufnehmen
+        // Dont add Standard-Chips to local History
         if (this._defaultChips?.includes(name) || !this._allowLocalChips) return;
         
         const idx = this._previous.findIndex(x=> x.toLowerCase() === name.toLowerCase());
@@ -1036,7 +1061,7 @@ class HaShoppingListImproved extends HTMLElement {
     }
     
 
-	// Warte dass Home Assistant das shopping_list_updated-Event feuert.
+	// Wait that Home Assistant is firering the shopping_list_updated-Event
 	_waitForShoppingListUpdate(timeout = 1000) {
         return new Promise((resolve) => {
             let done = false;
@@ -1051,7 +1076,7 @@ class HaShoppingListImproved extends HTMLElement {
             const handler = () => finish();
             window.addEventListener("shopping_list_updated", handler);
 
-            // Fallback: nach Timeout trotzdem weiter
+            // Fallback: after Timeout continue
             setTimeout(() => finish(), timeout);
         });
 	}
