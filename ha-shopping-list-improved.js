@@ -9,6 +9,21 @@
 
 const TRANSLATIONS = {
     de: {
+		"editor.options.chips_position.auto": "Automatisch (abhängig von Bildschirmgröße)",
+		"editor.options.chips_position.bottom": "Immer unten",
+		"editor.options.chips_position.right": "Immer rechts",
+		"editor.options.chips_position.full": "Rechts, mehrspaltig (nur Panel-Mode)",
+		"editor.options.chip_click.single": "Klick",
+		"editor.options.chip_click.dblclick": "Doppelklick",
+		"editor.options.chip_merge.combined": "Standard und Browser-Chips kombinieren (Standard)",
+		"editor.options.chip_merge.standard_first": "Standard-Chips zuerst",
+		"editor.options.chip_merge.browser_first": "Browser-Chips zuerst",
+		"editor.options.quantity.beginning": "Anzahl vorne z.B. '10x Butter'",
+		"editor.options.quantity.end": "Anzahl hinten z.B. 'Butter (10)'",
+		"editor.options.acknowledged.show": "Erledigte Artikel anzeigen",
+		"editor.options.acknowledged.hide": "Erledigte Artikel ausblenden",
+		"editor.options.acknowledged.end": "Erledigte Artikel am Ende anzeigen",
+		
         "editor.labels.highlight_words": "Hervorgehobene Wörter",
         "editor.labels.highlight_color": "Farbe für Hervorhebung",
         "editor.labels.chip_merge": "Chips kombinieren",
@@ -51,6 +66,21 @@ const TRANSLATIONS = {
     },
 
     en: {
+		"editor.options.chips_position.auto": "Automatic (depends on screen size)",
+		"editor.options.chips_position.bottom": "Always at bottom",
+		"editor.options.chips_position.right": "Always at right",
+		"editor.options.chips_position.full": "Right, multi-column (panel mode only)",
+		"editor.options.chip_click.single": "Click",
+		"editor.options.chip_click.dblclick": "Double-click",
+		"editor.options.chip_merge.combined": "Combine standard and browser chips (default)",
+		"editor.options.chip_merge.standard_first": "Standard chips first",
+		"editor.options.chip_merge.browser_first": "Browser chips first",
+		"editor.options.quantity.beginning": "Quantity at beginning, e.g. '10x Butter'",
+		"editor.options.quantity.end": "Quantity at end, e.g. 'Butter (10)'",
+		"editor.options.acknowledged.show": "Show completed items",
+		"editor.options.acknowledged.hide": "Hide completed items",
+		"editor.options.acknowledged.end": "Show completed items at the end",
+		
         "editor.labels.highlight_words": "Highlight words",
         "editor.labels.highlight_color": "Highlight color",
         "editor.labels.chip_merge": "Combine chips",
@@ -184,50 +214,51 @@ class HaShoppingListImproved extends HTMLElement {
     static getConfigForm() {
     return {
         schema: [
-            { 
-                name: "chips_position", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "auto", label: "Automatisch (abhängig von Bildschirmgröße)" },
-                    { value: "bottom", label: "Immer unten" },
-                    { value: "right", label: "Immer rechts" },
-                    { value: "full", label: "Rechts, mehrspaltig (nur Panel-Mode)" }
-                    ] 
-                } 
-                }, 
-                default: "auto"
-            },
-            {
-                name: "chips_width",
-                selector: { number: { min: 100, max: 800, step: 10 } },
-                default: 300
-            },
-            { 
-                name: "chip_click", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "single", label: "Klick" },
-                    { value: "dblclick", label: "Doppelklick" }
-                    ]
-                } 
-                }, 
-                default: "single"
-            },
-            {
-                name: "chip_merge",
-                selector: {
-                    select: {
-                        options: [
-                            { value: "combined", label: "Standard und Browser-Chips kombinieren (Standard)" },
-                            { value: "standard_first", label: "Standard-Chips zuerst" },
-                            { value: "browser_first", label: "Browser-Chips zuerst" }
-                        ]
-                    }
-                },
-                default: "combined"
-            },
+{
+    name: "chips_position",
+    selector: {
+        select: {
+            options: [
+                { value: "auto", label: translate("editor.options.chips_position.auto") },
+                { value: "bottom", label: translate("editor.options.chips_position.bottom") },
+                { value: "right", label: translate("editor.options.chips_position.right") },
+                { value: "full", label: translate("editor.options.chips_position.full") }
+            ]
+        }
+    },
+    default: "auto"
+},
+{
+    name: "chips_width",
+    selector: { number: { min: 100, max: 800, step: 10 } },
+    default: 300
+},
+{
+    name: "chip_click",
+    selector: {
+        select: {
+            options: [
+                { value: "single", label: translate("editor.options.chip_click.single") },
+                { value: "dblclick", label: translate("editor.options.chip_click.dblclick") }
+            ]
+        }
+    },
+    default: "single"
+},
+{
+    name: "chip_merge",
+    selector: {
+        select: {
+            options: [
+                { value: "combined", label: translate("editor.options.chip_merge.combined") },
+                { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
+                { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") }
+            ]
+        }
+    },
+    default: "combined"
+},
+
             { name: "chips", selector: { text: {} }, default: "" },
             { name: "highlight_words", selector: { text: {} }, default: "" },
 
@@ -248,31 +279,32 @@ class HaShoppingListImproved extends HTMLElement {
                 selector: { text: {} },
                 default: "red"
             },
-            { 
-                name: "quantity", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "beginning", label: "Anzahl vorne z.B. '10x Butter'" },
-                    { value: "end", label: "Anzahl hinten z.B. 'Butter (10)'" }
-                    ]
-                } 
-                }, 
-                default: "end"
-            },
-            { 
-                name: "acknowledged", 
-                selector: { 
-                select: { 
-                    options: [
-                    { value: "show", label: "Erledigte Artikel anzeigen" },
-                    { value: "hide", label: "Erledigte Artikel ausblenden" },
-                    { value: "end", label: "Erledigte Artikel am Ende anzeigen" }
-                    ]
-                } 
-                }, 
-                default: "show"
-            },
+{
+    name: "quantity",
+    selector: {
+        select: {
+            options: [
+                { value: "beginning", label: translate("editor.options.quantity.beginning") },
+                { value: "end", label: translate("editor.options.quantity.end") }
+            ]
+        }
+    },
+    default: "end"
+},
+{
+    name: "acknowledged",
+    selector: {
+        select: {
+            options: [
+                { value: "show", label: translate("editor.options.acknowledged.show") },
+                { value: "hide", label: translate("editor.options.acknowledged.hide") },
+                { value: "end", label: translate("editor.options.acknowledged.end") }
+            ]
+        }
+    },
+    default: "show"
+},
+
             { name: "local_chips", selector: { boolean: {} }, default: true },
             { name: "show_quantity_box", selector: { boolean: {} }, default: true },
             { name: "show_submit_button", selector: { boolean: {} }, default: true },
