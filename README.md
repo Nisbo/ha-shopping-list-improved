@@ -1,4 +1,5 @@
-# 🛒 Improved Shopping List Card (`ha-shopping-list-improved`)
+# 🛒 Improved Shopping List Card
+`ha-shopping-list-improved`
 
 ## 📖 🇩🇪 Vorwort / 🇬🇧 Foreword
 
