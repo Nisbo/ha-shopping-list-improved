@@ -195,10 +195,13 @@ sub_text: "Hint: Use chips to quickly add items again."
 | | |
 | --- | --- | 
 | <img width="531" height="894" alt="grafik" src="https://github.com/user-attachments/assets/25ea5ae9-2774-48c2-84bc-1f1fb9eb2869" /> | <img width="513" height="940" alt="grafik" src="https://github.com/user-attachments/assets/da3be606-1df6-4a31-96f9-5e159387b542" /> |
+| 🇬🇧 Configuration  | 🇩🇪 Konfiguration | 
 | <img width="521" height="1728" alt="grafik" src="https://github.com/user-attachments/assets/1ce6ac25-ec3b-4c59-a189-dc8d9b4c8691" />
- |   | 
+ | <img width="522" height="1705" alt="grafik" src="https://github.com/user-attachments/assets/e80794cd-4a5c-4989-877f-6f491e02dfa6" />
+ | 
 | <img width="521" height="738" alt="grafik" src="https://github.com/user-attachments/assets/4824d683-ef85-4fa2-a946-d15b6bc8ff95" />
-  |   | 
+  | <img width="519" height="703" alt="grafik" src="https://github.com/user-attachments/assets/3f61606b-4f7d-43e6-bbb5-de40048c2f56" />
+ | 
 
 <img width="1013" height="1832" alt="grafik" src="https://github.com/user-attachments/assets/eaca367a-0356-4b21-afb1-82f3e8d3fe08" />
 <img width="1007" height="862" alt="grafik" src="https://github.com/user-attachments/assets/475c3d9c-f845-4ba2-a330-2a992fb3c60d" />
