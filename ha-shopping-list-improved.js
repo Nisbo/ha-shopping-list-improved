@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.1.0
+ * Version: 1.2.0
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -43,6 +43,8 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende anzeigen",
         "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
 		
+        
+        "editor.labels.entity"                          : "To-Do-Liste",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
         "editor.labels.chip_merge"                      : "Chips kombinieren",
@@ -63,6 +65,7 @@ const TRANSLATIONS = {
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
 
+        "editor.helpers.entity"                         : "Wenn keine To-Do-Liste ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
         "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
         "editor.helpers.chip_merge"                     : "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
@@ -119,6 +122,7 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.end"               : "Show completed items at the end",
         "editor.defaults.sub_text"                      : "Hint: Use chips to quickly add items again.",
 		
+        "editor.labels.entity"                          : "To-Do-List",
         "editor.labels.highlight_words"                 : "Highlight words",
         "editor.labels.highlight_color"                 : "Highlight color",
         "editor.labels.chip_merge"                      : "Combine chips",
@@ -139,6 +143,7 @@ const TRANSLATIONS = {
         "editor.labels.sub_text"                        : "Hint text below the input field",
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
 
+        "editor.helpers.entity"                         : "If no To-Do list is selected, Home Assistant's default shopping list will be used automatically.",
 		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
 		"editor.helpers.chip_merge"                     : "Determines how standard and browser chips are combined and displayed.",
@@ -172,12 +177,38 @@ function detectLanguage() {
 }
 
 
-// translate-Funktion 
+// translate-Function 
 function translate(key) {
     const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
     if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key]; // Fallback Englisch
     return key;
+}
+
+
+// Helper function: determine the default Shopping List entity
+function getDefaultShoppingListEntity(hass) {
+    // Filter all todo-entities
+    const todoEntities = Object.values(hass.states).filter(s => s.entity_id.startsWith("todo."));
+
+    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found todo-entities:");
+    todoEntities.forEach(s => {
+        if(debugMode) console.debug(`  ${s.entity_id} - attributes:`, s.attributes);
+    });
+
+    // Try to find the HA standard list
+    // Criteria: supported_features = 15 (bitwise - only the 4 standard functions of the original Shopping List)
+    const systemList = todoEntities.find(s => s.attributes?.supported_features === 15);
+
+    if (systemList) {
+        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Selected standard list (system):", systemList.entity_id);
+        return systemList.entity_id;
+    }
+
+    // Fallback: use the first todo-entity
+    const fallback = todoEntities[0]?.entity_id || null;
+    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Fallback standard list:", fallback);
+    return fallback;
 }
 
 
@@ -191,10 +222,17 @@ class HaShoppingListImproved extends HTMLElement {
     set hass(hass) {
         this._hass = hass;
         this.render();
+        
+        //getDefaultShoppingListEntity(this._hass);
     }
-
+    
 	setConfig(config){
 	    this._config = config || {};
+
+        // Entity
+        const entity = config.entity || getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass);
+        this._entity = entity || null;
+        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Verwendete Entity:", this._entity);
 
         this._quantityPosition      = (config.quantity === "beginning") ? "beginning" : "end";
         this._acknowledgedMode      = ["hide", "end"].includes(config.acknowledged) ? config.acknowledged : "show";
@@ -234,6 +272,7 @@ class HaShoppingListImproved extends HTMLElement {
     // Provide default configuration when a new card is added.
     static getStubConfig() {
         return {
+            entity: getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass),
             chips_position: "auto",
             quantity: "end",
             acknowledged: "show",
@@ -247,6 +286,15 @@ class HaShoppingListImproved extends HTMLElement {
     static getConfigForm() {
     return {
         schema: [
+            {
+                name: "entity",
+                required: false,
+                selector: {
+                    entity: {
+                        domain: ["todo"] // only entities with domain "todo"
+                    }
+                },
+            },
             {
                 name: "chips_position",
                 selector: {
@@ -554,6 +602,7 @@ class HaShoppingListImproved extends HTMLElement {
 
     async _refresh() {
         try {
+            /*
             const res = await this._hass.callApi("GET", "shopping_list");
             const items = Array.isArray(res) ? res : [];
 
@@ -561,6 +610,37 @@ class HaShoppingListImproved extends HTMLElement {
                 name: (i.name || "").trim(),
                 complete: !!i.complete,
                 id: i.id
+            }));
+            */
+
+            const msg = {
+                type: "call_service",
+                domain: "todo",
+                service: "get_items",
+                target: { entity_id: this._entity },
+                id: Date.now(),
+                return_response: true
+            };
+
+            const wsResponse = await this._hass.connection.sendMessagePromise(msg);
+
+            if (debugMode) console.debug("[ha-shopping-list-improved] Raw WS response:", wsResponse);
+
+            const entityData = wsResponse.response?.[this._entity];
+
+            if (!entityData || !Array.isArray(entityData.items)) {
+                console.warn("[ha-shopping-list-improved] No valid todo items found in entity:", this._entity);
+                this._items = [];
+                this._renderList();
+                return;
+            }
+
+            if (debugMode) console.debug("[ha-shopping-list-improved] Extracted todo items:", entityData.items);
+
+            this._items = entityData.items.map(item => ({
+                name: (item.summary || "").trim(),
+                complete: item.status === "completed",
+                id: item.uid
             }));
 
             // Sort function: A --> Z, ignore quantity
@@ -642,6 +722,7 @@ class HaShoppingListImproved extends HTMLElement {
             // Edit-Function
             nameSpan.addEventListener('dblclick', () => {
                 if (item.complete) return;
+
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.value = item.name;
@@ -653,34 +734,50 @@ class HaShoppingListImproved extends HTMLElement {
 
                 const cancelEdit = () => { input.replaceWith(nameSpan); };
 
+                const saveEdit = async () => {
+                    const newValue = input.value.trim();
+                    if (!newValue || newValue === item.name) { 
+                        cancelEdit(); 
+                        return; 
+                    }
+
+                    // check for allowed quantity format
+                    const matchQtyNew = newValue.match(/^(\d+)×\s*/) || newValue.match(/\((\d+)\)$/);
+                    let quantity = matchQtyNew ? parseInt(matchQtyNew[1], 10) : 1;
+
+                    // name only
+                    const baseName = newValue.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
+
+                    // format name and quantity
+                    const formatted = (this._quantityPosition === 'beginning' && quantity > 1)
+                        ? `${quantity}× ${baseName}`
+                        : (quantity > 1 ? `${baseName} (${quantity})` : baseName);
+
+                    try {
+                        // update item
+                        await this._hass.connection.sendMessagePromise({
+                            type: "call_service",
+                            domain: "todo",
+                            service: "update_item",
+                            target: { entity_id: this._entity },
+                            service_data: {
+                                item: item.id,
+                                rename: formatted
+                            }
+                        });
+
+                        await this._refresh();
+                    } catch (err) {
+                        console.error('[ha-shopping-list-improved] Edit failed:', err);
+                    }
+                };
+
                 input.addEventListener('keydown', async (e) => {
                     if (e.key === 'Escape') cancelEdit();
                     else if (e.key === 'Enter') await saveEdit();
                 });
 
                 input.addEventListener('blur', async () => { await saveEdit(); });
-
-                const saveEdit = async () => {
-                    const newValue = input.value.trim();
-                    if (!newValue || newValue === item.name) { cancelEdit(); return; }
-
-                    const matchQty = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
-                    let quantity = 1;
-                    if (matchQty) quantity = parseInt(matchQty[1], 10);
-
-                    const baseName = newValue.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-                    const formatted = (this._quantityPosition === 'beginning' && quantity > 1)
-                    ? `${quantity}× ${baseName}`
-                    : (quantity > 1 ? `${baseName} (${quantity})` : baseName);
-
-                    try {
-                        await this._hass.callService('shopping_list', 'remove_item', { name: item.name });
-                        await this._hass.callService('shopping_list', 'add_item', { name: formatted });
-                        await this._refresh();
-                    } catch (err) {
-                        console.error('[ha-shopping-list-improved] Edit failed:', err);
-                    }
-                };
             });
 
             left.appendChild(completeBtn);
@@ -702,21 +799,32 @@ class HaShoppingListImproved extends HTMLElement {
                 if (plusBtn._processing) return;   // ignore click, if busy
                 plusBtn._processing = true;
 
-                // remove and count current quantity
-                let nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-                let currentQty = 1;
-                const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
-                if (match) currentQty = parseInt(match[1], 10);
-
-                // new quantity (old +1)
-                const newQty = currentQty + 1;
-                const formatted = (this._quantityPosition === "beginning")
-                    ? `${newQty}× ${nameOnly}`
-                    : `${nameOnly} (${newQty})`;
-
                 try {
-                    await this._hass.callService('shopping_list', 'remove_item', { name: item.name });
-                    await this._hass.callService('shopping_list', 'add_item', { name: formatted });
+                    const nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
+                    let currentQty = 1;
+                    const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
+                    if (match) currentQty = parseInt(match[1], 10);
+
+                    const newQty = currentQty + 1;
+                    const formattedName = (this._quantityPosition === "beginning")
+                        ? `${newQty}× ${nameOnly}`
+                        : `${nameOnly} (${newQty})`;
+
+                    // Update the existing item
+                    const msg = {
+                        type: "call_service",
+                        domain: "todo",
+                        service: "update_item",
+                        target: { entity_id: this._entity },
+                        service_data: {
+                            item: item.id,      // use UID of the existing item
+                            rename: formattedName
+                        }
+                    };
+
+                    if (debugMode) console.debug("[ha-shopping-list-improved] Sending plusButton WS message:", msg);
+
+                    await this._hass.connection.sendMessagePromise(msg);
                     await this._refresh();
                 } catch (err) {
                     console.error('[ha-shopping-list-improved] Unable to increase the quantity:', err);
@@ -737,44 +845,57 @@ class HaShoppingListImproved extends HTMLElement {
                 if (minusBtn._processing) return;
                 minusBtn._processing = true;
 
-                // remove and count current quantity
-                let nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-                let currentQty = 1;
-                const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
-                if (match) currentQty = parseInt(match[1], 10);
+                try {
+                    const nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
+                    let currentQty = 1;
+                    const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
+                    if (match) currentQty = parseInt(match[1], 10);
 
-                // if there are already more than 1, reduce quantity
-                if (currentQty > 1) {
-                    // new quantity (old -1)
-                    const newQty = currentQty - 1;
-                    const showQty = newQty > 1 || this._showQuantityOne; // show quantity only if >1 or if configured
+                    if (currentQty > 1) {
+                        // reduce quantity
+                        const newQty = currentQty - 1;
+                        const showQty = newQty > 1 || this._showQuantityOne;
+                        const formattedName = showQty
+                            ? (this._quantityPosition === 'beginning' ? `${newQty}× ${nameOnly}` : `${nameOnly} (${newQty})`)
+                            : nameOnly;
 
-                    let formatted;
-                    if (showQty) {
-                        formatted = (this._quantityPosition === 'beginning')
-                        ? `${newQty}× ${nameOnly}`
-                        : `${nameOnly} (${newQty})`;
-                    } else {
-                        formatted = nameOnly;
-                    }
-            
-                    try {
-                        await this._hass.callService('shopping_list', 'remove_item', { name: item.name });
-                        await this._hass.callService('shopping_list', 'add_item', { name: formatted });
+                        const msg = {
+                            type: "call_service",
+                            domain: "todo",
+                            service: "update_item",
+                            target: { entity_id: this._entity },
+                            service_data: {
+                                item: item.id,      // UID of the existing item
+                                rename: formattedName
+                            }
+                        };
+
+                        if (debugMode) console.debug("[ha-shopping-list-improved] Sending minusButton WS message:", msg);
+                        await this._hass.connection.sendMessagePromise(msg);
                         await this._refresh();
-                    } catch (err) {
-                        console.error('[ha-shopping-list-improved] Unable to decrease quantity:', err);
-                    }
-                } else {
-                    const msg = translate("editor.labels.confirm_remove").replace("{item}", nameOnly);
-                    if (confirm(msg)) {
-                        try {
-                            await this._hass.callService('shopping_list', 'remove_item', { name: item.name });
+
+                    } else {
+                        // last item -> remove
+                        const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", nameOnly);
+                        if (confirm(msgRemove)) {
+                            const removeMsg = {
+                                type: "call_service",
+                                domain: "todo",
+                                service: "remove_item",
+                                target: { entity_id: this._entity },
+                                service_data: {
+                                    item: item.id   // use UID
+                                }
+                            };
+
+                            if (debugMode) console.debug("[ha-shopping-list-improved] Sending remove WS message:", removeMsg);
+                            await this._hass.connection.sendMessagePromise(removeMsg);
                             await this._refresh();
-                        } catch (err) {
-                            console.error('[ha-shopping-list-improved] Unable to remove :', err);
                         }
                     }
+
+                } catch (err) {
+                    console.error('[ha-shopping-list-improved] Unable to decrease/remove item:', err);
                 }
 
                 minusBtn._processing = false;
@@ -789,25 +910,24 @@ class HaShoppingListImproved extends HTMLElement {
         });
     }
 
-	async _onAdd(){
+    async _onAdd() {
         if (this._addingBusy) {
             console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
             return;
         }
-	    this._addingBusy = true;
+        this._addingBusy = true;
 
-	    try {
+        try {
             let inputName = this._inputEl.value.trim();
             if (!inputName) return;
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
             const quantityPosition = this._quantityPosition; // "beginning" or "end"
 
-            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
-            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Count Items: this._items:", this._items);
+            if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
 
             if (!Array.isArray(this._items)) this._items = [];
 
-            // check if item excists (ignore quantity in name)
+            // check if item exists (ignore quantity in name)
             const existing = this._items.find(i => {
                 let nameClean = i.name;
                 if (quantityPosition === "beginning") {
@@ -818,10 +938,10 @@ class HaShoppingListImproved extends HTMLElement {
                 return nameClean.trim().toLowerCase() === inputName.toLowerCase();
             });
 
-		    let finalName = inputName;
+            let finalName = inputName;
 
             if (existing) {
-                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
+                if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
 
                 let currentQty = 1;
                 if (quantityPosition === "beginning") {
@@ -833,8 +953,6 @@ class HaShoppingListImproved extends HTMLElement {
                 }
 
                 const newQty = currentQty + inputQty;
-
-                // show quantity only if >1 or if configured
                 const showQty = newQty > 1 || this._showQuantityOne;
 
                 if (showQty) {
@@ -847,10 +965,17 @@ class HaShoppingListImproved extends HTMLElement {
                     finalName = inputName;
                 }
 
-                // remove old Item
+                // Remove old item
                 try {
-                    await this._hass.callService("shopping_list", "remove_item", { name: existing.name });
-                    if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] OLd Item removed:", existing.name);
+                    const removeMsg = {
+                        type: "call_service",
+                        domain: "todo",
+                        service: "remove_item",
+                        target: { entity_id: this._entity },
+                        service_data: { item: existing.id } // use uid from mapped items
+                    };
+                    if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Removing old item WS message:", removeMsg);
+                    await this._hass.connection.sendMessagePromise(removeMsg);
                 } catch (err) {
                     console.error("[ha-shopping-list-improved] Error while removing:", err);
                 }
@@ -864,52 +989,103 @@ class HaShoppingListImproved extends HTMLElement {
 
             // Add new/updated Item
             try {
-                await this._hass.callService("shopping_list","add_item",{ name: finalName });
-                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] New Item added:", finalName);
+                const addMsg = {
+                    type: "call_service",
+                    domain: "todo",
+                    service: "add_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: finalName }
+                };
+                if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
+                await this._hass.connection.sendMessagePromise(addMsg);
+
                 this._addToHistory(inputName);
                 this._inputEl.value = '';
                 this._qtyEl.value = '';
                 await this._refresh();
-            } catch(err){
+            } catch (err) {
                 console.error("[ha-shopping-list-improved] Unable to add:", err);
             }
 
         } finally {
             this._addingBusy = false;
         }
-	}
+    }
 
-    async _toggleComplete(item){
+    async _toggleComplete(item) {
+        if (!this._entity) return;
+
         try {
-        if (item.complete){
-            await this._hass.callService('shopping_list','incomplete_item',{ name: item.name });
-        } else {
-            await this._hass.callService('shopping_list','complete_item',{ name: item.name });
-        }
-        await this._refresh();
-        } catch(err) { 
-            console.error('[ha-shopping-list-improved] Toggle complete failed', err); 
+            const newStatus = item.complete ? "needs_action" : "completed";
+
+            const msg = {
+                type: "call_service",
+                domain: "todo",
+                service: "update_item",
+                target: { entity_id: this._entity },
+                service_data: {
+                    item: item.id,
+                    status: newStatus
+                }
+            };
+
+            if(debugMode) console.debug("[ha-shopping-list-improved] Sending toggleComplete WS message:", msg);
+
+            await this._hass.connection.sendMessagePromise(msg);
+
+            await this._refresh();
+        } catch (err) {
+            console.error("[ha-shopping-list-improved] Toggle complete failed", err);
         }
     }
 
-    async _removeItem(item){
+    async _removeItem(item) {
+        if (!this._entity) return;
+
         const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", item.name);
         if (!confirm(msgRemove)) return;
-        try{
-            await this._hass.callService('shopping_list','remove_item',{ name: item.name });
+
+        try {
+            const msg = {
+                type: "call_service",
+                domain: "todo",
+                service: "remove_item",
+                target: { entity_id: this._entity },
+                service_data: {
+                    item: item.id
+                }
+            };
+
+            if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", msg);
+
+            await this._hass.connection.sendMessagePromise(msg);
+
             await this._refresh();
-        } catch(err) { 
-            console.error('[ha-shopping-list-improved] Remove failed', err); 
+        } catch (err) {
+            console.error("[ha-shopping-list-improved] Remove failed", err);
         }
     }
 
-    async _clearCompleted(){
-        if (!confirm(translate("editor.labels.confirm_clear_done"))) return;
-        try{
-            await this._hass.callService('shopping_list','clear_completed_items',{});
+    async _clearCompleted() {
+        if (!this._entity) return;
+
+        const msgConfirm = translate("editor.labels.confirm_clear_completed");
+        if (!confirm(msgConfirm)) return;
+
+        try {
+            const msg = {
+                type: "call_service",
+                domain: "todo",
+                service: "remove_completed_items",
+                target: { entity_id: this._entity }
+            };
+
+            if(debugMode) console.debug("[ha-shopping-list-improved] Sending clearCompleted WS message:", msg);
+            await this._hass.connection.sendMessagePromise(msg);
+
             await this._refresh();
-        } catch(err) { 
-            console.error('[ha-shopping-list-improved] Clear failed', err); 
+        } catch (err) {
+            console.error("[ha-shopping-list-improved] Clear completed failed", err);
         }
     }
 
@@ -960,46 +1136,10 @@ class HaShoppingListImproved extends HTMLElement {
             chip.addEventListener(clickEvent, async () => {
                 if (this._addingBusy) return;
 
-                const name = chipText.trim();
-                const existingItem = this._items.find(i => {
-                    const nameClean = i.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-                    return nameClean.toLowerCase() === name.toLowerCase();
-                });
+                this._inputEl.value = chipText.trim();
+                this._qtyEl.value = '';
 
-                if (!existingItem) {
-                    // not exists --> add new
-                    this._inputEl.value = name;
-                    this._qtyEl.value = '';
-                    await this._onAdd();
-                    this._inputEl.value = ""; // clear field after adding
-                } else {
-                    // exists --> increase quantity by 1
-                    let currentQty = 1;
-                    const matchQty = existingItem.name.match(/^(\d+)×\s*/) || existingItem.name.match(/\((\d+)\)$/);
-                    if (matchQty) currentQty = parseInt(matchQty[1], 10);
-
-                    const newQty = currentQty + 1;
-                    let formatted;
-                    if (this._quantityPosition === 'beginning') {
-                        formatted = `${newQty}× ${name}`;
-                    } else {
-                        formatted = `${name} (${newQty})`;
-                    }
-
-                    this._inputEl.value = ""; // clear field after adding
-                    this._qtyEl.value = '';
-
-                    try {
-                        this._addingBusy = true;
-                        await this._hass.callService('shopping_list', 'remove_item', { name: existingItem.name });
-                        await this._hass.callService('shopping_list', 'add_item', { name: formatted });
-                        await this._refresh();
-                    } catch (err) {
-                        console.error('[ha-shopping-list-improved] Error while increasing quantity:', err);
-                    } finally {
-                        this._addingBusy = false;
-                    }
-                }
+                await this._onAdd();
             });
 
             // Longpress to delete local History
@@ -1034,10 +1174,12 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
     
-    // Lookaler Speicer für History
-    _storageKey(){ 
-        return 'ha-shopping-list-improved-history'; 
+    // Local storage key for History, unique per to-do list
+    _storageKey() {
+        const entityId = this._entity || "default";
+        return 'ha-shopping-list-improved-history-' + entityId;
     }
+
     _loadHistory(){ 
         try{ 
             const raw = localStorage.getItem(this._storageKey()); 
@@ -1046,9 +1188,11 @@ class HaShoppingListImproved extends HTMLElement {
             return []; 
         } 
     }
+
     _saveHistory(){ 
         try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,200))); }catch(e){} 
     }
+
     _addToHistory(name){
         name = (name || '').trim();
         if(!name) return;
@@ -1097,3 +1241,4 @@ window.customCards.push({
 	preview: true, 
 	description: translate("card.description")
 });
+
