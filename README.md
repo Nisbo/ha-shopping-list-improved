@@ -23,21 +23,21 @@ The biggest challenge was: **keeping the WAF intact 😄**
 
 ### 🇩🇪 Deutsch
 Die **Improved Shopping List Card** ist eine Karte für Home Assistant,  
-die die originale Einkaufsliste deutlich verbessert und die Bedienung um ein Vielfaches vereinfacht.
+die die originalen ToDo Listen deutlich verbessert und die Bedienung um ein Vielfaches vereinfacht.
 
 > ⚠️ **Hinweis:**  
-> Diese Karte basiert auf der **originalen Home Assistant Einkaufsliste** (`shopping_list`) und nutzt deren Datenstruktur.  
-> Alle Einträge, die du in dieser Karte hinzufügst, erscheinen auch in der Standard-Einkaufsliste – und umgekehrt.
+> Diese Karte basiert auf den **originalen Home Assistant ToDo Listen** und nutzt deren Datenstruktur.  
+> Alle Einträge, die du in dieser Karte hinzufügst, erscheinen auch in der entsprechenden TooDo Liste – und umgekehrt.
 
 ---
 
 ### 🇬🇧 English
 The **Improved Shopping List Card** is a card for Home Assistant,  
-which significantly improves the original shopping list and makes it much easier to use.
+which significantly improves the original ToDo lists and makes it much easier to use.
 
 > ⚠️ **Note:**  
-> This card is based on the **original Home Assistant shopping list** (`shopping_list`) and uses its data structure.  
-> All items you add in this card will also appear in the standard shopping list – and vice versa.
+> This card is based on the **original Home Assistant ToDo lists** and uses its data structure.  
+> All items you add in this card will also appear in the related ToDo list – and vice versa.
 
 
 ---
