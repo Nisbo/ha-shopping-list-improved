@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0
+ * Version: 1.2.0-BETA-2
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -10,7 +10,15 @@
 const TRANSLATIONS = {
     de: {
         "card.description"                              : "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
-
+		
+		"ui.common.yes"                  				: "Ja",
+		"ui.common.no"                  				: "Nein",
+		"ui.common.ok"                  				: "OK",
+		"ui.common.cancel"                  			: "Abbrechen",
+		"ui.common.edit_item"                  			: "Artikel bearbeiten",
+        "ui.common.add_item"                  			: "Artikel hinzufügen",
+        "ui.common.no_cat"                  			: "Keine",
+		
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
         "editor.labels.add_button"                      : "Hinzufügen",
@@ -26,6 +34,9 @@ const TRANSLATIONS = {
         "editor.labels.chip_highlighted"                : "Hervorgehobener Chip",
         "editor.labels.chip_standard"                   : "Standard-Chip",
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
+		"editor.labels.categories"                   	: "Kategorien",
+        "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
+        
 
 		"editor.options.chips_position.auto"            : "Automatisch (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom"          : "Immer unten",
@@ -40,7 +51,7 @@ const TRANSLATIONS = {
 		"editor.options.quantity.end"                   : "Anzahl hinten z.B. 'Butter (10)'",
 		"editor.options.acknowledged.show"              : "Erledigte Artikel anzeigen",
 		"editor.options.acknowledged.hide"              : "Erledigte Artikel ausblenden",
-		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende anzeigen",
+		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende der Kategorie anzeigen",
         "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
 		
         
@@ -53,6 +64,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_color"                      : "Farbe der Lokalen (Browser) Chips",
         "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
         "editor.labels.list_font_size"                  : "Schriftgröße der Listeneinträge (px)",
+		"editor.labels.cat_font_size"                   : "Schriftgröße der Kategorien (px)",
         "editor.labels.chips_width"                     : "Breite der Chips (nur bei 'full')",
         "editor.labels.chips_position"                  : "Position der Chips",
         "editor.labels.quantity"                        : "Position der Artikelanzahl",
@@ -70,6 +82,7 @@ const TRANSLATIONS = {
         "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
         "editor.helpers.chip_merge"                     : "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
         "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
+		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. STandard: 16px.",
         "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
         "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
         "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
@@ -84,11 +97,21 @@ const TRANSLATIONS = {
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
-        "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'."
+        "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
+        "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
+		"editor.helpers.categories"						: "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann."
     },
 
     en: {
         "card.description"                              : "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
+
+		"ui.common.yes"                  				: "Yes",
+		"ui.common.no"                  				: "No",
+		"ui.common.ok"                  				: "OK",
+		"ui.common.cancel"                  			: "Cancel",
+		"ui.common.edit_item"							: "Edit item",
+        "ui.common.add_item"                  			: "Add item",
+        "ui.common.no_cat"                  			: "none",
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
@@ -105,6 +128,8 @@ const TRANSLATIONS = {
         "editor.labels.chip_highlighted"                : "Highlighted Chip",
         "editor.labels.chip_standard"                   : "Standard chip",
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
+		"editor.labels.categories"                   	: "Categories",
+        "editor.labels.show_cat_popup"                  : "Show Categoty PopUp?",
 
 		"editor.options.chips_position.auto"            : "Automatic (depends on screen size)",
 		"editor.options.chips_position.bottom"          : "Always at bottom",
@@ -119,7 +144,7 @@ const TRANSLATIONS = {
 		"editor.options.quantity.end"                   : "Quantity at end, e.g. 'Butter (10)'",
 		"editor.options.acknowledged.show"              : "Show completed items",
 		"editor.options.acknowledged.hide"              : "Hide completed items",
-		"editor.options.acknowledged.end"               : "Show completed items at the end",
+		"editor.options.acknowledged.end"               : "Show completed items at the end of the category",
         "editor.defaults.sub_text"                      : "Hint: Use chips to quickly add items again.",
 		
         "editor.labels.entity"                          : "To-Do-List",
@@ -131,6 +156,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_color"                      : "Color of local (browser) chips",
         "editor.labels.chip_color_default"              : "Color of standard chips",
         "editor.labels.list_font_size"                  : "List item font size (px)",
+		"editor.labels.cat_font_size"                   : "Category font size (px)",
         "editor.labels.chips_width"                     : "Chip width (only for 'full')",
         "editor.labels.chips_position"                  : "Chip position",
         "editor.labels.quantity"                        : "Position of item quantity",
@@ -148,6 +174,7 @@ const TRANSLATIONS = {
 		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
 		"editor.helpers.chip_merge"                     : "Determines how standard and browser chips are combined and displayed.",
 		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
+		"editor.helpers.cat_font_size"                  : "Sets the font size for categories in the list. Default: 16px.",
 		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
 		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
@@ -162,7 +189,10 @@ const TRANSLATIONS = {
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
 		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
-		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'."
+		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
+        "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
+		"editor.helpers.categories"                     : "With categories, you can automatically group items. Each category starts with - name: <category name> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Any item that matches one of the keywords will automatically be assigned to that category. When creating a new card, a default category template is added for guidance."
+
     }
 };
 
@@ -246,11 +276,13 @@ class HaShoppingListImproved extends HTMLElement {
         this._chipPosition          = ["bottom", "right", "full", "auto"].includes(config.chips_position) ? config.chips_position : "auto";
         this._chipWidth             = this._chipPosition === "full" && typeof config.chips_width === "number" ? `${config.chips_width}px` : "250px";
         this._listFontSize          = config.list_font_size || 14; // Standard: 14px
+		this._catFontSize           = config.cat_font_size  || 16; // Standard: 16px
         this._chipFontSize          = config.chip_font_size || 12; // Standard: 12px
-        this._chipColor             = config.chip_color || "rgba(100,100,100,0.3)"; // Standardfarbe
+        this._chipColor             = config.chip_color     || "rgba(100,100,100,0.3)"; // Standardfarbe
         this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
         this._chipMergeMode         = ["combined", "standard_first", "browser_first"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._highlightColor        = config.highlight_color || "#D9534F";
+        this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
 
         if (typeof config.highlight_words === "string") {
             this._highlightWords = config.highlight_words.split(/\s*[,;]\s*/).filter(c => c);
@@ -267,6 +299,13 @@ class HaShoppingListImproved extends HTMLElement {
         } else {
             this._defaultChips = [];
         }
+        
+        // parse categories
+		if (config.categories) {
+			this._categories = this._parseCategories(config.categories);
+		} else {
+			this._categories = [];
+		}
     }
 
     // Provide default configuration when a new card is added.
@@ -278,7 +317,17 @@ class HaShoppingListImproved extends HTMLElement {
             acknowledged: "show",
             chip_click: "single",
             sub_text: translate("editor.defaults.sub_text"),
-            chip_merge: "combined"
+            chip_merge: "combined",
+			categories: [
+							{
+								name: "Category 1",
+								items: ["Item A", "Item B", "Item C", "Item F"]
+							},
+							{
+								name: "Category 2",
+								items: ["Item D", "Item E"]
+							}
+						]
         };
     }
 
@@ -342,6 +391,7 @@ class HaShoppingListImproved extends HTMLElement {
             { name: "chips", selector: { text: {} }, default: "" },
             { name: "highlight_words", selector: { text: {} }, default: "" },
 
+			{ name: "cat_font_size",  selector: { number: { min: 8, max: 30, step: 1 } }, default: 16},
             { name: "list_font_size", selector: { number: { min: 8, max: 30, step: 1 } }, default: 14},
             { name: "chip_font_size", selector: { number: { min: 8, max: 30, step: 1 } }, default: 12},
             {
@@ -389,7 +439,20 @@ class HaShoppingListImproved extends HTMLElement {
             { name: "show_submit_button", selector: { boolean: {} }, default: true },
             { name: "show_input_mask", selector: { boolean: {} }, default: true },
             { name: "show_quantity_one", selector: { boolean: {} }, default: false },
-            { name: "sub_text", selector: { text: {} }, default: " "}
+            { name: "sub_text", selector: { text: {} }, default: " "},
+            { name: "show_cat_popup", selector: { boolean: {} }, default: true },
+            {
+                name: "categories",
+                required: false,
+                selector: {
+                    object: {
+                        properties: {
+                            "category1": { type: "string", name: "Only a placeholder" },
+                            "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+                        }
+                    }
+                }
+            }
             ],
 
             computeLabel: (schema) => {
@@ -445,6 +508,24 @@ class HaShoppingListImproved extends HTMLElement {
     disconnectedCallback() {
         window.removeEventListener('shopping_list_updated', this._eventListener);
     }
+    
+    _parseCategories(categoriesArray) {
+        const categories = [];
+
+        for (const cat of categoriesArray) {
+            const name = cat.name || "(no category)";
+            const items = Array.isArray(cat.items) ? cat.items : [];
+
+            console.log(`Kategorie ${name}: ${items.length ? items.join(", ") : "(leer)"}`);
+
+            categories.push({
+                name,
+                items
+            });
+        }
+
+        return categories;
+    }
 
     _renderSkeleton() {
         const style = document.createElement('style');
@@ -464,6 +545,20 @@ class HaShoppingListImproved extends HTMLElement {
             li { display:flex; align-items:center; justify-content:space-between; padding:8px; border-radius:6px; margin-bottom:6px; }
             li.done .name { text-decoration: line-through; opacity:0.6; }
             li.green { background: rgba(76,175,80,0.12); }
+
+            /* Category */
+            li.category-header {
+                font-weight: 700;
+                opacity: 1;
+                background: rgba(0, 0, 0, 0.06);
+                border-left: 3px solid rgba(0, 0, 0, 0.2);
+                padding-left: 8px;
+                margin-top: 12px;
+                margin-bottom: 6px;
+                font-size: ${this._catFontSize}px;
+                border-radius: 4px;
+            }
+
             .left { display:flex; gap:8px; align-items:center; flex:1 }
             .name { font-size: ${this._listFontSize}px; }
             .actions { display:flex; gap:6px; }
@@ -643,21 +738,13 @@ class HaShoppingListImproved extends HTMLElement {
                 id: item.uid
             }));
 
-            // Sort function: A --> Z, ignore quantity
-            this._items.sort((a, b) => {
-                let nameA = a.name;
-                let nameB = b.name;
+			// Sort function: A --> Z, ignore quantity and category
+			this._items.sort((a, b) => {
+				const nameA = this._getNameOnly(a.name);
+				const nameB = this._getNameOnly(b.name);
 
-                if (this._quantityPosition === "beginning") {
-                    nameA = nameA.replace(/^(\d+)×\s*/, '');
-                    nameB = nameB.replace(/^(\d+)×\s*/, '');
-                } else {
-                    nameA = nameA.replace(/\s*\(\d+\)$/, '');
-                    nameB = nameB.replace(/\s*\(\d+\)$/, '');
-                }
-
-                return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
-            });
+				return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
+			});
 
             if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
             
@@ -696,218 +783,398 @@ class HaShoppingListImproved extends HTMLElement {
             });
         }
 
-        itemsToRender.forEach(item => {
-            const li = document.createElement('li');
-            li.dataset.name = item.name;
-            if (item.complete) li.classList.add('done', 'green');
+        // Articles without category
+        const uncategorized = itemsToRender.filter(i => {
+            const nameOnly = this._getNameOnly(i.name);
+            const categoryFromName = this._getCategory(i.name);
 
-            const left = document.createElement('div');
-            left.className = 'left';
+            if (categoryFromName) return false;
 
-            // Acknowledged Checkbox / hook
-            const completeBtn = document.createElement('button');
-            completeBtn.innerHTML = item.complete ? '\u2714' : '\u2610';
-            completeBtn.title = translate("editor.labels.complete_btn");
-            completeBtn.style.cursor = 'pointer';
-            completeBtn.style.border = 'none';
-            completeBtn.style.background = 'transparent';
-            completeBtn.style.fontSize = '16px';
-            completeBtn.style.marginRight = '8px';
-            completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
+            return !this._categories.some(c => 
+                c.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())
+            );
+        });
 
-            const nameSpan = document.createElement('div');
-            nameSpan.className = 'name';
-            nameSpan.textContent = item.name;
 
-            // Edit-Function
-            nameSpan.addEventListener('dblclick', () => {
-                if (item.complete) return;
+        if (uncategorized.length) {
+            uncategorized.forEach(item => this._renderItem(item, this._listEl));
+        }
 
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = item.name;
-                input.style.flex = '1';
-                input.style.fontSize = '14px';
-                input.style.padding = '2px 4px';
-                nameSpan.replaceWith(input);
-                input.focus();
+        // Articles with category
+        this._categories.forEach(cat => {
+            const catItems = itemsToRender.filter(i => {
+                const nameOnly = this._getNameOnly(i.name);
+                const explicitCategory = this._getCategory(i.name);
 
-                const cancelEdit = () => { input.replaceWith(nameSpan); };
+                if (explicitCategory) {
+                    return explicitCategory.toLowerCase() === cat.name.toLowerCase();
+                }
 
-                const saveEdit = async () => {
-                    const newValue = input.value.trim();
-                    if (!newValue || newValue === item.name) { 
-                        cancelEdit(); 
-                        return; 
-                    }
-
-                    // check for allowed quantity format
-                    const matchQtyNew = newValue.match(/^(\d+)×\s*/) || newValue.match(/\((\d+)\)$/);
-                    let quantity = matchQtyNew ? parseInt(matchQtyNew[1], 10) : 1;
-
-                    // name only
-                    const baseName = newValue.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-
-                    // format name and quantity
-                    const formatted = (this._quantityPosition === 'beginning' && quantity > 1)
-                        ? `${quantity}× ${baseName}`
-                        : (quantity > 1 ? `${baseName} (${quantity})` : baseName);
-
-                    try {
-                        // update item
-                        await this._hass.connection.sendMessagePromise({
-                            type: "call_service",
-                            domain: "todo",
-                            service: "update_item",
-                            target: { entity_id: this._entity },
-                            service_data: {
-                                item: item.id,
-                                rename: formatted
-                            }
-                        });
-
-                        await this._refresh();
-                    } catch (err) {
-                        console.error('[ha-shopping-list-improved] Edit failed:', err);
-                    }
-                };
-
-                input.addEventListener('keydown', async (e) => {
-                    if (e.key === 'Escape') cancelEdit();
-                    else if (e.key === 'Enter') await saveEdit();
-                });
-
-                input.addEventListener('blur', async () => { await saveEdit(); });
+                return cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase());
             });
 
-            left.appendChild(completeBtn);
-            left.appendChild(nameSpan);
+            if (catItems.length) {
+                const liCat = document.createElement('li');
+                liCat.classList.add('category-header');
+                liCat.textContent = cat.name;
+                this._listEl.appendChild(liCat);
 
-            // Actions: Plus or Minus
-            const actions = document.createElement('div');
-            actions.className = 'actions';
+                catItems.forEach(item => this._renderItem(item, this._listEl));
+            }
+        });
+    }
 
-            const plusBtn = document.createElement('button');
-            plusBtn.innerHTML = '+';
-            plusBtn.title = translate("editor.labels.plus_btn");
-            plusBtn.style.border = 'none';
-            plusBtn.style.background = 'transparent';
-            plusBtn.style.cursor = 'pointer';
-            plusBtn.style.fontSize = '18px';
-            plusBtn.style.marginLeft = '8px';
-            plusBtn.addEventListener('click', async () => {
-                if (plusBtn._processing) return;   // ignore click, if busy
-                plusBtn._processing = true;
+    // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
+    _getCategory(name) {
+        const match = name.match(/^@(.+?)@\s*/);
+        return match ? match[1] : null;
+    }
 
-                try {
-                    const nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-                    let currentQty = 1;
-                    const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
-                    if (match) currentQty = parseInt(match[1], 10);
+    // Extract Quantity, e.g. "@Obst@ 2× Apfel" -> 2, "Apfel (3)" -> 3
+    _getQuantity(name) {
+        const nameWithoutCat = name.replace(/^@.+?@\s*/, '');
+        const match = nameWithoutCat.match(/^(\d+)×\s*/) || nameWithoutCat.match(/\((\d+)\)$/);
+        return match ? parseInt(match[1], 10) : 1;
+    }
 
-                    const newQty = currentQty + 1;
-                    const formattedName = (this._quantityPosition === "beginning")
+    // Extract the name without category and quantity
+    _getNameOnly(name) {
+        let n = name.replace(/^@.+?@\s*/, '');       // Category
+        n = n.replace(/^(\d+)×\s*/, '');             // Quantity beginning
+        n = n.replace(/\s*\(\d+\)$/, '');            // Quantity end
+        return n.trim();
+    }
+
+    async editItemPopup(currentName, mode = "edit") {
+        return new Promise((resolve) => {
+            let currentCategory = null;
+            let nameOnly = currentName;
+            const catMatch = currentName.match(/^@([^@]+)@\s*(.*)/);
+            if (catMatch) {
+                currentCategory = catMatch[1];
+                nameOnly = catMatch[2];
+            }
+
+            // Overlay
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'auto';
+
+            // Popup-Box
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.padding = '16px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.maxWidth = '320px';
+            popup.style.width = '90%';
+            popup.style.textAlign = 'center';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.pointerEvents = 'auto';
+
+            // Label
+            const label = document.createElement('p');
+            label.textContent = mode === "add"
+                ? translate("ui.common.add_item")
+                : translate("ui.common.edit_item");
+            label.style.marginBottom = '8px';
+
+            // Input
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = nameOnly;
+            input.style.width = '100%';
+            input.style.padding = '6px 8px';
+            input.style.marginBottom = '12px';
+            input.style.border = '1px solid var(--divider-color, #ccc)';
+            input.style.borderRadius = '4px';
+            input.style.fontSize = '14px';
+            input.style.boxSizing = 'border-box';
+
+            // Category-Chips
+            const catContainer = document.createElement('div');
+            catContainer.style.display = 'flex';
+            catContainer.style.flexWrap = 'wrap';
+            catContainer.style.gap = '8px';
+            catContainer.style.marginBottom = '12px';
+
+            let selectedCategory = currentCategory;
+
+            function createChip(name, isSelected, onClick) {
+                const chip = document.createElement('div');
+                chip.textContent = name;
+                chip.style.padding = '4px 12px';
+                chip.style.borderRadius = '16px';
+                chip.style.cursor = 'pointer';
+                chip.style.userSelect = 'none';
+                chip.style.fontSize = '13px';
+                chip.style.border = '1px solid var(--divider-color, #ccc)';
+                chip.style.background = isSelected ? 'var(--primary-color)' : 'var(--secondary-background-color)';
+                chip.style.color = isSelected ? 'white' : 'var(--primary-text-color)';
+                chip.addEventListener('click', () => onClick(chip));
+                chip.addEventListener('mouseenter', () => chip.style.opacity = 0.85);
+                chip.addEventListener('mouseleave', () => chip.style.opacity = 1);
+                return chip;
+            }
+
+            const noCatChip = createChip(translate("ui.common.no_cat"), selectedCategory === null, (chipEl) => {
+                selectedCategory = null;
+                Array.from(catContainer.children).forEach(c => {
+                    c.style.background = (c === chipEl) ? 'var(--primary-color)' : 'var(--secondary-background-color)';
+                    c.style.color = (c === chipEl) ? 'white' : 'var(--primary-text-color)';
+                });
+            });
+            catContainer.appendChild(noCatChip);
+
+            // Categorie-Chips from Config
+            this._categories.forEach(cat => {
+                const chip = createChip(cat.name, cat.name === selectedCategory, (chipEl) => {
+                    selectedCategory = cat.name;
+                    Array.from(catContainer.children).forEach(c => {
+                        c.style.background = (c === chipEl) ? 'var(--primary-color)' : 'var(--secondary-background-color)';
+                        c.style.color = (c === chipEl) ? 'white' : 'var(--primary-text-color)';
+                    });
+                });
+                catContainer.appendChild(chip);
+            });
+
+            // Buttons
+            const btnContainer = document.createElement('div');
+            btnContainer.style.display = 'flex';
+            btnContainer.style.justifyContent = 'flex-end';
+            btnContainer.style.gap = '12px';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = translate("ui.common.cancel");
+            cancelBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+            cancelBtn.style.border = 'none';
+            cancelBtn.style.padding = '6px 12px';
+            cancelBtn.style.borderRadius = '4px';
+            cancelBtn.style.cursor = 'pointer';
+
+            const okBtn = document.createElement('button');
+            okBtn.textContent = translate("ui.common.ok");
+            okBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+            okBtn.style.color = 'white';
+            okBtn.style.border = 'none';
+            okBtn.style.padding = '6px 12px';
+            okBtn.style.borderRadius = '4px';
+            okBtn.style.cursor = 'pointer';
+
+            btnContainer.appendChild(okBtn);
+            btnContainer.appendChild(cancelBtn);
+
+            popup.appendChild(label);
+            popup.appendChild(input);
+            popup.appendChild(catContainer);
+            popup.appendChild(btnContainer);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+
+            // click on background = cancel
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                    resolve(null);
+                }
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                resolve(null);
+            });
+
+            okBtn.addEventListener('click', () => {
+                let finalName = input.value.trim();
+                if (selectedCategory) {
+                    finalName = `@${selectedCategory}@ ${finalName}`;
+                }
+                document.body.removeChild(overlay);
+                resolve(finalName || null);
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') okBtn.click();
+                if (e.key === 'Escape') cancelBtn.click();
+            });
+
+            input.focus();
+            input.select();
+        });
+    }
+
+    _renderItem(item, parentEl) {
+        const li = document.createElement('li');
+        li.dataset.name = item.name;
+        if (item.complete) li.classList.add('done', 'green');
+
+        const left = document.createElement('div');
+        left.className = 'left';
+
+        // Complete Button
+        const completeBtn = document.createElement('button');
+        completeBtn.innerHTML = item.complete ? '\u2714' : '\u2610';
+        completeBtn.title = translate("editor.labels.complete_btn");
+        completeBtn.style.cursor = 'pointer';
+        completeBtn.style.border = 'none';
+        completeBtn.style.background = 'transparent';
+        completeBtn.style.fontSize = '16px';
+        completeBtn.style.marginRight = '8px';
+        completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
+
+        // Name Span
+        const nameSpan = document.createElement('div');
+        nameSpan.className = 'name';
+
+        const nameOnly = this._getNameOnly(item.name);
+        const qty = this._getQuantity(item.name);
+        let displayName = nameOnly;
+
+        if (qty > 1 || this._showQuantityOne) {
+            displayName = this._quantityPosition === "beginning"
+                ? `${qty}× ${nameOnly}`
+                : `${nameOnly} (${qty})`;
+        }
+
+        nameSpan.textContent = displayName;
+
+        nameSpan.addEventListener('dblclick', async () => {
+            const newName = await this.editItemPopup(item.name);
+            if (!newName || newName === item.name) return;
+
+            try {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: item.id, rename: newName }
+                });
+                await this._refresh();
+            } catch (err) {
+                console.error('[ha-shopping-list-improved] Unable to rename item:', err);
+            }
+        });
+
+        left.appendChild(completeBtn);
+        left.appendChild(nameSpan);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        // Plus-Button
+        const plusBtn = document.createElement('button');
+        plusBtn.innerHTML = '+';
+        plusBtn.title = translate("editor.labels.plus_btn");
+        plusBtn.style.border = 'none';
+        plusBtn.style.background = 'transparent';
+        plusBtn.style.cursor = 'pointer';
+        plusBtn.style.fontSize = '18px';
+        plusBtn.style.marginLeft = '8px';
+        plusBtn.addEventListener('click', async () => {
+            if (plusBtn._processing) return;
+            plusBtn._processing = true;
+
+            try {
+                const nameOnly = this._getNameOnly(item.name);
+                const category = this._getCategory(item.name);
+                let currentQty = this._getQuantity(item.name);
+                const newQty = currentQty + 1;
+
+                const showQty = newQty > 1 || this._showQuantityOne;
+
+                let formattedName = showQty
+                    ? (this._quantityPosition === "beginning"
                         ? `${newQty}× ${nameOnly}`
-                        : `${nameOnly} (${newQty})`;
+                        : `${nameOnly} (${newQty})`)
+                    : nameOnly;
 
-                    // Update the existing item
-                    const msg = {
+                if (category) {
+                    formattedName = `@${category}@ ${formattedName}`;
+                }
+
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: item.id, rename: formattedName }
+                });
+                await this._refresh();
+            } catch (err) {
+                console.error('[ha-shopping-list-improved] Plus button failed', err);
+            }
+
+            plusBtn._processing = false;
+        });
+
+        // Minus-Button
+        const minusBtn = document.createElement('button');
+        minusBtn.innerHTML = '−';
+        minusBtn.title = translate("editor.labels.minus_btn");
+        minusBtn.style.border = 'none';
+        minusBtn.style.background = 'transparent';
+        minusBtn.style.cursor = 'pointer';
+        minusBtn.style.fontSize = '18px';
+        minusBtn.style.marginLeft = '4px';
+        minusBtn.addEventListener('click', async () => {
+            if (minusBtn._processing) return;
+            minusBtn._processing = true;
+
+            try {
+                const nameOnly = this._getNameOnly(item.name);
+                const category = this._getCategory(item.name);
+                let currentQty = this._getQuantity(item.name);
+
+                if (currentQty > 1) {
+                    const newQty = currentQty - 1;
+                    const showQty = newQty > 1 || this._showQuantityOne;
+
+                    let formattedName = showQty
+                        ? (this._quantityPosition === 'beginning'
+                            ? `${newQty}× ${nameOnly}`
+                            : `${nameOnly} (${newQty})`)
+                        : nameOnly;
+
+                    // Kategorie wieder einfügen
+                    if (category) {
+                        formattedName = `@${category}@ ${formattedName}`;
+                    }
+
+                    await this._hass.connection.sendMessagePromise({
                         type: "call_service",
                         domain: "todo",
                         service: "update_item",
                         target: { entity_id: this._entity },
-                        service_data: {
-                            item: item.id,      // use UID of the existing item
-                            rename: formattedName
-                        }
-                    };
-
-                    if (debugMode) console.debug("[ha-shopping-list-improved] Sending plusButton WS message:", msg);
-
-                    await this._hass.connection.sendMessagePromise(msg);
+                        service_data: { item: item.id, rename: formattedName }
+                    });
                     await this._refresh();
-                } catch (err) {
-                    console.error('[ha-shopping-list-improved] Unable to increase the quantity:', err);
+                } else {
+                    await this._removeItem(item);
                 }
+            } catch (err) {
+                console.error('[ha-shopping-list-improved] Minus button failed', err);
+            }
 
-                plusBtn._processing = false;
-            });
-
-            const minusBtn = document.createElement('button');
-            minusBtn.innerHTML = '−';
-            minusBtn.title = translate("editor.labels.minus_btn");
-            minusBtn.style.border = 'none';
-            minusBtn.style.background = 'transparent';
-            minusBtn.style.cursor = 'pointer';
-            minusBtn.style.fontSize = '18px';
-            minusBtn.style.marginLeft = '4px';
-            minusBtn.addEventListener('click', async () => {
-                if (minusBtn._processing) return;
-                minusBtn._processing = true;
-
-                try {
-                    const nameOnly = item.name.replace(/^(\d+)×\s*/, '').replace(/\s*\(\d+\)$/, '').trim();
-                    let currentQty = 1;
-                    const match = item.name.match(/^(\d+)×\s*/) || item.name.match(/\((\d+)\)$/);
-                    if (match) currentQty = parseInt(match[1], 10);
-
-                    if (currentQty > 1) {
-                        // reduce quantity
-                        const newQty = currentQty - 1;
-                        const showQty = newQty > 1 || this._showQuantityOne;
-                        const formattedName = showQty
-                            ? (this._quantityPosition === 'beginning' ? `${newQty}× ${nameOnly}` : `${nameOnly} (${newQty})`)
-                            : nameOnly;
-
-                        const msg = {
-                            type: "call_service",
-                            domain: "todo",
-                            service: "update_item",
-                            target: { entity_id: this._entity },
-                            service_data: {
-                                item: item.id,      // UID of the existing item
-                                rename: formattedName
-                            }
-                        };
-
-                        if (debugMode) console.debug("[ha-shopping-list-improved] Sending minusButton WS message:", msg);
-                        await this._hass.connection.sendMessagePromise(msg);
-                        await this._refresh();
-
-                    } else {
-                        // last item -> remove
-                        const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", nameOnly);
-                        if (confirm(msgRemove)) {
-                            const removeMsg = {
-                                type: "call_service",
-                                domain: "todo",
-                                service: "remove_item",
-                                target: { entity_id: this._entity },
-                                service_data: {
-                                    item: item.id   // use UID
-                                }
-                            };
-
-                            if (debugMode) console.debug("[ha-shopping-list-improved] Sending remove WS message:", removeMsg);
-                            await this._hass.connection.sendMessagePromise(removeMsg);
-                            await this._refresh();
-                        }
-                    }
-
-                } catch (err) {
-                    console.error('[ha-shopping-list-improved] Unable to decrease/remove item:', err);
-                }
-
-                minusBtn._processing = false;
-            });
-
-            actions.appendChild(plusBtn);
-            actions.appendChild(minusBtn);
-
-            li.appendChild(left);
-            li.appendChild(actions);
-            this._listEl.appendChild(li);
+            minusBtn._processing = false;
         });
+
+        actions.appendChild(plusBtn);
+        actions.appendChild(minusBtn);
+
+        li.appendChild(left);
+        li.appendChild(actions);
+        parentEl.appendChild(li);
     }
 
     async _onAdd() {
@@ -927,31 +1194,33 @@ class HaShoppingListImproved extends HTMLElement {
 
             if (!Array.isArray(this._items)) this._items = [];
 
-            // check if item exists (ignore quantity in name)
-            const existing = this._items.find(i => {
-                let nameClean = i.name;
-                if (quantityPosition === "beginning") {
-                    nameClean = nameClean.replace(/^(\d+)×\s*/, '');
-                } else {
-                    nameClean = nameClean.replace(/\s*\(\d+\)$/, '');
+            const nameOnly = this._getNameOnly(inputName);
+
+            const existing = this._items.find(i => this._getNameOnly(i.name).toLowerCase() === nameOnly.toLowerCase());
+
+            let assignedCategory = null;
+            this._categories.forEach(cat => {
+                if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
+                    assignedCategory = cat.name;
                 }
-                return nameClean.trim().toLowerCase() === inputName.toLowerCase();
             });
+
+            if (!existing && !assignedCategory && this._showCatPopUp) {
+                const result = await this.editItemPopup(inputName, "add");
+                if (!result) {
+                    this._addingBusy = false;
+                    return;
+                }
+                inputName = this._getNameOnly(result);
+                assignedCategory = this._getCategory(result);
+            }
 
             let finalName = inputName;
 
             if (existing) {
                 if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
 
-                let currentQty = 1;
-                if (quantityPosition === "beginning") {
-                    const match = existing.name.match(/^(\d+)×\s*/);
-                    if (match) currentQty = parseInt(match[1], 10);
-                } else {
-                    const match = existing.name.match(/\((\d+)\)$/);
-                    if (match) currentQty = parseInt(match[1], 10);
-                }
-
+                let currentQty = this._getQuantity(existing.name) || 1;
                 const newQty = currentQty + inputQty;
                 const showQty = newQty > 1 || this._showQuantityOne;
 
@@ -965,6 +1234,13 @@ class HaShoppingListImproved extends HTMLElement {
                     finalName = inputName;
                 }
 
+                if (assignedCategory) {
+                    finalName = `@${assignedCategory}@ ${finalName}`;
+                } else {
+                    const existingCat = this._getCategory(existing.name);
+                    if (existingCat) finalName = `@${existingCat}@ ${finalName}`;
+                }
+
                 // Remove old item
                 try {
                     const removeMsg = {
@@ -972,18 +1248,24 @@ class HaShoppingListImproved extends HTMLElement {
                         domain: "todo",
                         service: "remove_item",
                         target: { entity_id: this._entity },
-                        service_data: { item: existing.id } // use uid from mapped items
+                        service_data: { item: existing.id }
                     };
                     if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Removing old item WS message:", removeMsg);
                     await this._hass.connection.sendMessagePromise(removeMsg);
                 } catch (err) {
                     console.error("[ha-shopping-list-improved] Error while removing:", err);
                 }
-            } else if (inputQty > 1 || this._showQuantityOne) {
-                if (quantityPosition === "beginning") {
-                    finalName = `${inputQty}× ${inputName}`;
-                } else {
-                    finalName = `${inputName} (${inputQty})`;
+            } else {
+                // New Item
+                if (inputQty > 1 || this._showQuantityOne) {
+                    if (quantityPosition === "beginning") {
+                        finalName = `${inputQty}× ${inputName}`;
+                    } else {
+                        finalName = `${inputName} (${inputQty})`;
+                    }
+                }
+                if (assignedCategory) {
+                    finalName = `@${assignedCategory}@ ${finalName}`;
                 }
             }
 
@@ -1043,7 +1325,7 @@ class HaShoppingListImproved extends HTMLElement {
         if (!this._entity) return;
 
         const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", item.name);
-        if (!confirm(msgRemove)) return;
+		if (!(await this.confirmPopup(msgRemove))) return;
 
         try {
             const msg = {
@@ -1069,8 +1351,9 @@ class HaShoppingListImproved extends HTMLElement {
     async _clearCompleted() {
         if (!this._entity) return;
 
-        const msgConfirm = translate("editor.labels.confirm_clear_completed");
-        if (!confirm(msgConfirm)) return;
+        const msgConfirm = translate("editor.labels.confirm_clear_done");
+        //if (!confirmPopup(msgConfirm)) return;
+		if (!(await this.confirmPopup(msgConfirm))) return;
 
         try {
             const msg = {
@@ -1087,6 +1370,105 @@ class HaShoppingListImproved extends HTMLElement {
         } catch (err) {
             console.error("[ha-shopping-list-improved] Clear completed failed", err);
         }
+    }
+	
+    async confirmPopup(message, okOnly = false) {
+        return new Promise((resolve) => {
+            // Overlay
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'auto';
+
+            // Popup-Box
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.padding = '16px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.maxWidth = '320px';
+            popup.style.textAlign = 'center';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.pointerEvents = 'auto';
+
+            // Message
+            const msg = document.createElement('p');
+            msg.textContent = message;
+            msg.style.marginBottom = '16px';
+
+            // Buttons
+            const btnContainer = document.createElement('div');
+            btnContainer.style.display = 'flex';
+            btnContainer.style.justifyContent = 'center';
+            btnContainer.style.gap = '12px';
+
+            if (okOnly) {
+                const okBtn = document.createElement('button');
+                okBtn.textContent = translate("ui.common.ok");
+                okBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+                okBtn.style.color = 'white';
+                okBtn.style.border = 'none';
+                okBtn.style.padding = '8px 16px';
+                okBtn.style.borderRadius = '4px';
+                okBtn.style.cursor = 'pointer';
+                okBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(true);
+                });
+                btnContainer.appendChild(okBtn);
+            } else {
+                const yesBtn = document.createElement('button');
+                yesBtn.textContent = translate("ui.common.yes");
+                yesBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+                yesBtn.style.color = 'white';
+                yesBtn.style.border = 'none';
+                yesBtn.style.padding = '8px 16px';
+                yesBtn.style.borderRadius = '4px';
+                yesBtn.style.cursor = 'pointer';
+
+                const noBtn = document.createElement('button');
+                noBtn.textContent = translate("ui.common.no");
+                noBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+                noBtn.style.border = 'none';
+                noBtn.style.padding = '8px 16px';
+                noBtn.style.borderRadius = '4px';
+                noBtn.style.cursor = 'pointer';
+
+                yesBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(true);
+                });
+                noBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(false);
+                });
+
+                btnContainer.appendChild(yesBtn);
+                btnContainer.appendChild(noBtn);
+
+                // ckick on background closes with "No"
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        document.body.removeChild(overlay);
+                        resolve(false);
+                    }
+                });
+            }
+
+            popup.appendChild(msg);
+            popup.appendChild(btnContainer);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
     }
 
 	_renderHistory() {
@@ -1152,8 +1534,24 @@ class HaShoppingListImproved extends HTMLElement {
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
             } else {
                 let timer;
-                chip.addEventListener('mousedown', e => { timer = setTimeout(() => alert(translate("editor.labels.alert_cannot_delete_standard")), 5000); });
-                chip.addEventListener('touchstart', e => { timer = setTimeout(() => alert(translate("editor.labels.alert_cannot_delete_standard")), 5000); });
+				chip.addEventListener('mousedown', e => { 
+					timer = setTimeout(async () => {
+						await this.confirmPopup(
+							translate("editor.labels.alert_cannot_delete_standard"),
+							true
+						);
+					}, 5000); 
+				});
+
+				chip.addEventListener('touchstart', e => { 
+					timer = setTimeout(async () => {
+						await this.confirmPopup(
+							translate("editor.labels.alert_cannot_delete_standard"),
+							true
+						);
+					}, 5000); 
+				});
+
                 chip.addEventListener('mouseup', e => { clearTimeout(timer); });
                 chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
@@ -1163,9 +1561,9 @@ class HaShoppingListImproved extends HTMLElement {
         });
 	}
 
-    _removeHistoryItem(name){
+    async _removeHistoryItem(name){
         const msgHistory = translate("editor.labels.confirm_remove_history").replace("{item}", name);
-        if (!confirm(msgHistory)) return;
+		if (!(await this.confirmPopup(msgHistory))) return;
         const idx = this._previous.findIndex(x=> x.toLowerCase()===name.toLowerCase());
         if (idx!==-1){ 
             this._previous.splice(idx,1); 
@@ -1208,7 +1606,6 @@ class HaShoppingListImproved extends HTMLElement {
         this._renderHistory();
     }
     
-
 	// Wait that Home Assistant is firering the shopping_list_updated-Event
 	_waitForShoppingListUpdate(timeout = 1000) {
         return new Promise((resolve) => {
@@ -1241,4 +1638,3 @@ window.customCards.push({
 	preview: true, 
 	description: translate("card.description")
 });
-
