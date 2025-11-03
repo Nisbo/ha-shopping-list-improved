@@ -1047,10 +1047,20 @@ class HaShoppingListImproved extends HTMLElement {
                 : translate("ui.common.edit_item");
             label.style.marginBottom = '8px';
 
+            // Generate DisplayName with Quantity
+            const qty = this._getQuantity(currentName);
+
+            let displayName = this._getNameOnly(currentName);
+            if (qty > 1 || this._showQuantityOne) {
+                displayName = this._quantityPosition === "beginning"
+                    ? `${qty}× ${displayName}`
+                    : `${displayName} (${qty})`;
+            }
+
             // Input
             const input = document.createElement('input');
             input.type = 'text';
-            input.value = nameOnly;
+            input.value = displayName;
             input.style.width = '100%';
             input.style.padding = '6px 8px';
             input.style.marginBottom = '12px';
