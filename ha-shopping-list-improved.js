@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-2
+ * Version: 1.2.0-BETA-3
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -18,6 +18,15 @@ const TRANSLATIONS = {
 		"ui.common.edit_item"                  			: "Artikel bearbeiten",
         "ui.common.add_item"                  			: "Artikel hinzufügen",
         "ui.common.no_cat"                  			: "Keine",
+		"ui.common.delete"                  			: "Löschen",
+        "ui.common.sync_to_ha"                  		: "Änderungen an Home Assistant senden",
+        "ui.common.sync"                  		        : "Synchronisiere...",
+        "ui.common.sync_finished"                       : "Synchronisation abgeschlossen!",
+        "ui.common.sync_error"                          : "Fehler bei Synchronisation:",
+        "ui.common.sync_without_category"               : "Ohne Kategorie",
+        "ui.common.sync_offline_list"                   : "Offline-Einkaufsliste",
+        "ui.common.sync_created"                        : "erstellt am",
+        "ui.common.export"                              : "Exportieren",
 		
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
@@ -37,7 +46,6 @@ const TRANSLATIONS = {
 		"editor.labels.categories"                   	: "Kategorien",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
         
-
 		"editor.options.chips_position.auto"            : "Automatisch (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom"          : "Immer unten",
 		"editor.options.chips_position.right"           : "Immer rechts",
@@ -54,7 +62,6 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende der Kategorie anzeigen",
         "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
 		
-        
         "editor.labels.entity"                          : "To-Do-Liste",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
@@ -72,10 +79,14 @@ const TRANSLATIONS = {
         "editor.labels.chip_click"                      : "Verhalten beim Klick auf einen Chip",
         "editor.labels.show_quantity_box"               : "Anzahlfeld anzeigen",
         "editor.labels.show_submit_button"              : "Hinzufügen-Button anzeigen",
+        "editor.labels.show_export_button"              : "Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
+		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
+        "editor.labels.longlived_token"                 : "Langlebiger Zugriffstoken (für den Zugriff via Export-Datei)",
+        "editor.labels.external_url"                    : "(Externe) URL von Home Assistant (für den Zugriff via Export-Datei)",
 
         "editor.helpers.entity"                         : "Wenn keine To-Do-Liste ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
@@ -94,12 +105,16 @@ const TRANSLATIONS = {
         "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
         "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
         "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
+        "editor.helpers.show_export_button"             : "Zeigt den Export-Button unten an. Mit der Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
+		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht.",
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
-		"editor.helpers.categories"						: "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann."
+        "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
+        "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
+		"editor.helpers.categories"                     : "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Optional kann jede Kategorie ein icon (z.B. mdi:apple) und eine Hintergrundfarbe bgcolor (z.B. #247645) haben. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann."
     },
 
     en: {
@@ -112,6 +127,15 @@ const TRANSLATIONS = {
 		"ui.common.edit_item"							: "Edit item",
         "ui.common.add_item"                  			: "Add item",
         "ui.common.no_cat"                  			: "none",
+		"ui.common.delete"                  			: "Delete",
+        "ui.common.sync_to_ha"                          : "Send changes to Home Assistant",
+        "ui.common.sync"                                : "Synchronizing...",
+        "ui.common.sync_finished"                       : "Synchronization completed!",
+        "ui.common.sync_error"                          : "Error during synchronization:",
+        "ui.common.sync_without_category"               : "Without category",
+        "ui.common.sync_offline_list"                   : "Offline shopping list",
+        "ui.common.sync_created"                        : "created on",
+        "ui.common.export"                              : "Export",
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
@@ -164,10 +188,14 @@ const TRANSLATIONS = {
         "editor.labels.chip_click"                      : "Chip click behavior",
         "editor.labels.show_quantity_box"               : "Show quantity box",
         "editor.labels.show_submit_button"              : "Show add button",
+        "editor.labels.show_export_button"              : "Show Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
+		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
         "editor.labels.sub_text"                        : "Hint text below the input field",
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
+        "editor.labels.longlived_token"                 : "Long-Lived Access Token (for access via export file)",
+        "editor.labels.external_url"                    : "(External) URL of Home Assistant (for access via export file)",
 
         "editor.helpers.entity"                         : "If no To-Do list is selected, Home Assistant's default shopping list will be used automatically.",
 		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
@@ -186,13 +214,16 @@ const TRANSLATIONS = {
 		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
 		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
 		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
+        "editor.helpers.show_export_button"             : "Shows the Export button on the bottom. With the Export function, you can download the current todo list as an HTML file for offline use.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
+		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity.",
 		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
-		"editor.helpers.categories"                     : "With categories, you can automatically group items. Each category starts with - name: <category name> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Any item that matches one of the keywords will automatically be assigned to that category. When creating a new card, a default category template is added for guidance."
-
+        "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
+        "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
+		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference."
     }
 };
 
@@ -216,7 +247,7 @@ function translate(key) {
 }
 
 
-// Helper function: determine the default Shopping List entity
+// determine the default Shopping List entity
 function getDefaultShoppingListEntity(hass) {
     // Filter all todo-entities
     const todoEntities = Object.values(hass.states).filter(s => s.entity_id.startsWith("todo."));
@@ -252,8 +283,6 @@ class HaShoppingListImproved extends HTMLElement {
     set hass(hass) {
         this._hass = hass;
         this.render();
-        
-        //getDefaultShoppingListEntity(this._hass);
     }
     
 	setConfig(config){
@@ -269,6 +298,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._chipClick             = (config.chip_click === "dblclick") ? "dblclick" : "click";
         this._showQuantitySelection = (config.show_quantity_box === false) ? false : true;
         this._showSubmitButton      = (config.show_submit_button === false) ? false : true;
+		this._showPlusMinus      	= (config.show_plus_minus === false) ? false : true;
         this._showInputMask         = (config.show_input_mask === false) ? false : true;
         this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
@@ -278,11 +308,14 @@ class HaShoppingListImproved extends HTMLElement {
         this._listFontSize          = config.list_font_size || 14; // Standard: 14px
 		this._catFontSize           = config.cat_font_size  || 16; // Standard: 16px
         this._chipFontSize          = config.chip_font_size || 12; // Standard: 12px
-        this._chipColor             = config.chip_color     || "rgba(100,100,100,0.3)"; // Standardfarbe
+        this._chipColor             = config.chip_color     || "rgba(100,100,100,0.3)";
         this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
         this._chipMergeMode         = ["combined", "standard_first", "browser_first"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
+        this._showExportButton      = (config.show_export_button === true) ? true : false;
+        this._longLivedToken        = config.longlived_token || "";
+        this._externalUrl           = config.external_url || "";
 
         if (typeof config.highlight_words === "string") {
             this._highlightWords = config.highlight_words.split(/\s*[,;]\s*/).filter(c => c);
@@ -325,6 +358,8 @@ class HaShoppingListImproved extends HTMLElement {
 							},
 							{
 								name: "Category 2",
+                                icon: "mdi:apple",
+                                bgcolor: "#247645",
 								items: ["Item D", "Item E"]
 							}
 						]
@@ -438,6 +473,7 @@ class HaShoppingListImproved extends HTMLElement {
             { name: "show_quantity_box", selector: { boolean: {} }, default: true },
             { name: "show_submit_button", selector: { boolean: {} }, default: true },
             { name: "show_input_mask", selector: { boolean: {} }, default: true },
+			{ name: "show_plus_minus", selector: { boolean: {} }, default: true },
             { name: "show_quantity_one", selector: { boolean: {} }, default: false },
             { name: "sub_text", selector: { text: {} }, default: " "},
             { name: "show_cat_popup", selector: { boolean: {} }, default: true },
@@ -452,6 +488,17 @@ class HaShoppingListImproved extends HTMLElement {
                         }
                     }
                 }
+            },
+            { name: "show_export_button", selector: { boolean: {} }, default: false },
+            {
+                name: "longlived_token",
+                selector: { text: {} },
+                default: ""
+            },
+            {
+                name: "external_url",
+                selector: { text: {} },
+                default: ""
             }
             ],
 
@@ -508,7 +555,8 @@ class HaShoppingListImproved extends HTMLElement {
     disconnectedCallback() {
         window.removeEventListener('shopping_list_updated', this._eventListener);
     }
-    
+  
+/*  
     _parseCategories(categoriesArray) {
         const categories = [];
 
@@ -526,6 +574,30 @@ class HaShoppingListImproved extends HTMLElement {
 
         return categories;
     }
+*/
+
+    _parseCategories(categoriesArray) {
+        const categories = [];
+
+        for (const cat of categoriesArray) {
+            const name = cat.name || "(no category)";
+            const items = Array.isArray(cat.items) ? cat.items : [];
+            const icon = cat.icon || null;        // optional Icon
+            const bgcolor = cat.bgcolor || null;  // optional bgcolor
+
+            if(debugMode) console.log(`Category ${name}: ${items.length ? items.join(", ") : "(empty)"}, icon: ${icon}, bgcolor: ${bgcolor}`);
+
+            categories.push({
+                name,
+                items,
+                icon,
+                bgcolor
+            });
+        }
+
+        return categories;
+    }
+
 
     _renderSkeleton() {
         const style = document.createElement('style');
@@ -676,6 +748,7 @@ class HaShoppingListImproved extends HTMLElement {
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                    ${this._showExportButton ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
                     <button id="clearBtn">${translate("editor.labels.clear_button")}</button>
                 </div>
             </div>
@@ -686,6 +759,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
         this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
+        if (this._showExportButton) this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
 
         this._listEl = this._shadow.getElementById('list');
         this._historyEl = this._shadow.getElementById('history');
@@ -788,18 +862,23 @@ class HaShoppingListImproved extends HTMLElement {
             const nameOnly = this._getNameOnly(i.name);
             const categoryFromName = this._getCategory(i.name);
 
+            // Explizit @none@ as uncategorized
+            if (categoryFromName && categoryFromName.toLowerCase() === 'none') return true;
+
+            // Category in name found -> not uncategorized
             if (categoryFromName) return false;
 
+            // Check if in any category config
             return !this._categories.some(c => 
                 c.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())
             );
         });
 
-
         if (uncategorized.length) {
             uncategorized.forEach(item => this._renderItem(item, this._listEl));
         }
 
+        /*
         // Articles with category
         this._categories.forEach(cat => {
             const catItems = itemsToRender.filter(i => {
@@ -822,6 +901,60 @@ class HaShoppingListImproved extends HTMLElement {
                 catItems.forEach(item => this._renderItem(item, this._listEl));
             }
         });
+		*/
+
+        // Articles with category
+        this._categories.forEach(cat => {
+            const catItems = itemsToRender.filter(i => {
+                const nameOnly = this._getNameOnly(i.name);
+                const explicitCategory = this._getCategory(i.name);
+
+                if (explicitCategory) {
+                    return explicitCategory.toLowerCase() === cat.name.toLowerCase();
+                }
+
+                return cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase());
+            });
+
+            if (catItems.length) {
+                const liCat = document.createElement('li');
+                liCat.classList.add('category-header');
+                liCat.style.padding = '4px 8px';
+                liCat.style.borderRadius = '4px';
+                if (cat.bgcolor) liCat.style.backgroundColor = cat.bgcolor;
+                // ggf: liCat.style.color = cat.textcolor || (cat.bgcolor ? 'white' : 'var(--primary-text-color)');
+
+                // Container for Icon + Text
+                const container = document.createElement('div');
+                container.style.display = 'inline-flex';
+                container.style.alignItems = 'center';
+                container.style.gap = '6px';
+
+                // Icon
+                if (cat.icon) {
+                    const iconEl = document.createElement('ha-icon');
+                    iconEl.setAttribute('icon', cat.icon);
+                    iconEl.style.width = `${this._catFontSize}px`;
+                    iconEl.style.height = `${this._catFontSize}px`;
+                    iconEl.style.display = 'inline-flex';
+                    iconEl.style.alignItems = 'center';
+                    iconEl.style.justifyContent = 'center';
+                    iconEl.style.flexShrink = '0';
+                    container.appendChild(iconEl);
+                }
+
+                // Text
+                const textEl = document.createElement('span');
+                textEl.textContent = cat.name;
+                container.appendChild(textEl);
+
+                liCat.appendChild(container);
+                this._listEl.appendChild(liCat);
+
+                catItems.forEach(item => this._renderItem(item, this._listEl, cat));
+            }
+        });
+
     }
 
     // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
@@ -845,14 +978,39 @@ class HaShoppingListImproved extends HTMLElement {
         return n.trim();
     }
 
+    // Edit PopUp for adding/editing items with category selection
     async editItemPopup(currentName, mode = "edit") {
         return new Promise((resolve) => {
             let currentCategory = null;
             let nameOnly = currentName;
-            const catMatch = currentName.match(/^@([^@]+)@\s*(.*)/);
-            if (catMatch) {
-                currentCategory = catMatch[1];
-                nameOnly = catMatch[2];
+
+            // 1. Check if an explicit category is present in the name
+            const extractedCategory = this._getCategory(currentName);
+            if (extractedCategory) {
+                currentCategory = extractedCategory;
+                nameOnly = this._getNameOnly(currentName);
+            }
+
+            // 2. If no explicit category, check if the item is assigned to a config category
+            if (!currentCategory) {
+                const normalizedName = this._getNameOnly(nameOnly).toLowerCase();
+
+                for (const cat of this._categories) {
+                    const match = cat.items.some(catItem => {
+                        const normalizedItem = this._getNameOnly(catItem).toLowerCase();
+                        return normalizedItem === normalizedName;
+                    });
+
+                    if (match) {
+                        currentCategory = cat.name;
+                        break;
+                    }
+                }
+            }
+
+            // 3. If still no category, set to "none"
+            if (!currentCategory) {
+                currentCategory = "none";
             }
 
             // Overlay
@@ -869,7 +1027,7 @@ class HaShoppingListImproved extends HTMLElement {
             overlay.style.zIndex = '9999';
             overlay.style.pointerEvents = 'auto';
 
-            // Popup-Box
+            // Popup
             const popup = document.createElement('div');
             popup.style.background = 'var(--card-background-color, white)';
             popup.style.padding = '16px';
@@ -910,58 +1068,159 @@ class HaShoppingListImproved extends HTMLElement {
 
             let selectedCategory = currentCategory;
 
-            function createChip(name, isSelected, onClick) {
+            function createStyledChip(label, isSelected, bgColor, icon, onClick) {
+                // Wrapper for Chip + Underline
+                const chipWrapper = document.createElement('div');
+                chipWrapper.style.display = 'flex';
+                chipWrapper.style.flexDirection = 'column';
+                chipWrapper.style.alignItems = 'center';
+                chipWrapper.style.cursor = 'pointer';
+
+                // Chip
                 const chip = document.createElement('div');
-                chip.textContent = name;
-                chip.style.padding = '4px 12px';
+                chip.style.display = 'inline-flex';
+                chip.style.alignItems = 'center';
+                chip.style.justifyContent = 'center';
+                chip.style.padding = '4px 10px';
                 chip.style.borderRadius = '16px';
-                chip.style.cursor = 'pointer';
-                chip.style.userSelect = 'none';
                 chip.style.fontSize = '13px';
                 chip.style.border = '1px solid var(--divider-color, #ccc)';
-                chip.style.background = isSelected ? 'var(--primary-color)' : 'var(--secondary-background-color)';
-                chip.style.color = isSelected ? 'white' : 'var(--primary-text-color)';
-                chip.addEventListener('click', () => onClick(chip));
-                chip.addEventListener('mouseenter', () => chip.style.opacity = 0.85);
-                chip.addEventListener('mouseleave', () => chip.style.opacity = 1);
-                return chip;
+                chip.style.background = bgColor || 'var(--secondary-background-color)';
+                chip.style.color = 'var(--primary-text-color)';
+                chip.style.gap = '6px';
+                chip.style.lineHeight = '1.2';
+                chip.style.minHeight = '24px';
+                chip.style.boxSizing = 'border-box';
+
+                // Icon
+                if (icon) {
+                    const iconEl = document.createElement('ha-icon');
+                    iconEl.setAttribute('icon', icon);
+                    iconEl.style.width = '14px';
+                    iconEl.style.height = '14px';
+                    iconEl.style.display = 'inline-flex';
+                    iconEl.style.alignItems = 'center';
+                    iconEl.style.justifyContent = 'center';
+                    iconEl.style.flexShrink = '0';
+                    chip.appendChild(iconEl);
+                }
+
+                // Text
+                const textEl = document.createElement('span');
+                textEl.textContent = label;
+                chip.appendChild(textEl);
+
+                // "deeper" selected" Chip
+                if (isSelected) {
+                    chip.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.4)';
+                    chip.style.transform = 'translateY(1px)';
+                    chip.style.color = 'white';
+                }
+
+                // Unterlinie
+                const underline = document.createElement('div');
+                underline.className = 'chip-underline';
+                underline.style.height = '1px';
+                underline.style.width = '80%';
+                underline.style.marginTop = '5px';
+                underline.style.background = isSelected ? (bgColor || 'var(--primary-color)') : 'transparent';
+                underline.style.borderRadius = '2px';
+
+                chipWrapper.appendChild(chip);
+                chipWrapper.appendChild(underline);
+
+                // Click handler
+                chipWrapper.addEventListener('click', () => onClick(chipWrapper));
+
+                chipWrapper._chip = chip;
+                chipWrapper._underline = underline;
+
+                return chipWrapper;
             }
 
-            const noCatChip = createChip(translate("ui.common.no_cat"), selectedCategory === null, (chipEl) => {
-                selectedCategory = null;
-                Array.from(catContainer.children).forEach(c => {
-                    c.style.background = (c === chipEl) ? 'var(--primary-color)' : 'var(--secondary-background-color)';
-                    c.style.color = (c === chipEl) ? 'white' : 'var(--primary-text-color)';
-                });
-            });
-            catContainer.appendChild(noCatChip);
+            // No Category Chip
+            const noCatChipWrapper = createStyledChip(
+                translate("ui.common.no_cat"),
+                selectedCategory === "none",
+                'var(--secondary-background-color)',
+                null,
+                (wrapperEl) => {
+                    selectedCategory = "none";
 
-            // Categorie-Chips from Config
-            this._categories.forEach(cat => {
-                const chip = createChip(cat.name, cat.name === selectedCategory, (chipEl) => {
-                    selectedCategory = cat.name;
+                    // reset all chips
                     Array.from(catContainer.children).forEach(c => {
-                        c.style.background = (c === chipEl) ? 'var(--primary-color)' : 'var(--secondary-background-color)';
-                        c.style.color = (c === chipEl) ? 'white' : 'var(--primary-text-color)';
+                        c._chip.style.background = c._chip.dataset.bgcolor || 'var(--secondary-background-color)';
+                        c._chip.style.boxShadow = 'none';
+                        c._chip.style.transform = 'translateY(0)';
+                        c._chip.style.color = 'var(--primary-text-color)';
+                        c._underline.style.background = 'transparent';
                     });
-                });
-                catContainer.appendChild(chip);
-            });
 
-            // Buttons
+                    // select current no category chip
+                    wrapperEl._chip.style.background = 'var(--secondary-background-color)';
+                    wrapperEl._chip.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.4)';
+                    wrapperEl._chip.style.transform = 'translateY(1px)';
+                    wrapperEl._chip.style.color = 'white';
+                    wrapperEl._underline.style.background = 'var(--secondary-background-color)';
+                }
+            );
+
+            noCatChipWrapper._chip.dataset.bgcolor = 'var(--secondary-background-color)';
+            catContainer.appendChild(noCatChipWrapper);
+
+            // Category Chips from Config
+            this._categories
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }))
+                .forEach(cat => {
+                    const chipWrapper = createStyledChip(
+                        cat.name,
+                        cat.name === selectedCategory,
+                        cat.bgcolor,
+                        cat.icon,
+                        (wrapperEl) => {
+                            // reset all chips
+                            Array.from(catContainer.children).forEach(c => {
+                                const cBg = c._chip.dataset.bgcolor || 'var(--secondary-background-color)';
+                                c._chip.style.background = cBg;
+                                c._chip.style.boxShadow = 'none';
+                                c._chip.style.transform = 'translateY(0)';
+                                c._chip.style.color = 'var(--primary-text-color)';
+                                c._underline.style.background = 'transparent';
+                            });
+
+                            // select current chip
+                            selectedCategory = cat.name;
+                            wrapperEl._chip.style.background = cat.bgcolor || 'var(--secondary-background-color)';
+                            wrapperEl._chip.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.4)';
+                            wrapperEl._chip.style.transform = 'translateY(1px)';
+                            wrapperEl._chip.style.color = 'white';
+                            wrapperEl._underline.style.background = cat.bgcolor || 'var(--primary-color)';
+                        }
+                    );
+
+                    chipWrapper._chip.dataset.bgcolor = cat.bgcolor || '';
+                    catContainer.appendChild(chipWrapper);
+                });
+
+            // Buttons container
             const btnContainer = document.createElement('div');
             btnContainer.style.display = 'flex';
-            btnContainer.style.justifyContent = 'flex-end';
+            btnContainer.style.alignItems = 'center';
             btnContainer.style.gap = '12px';
+            btnContainer.style.width = '100%';
+            btnContainer.style.marginTop = '8px';
 
-            const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = translate("ui.common.cancel");
-            cancelBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
-            cancelBtn.style.border = 'none';
-            cancelBtn.style.padding = '6px 12px';
-            cancelBtn.style.borderRadius = '4px';
-            cancelBtn.style.cursor = 'pointer';
+            const leftButtons = document.createElement('div');
+            leftButtons.style.display = 'flex';
+            leftButtons.style.gap = '12px';
+            leftButtons.style.alignItems = 'center';
 
+            const rightArea = document.createElement('div');
+            rightArea.style.display = 'flex';
+            rightArea.style.alignItems = 'center';
+
+            // OK and Cancel Buttons
             const okBtn = document.createElement('button');
             okBtn.textContent = translate("ui.common.ok");
             okBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
@@ -971,9 +1230,43 @@ class HaShoppingListImproved extends HTMLElement {
             okBtn.style.borderRadius = '4px';
             okBtn.style.cursor = 'pointer';
 
-            btnContainer.appendChild(okBtn);
-            btnContainer.appendChild(cancelBtn);
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = translate("ui.common.cancel");
+            cancelBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+            cancelBtn.style.border = 'none';
+            cancelBtn.style.padding = '6px 12px';
+            cancelBtn.style.borderRadius = '4px';
+            cancelBtn.style.cursor = 'pointer';
 
+            leftButtons.appendChild(okBtn);
+            leftButtons.appendChild(cancelBtn);
+
+            // Delete Button only in edit mode
+            if (mode === "edit") {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = translate("ui.common.delete");
+                deleteBtn.style.backgroundColor = '#c62828';
+                deleteBtn.style.color = 'white';
+                deleteBtn.style.border = 'none';
+                deleteBtn.style.padding = '6px 12px';
+                deleteBtn.style.borderRadius = '4px';
+                deleteBtn.style.cursor = 'pointer';
+
+                deleteBtn.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve("__DELETE__");
+                });
+
+                btnContainer.style.justifyContent = 'space-between';
+                btnContainer.appendChild(leftButtons);
+                rightArea.appendChild(deleteBtn);
+                btnContainer.appendChild(rightArea);
+            } else {
+                btnContainer.style.justifyContent = 'flex-end';
+                btnContainer.appendChild(leftButtons);
+            }
+
+            // Combine all
             popup.appendChild(label);
             popup.appendChild(input);
             popup.appendChild(catContainer);
@@ -981,7 +1274,7 @@ class HaShoppingListImproved extends HTMLElement {
             overlay.appendChild(popup);
             document.body.appendChild(overlay);
 
-            // click on background = cancel
+            // Click outside = cancel
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
                     document.body.removeChild(overlay);
@@ -1047,24 +1340,29 @@ class HaShoppingListImproved extends HTMLElement {
         }
 
         nameSpan.textContent = displayName;
+		nameSpan.addEventListener('dblclick', async () => {
+			const newName = await this.editItemPopup(item.name, "edit");
+			if (!newName || newName === item.name) return;
 
-        nameSpan.addEventListener('dblclick', async () => {
-            const newName = await this.editItemPopup(item.name);
-            if (!newName || newName === item.name) return;
+			// check if delete button was pressed
+			if (newName === "__DELETE__") {
+				await this._removeItem(item);
+				return;
+			}
 
-            try {
-                await this._hass.connection.sendMessagePromise({
-                    type: "call_service",
-                    domain: "todo",
-                    service: "update_item",
-                    target: { entity_id: this._entity },
-                    service_data: { item: item.id, rename: newName }
-                });
-                await this._refresh();
-            } catch (err) {
-                console.error('[ha-shopping-list-improved] Unable to rename item:', err);
-            }
-        });
+			try {
+				await this._hass.connection.sendMessagePromise({
+					type: "call_service",
+					domain: "todo",
+					service: "update_item",
+					target: { entity_id: this._entity },
+					service_data: { item: item.id, rename: newName }
+				});
+				await this._refresh();
+			} catch (err) {
+				console.error('[ha-shopping-list-improved] Unable to rename item:', err);
+			}
+		});
 
         left.appendChild(completeBtn);
         left.appendChild(nameSpan);
@@ -1146,7 +1444,6 @@ class HaShoppingListImproved extends HTMLElement {
                             : `${nameOnly} (${newQty})`)
                         : nameOnly;
 
-                    // Kategorie wieder einfügen
                     if (category) {
                         formattedName = `@${category}@ ${formattedName}`;
                     }
@@ -1169,9 +1466,11 @@ class HaShoppingListImproved extends HTMLElement {
             minusBtn._processing = false;
         });
 
-        actions.appendChild(plusBtn);
-        actions.appendChild(minusBtn);
-
+		if (this._showPlusMinus){
+				actions.appendChild(plusBtn);
+				actions.appendChild(minusBtn);
+		}
+		
         li.appendChild(left);
         li.appendChild(actions);
         parentEl.appendChild(li);
@@ -1196,15 +1495,36 @@ class HaShoppingListImproved extends HTMLElement {
 
             const nameOnly = this._getNameOnly(inputName);
 
+            // Check if the item already exists
             const existing = this._items.find(i => this._getNameOnly(i.name).toLowerCase() === nameOnly.toLowerCase());
 
             let assignedCategory = null;
-            this._categories.forEach(cat => {
-                if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
-                    assignedCategory = cat.name;
-                }
-            });
 
+            // 1. If the item exists, keep its current category
+            if (existing) {
+                const existingCat = this._getCategory(existing.name);
+                if (existingCat) {
+                    assignedCategory = existingCat;
+                }
+            }
+
+            // 2. If there is an explicit category in the input, use it
+            const explicitCategory = this._getCategory(inputName);
+            if (explicitCategory) {
+                assignedCategory = explicitCategory;
+            }
+
+            // 3. Only if no category is set yet, take the config category
+            if (!assignedCategory) { // <-- only check for null, 'none' remains
+                for (const cat of this._categories) {
+                    if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
+                        assignedCategory = cat.name;
+                        break; // only the first matching category
+                    }
+                }
+            }
+
+            // 4. If still no category and popup enabled, ask the user
             if (!existing && !assignedCategory && this._showCatPopUp) {
                 const result = await this.editItemPopup(inputName, "add");
                 if (!result) {
@@ -1215,80 +1535,77 @@ class HaShoppingListImproved extends HTMLElement {
                 assignedCategory = this._getCategory(result);
             }
 
-            let finalName = inputName;
+			let finalName = inputName;
 
-            if (existing) {
-                if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
+			if (existing) {
+				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
 
-                let currentQty = this._getQuantity(existing.name) || 1;
-                const newQty = currentQty + inputQty;
-                const showQty = newQty > 1 || this._showQuantityOne;
+				let currentQty = this._getQuantity(existing.name) || 1;
+				const newQty = currentQty + inputQty;
+				const showQty = newQty > 1 || this._showQuantityOne;
 
-                if (showQty) {
-                    if (quantityPosition === "beginning") {
-                        finalName = `${newQty}× ${inputName}`;
-                    } else {
-                        finalName = `${inputName} (${newQty})`;
-                    }
-                } else {
-                    finalName = inputName;
-                }
+				if (showQty) {
+					if (quantityPosition === "beginning") {
+						finalName = `${newQty}× ${inputName}`;
+					} else {
+						finalName = `${inputName} (${newQty})`;
+					}
+				} else {
+					finalName = inputName;
+				}
 
-                if (assignedCategory) {
-                    finalName = `@${assignedCategory}@ ${finalName}`;
-                } else {
-                    const existingCat = this._getCategory(existing.name);
-                    if (existingCat) finalName = `@${existingCat}@ ${finalName}`;
-                }
+				const existingCat = this._getCategory(existing.name);
+				const effectiveCat = assignedCategory || existingCat;
+				if (effectiveCat) finalName = `@${effectiveCat}@ ${finalName}`;
 
-                // Remove old item
-                try {
-                    const removeMsg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "remove_item",
-                        target: { entity_id: this._entity },
-                        service_data: { item: existing.id }
-                    };
-                    if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Removing old item WS message:", removeMsg);
-                    await this._hass.connection.sendMessagePromise(removeMsg);
-                } catch (err) {
-                    console.error("[ha-shopping-list-improved] Error while removing:", err);
-                }
-            } else {
-                // New Item
-                if (inputQty > 1 || this._showQuantityOne) {
-                    if (quantityPosition === "beginning") {
-                        finalName = `${inputQty}× ${inputName}`;
-                    } else {
-                        finalName = `${inputName} (${inputQty})`;
-                    }
-                }
-                if (assignedCategory) {
-                    finalName = `@${assignedCategory}@ ${finalName}`;
-                }
-            }
+				try {
+					const updateMsg = {
+						type: "call_service",
+						domain: "todo",
+						service: "update_item",
+						target: { entity_id: this._entity },
+						service_data: {
+							item: existing.id,
+							rename: finalName,
+						},
+					};
+					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Updating existing item:", updateMsg);
+					await this._hass.connection.sendMessagePromise(updateMsg);
+				} catch (err) {
+					console.error("[ha-shopping-list-improved] Error while updating item:", err);
+				}
+			} else {
+				// New Item
+				if (inputQty > 1 || this._showQuantityOne) {
+					if (quantityPosition === "beginning") {
+						finalName = `${inputQty}× ${inputName}`;
+					} else {
+						finalName = `${inputName} (${inputQty})`;
+					}
+				}
+				if (assignedCategory) {
+					finalName = `@${assignedCategory}@ ${finalName}`;
+				}
 
-            // Add new/updated Item
-            try {
-                const addMsg = {
-                    type: "call_service",
-                    domain: "todo",
-                    service: "add_item",
-                    target: { entity_id: this._entity },
-                    service_data: { item: finalName }
-                };
-                if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
-                await this._hass.connection.sendMessagePromise(addMsg);
+				try {
+					const addMsg = {
+						type: "call_service",
+						domain: "todo",
+						service: "add_item",
+						target: { entity_id: this._entity },
+						service_data: { item: finalName },
+					};
+					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
+					await this._hass.connection.sendMessagePromise(addMsg);
+				} catch (err) {
+					console.error("[ha-shopping-list-improved] Unable to add:", err);
+				}
+			}
 
-                this._addToHistory(inputName);
-                this._inputEl.value = '';
-                this._qtyEl.value = '';
-                await this._refresh();
-            } catch (err) {
-                console.error("[ha-shopping-list-improved] Unable to add:", err);
-            }
-
+			this._addToHistory(inputName);
+			this._inputEl.value = '';
+			this._qtyEl.value = '';
+			await this._refresh();
         } finally {
             this._addingBusy = false;
         }
@@ -1324,7 +1641,9 @@ class HaShoppingListImproved extends HTMLElement {
     async _removeItem(item) {
         if (!this._entity) return;
 
-        const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", item.name);
+		const itemNameOnly = this._getNameOnly(item.name);
+		const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
+    
 		if (!(await this.confirmPopup(msgRemove))) return;
 
         try {
@@ -1352,7 +1671,6 @@ class HaShoppingListImproved extends HTMLElement {
         if (!this._entity) return;
 
         const msgConfirm = translate("editor.labels.confirm_clear_done");
-        //if (!confirmPopup(msgConfirm)) return;
 		if (!(await this.confirmPopup(msgConfirm))) return;
 
         try {
@@ -1497,7 +1815,7 @@ class HaShoppingListImproved extends HTMLElement {
                 break;
         }
 
-        combined.slice(0, 400).forEach(chipText => {
+        combined.forEach(chipText => {
             const chip = document.createElement('div');
             chip.className = 'chip';
             chip.textContent = chipText;
@@ -1572,6 +1890,287 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
     
+    // Export function
+    _exportOfflineList() {
+        const now = new Date();
+        const formattedDate = now.toLocaleString();
+
+        const categories = this._categories || [];
+        const items = this._items || [];
+
+        const entityId = this._entity || "default_list";
+
+        const exportTimestamp = now.toISOString();
+
+        const STORAGE_KEY = `offlineShoppingListStatus_${entityId}`;
+        const STORAGE_TIMESTAMP_KEY = `offlineShoppingListTimestamp_${entityId}`;
+
+        let baseUrl = this._externalUrl ? this._externalUrl.trim().replace(/\/$/, "") : window.location.origin;
+
+        if (!/^https?:\/\//i.test(baseUrl)) {
+            baseUrl = "http://" + baseUrl;
+        }
+
+        const token = this._longLivedToken || "";
+
+        const itemsByCat = {};
+        for (const item of items) {
+            const name = this._getNameOnly(item.name);
+            const cat = this._getCategory(item.name) || item.category || "none";
+            const quantity = this._getQuantity(item.name);
+            const uid = item.id || null;
+
+            if (!itemsByCat[cat]) itemsByCat[cat] = [];
+            itemsByCat[cat].push({
+                name,
+                complete: item.complete,
+                quantity,
+                uid
+            });
+        }
+
+        const allCats = [...categories.map(c => c.name), "none"];
+
+        let html = `
+            <!DOCTYPE html>
+            <html lang="de">
+            <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>${translate("ui.common.sync_offline_list")} - ${entityId}</title>
+            <style>
+                body {
+                    font-family: "Roboto", sans-serif;
+                    background: #f5f5f5;
+                    margin: 0;
+                    padding: 16px;
+                }
+                h1 {
+                    text-align: center;
+                    font-size: 20px;
+                    margin-bottom: 8px;
+                    color: #333;
+                }
+                h4 {
+                    text-align: center;
+                    font-size: 12px;
+                    margin-bottom: 8px;
+                    color: #333;
+                }
+                #sync-button {
+                    display: block;
+                    margin: 0 auto 16px auto;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    background-color: #0078d7;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                }
+                #sync-button:disabled {
+                    background-color: #999;
+                    cursor: not-allowed;
+                }
+                .category {
+                    background: white;
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 12px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .category-title {
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .item {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 4px 0;
+                }
+                input[type="checkbox"] {
+                    width: 18px;
+                    height: 18px;
+                }
+            </style>
+            </head>
+            <body>
+            <h1>${translate("ui.common.sync_offline_list")}</h1>
+            <h4>${entityId}</h4>
+            <h4>${translate("ui.common.sync_created")} ${formattedDate}</h4>
+            <button id="sync-button">${translate("ui.common.sync_to_ha")}</button>
+            `;
+
+    for (const catName of allCats) {
+        const catItems = itemsByCat[catName];
+        if (!catItems || catItems.length === 0) continue;
+
+        const catCfg = categories.find(c => c.name === catName);
+        const icon = ""; //catCfg?.icon ? `<ha-icon icon="${catCfg.icon}" style="width:16px;height:16px;"></ha-icon>` : "";
+        const color = catCfg?.bgcolor || "#ccc";
+
+        html += `
+        <div class="category">
+            <div class="category-title" style="color:${color};">
+                ${icon}${catName === "none" ? translate("ui.common.sync_without_category") : catName}
+            </div>
+        `;
+
+        for (const it of catItems) {
+            const showQty = it.quantity > 1 || this._showQuantityOne;
+            let nameText = it.name;
+            if (showQty) {
+                if (this._quantityPosition === "beginning") {
+                    nameText = `${it.quantity}× ${it.name}`;
+                } else {
+                    nameText = `${it.name} (${it.quantity})`;
+                }
+            }
+
+            html += `
+            <div class="item" title="UUID: ${it.uid || 'n/a'}" data-uid="${it.uid || ''}">
+                <input type="checkbox" data-complete="${it.complete}" ${it.complete ? "checked" : ""}>
+                <span>${nameText}</span>
+            </div>`;
+        }
+        html += `</div>`;
+    }
+
+    html += `
+        <script>
+        const EXPORT_TIMESTAMP = "${exportTimestamp}";
+        const STORAGE_KEY = "${STORAGE_KEY}";
+        const STORAGE_TIMESTAMP_KEY = "${STORAGE_TIMESTAMP_KEY}";
+
+        const HA_BASE_URL = "${baseUrl}";
+        const HA_ENTITY_ID = "${entityId}";
+        const HA_TOKEN = "${token}";
+
+        const savedTimestamp = localStorage.getItem(STORAGE_TIMESTAMP_KEY);
+        let savedStatus = {};
+
+        if (savedTimestamp !== EXPORT_TIMESTAMP) {
+            localStorage.removeItem(STORAGE_KEY);
+            savedStatus = {};
+            localStorage.setItem(STORAGE_TIMESTAMP_KEY, EXPORT_TIMESTAMP);
+        } else {
+            savedStatus = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        }
+
+        const checkboxes = document.querySelectorAll("input[type='checkbox']");
+        checkboxes.forEach((cb, idx) => {
+            if (savedStatus.hasOwnProperty(idx)) {
+            cb.checked = savedStatus[idx];
+            } else {
+            cb.checked = cb.getAttribute('data-complete') === "true";
+            }
+        });
+
+        checkboxes.forEach((cb, idx) => {
+            cb.addEventListener("change", () => {
+            savedStatus[idx] = cb.checked;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(savedStatus));
+            });
+        });
+
+        // WebSocket to HA
+        async function sendToggle(uid, status) {
+            return new Promise((resolve, reject) => {
+            if (!uid) {
+                reject("No UID for Item");
+                return;
+            }
+
+            const wsUrl = HA_BASE_URL.replace(/^http/, 'ws') + "/api/websocket";
+            const socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => {
+                socket.send(JSON.stringify({ type: "auth", access_token: HA_TOKEN }));
+            };
+
+            socket.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+
+                if (msg.type === "auth_ok") {
+                const newStatus = status ? "completed" : "needs_action";
+
+                const serviceCall = {
+                    id: 1,
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: HA_ENTITY_ID },
+                    service_data: {
+                    item: uid,
+                    status: newStatus
+                    }
+                };
+                socket.send(JSON.stringify(serviceCall));
+                } else if (msg.type === "result") {
+                if (msg.success) {
+                    socket.close();
+                    resolve();
+                } else {
+                    socket.close();
+                    reject(msg.error?.message || "Service call failed");
+                }
+                } else if (msg.type === "auth_invalid") {
+                socket.close();
+                reject("Auth failed");
+                }
+            };
+
+            socket.onerror = (err) => {
+                reject("WebSocket Error: " + err.message);
+            };
+
+            socket.onclose = (ev) => {
+                if (!ev.wasClean) {
+                reject("WebSocket closed unexpectedly");
+                }
+            };
+            });
+        }
+
+        // Sync Button
+        const syncBtn = document.getElementById("sync-button");
+        syncBtn.addEventListener("click", async () => {
+            syncBtn.disabled = true;
+            syncBtn.textContent = "${translate("ui.common.sync_to_ha")}";
+
+            try {
+            for (let i = 0; i < checkboxes.length; i++) {
+                const cb = checkboxes[i];
+                const itemDiv = cb.closest(".item");
+                const uid = itemDiv.getAttribute("data-uid");
+                await sendToggle(uid, cb.checked);
+            }
+            alert("${translate("ui.common.sync_finished")}");
+            } catch (e) {
+            alert("${translate("ui.common.sync_error")} " + e);
+            } finally {
+            syncBtn.disabled = false;
+            syncBtn.textContent = "${translate("ui.common.sync_to_ha")}";
+            }
+        });
+        </script>
+        </body>
+        </html>`;
+
+        const blob = new Blob([html], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `shopping-list-offline-${entityId}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+
     // Local storage key for History, unique per to-do list
     _storageKey() {
         const entityId = this._entity || "default";
@@ -1588,7 +2187,7 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _saveHistory(){ 
-        try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,200))); }catch(e){} 
+        try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){} 
     }
 
     _addToHistory(name){
@@ -1601,7 +2200,7 @@ class HaShoppingListImproved extends HTMLElement {
         const idx = this._previous.findIndex(x=> x.toLowerCase() === name.toLowerCase());
         if(idx!==-1) this._previous.splice(idx,1);
         this._previous.unshift(name);
-        this._previous = this._previous.slice(0,200);
+        this._previous = this._previous.slice(0,2000);
         this._saveHistory();
         this._renderHistory();
     }
