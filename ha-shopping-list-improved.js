@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-3
+ * Version: 1.2.0-BETA-4
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -26,7 +26,8 @@ const TRANSLATIONS = {
         "ui.common.sync_without_category"               : "Ohne Kategorie",
         "ui.common.sync_offline_list"                   : "Offline-Einkaufsliste",
         "ui.common.sync_created"                        : "erstellt am",
-        "ui.common.export"                              : "Exportieren",
+        "ui.common.export"                              : "HTML Export",
+        "ui.common.export_pdf"                          : "PDF Export",
 		
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
@@ -44,6 +45,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_standard"                   : "Standard-Chip",
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
 		"editor.labels.categories"                   	: "Kategorien",
+        "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
         
 		"editor.options.chips_position.auto"            : "Automatisch (abhängig von Bildschirmgröße)",
@@ -79,7 +81,8 @@ const TRANSLATIONS = {
         "editor.labels.chip_click"                      : "Verhalten beim Klick auf einen Chip",
         "editor.labels.show_quantity_box"               : "Anzahlfeld anzeigen",
         "editor.labels.show_submit_button"              : "Hinzufügen-Button anzeigen",
-        "editor.labels.show_export_button"              : "Export-Button anzeigen",
+        "editor.labels.show_export_button_pdf"          : "PDF Export-Button anzeigen",
+        "editor.labels.show_export_button"              : "HTML Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
 		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
@@ -105,12 +108,14 @@ const TRANSLATIONS = {
         "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
         "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
         "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
-        "editor.helpers.show_export_button"             : "Zeigt den Export-Button unten an. Mit der Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
+        "editor.helpers.show_export_button_pdf"         : "Zeigt den PDF Export-Button unten an. Mit der PDF-Export-Funktion kannst du die aktuelle Einkaufsliste als PDF-Datei herunterladen und offline verwenden.",
+        "editor.helpers.show_export_button"             : "Zeigt den HTML Export-Button unten an. Mit der HTML-Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
 		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht.",
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
+        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
@@ -135,7 +140,8 @@ const TRANSLATIONS = {
         "ui.common.sync_without_category"               : "Without category",
         "ui.common.sync_offline_list"                   : "Offline shopping list",
         "ui.common.sync_created"                        : "created on",
-        "ui.common.export"                              : "Export",
+        "ui.common.export"                              : "HTML Export",
+        "ui.common.export_pdf"                          : "PDF Export",
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
@@ -153,6 +159,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_standard"                   : "Standard chip",
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 		"editor.labels.categories"                   	: "Categories",
+        "editor.labels.show_cat_count"                  : "Show item count in categories ?  ",
         "editor.labels.show_cat_popup"                  : "Show Categoty PopUp?",
 
 		"editor.options.chips_position.auto"            : "Automatic (depends on screen size)",
@@ -188,7 +195,8 @@ const TRANSLATIONS = {
         "editor.labels.chip_click"                      : "Chip click behavior",
         "editor.labels.show_quantity_box"               : "Show quantity box",
         "editor.labels.show_submit_button"              : "Show add button",
-        "editor.labels.show_export_button"              : "Show Export button",
+        "editor.labels.show_export_button_pdf"          : "Show PDF Export button",
+        "editor.labels.show_export_button"              : "Show HTML Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
 		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
@@ -214,12 +222,14 @@ const TRANSLATIONS = {
 		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
 		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
 		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
-        "editor.helpers.show_export_button"             : "Shows the Export button on the bottom. With the Export function, you can download the current todo list as an HTML file for offline use.",
+        "editor.helpers.show_export_button_pdf"         : "Shows the PDF Export button on the bottom. With the PDF-Export function, you can download the current todo list as an PDF file for offline use.",
+        "editor.helpers.show_export_button"             : "Shows the HTML Export button on the bottom. With the HTML-Export function, you can download the current todo list as an HTML file for offline use.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
 		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity.",
 		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
+        "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
@@ -313,7 +323,9 @@ class HaShoppingListImproved extends HTMLElement {
         this._chipMergeMode         = ["combined", "standard_first", "browser_first"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
+        this._showCatCount          = (config.show_cat_count === false) ? false : true;
         this._showExportButton      = (config.show_export_button === true) ? true : false;
+        this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._longLivedToken        = config.longlived_token || "";
         this._externalUrl           = config.external_url || "";
 
@@ -477,6 +489,7 @@ class HaShoppingListImproved extends HTMLElement {
             { name: "show_quantity_one", selector: { boolean: {} }, default: false },
             { name: "sub_text", selector: { text: {} }, default: " "},
             { name: "show_cat_popup", selector: { boolean: {} }, default: true },
+            { name: "show_cat_count", selector: { boolean: {} }, default: true },
             {
                 name: "categories",
                 required: false,
@@ -489,6 +502,7 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 }
             },
+            { name: "show_export_button_pdf", selector: { boolean: {} }, default: false },
             { name: "show_export_button", selector: { boolean: {} }, default: false },
             {
                 name: "longlived_token",
@@ -555,26 +569,6 @@ class HaShoppingListImproved extends HTMLElement {
     disconnectedCallback() {
         window.removeEventListener('shopping_list_updated', this._eventListener);
     }
-  
-/*  
-    _parseCategories(categoriesArray) {
-        const categories = [];
-
-        for (const cat of categoriesArray) {
-            const name = cat.name || "(no category)";
-            const items = Array.isArray(cat.items) ? cat.items : [];
-
-            console.log(`Kategorie ${name}: ${items.length ? items.join(", ") : "(leer)"}`);
-
-            categories.push({
-                name,
-                items
-            });
-        }
-
-        return categories;
-    }
-*/
 
     _parseCategories(categoriesArray) {
         const categories = [];
@@ -597,7 +591,6 @@ class HaShoppingListImproved extends HTMLElement {
 
         return categories;
     }
-
 
     _renderSkeleton() {
         const style = document.createElement('style');
@@ -748,6 +741,7 @@ class HaShoppingListImproved extends HTMLElement {
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                    ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;` : ``}
                     ${this._showExportButton ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
                     <button id="clearBtn">${translate("editor.labels.clear_button")}</button>
                 </div>
@@ -760,6 +754,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
         this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton) this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
+        if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
+
 
         this._listEl = this._shadow.getElementById('list');
         this._historyEl = this._shadow.getElementById('history');
@@ -878,7 +874,6 @@ class HaShoppingListImproved extends HTMLElement {
             uncategorized.forEach(item => this._renderItem(item, this._listEl));
         }
 
-        /*
         // Articles with category
         this._categories.forEach(cat => {
             const catItems = itemsToRender.filter(i => {
@@ -893,44 +888,25 @@ class HaShoppingListImproved extends HTMLElement {
             });
 
             if (catItems.length) {
-                const liCat = document.createElement('li');
-                liCat.classList.add('category-header');
-                liCat.textContent = cat.name;
-                this._listEl.appendChild(liCat);
+                const total = catItems.length;
+                const done = catItems.filter(i => i.complete).length;
+                const storageKey = `${this._entity}_category_${cat.name}`;
 
-                catItems.forEach(item => this._renderItem(item, this._listEl));
-            }
-        });
-		*/
+                const collapsed = localStorage.getItem(storageKey) === 'true';
 
-        // Articles with category
-        this._categories.forEach(cat => {
-            const catItems = itemsToRender.filter(i => {
-                const nameOnly = this._getNameOnly(i.name);
-                const explicitCategory = this._getCategory(i.name);
-
-                if (explicitCategory) {
-                    return explicitCategory.toLowerCase() === cat.name.toLowerCase();
-                }
-
-                return cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase());
-            });
-
-            if (catItems.length) {
                 const liCat = document.createElement('li');
                 liCat.classList.add('category-header');
                 liCat.style.padding = '4px 8px';
                 liCat.style.borderRadius = '4px';
                 if (cat.bgcolor) liCat.style.backgroundColor = cat.bgcolor;
-                // ggf: liCat.style.color = cat.textcolor || (cat.bgcolor ? 'white' : 'var(--primary-text-color)');
+                liCat.style.cursor = 'pointer';
+                liCat.style.userSelect = 'none';
 
-                // Container for Icon + Text
                 const container = document.createElement('div');
                 container.style.display = 'inline-flex';
                 container.style.alignItems = 'center';
                 container.style.gap = '6px';
 
-                // Icon
                 if (cat.icon) {
                     const iconEl = document.createElement('ha-icon');
                     iconEl.setAttribute('icon', cat.icon);
@@ -943,18 +919,31 @@ class HaShoppingListImproved extends HTMLElement {
                     container.appendChild(iconEl);
                 }
 
-                // Text
                 const textEl = document.createElement('span');
-                textEl.textContent = cat.name;
+                if (this._showCatCount) {
+                    textEl.textContent = `${cat.name} (${done}/${total})`;
+                } else {
+                    textEl.textContent = cat.name;
+                }
                 container.appendChild(textEl);
 
                 liCat.appendChild(container);
                 this._listEl.appendChild(liCat);
 
-                catItems.forEach(item => this._renderItem(item, this._listEl, cat));
+                const itemsContainer = document.createElement('div');
+                itemsContainer.style.margin = '4px 0 12px 0';
+                itemsContainer.style.display = collapsed ? 'none' : 'block';
+
+                catItems.forEach(item => this._renderItem(item, itemsContainer, cat));
+                this._listEl.appendChild(itemsContainer);
+
+                liCat.addEventListener('click', () => {
+                    const isCollapsed = itemsContainer.style.display === 'none';
+                    itemsContainer.style.display = isCollapsed ? 'block' : 'none';
+                    localStorage.setItem(storageKey, isCollapsed ? 'false' : 'true');
+                });
             }
         });
-
     }
 
     // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
@@ -1179,9 +1168,14 @@ class HaShoppingListImproved extends HTMLElement {
             catContainer.appendChild(noCatChipWrapper);
 
             // Category Chips from Config
-            this._categories
+            const sortByName = false; // true = sort ABC, false = sort original order
+
+            (this._categories || [])
                 .slice()
-                .sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }))
+                .sort((a, b) => {
+                    if (!sortByName) return 0; // no sort
+                    return a.name.localeCompare(b.name, 'de', { sensitivity: 'base' });
+                })
                 .forEach(cat => {
                     const chipWrapper = createStyledChip(
                         cat.name,
@@ -1924,9 +1918,26 @@ class HaShoppingListImproved extends HTMLElement {
         const token = this._longLivedToken || "";
 
         const itemsByCat = {};
+
+        // Category handling
+        const getCategoryForItem = (item) => {
+            const nameOnly = this._getNameOnly(item.name);
+            const explicitCategory = this._getCategory(item.name);
+            if (explicitCategory) return explicitCategory;
+
+            for (const cat of categories) {
+                if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
+                    return cat.name;
+                }
+            }
+
+            // Fallback
+            return item.category || "none";
+        };
+
         for (const item of items) {
             const name = this._getNameOnly(item.name);
-            const cat = this._getCategory(item.name) || item.category || "none";
+            const cat = getCategoryForItem(item);
             const quantity = this._getQuantity(item.name);
             const uid = item.id || null;
 
@@ -2180,6 +2191,191 @@ class HaShoppingListImproved extends HTMLElement {
         URL.revokeObjectURL(url);
     }
 
+    // PDF Export function
+    async _exportPdfList() {
+        // load pdf-lib, if not already done
+        const { PDFDocument, rgb, StandardFonts } = await new Promise((resolve, reject) => {
+            if (window.PDFLib) return resolve(window.PDFLib);
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js";
+            script.onload = () => resolve(window.PDFLib);
+            script.onerror = () => reject(new Error("pdf-lib load failed"));
+            document.head.appendChild(script);
+        });
+
+        const now = new Date();
+        const formattedDate = now.toLocaleString();
+        const categories = this._categories || [];
+        const items = this._items || [];
+        const entityId = this._entity || "default_list";
+
+        const getCategoryForItem = (item) => {
+            const nameOnly = this._getNameOnly(item.name);
+            const explicitCategory = this._getCategory(item.name);
+            if (explicitCategory) return explicitCategory.toLowerCase();
+
+            for (const cat of categories) {
+            if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
+                return cat.name.toLowerCase();
+            }
+            }
+
+            return "none";
+        };
+
+        const itemsByCat = {};
+        for (const item of items) {
+            const cat = getCategoryForItem(item);
+            if (!itemsByCat[cat]) itemsByCat[cat] = [];
+            itemsByCat[cat].push({
+            name: this._getNameOnly(item.name),
+            complete: item.complete,
+            quantity: this._getQuantity(item.name),
+            uid: item.id || null,
+            });
+        }
+
+        const allCats = [...categories.map(c => c.name.toLowerCase()), "none"];
+
+        // ceate PDF
+        const pdfDoc = await PDFDocument.create();
+
+        // load font
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const fontSizeTitle = 18;
+        const fontSizeNormal = 12;
+        const margin = 40;
+        let y = 750;
+
+        // create page
+        let page = pdfDoc.addPage([595, 842]); // A4 in pt (ca.)
+
+        // Title
+        page.drawText(`Shopping List - ${entityId}`, {
+            x: margin,
+            y,
+            size: fontSizeTitle,
+            font,
+            color: rgb(0, 0, 0),
+        });
+        y -= 30;
+
+        // Creation date
+        page.drawText(`Erstellt: ${formattedDate}`, {
+            x: margin,
+            y,
+            size: fontSizeNormal,
+            font,
+            color: rgb(0, 0, 0),
+        });
+        y -= 30;
+
+        // Form
+        const form = pdfDoc.getForm();
+
+        for (const catName of allCats) {
+            const catItems = itemsByCat[catName];
+            if (!catItems || catItems.length === 0) continue;
+
+            const catCfg = categories.find(c => c.name.toLowerCase() === catName);
+
+            const displayCatName = catName === "none" ? "Ohne Kategorie" : (catCfg ? catCfg.name : catName);
+
+            page.drawText(displayCatName, {
+            x: margin,
+            y,
+            size: fontSizeNormal,
+            font,
+            color: catCfg && catCfg.bgcolor
+                ? rgb(...hexToRgb(catCfg.bgcolor))  // hex to rgb
+                : rgb(0, 0, 0),
+            });
+            y -= 20;
+
+            for (const [i, it] of catItems.entries()) {
+            // new page if needed
+            if (y < 50) {
+                page = pdfDoc.addPage([595, 842]);
+                y = 800;
+            }
+
+            const showQty = it.quantity > 1 || this._showQuantityOne;
+            let nameText = it.name;
+            if (showQty) {
+                if (this._quantityPosition === "beginning") {
+                nameText = `${it.quantity}× ${it.name}`;
+                } else {
+                nameText = `${it.name} (${it.quantity})`;
+                }
+            }
+
+            // Position Checkbox
+            const boxX = margin;
+            const boxY = y - 10;
+            const boxSize = 15;
+
+            const checkBox = form.createCheckBox(`checkbox_${catName}_${i}`);
+            checkBox.addToPage(page, { x: boxX, y: boxY, width: boxSize, height: boxSize });
+            if (it.complete) checkBox.check();
+
+            page.drawText(nameText, {
+                x: boxX + boxSize + 5,
+                y: boxY + 2,
+                size: fontSizeNormal,
+                font,
+                color: rgb(0, 0, 0),
+            });
+
+            y -= 25;
+            }
+
+            y -= 10;
+        }
+
+        // save PDF
+        const pdfBytes = await pdfDoc.save();
+
+        // Download
+        const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `shopping-list-${entityId}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        // Hex to RGB helper
+        function hexToRgb(color) {
+            if (typeof color !== 'string') return [0, 0, 0, 1];
+
+            // rgba or rgb
+            const rgbaMatch = color.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*([01]?\.?\d*))?\s*\)$/i);
+            if (rgbaMatch) {
+                const r = Math.min(255, parseInt(rgbaMatch[1], 10)) / 255;
+                const g = Math.min(255, parseInt(rgbaMatch[2], 10)) / 255;
+                const b = Math.min(255, parseInt(rgbaMatch[3], 10)) / 255;
+                const a = rgbaMatch[4] !== undefined ? Math.min(1, Math.max(0, parseFloat(rgbaMatch[4]))) : 1;
+                return [r, g, b, a];
+            }
+
+            // Hex
+            let cleanHex = color.replace(/^#/, '').toLowerCase();
+            if (cleanHex.length === 3) {
+                cleanHex = cleanHex.split('').map(ch => ch + ch).join('');
+            }
+
+            if (cleanHex.length !== 6) {
+                // Ungültiger Wert
+                return [0, 0, 0, 1];
+            }
+
+            const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
+            const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
+            const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+
+            return [r, g, b, 1];
+        }
+    }
 
     // Local storage key for History, unique per to-do list
     _storageKey() {
