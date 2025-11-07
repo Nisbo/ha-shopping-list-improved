@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-4
+ * Version: 1.2.0-BETA-5
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -48,15 +48,18 @@ const TRANSLATIONS = {
         "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
         
-		"editor.options.chips_position.auto"            : "Automatisch (abhängig von Bildschirmgröße)",
+		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
+		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom"          : "Immer unten",
 		"editor.options.chips_position.right"           : "Immer rechts",
 		"editor.options.chips_position.full"            : "Rechts, mehrspaltig (nur Panel-Mode)",
 		"editor.options.chip_click.single"              : "Klick",
 		"editor.options.chip_click.dblclick"            : "Doppelklick",
 		"editor.options.chip_merge.combined"            : "Standard und Browser-Chips kombinieren (Standard)",
-		"editor.options.chip_merge.standard_first"      : "Standard-Chips zuerst",
-		"editor.options.chip_merge.browser_first"       : "Browser-Chips zuerst",
+		"editor.options.chip_merge.standard_first"      : "Standard-Chips zuerst, dann Browser-Chips",
+		"editor.options.chip_merge.browser_first"       : "Browser-Chips zuerst, dann Standard-Chips",
+        "editor.options.chip_merge.global_only"         : "Nur globale Chips (aus Textdatei",
+        "editor.options.chip_merge.global_combined"     : "Alle Chips kombiniert (Globale, Standard, Browser)",
 		"editor.options.quantity.beginning"             : "Anzahl vorne z.B. '10x Butter'",
 		"editor.options.quantity.end"                   : "Anzahl hinten z.B. 'Butter (10)'",
 		"editor.options.acknowledged.show"              : "Erledigte Artikel anzeigen",
@@ -74,7 +77,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
         "editor.labels.list_font_size"                  : "Schriftgröße der Listeneinträge (px)",
 		"editor.labels.cat_font_size"                   : "Schriftgröße der Kategorien (px)",
-        "editor.labels.chips_width"                     : "Breite der Chips (nur bei 'full')",
+        "editor.labels.chips_width"                     : "Breite der Chips im '(Auto) Panel Mode'",
         "editor.labels.chips_position"                  : "Position der Chips",
         "editor.labels.quantity"                        : "Position der Artikelanzahl",
         "editor.labels.acknowledged"                    : "Erledigte Artikel",
@@ -90,18 +93,20 @@ const TRANSLATIONS = {
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
         "editor.labels.longlived_token"                 : "Langlebiger Zugriffstoken (für den Zugriff via Export-Datei)",
         "editor.labels.external_url"                    : "(Externe) URL von Home Assistant (für den Zugriff via Export-Datei)",
+        "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
+        "editor.labels.chip_file"                       : "Path zur Textdatei mit den Globalen Chips",
 
         "editor.helpers.entity"                         : "Wenn keine To-Do-Liste ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
         "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
-        "editor.helpers.chip_merge"                     : "Legt fest, wie Standard- und Browser-Chips zusammen angezeigt werden.",
+        "editor.helpers.chip_merge"                     : "Legt fest, wie Globale-, Standard- und Browser-Chips zusammen angezeigt werden.",
         "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
 		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. STandard: 16px.",
         "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
         "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
         "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
         "editor.helpers.local_chips"                    : "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar.",
-        "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Wirkt nur bei 'chips_position' = 'full'.",
+        "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Nur für '(Auto) Panel Mode'.",
         "editor.helpers.chips_position"                 : "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
         "editor.helpers.quantity"                       : "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
         "editor.helpers.acknowledged"                   : "Steuert, ob erledigte Artikel angezeigt werden.",
@@ -115,6 +120,8 @@ const TRANSLATIONS = {
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
+        "editor.helpers.chip_file"                      : "Beispiel: /local/chips.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Chip eingetragen werden.",
+        "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
         "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
@@ -162,15 +169,18 @@ const TRANSLATIONS = {
         "editor.labels.show_cat_count"                  : "Show item count in categories ?  ",
         "editor.labels.show_cat_popup"                  : "Show Categoty PopUp?",
 
-		"editor.options.chips_position.auto"            : "Automatic (depends on screen size)",
+		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
+		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
 		"editor.options.chips_position.bottom"          : "Always at bottom",
 		"editor.options.chips_position.right"           : "Always at right",
 		"editor.options.chips_position.full"            : "Right, multi-column (panel mode only)",
 		"editor.options.chip_click.single"              : "Click",
 		"editor.options.chip_click.dblclick"            : "Double-click",
-		"editor.options.chip_merge.combined"            : "Combine standard and browser chips (default)",
-		"editor.options.chip_merge.standard_first"      : "Standard chips first",
-		"editor.options.chip_merge.browser_first"       : "Browser chips first",
+        "editor.options.chip_merge.combined"            : "Combine standard and browser chips (default)",
+        "editor.options.chip_merge.standard_first"      : "Standard chips first, then browser chips",
+        "editor.options.chip_merge.browser_first"       : "Browser chips first, then standard chips",
+        "editor.options.chip_merge.global_only"         : "Global chips only (from text file)",
+        "editor.options.chip_merge.global_combined"     : "All chips combined (global, standard, browser)",
 		"editor.options.quantity.beginning"             : "Quantity at beginning, e.g. '10x Butter'",
 		"editor.options.quantity.end"                   : "Quantity at end, e.g. 'Butter (10)'",
 		"editor.options.acknowledged.show"              : "Show completed items",
@@ -188,7 +198,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_color_default"              : "Color of standard chips",
         "editor.labels.list_font_size"                  : "List item font size (px)",
 		"editor.labels.cat_font_size"                   : "Category font size (px)",
-        "editor.labels.chips_width"                     : "Chip width (only for 'full')",
+        "editor.labels.chips_width"                     : "Chip width - Only for '(Auto) Panel Mode'",
         "editor.labels.chips_position"                  : "Chip position",
         "editor.labels.quantity"                        : "Position of item quantity",
         "editor.labels.acknowledged"                    : "Completed items",
@@ -204,18 +214,20 @@ const TRANSLATIONS = {
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
         "editor.labels.longlived_token"                 : "Long-Lived Access Token (for access via export file)",
         "editor.labels.external_url"                    : "(External) URL of Home Assistant (for access via export file)",
+        "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
+        "editor.labels.chip_file"                       : "Path to the text file with the global chips",
 
         "editor.helpers.entity"                         : "If no To-Do list is selected, Home Assistant's default shopping list will be used automatically.",
 		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
-		"editor.helpers.chip_merge"                     : "Determines how standard and browser chips are combined and displayed.",
+		"editor.helpers.chip_merge"                     : "Determines how global, standard and browser chips are combined and displayed.",
 		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
 		"editor.helpers.cat_font_size"                  : "Sets the font size for categories in the list. Default: 16px.",
 		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
 		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
 		"editor.helpers.local_chips"                    : "Local chips are stored only in the browser and are not synced to other devices. They will be lost when the browser cache is cleared.",
-		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when 'chips_position' is set to 'full' (Panel mode).",
+		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when '(Auto) Panel Mode' is selected.",
 		"editor.helpers.chips_position"                 : "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
 		"editor.helpers.quantity"                       : "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
 		"editor.helpers.acknowledged"                   : "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
@@ -229,6 +241,8 @@ const TRANSLATIONS = {
 		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
+        "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
+        "editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
         "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
@@ -292,7 +306,9 @@ class HaShoppingListImproved extends HTMLElement {
 
     set hass(hass) {
         this._hass = hass;
+        //this._loadGlobalChipsFromFile();
         this.render();
+		this._refresh();
     }
     
 	setConfig(config){
@@ -313,14 +329,15 @@ class HaShoppingListImproved extends HTMLElement {
         this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
-        this._chipPosition          = ["bottom", "right", "full", "auto"].includes(config.chips_position) ? config.chips_position : "auto";
-        this._chipWidth             = this._chipPosition === "full" && typeof config.chips_width === "number" ? `${config.chips_width}px` : "250px";
+        this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel"].includes(config.chips_position) ? config.chips_position : "auto";
+        //this._chipWidth             = this._chipPosition === "full" && typeof config.chips_width === "number" ? `${config.chips_width}px` : "250px";
+		this._chipWidth             = (["full", "auto_panel"].includes(this._chipPosition) && typeof config.chips_width === "number") ? `${config.chips_width}px` : "300px";
         this._listFontSize          = config.list_font_size || 14; // Standard: 14px
 		this._catFontSize           = config.cat_font_size  || 16; // Standard: 16px
         this._chipFontSize          = config.chip_font_size || 12; // Standard: 12px
         this._chipColor             = config.chip_color     || "rgba(100,100,100,0.3)";
         this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
-        this._chipMergeMode         = ["combined", "standard_first", "browser_first"].includes(config.chip_merge) ? config.chip_merge : "combined";
+        this._chipMergeMode         = ["combined", "standard_first", "browser_first", "global_combined", "global_only"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
@@ -328,6 +345,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._longLivedToken        = config.longlived_token || "";
         this._externalUrl           = config.external_url || "";
+        this._bubbleCardMode        = (config.bubble_card === true) ? true : false;
+        this._chipFile              = config.chip_file || "";
 
         if (typeof config.highlight_words === "string") {
             this._highlightWords = config.highlight_words.split(/\s*[,;]\s*/).filter(c => c);
@@ -351,7 +370,38 @@ class HaShoppingListImproved extends HTMLElement {
 		} else {
 			this._categories = [];
 		}
+
+        // load Global Chips
+        this._globalChips = [];
+        this._loadGlobalChipsFromFile();
     }
+
+
+    // Global Chips
+    async _loadGlobalChipsFromFile() {
+        if (!this._chipFile || !this._chipFile.trim()) {
+            if(debugMode) console.info("[ha-shopping-list-improved] No path specified for global chips, skipping load.");
+            return;
+        }
+
+        try {
+            const path = this._chipFile.trim() + "?" + new Date().getTime();
+            const response = await fetch(path);
+            if (!response.ok) throw new Error("Error loading file");
+            const text = await response.text();
+            this._globalChips = text
+                .split(/\r?\n/)
+                .map(c => c.trim())
+                .filter(c => c);
+
+            if (debugMode) console.info("[ha-shopping-list-improved] Global chips loaded:", this._globalChips);
+
+            this._renderHistory(); // rerun to apply global chips
+        } catch (err) {
+            console.warn("[ha-shopping-list-improved] Unable to load global chips:", err);
+        }
+    }
+
 
     // Provide default configuration when a new card is added.
     static getStubConfig() {
@@ -397,6 +447,7 @@ class HaShoppingListImproved extends HTMLElement {
                     select: {
                         options: [
                             { value: "auto", label: translate("editor.options.chips_position.auto") },
+							{ value: "auto_panel", label: translate("editor.options.chips_position.auto_panel") },
                             { value: "bottom", label: translate("editor.options.chips_position.bottom") },
                             { value: "right", label: translate("editor.options.chips_position.right") },
                             { value: "full", label: translate("editor.options.chips_position.full") }
@@ -429,7 +480,10 @@ class HaShoppingListImproved extends HTMLElement {
                         options: [
                             { value: "combined", label: translate("editor.options.chip_merge.combined") },
                             { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
-                            { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") }
+                            { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") },
+
+                            { value: "global_only", label: translate("editor.options.chip_merge.global_only") },
+                            { value: "global_combined", label: translate("editor.options.chip_merge.global_combined") }
                         ]
                     }
                 },
@@ -437,6 +491,12 @@ class HaShoppingListImproved extends HTMLElement {
             },
             { name: "chips", selector: { text: {} }, default: "" },
             { name: "highlight_words", selector: { text: {} }, default: "" },
+
+            {
+                name: "chip_file",
+                selector: { text: {} },
+                default: ""
+            },
 
 			{ name: "cat_font_size",  selector: { number: { min: 8, max: 30, step: 1 } }, default: 16},
             { name: "list_font_size", selector: { number: { min: 8, max: 30, step: 1 } }, default: 14},
@@ -513,7 +573,8 @@ class HaShoppingListImproved extends HTMLElement {
                 name: "external_url",
                 selector: { text: {} },
                 default: ""
-            }
+            },
+            { name: "bubble_card", selector: { boolean: {} }, default: false }
             ],
 
             computeLabel: (schema) => {
@@ -551,7 +612,7 @@ class HaShoppingListImproved extends HTMLElement {
 
         // render Skeleton (HTML + Styles)
         this._renderSkeleton();
-        this._refresh();
+        //this._refresh(); // moved to set hass to ensure availability of hass
 
         // Event-Listener for external Updates
         this._eventListener = (e) => {
@@ -593,8 +654,9 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _renderSkeleton() {
+        if (!this._hass) return;
         const style = document.createElement('style');
-        // _chipPosition = "auto" | "bottom" | "right"
+        // _chipPosition = "auto" | "bottom" | "right" | "auto_panel"
         const containerClass = `list-history-container ${this._chipPosition}`;
 
         style.textContent = `
@@ -676,6 +738,24 @@ class HaShoppingListImproved extends HTMLElement {
                     flex-wrap: nowrap;
                 }
             }
+			
+			/* Auto Panel: Chips right if size > 700px, otherwise bottom */
+			@media (min-width: 700px) {
+				.list-history-container.auto_panel {
+					flex-direction: row;
+					align-items: flex-start;
+				}
+				.list-history-container.auto_panel .history {
+							display: flex;
+							flex-direction: row;
+							flex-wrap: wrap;
+							align-content: flex-start;
+							gap: 6px;
+							margin-top: 0;
+							overflow-y: auto;
+							width: var(--chips-width, ${this._chipWidth});
+				}
+			}
 
             /* Right: Always right (in rows) */
             .list-history-container.right {
@@ -756,16 +836,37 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._showExportButton) this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
 
-
         this._listEl = this._shadow.getElementById('list');
         this._historyEl = this._shadow.getElementById('history');
         this._inputEl = this._shadow.getElementById('itemInput');
         this._qtyEl = this._shadow.getElementById('quantitySelect');
 
         this._renderHistory();
+		
+		// Bubble Card WorkAround
+        if(this._bubbleCardMode){
+            requestAnimationFrame(() => {
+                const card = this._shadow.querySelector('.card');
+                card.style.minHeight = window.outerHeight + "px";//'520px';
+
+                if(debugMode) console.debug("[ha-shopping-list-improved] window.outerHeight:", card.offsetHeight);
+            });
+
+            // responsive on window resize
+            window.addEventListener('resize', () => {
+                requestAnimationFrame(() => {
+                    const card = this._shadow.querySelector('.card');
+                    card.style.minHeight = window.outerHeight + "px";
+
+                    if(debugMode) console.debug("[ha-shopping-list-improved] Resized: window.outerHeight:", window.outerHeight);
+                });
+            });
+        }
     }
 
     async _refresh() {
+		if (!this._hass) return;
+
         try {
             /*
             const res = await this._hass.callApi("GET", "shopping_list");
@@ -834,6 +935,9 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _renderList() {
+        if (!this._hass) return;
+        if (!this._listEl) return;
+
         this._listEl.innerHTML = '';
         if (!this._items.length) {
             this._listEl.innerHTML = `<li class="small">${translate("editor.labels.no_items")}</li>`;
@@ -1798,6 +1902,7 @@ class HaShoppingListImproved extends HTMLElement {
 
         const localChips = this._previous || [];
         const defaultChips = this._defaultChips || [];
+        const globalChips = this._globalChips || [];
         let combined = [];
 
         switch (this._chipMergeMode) {
@@ -1816,6 +1921,27 @@ class HaShoppingListImproved extends HTMLElement {
                 const sortedLocalFirst = [...localChips].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 const sortedDefaultsFirst = [...defaultChips].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 combined = [...sortedLocalFirst, ...sortedDefaultsFirst.filter(c => !localChips.includes(c))];
+                break;
+
+
+            case "global_only":
+                combined = [...globalChips];
+                combined.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                break;
+
+            case "global_combined":
+                combined = [
+                    ...globalChips,
+                    ...defaultChips.filter(c => !globalChips.includes(c)),
+                    ...localChips.filter(c => !globalChips.includes(c) && !defaultChips.includes(c))
+                ];
+                combined.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                break;
+
+            default:
+                // Fallback to combined
+                combined = [...defaultChips, ...localChips.filter(c => !defaultChips.includes(c))];
+                combined.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 break;
         }
 
