@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-5
+ * Version: 1.2.0-BETA-6
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -43,10 +43,13 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Chip '{item}' aus History löschen?",
         "editor.labels.chip_highlighted"                : "Hervorgehobener Chip",
         "editor.labels.chip_standard"                   : "Standard-Chip",
+		"editor.labels.chip_global"						: "Globaler Chip",
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
 		"editor.labels.categories"                   	: "Kategorien",
         "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
+		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
+		"editor.labels.dishes" 							: "Gerichte",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -66,6 +69,11 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.hide"              : "Erledigte Artikel ausblenden",
 		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende der Kategorie anzeigen",
         "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
+		"editor.options.category_merge.standard_only"   : "Nur lokale Kategorien (Standard)",
+		"editor.options.category_merge.global_only"     : "Nur globale Kategorien (aus Textdatei)",
+		"editor.options.category_merge.local_first"     : "Lokale Kategorien zuerst, dann globale",
+		"editor.options.category_merge.global_first"    : "Globale Kategorien zuerst, dann lokale",
+		"editor.options.category_merge.global_combined" : "Alle Kategorien kombiniert und alphabetisch sortiert",
 		
         "editor.labels.entity"                          : "To-Do-Liste",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
@@ -74,7 +82,9 @@ const TRANSLATIONS = {
         "editor.labels.local_chips"                     : "Lokale Chips erlauben?",
         "editor.labels.chip_font_size"                  : "Schriftgröße der Chips (px)",
         "editor.labels.chip_color"                      : "Farbe der Lokalen (Browser) Chips",
+		"editor.labels.chip_color_global"               : "Farbe der Globalen (Textdatei) Chips",
         "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
+		"editor.labels.chip_color_dish"              	: "Farbe der Chips für Gerichte",
         "editor.labels.list_font_size"                  : "Schriftgröße der Listeneinträge (px)",
 		"editor.labels.cat_font_size"                   : "Schriftgröße der Kategorien (px)",
         "editor.labels.chips_width"                     : "Breite der Chips im '(Auto) Panel Mode'",
@@ -95,6 +105,7 @@ const TRANSLATIONS = {
         "editor.labels.external_url"                    : "(Externe) URL von Home Assistant (für den Zugriff via Export-Datei)",
         "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
         "editor.labels.chip_file"                       : "Path zur Textdatei mit den Globalen Chips",
+		"editor.labels.category_file"                   : "Path zur Textdatei mit den Globalen Kategorien",
 
         "editor.helpers.entity"                         : "Wenn keine To-Do-Liste ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
@@ -104,7 +115,9 @@ const TRANSLATIONS = {
 		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. STandard: 16px.",
         "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
         "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
+		"editor.helpers.chip_color_global"              : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
         "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
+		"editor.helpers.chip_color_dish"             	: "Hex- oder rgba-Farbcode eingeben, z. B. ‘#745E3D’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
         "editor.helpers.local_chips"                    : "Lokale Chips werden nur im Browser gespeichert und sind nicht auf anderen Geräten verfügbar.",
         "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Nur für '(Auto) Panel Mode'.",
         "editor.helpers.chips_position"                 : "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
@@ -121,12 +134,15 @@ const TRANSLATIONS = {
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
         "editor.helpers.chip_file"                      : "Beispiel: /local/chips.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Chip eingetragen werden.",
+        "editor.helpers.category_file"                  : "Beispiel: /local/categories.txt, wenn die Datei im www-Ordner liegt. Für den Aufbau der Datei, bitte in die Dokumentation gucken.",
+		"editor.helpers.category_merge_mode"			: "Wähle, wie globale und lokale Kategorien zusammengeführt werden sollen. „Standard_only“ zeigt nur die lokal definierten Kategorien, „global_only“ nur die globalen Kategorien. Die anderen Optionen kombinieren beide auf verschiedene Weise.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
         "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
-		"editor.helpers.categories"                     : "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Optional kann jede Kategorie ein icon (z.B. mdi:apple) und eine Hintergrundfarbe bgcolor (z.B. #247645) haben. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann."
+		"editor.helpers.categories"                     : "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Optional kann jede Kategorie ein icon (z.B. mdi:apple) und eine Hintergrundfarbe bgcolor (z.B. #247645) haben. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann.",
+		"editor.helpers.dishes"							: "Mit Gerichte kannst du mehrere Artikel auf einmal hinzufügen. Jedes Gericht beginnt mit - name: <Gericht> und enthält darunter eine Liste von Artikeln unter items. Beispiel: - name: McDonalds items: - Cheeseburger - BigMac (2) - Pommes - Hamburger (4). Optional kann jedes Gericht eine Hintergrundfarbe (bgcolor, z. B. #247645) haben. Für mehr Informationen über den Aufbau, bitte in die Dokumentation schauen."
     },
 
     en: {
@@ -164,10 +180,13 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Delete chip '{item}' from history?",
         "editor.labels.chip_highlighted"                : "Highlighted Chip",
         "editor.labels.chip_standard"                   : "Standard chip",
+		"editor.labels.chip_global"						: "Global Chip",
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 		"editor.labels.categories"                   	: "Categories",
         "editor.labels.show_cat_count"                  : "Show item count in categories ?  ",
-        "editor.labels.show_cat_popup"                  : "Show Categoty PopUp?",
+        "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
+		"editor.labels.category_merge_mode" 			: "Category merge mode",
+		"editor.labels.dishes" 							: "Dishes",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -187,7 +206,12 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.hide"              : "Hide completed items",
 		"editor.options.acknowledged.end"               : "Show completed items at the end of the category",
         "editor.defaults.sub_text"                      : "Hint: Use chips to quickly add items again.",
-		
+		"editor.options.category_merge.standard_only"   : "Local categories only (default)",
+		"editor.options.category_merge.global_only"     : "Global categories only (from text file)",
+		"editor.options.category_merge.local_first"     : "Local categories first, then global",
+		"editor.options.category_merge.global_first"    : "Global categories first, then local",
+		"editor.options.category_merge.global_combined" : "All categories combined and sorted alphabetically",
+
         "editor.labels.entity"                          : "To-Do-List",
         "editor.labels.highlight_words"                 : "Highlight words",
         "editor.labels.highlight_color"                 : "Highlight color",
@@ -195,7 +219,9 @@ const TRANSLATIONS = {
         "editor.labels.local_chips"                     : "Allow local chips?",
         "editor.labels.chip_font_size"                  : "Chip font size (px)",
         "editor.labels.chip_color"                      : "Color of local (browser) chips",
+		"editor.labels.chip_color_global"               : "Color of global (text file) chips",
         "editor.labels.chip_color_default"              : "Color of standard chips",
+		"editor.labels.chip_color_dish"              	: "Color of dishes chips",
         "editor.labels.list_font_size"                  : "List item font size (px)",
 		"editor.labels.cat_font_size"                   : "Category font size (px)",
         "editor.labels.chips_width"                     : "Chip width - Only for '(Auto) Panel Mode'",
@@ -216,6 +242,7 @@ const TRANSLATIONS = {
         "editor.labels.external_url"                    : "(External) URL of Home Assistant (for access via export file)",
         "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
         "editor.labels.chip_file"                       : "Path to the text file with the global chips",
+		"editor.labels.category_file"                   : "Path to the text file with the global categories",
 
         "editor.helpers.entity"                         : "If no To-Do list is selected, Home Assistant's default shopping list will be used automatically.",
 		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
@@ -225,7 +252,9 @@ const TRANSLATIONS = {
 		"editor.helpers.cat_font_size"                  : "Sets the font size for categories in the list. Default: 16px.",
 		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
 		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
+		"editor.helpers.chip_color_global"              : "Hex or rgba color code for global (text file) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
+		"editor.helpers.chip_color_dish"             	: "Hex or rgba color code for dishes chips, e.g. '#745E3D' or 'rgba(100,100,255,0.3)'.",
 		"editor.helpers.local_chips"                    : "Local chips are stored only in the browser and are not synced to other devices. They will be lost when the browser cache is cleared.",
 		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when '(Auto) Panel Mode' is selected.",
 		"editor.helpers.chips_position"                 : "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
@@ -242,12 +271,15 @@ const TRANSLATIONS = {
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
-        "editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
+        "editor.helpers.category_file"                  : "Example: /local/categories.txt if the file is located in the www folder. For file format, refer to the documentation.",
+        "editor.helpers.category_merge_mode"			: "Choose how global and local categories should be merged. “standard_only” shows only local categories, “global_only” only global categories. Other options combine both in different ways.",
+		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
         "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
-		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference."
+		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference.",
+		"editor.helpers.dishes"							: "With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). For more information about the structure, please check the documentation."
     }
 };
 
@@ -337,6 +369,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._chipFontSize          = config.chip_font_size || 12; // Standard: 12px
         this._chipColor             = config.chip_color     || "rgba(100,100,100,0.3)";
         this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
+		this._chipGlobalColor		= config.chip_color_global || "rgba(100,100,100,0.3)";
+		this._chipColorDish 		= config.chip_color_dish || "#745E3D";
         this._chipMergeMode         = ["combined", "standard_first", "browser_first", "global_combined", "global_only"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
@@ -347,7 +381,9 @@ class HaShoppingListImproved extends HTMLElement {
         this._externalUrl           = config.external_url || "";
         this._bubbleCardMode        = (config.bubble_card === true) ? true : false;
         this._chipFile              = config.chip_file || "";
-
+		this._categoryFile          = config.category_file || "";
+		this._categoryMergeMode		= ["standard_only", "global_only", "local_first", "global_first", "global_combined"].includes(config.category_merge_mode) ? config.category_merge_mode : "standard_only";
+		
         if (typeof config.highlight_words === "string") {
             this._highlightWords = config.highlight_words.split(/\s*[,;]\s*/).filter(c => c);
         } else if (Array.isArray(config.highlight_words)) {
@@ -370,10 +406,21 @@ class HaShoppingListImproved extends HTMLElement {
 		} else {
 			this._categories = [];
 		}
+		
+		// parse dishes _parseDishes(dishesArray)
+		if (config.dishes) {
+			this._dishes = this._parseDishes(config.dishes);
+		} else {
+			this._dishes = [];
+		}
 
         // load Global Chips
         this._globalChips = [];
         this._loadGlobalChipsFromFile();
+		
+		// load Global Categories
+		this._globalCategories = [];
+        this._loadGlobalCategoriesFromFile();
     }
 
 
@@ -387,7 +434,7 @@ class HaShoppingListImproved extends HTMLElement {
         try {
             const path = this._chipFile.trim() + "?" + new Date().getTime();
             const response = await fetch(path);
-            if (!response.ok) throw new Error("Error loading file");
+            if (!response.ok) throw new Error("Error loading file for global chips");
             const text = await response.text();
             this._globalChips = text
                 .split(/\r?\n/)
@@ -401,7 +448,50 @@ class HaShoppingListImproved extends HTMLElement {
             console.warn("[ha-shopping-list-improved] Unable to load global chips:", err);
         }
     }
+	
 
+	// Global Categories
+	async _loadGlobalCategoriesFromFile() {
+		if (!this._categoryFile || !this._categoryFile.trim()) {
+			if (debugMode) console.info("[ha-shopping-list-improved] No path specified for global categories, skipping load.");
+			return;
+		}
+
+		try {
+			const path = this._categoryFile.trim() + "?" + new Date().getTime();
+			const response = await fetch(path);
+			if (!response.ok) throw new Error("Error loading file for global categories");
+			const text = await response.text();
+
+			const categories = [];
+			const blocks = text.split(/\n(?=\[)/); // Split by new category section
+
+			for (const block of blocks) {
+				const nameMatch = block.match(/^\[(.+?)\]/);
+				if (!nameMatch) continue;
+
+				const name = nameMatch[1].trim();
+				const iconMatch = block.match(/icon\s*=\s*(.+)/);
+				const bgcolorMatch = block.match(/bgcolor\s*=\s*(.+)/);
+				const itemsMatch = block.match(/items\s*=\s*(.+)/);
+
+				const category = {
+					name,
+					icon: iconMatch ? iconMatch[1].trim() : "",
+					bgcolor: bgcolorMatch ? bgcolorMatch[1].trim() : "",
+					items: itemsMatch ? itemsMatch[1].split(/\s*,\s*/).filter(i => i) : []
+				};
+				categories.push(category);
+			}
+
+			this._globalCategories = categories;
+			if(debugMode) console.info("[ha-shopping-list-improved] Global categories loaded:", categories);
+
+			this._renderHistory(); // rerun if needed
+		} catch (err) {
+			console.warn("[ha-shopping-list-improved] Unable to load global categories:", err);
+		}
+	}
 
     // Provide default configuration when a new card is added.
     static getStubConfig() {
@@ -516,6 +606,19 @@ class HaShoppingListImproved extends HTMLElement {
                 selector: { text: {} },
                 default: "red"
             },
+			
+			{
+                name: "chip_color_global",
+                selector: { text: {} },
+                default: "rgba(100,100,100,0.3)"
+            },
+			
+			{
+                name: "chip_color_dish",
+                selector: { text: {} },
+                default: "rgba(100,100,100,0.3)"
+            },
+			
             {
                 name: "quantity",
                 selector: {
@@ -562,6 +665,43 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 }
             },
+			
+			{
+				name: "category_merge_mode",
+				label: translate("editor.labels.category_merge_mode"),
+				selector: {
+					select: {
+						mode: "dropdown",
+						options: [
+							{ value: "standard_only",   label: translate("editor.options.category_merge.standard_only") },
+							{ value: "global_only",     label: translate("editor.options.category_merge.global_only") },
+							{ value: "local_first",     label: translate("editor.options.category_merge.local_first") },
+							{ value: "global_first",    label: translate("editor.options.category_merge.global_first") },
+							{ value: "global_combined", label: translate("editor.options.category_merge.global_combined") }
+						]
+					}
+				}
+			},
+
+            {
+                name: "category_file",
+                selector: { text: {} },
+                default: ""
+            },
+
+            {
+                name: "dishes",
+                required: false,
+                selector: {
+                    object: {
+                        properties: {
+                            "category1": { type: "string", name: "Only a placeholder" },
+                            "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+                        }
+                    }
+                }
+            },
+
             { name: "show_export_button_pdf", selector: { boolean: {} }, default: false },
             { name: "show_export_button", selector: { boolean: {} }, default: false },
             {
@@ -651,6 +791,26 @@ class HaShoppingListImproved extends HTMLElement {
         }
 
         return categories;
+    }
+	
+	_parseDishes(dishesArray) {
+        const dishes = [];
+
+        for (const dish of dishesArray) {
+            const name = dish.name || "(no dish)";
+            const items = Array.isArray(dish.items) ? dish.items : [];
+            const bgcolor = dish.bgcolor || null;  // optional bgcolor
+
+            if(debugMode) console.log(`Dish ${name}: ${items.length ? items.join(", ") : "(empty)"}, bgcolor: ${bgcolor}`);
+
+            dishes.push({
+                name,
+                items,
+                bgcolor
+            });
+        }
+
+        return dishes;
     }
 
     _renderSkeleton() {
@@ -782,7 +942,7 @@ class HaShoppingListImproved extends HTMLElement {
             .list-history-container.full .history {
                 display: flex;
                 flex-direction: row;
-                flex-wrap: wrap; /* Zeilenumbruch */
+                flex-wrap: wrap;
                 align-content: flex-start;
                 gap: 6px;
                 margin-top: 0;
@@ -1898,6 +2058,72 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
 	_renderHistory() {
+		// Category Merge logic
+		const mergeMode = this._categoryMergeMode || "standard_only";
+
+		if(debugMode) console.info("[ha-shopping-list-improved] Category merge mode:", mergeMode);
+
+		const localCats = Array.isArray(this._categories) ? this._categories : [];
+		const globalCats = Array.isArray(this._globalCategories) ? this._globalCategories : [];
+		let merged = [];
+
+		switch (mergeMode) {
+			case "standard_only":
+				merged = [...localCats];
+				break;
+
+			case "global_only":
+				merged = [...globalCats];
+				break;
+
+			case "local_first": {
+				const existingNames = localCats.map(c => c.name.toLowerCase());
+				merged = [
+					...localCats,
+					...globalCats.filter(gc => !existingNames.includes(gc.name.toLowerCase()))
+				];
+				break;
+			}
+
+			case "global_first": {
+				const existingNames = globalCats.map(c => c.name.toLowerCase());
+				merged = [
+					...globalCats,
+					...localCats.filter(lc => !existingNames.includes(lc.name.toLowerCase()))
+				];
+				break;
+			}
+
+			case "global_combined": {
+				const all = [...localCats, ...globalCats];
+				const unique = [];
+				const names = new Set();
+				for (const c of all) {
+					const lower = c.name.toLowerCase();
+					if (!names.has(lower)) {
+						names.add(lower);
+						unique.push(c);
+					}
+				}
+				merged = unique.sort((a, b) =>
+					a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+				);
+				break;
+			}
+
+			default:
+				merged = [...localCats];
+				break;
+		}
+
+		this._categories = merged;
+
+		if (debugMode) {
+			console.info("[ha-shopping-list-improved] Local categories:", localCats);
+			console.info("[ha-shopping-list-improved] Global categories:", globalCats);
+			console.info("[ha-shopping-list-improved] All categories after merge:", this._categories);
+		}
+
         this._historyEl.innerHTML = '';
 
         const localChips = this._previous || [];
@@ -1944,22 +2170,25 @@ class HaShoppingListImproved extends HTMLElement {
                 combined.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 break;
         }
-
+		
         combined.forEach(chipText => {
             const chip = document.createElement('div');
             chip.className = 'chip';
             chip.textContent = chipText;
 
-            // Color Priority: Highlight > Standard > Local
-            if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
-                chip.style.background = this._highlightColor;
-                chip.title = translate("editor.labels.chip_highlighted");
-            } else if (this._defaultChips?.includes(chipText)) {
-                chip.style.background = this._chipColorDefault;
-                chip.title = translate("editor.labels.chip_standard");
-            } else {
-                chip.style.background = this._chipColor;
-            }
+			// Color Priority: Highlight > Global > Standard > Local
+			if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
+				chip.style.background = this._highlightColor;
+				chip.title = translate("editor.labels.chip_highlighted");
+			} else if (this._globalChips?.includes(chipText)) {
+				chip.style.background = this._chipGlobalColor;
+				chip.title = translate("editor.labels.chip_global");
+			} else if (this._defaultChips?.includes(chipText)) {
+				chip.style.background = this._chipColorDefault;
+				chip.title = translate("editor.labels.chip_standard");
+			} else {
+				chip.style.background = this._chipColor;
+			}
 
             // Click or Double-Click-Logic
             const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
@@ -2007,6 +2236,35 @@ class HaShoppingListImproved extends HTMLElement {
 
             this._historyEl.appendChild(chip);
         });
+		
+
+		// Add dishes
+		const dishes = this._dishes || [];
+
+		dishes.forEach(dish => {
+			const chip = document.createElement('div');
+			chip.className = 'chip';
+			chip.textContent = dish.name || "(no dish)";
+			chip.style.background = dish.bgcolor || this._chipColorDish; // fallback
+
+			// Click or Double-Click-Logic
+			const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
+			chip.addEventListener(clickEvent, async () => {
+				if (this._addingBusy) return;
+
+				for (const item of dish.items) {
+					const itemName = this._getNameOnly(item);
+					const itemQuantity = this._getQuantity(item);
+
+					this._inputEl.value = itemName;
+					this._qtyEl.value = itemQuantity;
+
+					await this._onAdd();
+				}
+			});
+
+			this._historyEl.appendChild(chip);
+		});
 	}
 
     async _removeHistoryItem(name){
