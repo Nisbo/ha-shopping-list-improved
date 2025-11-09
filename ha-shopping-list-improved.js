@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-6
+ * Version: 1.2.0-BETA-7
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -28,6 +28,7 @@ const TRANSLATIONS = {
         "ui.common.sync_created"                        : "erstellt am",
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
+		"ui.common.close"                          		: "Schließen",
 		
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
@@ -94,6 +95,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_click"                      : "Verhalten beim Klick auf einen Chip",
         "editor.labels.show_quantity_box"               : "Anzahlfeld anzeigen",
         "editor.labels.show_submit_button"              : "Hinzufügen-Button anzeigen",
+		"editor.labels.show_qrscan_button"    			: "QR-Scanner-Button anzeigen (nur mit https)",
         "editor.labels.show_export_button_pdf"          : "PDF Export-Button anzeigen",
         "editor.labels.show_export_button"              : "HTML Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
@@ -126,6 +128,7 @@ const TRANSLATIONS = {
         "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
         "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
         "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
+		"editor.helpers.show_qrscan_button"   			: "Zeigt den QR-Scanner-Button an. Damit können ein oder mehrere Artikel gleichzeitig per QR-Code gescannt werden. Bei mehreren Artikeln müssen diese jeweils in einer neuen Zeile stehen. Mengenangaben können in Klammern angegeben werden, z. B. 'Bananen (6)'. Funktioniert nur, wenn man über https:// auf Home Assistant zugreift.",
         "editor.helpers.show_export_button_pdf"         : "Zeigt den PDF Export-Button unten an. Mit der PDF-Export-Funktion kannst du die aktuelle Einkaufsliste als PDF-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_export_button"             : "Zeigt den HTML Export-Button unten an. Mit der HTML-Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
@@ -165,6 +168,7 @@ const TRANSLATIONS = {
         "ui.common.sync_created"                        : "created on",
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
+		"ui.common.close"                          		: "Close",
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
@@ -231,6 +235,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_click"                      : "Chip click behavior",
         "editor.labels.show_quantity_box"               : "Show quantity box",
         "editor.labels.show_submit_button"              : "Show add button",
+		"editor.labels.show_qrscan_button"    			: "Show QR Scanner Button (only with https)",
         "editor.labels.show_export_button_pdf"          : "Show PDF Export button",
         "editor.labels.show_export_button"              : "Show HTML Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
@@ -263,6 +268,7 @@ const TRANSLATIONS = {
 		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
 		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
 		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
+		"editor.helpers.show_qrscan_button"   			: "Displays the QR scanner button. Allows scanning one or multiple items at once via QR code. For multiple items, each item must be on a separate line. Quantities can be specified in parentheses, e.g., 'Bananas (6)'. You must access Home Assistant via a https:// connection.",
         "editor.helpers.show_export_button_pdf"         : "Shows the PDF Export button on the bottom. With the PDF-Export function, you can download the current todo list as an PDF file for offline use.",
         "editor.helpers.show_export_button"             : "Shows the HTML Export button on the bottom. With the HTML-Export function, you can download the current todo list as an HTML file for offline use.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
@@ -362,7 +368,6 @@ class HaShoppingListImproved extends HTMLElement {
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
         this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel"].includes(config.chips_position) ? config.chips_position : "auto";
-        //this._chipWidth             = this._chipPosition === "full" && typeof config.chips_width === "number" ? `${config.chips_width}px` : "250px";
 		this._chipWidth             = (["full", "auto_panel"].includes(this._chipPosition) && typeof config.chips_width === "number") ? `${config.chips_width}px` : "300px";
         this._listFontSize          = config.list_font_size || 14; // Standard: 14px
 		this._catFontSize           = config.cat_font_size  || 16; // Standard: 16px
@@ -383,6 +388,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._chipFile              = config.chip_file || "";
 		this._categoryFile          = config.category_file || "";
 		this._categoryMergeMode		= ["standard_only", "global_only", "local_first", "global_first", "global_combined"].includes(config.category_merge_mode) ? config.category_merge_mode : "standard_only";
+		this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
 		
         if (typeof config.highlight_words === "string") {
             this._highlightWords = config.highlight_words.split(/\s*[,;]\s*/).filter(c => c);
@@ -647,6 +653,7 @@ class HaShoppingListImproved extends HTMLElement {
             { name: "local_chips", selector: { boolean: {} }, default: true },
             { name: "show_quantity_box", selector: { boolean: {} }, default: true },
             { name: "show_submit_button", selector: { boolean: {} }, default: true },
+			{ name: "show_qrscan_button", selector: { boolean: {} }, default: false },
             { name: "show_input_mask", selector: { boolean: {} }, default: true },
 			{ name: "show_plus_minus", selector: { boolean: {} }, default: true },
             { name: "show_quantity_one", selector: { boolean: {} }, default: false },
@@ -768,6 +775,7 @@ class HaShoppingListImproved extends HTMLElement {
 	}
 
     disconnectedCallback() {
+		this._stopScan();
         window.removeEventListener('shopping_list_updated', this._eventListener);
     }
 
@@ -969,8 +977,13 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                     <input id="itemInput" type="text" placeholder="${translate("editor.placeholders.item")}" autocomplete="off">
                     <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">${translate("editor.labels.add_button")}</button>
+					<ha-icon id="qrScanBtn" ${this._showQrScanButton ? '' : ' class="hidden"'}" icon="mdi:qrcode-scan" style="
+						cursor: pointer;
+						width: 24px;
+						height: 24px;
+						vertical-align: middle;
+					"></ha-icon>
                 </div>
-
                 <div class="small">
                     ${ this._subText }
                 </div>
@@ -993,13 +1006,14 @@ class HaShoppingListImproved extends HTMLElement {
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
         this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
-        if (this._showExportButton) this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
+        if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
+		if (this.show_qrscan_button)   this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
 
-        this._listEl = this._shadow.getElementById('list');
+        this._listEl    = this._shadow.getElementById('list');
         this._historyEl = this._shadow.getElementById('history');
-        this._inputEl = this._shadow.getElementById('itemInput');
-        this._qtyEl = this._shadow.getElementById('quantitySelect');
+        this._inputEl   = this._shadow.getElementById('itemInput');
+        this._qtyEl     = this._shadow.getElementById('quantitySelect');
 
         this._renderHistory();
 		
@@ -1023,6 +1037,157 @@ class HaShoppingListImproved extends HTMLElement {
             });
         }
     }
+
+	// QR-Scanner
+	async _onScanSuccess(decodedText, decodedResult) {
+		if (this._addingBusyQR) {
+			if (debugMode) console.warn("[ha-shopping-list-improved][DEBUG] Scan ignored to avoid duplicates");
+			return;
+		}
+		
+		this._stopScan();
+		
+		this._addingBusyQR = true;
+
+		if (debugMode) console.log(`Scan result: ${decodedText}`, decodedResult);
+
+		const lines = decodedText
+			.split(/\r?\n/)
+			.map(line => line.trim())
+			.filter(line => line);
+
+		for (const line of lines) {
+			const quantity = this._getQuantity(line);
+			const name = this._getNameOnly(line);
+
+			this._inputEl.value = name;
+			this._qtyEl.value = quantity;
+
+			await this._onAdd();
+		}
+
+		this._addingBusyQR = false;
+	}
+
+	async _startScan() {
+		const wrapperDivId = `qr-wrapper-${this._entity}`;
+		const scannerDivId = `qr-reader-${this._entity}`;
+
+		let wrapperDiv = document.getElementById(wrapperDivId);
+		if (!wrapperDiv) {
+			wrapperDiv = document.createElement("div");
+			wrapperDiv.id = wrapperDivId;
+
+			wrapperDiv.style.position = "fixed";
+			wrapperDiv.style.top = "50%";
+			wrapperDiv.style.left = "50%";
+			wrapperDiv.style.transform = "translate(-50%, -50%)";
+			wrapperDiv.style.zIndex = "9999";
+			wrapperDiv.style.backgroundColor = "var(--card-background-color, #fff)";
+			wrapperDiv.style.borderRadius = "12px";
+			wrapperDiv.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+			wrapperDiv.style.padding = "16px";
+			wrapperDiv.style.display = "flex";
+			wrapperDiv.style.flexDirection = "column";
+			wrapperDiv.style.alignItems = "center";
+			wrapperDiv.style.maxWidth = "90vw";
+			document.body.appendChild(wrapperDiv);
+		}
+
+		// Scanner-Div
+		let scannerDiv = document.getElementById(scannerDivId);
+		if (!scannerDiv) {
+			scannerDiv = document.createElement("div");
+			scannerDiv.id = scannerDivId;
+			scannerDiv.style.width = "400px";
+			scannerDiv.style.maxWidth = "90vw";
+			wrapperDiv.appendChild(scannerDiv);
+		}
+
+		// Close-Button
+		if (!document.getElementById("qr-close-btn-styles")) {
+			const style = document.createElement("style");
+			style.id = "qr-close-btn-styles";
+			style.textContent = `
+				.qr-close-btn {
+				  display: inline-flex;
+				  align-items: center;
+				  justify-content: center;
+				  padding: 0 16px;
+				  height: 36px;
+				  font-size: 14px;
+				  font-weight: 500;
+				  border-radius: 4px;
+				  border: none;
+				  cursor: pointer;
+				  background-color: var(--primary-color, #03a9f4);
+				  color: var(--primary-text-color, #fff);
+				  transition: background-color 0.2s;
+				  margin-top: 12px;
+				}
+				.qr-close-btn:hover {
+				  background-color: var(--primary-color-hover, #0288d1);
+				}
+			`;
+			document.head.appendChild(style);
+		}
+
+		// Close-Button
+		let closeButton = wrapperDiv.querySelector(".qr-close-btn");
+		if (!closeButton) {
+			closeButton = document.createElement("button");
+			closeButton.textContent = translate("ui.common.close");
+			closeButton.className = "qr-close-btn";
+			closeButton.onclick = () => this._stopScan();
+			wrapperDiv.appendChild(closeButton);
+		}
+
+		// load Html5QrcodeScanner
+		if (!window.Html5QrcodeScanner && !window._html5QrcodeLoading) {
+			window._html5QrcodeLoading = true;
+			await new Promise((resolve, reject) => {
+				const script = document.createElement("script");
+				script.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
+				script.onload = resolve;
+				script.onerror = reject;
+				document.head.appendChild(script);
+			});
+		}
+
+		if (!window.Html5QrcodeScanner) {
+			console.error("Html5QrcodeScanner class not found!");
+			return;
+		}
+
+		// start QR-Scanner
+		const html5QrCodeScanner = new window.Html5QrcodeScanner(scannerDivId, {fps: 10, qrbox: 250, showTorchButton: true }, false);
+
+		html5QrCodeScanner.render(decodedText => this._onScanSuccess(decodedText));
+
+		this._html5QrCodeScanner = html5QrCodeScanner;
+		this._scannerDiv = scannerDiv;
+		this._wrapperDiv = wrapperDiv;
+	}
+
+	_stopScan() {
+		if (this._html5QrCodeScanner) {
+			this._html5QrCodeScanner.clear()
+				.then(() => {
+					if (debugMode) console.log("QR-Scanner stopped.");
+				})
+				.catch(err => {
+					console.error("Error while stopping Html5QrcodeScanner:", err);
+				})
+				.finally(() => {
+					if (this._wrapperDiv) {
+						this._wrapperDiv.remove();
+						this._wrapperDiv = null;
+					}
+					this._scannerDiv = null;
+					this._html5QrCodeScanner = null;
+				});
+		}
+	}
 
     async _refresh() {
 		if (!this._hass) return;
