@@ -1008,7 +1008,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
-		if (this.show_qrscan_button)   this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
+		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
 
         this._listEl    = this._shadow.getElementById('list');
         this._historyEl = this._shadow.getElementById('history');
