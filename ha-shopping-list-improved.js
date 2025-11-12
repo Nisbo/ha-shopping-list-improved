@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-7
+ * Version: 1.2.0-BETA-8
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -29,6 +29,31 @@ const TRANSLATIONS = {
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Schließen",
+
+        "ui.todo.hours"                                 : "Stunden",
+        "ui.todo.days"                                  : "Tage",
+        "ui.todo.months"                                : "Monate",
+        "ui.todo.due_every"                             : "Fälligkeit alle:",
+        "ui.todo.next_due"                              : "Nächste Fälligkeit:",
+        "ui.todo.remove_due"                            : "Fälligkeitsdatum entfernen",
+        "ui.todo.next_due"                              : "nächste Fälligkeit setzen",
+        "ui.todo.next_due_now"                          : "nächste Fälligkeit ab jetzt setzen",
+        "ui.todo.edit"                                  : "Eintrag bearbeiten",
+        "ui.todo.delete"                                : "Eintrag löschen",
+        "ui.todo.interval_once"                         : "Einmalig",
+        "ui.todo.due_label"                             : "Fällig",
+        "ui.todo.select_action"                         : "Wähle eine Aktion für diesen Eintrag:",
+        "ui.todo.list.year"                             : "Jahr",
+        "ui.todo.list.years"                            : "Jahre",
+        "ui.todo.list.month"                            : "Monat",
+        "ui.todo.list.months"                           : "Monate",
+        "ui.todo.list.day"                              : "Tag",
+        "ui.todo.list.days"                             : "Tage",
+        "ui.todo.list.hour"                             : "Stunde",
+        "ui.todo.list.hours"                            : "Stunden",
+        "ui.todo.list.minute"                           : "Minute",
+        "ui.todo.list.minutes"                          : "Minuten",
+        "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.", 
 		
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
@@ -46,11 +71,13 @@ const TRANSLATIONS = {
         "editor.labels.chip_standard"                   : "Standard-Chip",
 		"editor.labels.chip_global"						: "Globaler Chip",
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
+		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
 		"editor.labels.categories"                   	: "Kategorien",
         "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
 		"editor.labels.dishes" 							: "Gerichte",
+        "editor.labels.mode"                            : "Modus",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -75,8 +102,11 @@ const TRANSLATIONS = {
 		"editor.options.category_merge.local_first"     : "Lokale Kategorien zuerst, dann globale",
 		"editor.options.category_merge.global_first"    : "Globale Kategorien zuerst, dann lokale",
 		"editor.options.category_merge.global_combined" : "Alle Kategorien kombiniert und alphabetisch sortiert",
+        "editor.options.mode.shopping"                  : "Einkaufsliste",
+        "editor.options.mode.todo"                      : "To-Do-Liste",
 		
         "editor.labels.entity"                          : "To-Do-Liste",
+        "editor.helpers.mode"                           : "Legt fest, wie die Liste verwendet wird. Im Modus „Einkaufsliste“ stehen erweiterte Funktionen zur originalen Einkaufsliste zur Verfügung, jedoch ohne Fälligkeiten. Im Modus „To-Do-Liste“ können zusätzlich Fälligkeitsdaten gesetzt und verwaltet werden, die Bedienung unterscheidet sich dabei leicht. Hinweis: Die originale Home Assistant Einkaufsliste mit der Entität 'Einkaufsliste' unterstützt keine Fälligkeiten. Zusätzlich gibt es im To-Do-Modus keine Anzahleingabe, keine Plus- und Minus-Buttons, keine Export-Buttons sowie keinen Button, um erledigte Einträge zu löschen.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
         "editor.labels.chip_merge"                      : "Chips kombinieren",
@@ -99,7 +129,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "PDF Export-Button anzeigen",
         "editor.labels.show_export_button"              : "HTML Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
-		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen",
+		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen (Nur im Modus 'Einkaufsliste')",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
@@ -132,7 +162,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_export_button_pdf"         : "Zeigt den PDF Export-Button unten an. Mit der PDF-Export-Funktion kannst du die aktuelle Einkaufsliste als PDF-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_export_button"             : "Zeigt den HTML Export-Button unten an. Mit der HTML-Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
-		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht.",
+		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht. Im Modus 'To-Do-Liste' sind diese Buttons nicht verfügbar.",
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
@@ -170,6 +200,31 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Close",
 
+        "ui.todo.hours"                                 : "Hours",
+        "ui.todo.days"                                  : "Days",
+        "ui.todo.months"                                : "Months",
+        "ui.todo.due_every"                             : "Due every:",
+        "ui.todo.next_due"                              : "Next due:",
+        "ui.todo.remove_due"                            : "Remove due date",
+        "ui.todo.next_due"                              : "Set next due date",
+        "ui.todo.next_due_now"                          : "Set next due date from now",
+        "ui.todo.edit"                                  : "Edit entry",
+        "ui.todo.delete"                                : "Delete entry",
+        "ui.todo.interval_once"                         : "One-time",
+        "ui.todo.due_label"                             : "Due",
+        "ui.todo.select_action"                         : "Select an action for this item:",
+        "ui.todo.list.year"                             : "Year",
+        "ui.todo.list.years"                            : "Years",
+        "ui.todo.list.month"                            : "Month",
+        "ui.todo.list.months"                           : "Months",
+        "ui.todo.list.day"                              : "Day",
+        "ui.todo.list.days"                             : "Days",
+        "ui.todo.list.hour"                             : "Hour",
+        "ui.todo.list.hours"                            : "Hours",
+        "ui.todo.list.minute"                           : "Minute",
+        "ui.todo.list.minutes"                          : "Minutes",
+        "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.", 
+
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
         "editor.labels.add_button"                      : "Add",
@@ -186,11 +241,13 @@ const TRANSLATIONS = {
         "editor.labels.chip_standard"                   : "Standard chip",
 		"editor.labels.chip_global"						: "Global Chip",
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
+		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
 		"editor.labels.categories"                   	: "Categories",
         "editor.labels.show_cat_count"                  : "Show item count in categories ?  ",
         "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
 		"editor.labels.dishes" 							: "Dishes",
+        "editor.labels.mode"                            : "Mode",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -215,6 +272,8 @@ const TRANSLATIONS = {
 		"editor.options.category_merge.local_first"     : "Local categories first, then global",
 		"editor.options.category_merge.global_first"    : "Global categories first, then local",
 		"editor.options.category_merge.global_combined" : "All categories combined and sorted alphabetically",
+        "editor.options.mode.shopping"                  : "Shopping list",
+        "editor.options.mode.todo"                      : "To-do list",
 
         "editor.labels.entity"                          : "To-Do-List",
         "editor.labels.highlight_words"                 : "Highlight words",
@@ -239,7 +298,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "Show PDF Export button",
         "editor.labels.show_export_button"              : "Show HTML Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
-		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons",
+		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons (Only in 'Shopping List' mode)",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
         "editor.labels.sub_text"                        : "Hint text below the input field",
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
@@ -250,7 +309,8 @@ const TRANSLATIONS = {
 		"editor.labels.category_file"                   : "Path to the text file with the global categories",
 
         "editor.helpers.entity"                         : "If no To-Do list is selected, Home Assistant's default shopping list will be used automatically.",
-		"editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
+        "editor.helpers.mode"                           : "Defines how the list is used. In 'Shopping List' mode, extended functions for the original shopping list are available, but without due dates. In 'To-Do List' mode, due dates can additionally be set and managed, with slightly different handling. Note: The original Home Assistant shopping list entity 'Shopping List' does not support due dates. In To-Do mode, there is also no quantity input, no plus or minus buttons, no export buttons, and no button to delete completed entries.",
+        "editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
 		"editor.helpers.chip_merge"                     : "Determines how global, standard and browser chips are combined and displayed.",
 		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
@@ -272,7 +332,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_export_button_pdf"         : "Shows the PDF Export button on the bottom. With the PDF-Export function, you can download the current todo list as an PDF file for offline use.",
         "editor.helpers.show_export_button"             : "Shows the HTML Export button on the bottom. With the HTML-Export function, you can download the current todo list as an HTML file for offline use.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
-		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity.",
+		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity. (Not available in 'To-Do List' mode).",
 		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
@@ -382,6 +442,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
+        this._showClearButton       = (config.show_clear_button === false) ? false : true;
         this._longLivedToken        = config.longlived_token || "";
         this._externalUrl           = config.external_url || "";
         this._bubbleCardMode        = (config.bubble_card === true) ? true : false;
@@ -389,7 +450,20 @@ class HaShoppingListImproved extends HTMLElement {
 		this._categoryFile          = config.category_file || "";
 		this._categoryMergeMode		= ["standard_only", "global_only", "local_first", "global_first", "global_combined"].includes(config.category_merge_mode) ? config.category_merge_mode : "standard_only";
 		this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
-		
+		this._mode                  = (config.mode === "todo") ? "todo" : "shopping";
+        this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
+        this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
+        this._todoYellowH           = config.todo_yellow_h || 10;   // Hours   10 Minutes
+        this._todoYellowS           = config.todo_yellow_s || 120;  // Date only 2 hours
+
+        // Hide Quantity Selection, bottom buttons in To-Do Mode
+        if (this._mode === "todo") {
+            this._showQuantitySelection = false;
+            this._showExportButton      = false;
+            this._showExportButtonPdf   = false;
+            this._showClearButton       = false;
+        }
+
         if (typeof config.highlight_words === "string") {
             this._highlightWords = config.highlight_words.split(/\s*[,;]\s*/).filter(c => c);
         } else if (Array.isArray(config.highlight_words)) {
@@ -429,7 +503,6 @@ class HaShoppingListImproved extends HTMLElement {
         this._loadGlobalCategoriesFromFile();
     }
 
-
     // Global Chips
     async _loadGlobalChipsFromFile() {
         if (!this._chipFile || !this._chipFile.trim()) {
@@ -455,7 +528,6 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 	
-
 	// Global Categories
 	async _loadGlobalCategoriesFromFile() {
 		if (!this._categoryFile || !this._categoryFile.trim()) {
@@ -506,6 +578,7 @@ class HaShoppingListImproved extends HTMLElement {
             chips_position: "auto",
             quantity: "end",
             acknowledged: "show",
+            mode: "shopping",
             chip_click: "single",
             sub_text: translate("editor.defaults.sub_text"),
             chip_merge: "combined",
@@ -528,6 +601,20 @@ class HaShoppingListImproved extends HTMLElement {
     static getConfigForm() {
     return {
         schema: [
+            {
+                name: "mode",
+                label: translate("editor.labels.mode"),
+                selector: {
+                    select: {
+                        mode: "dropdown",
+                        options: [
+                            { value: "shopping", label: translate("editor.options.mode.shopping") },
+                            { value: "todo",     label: translate("editor.options.mode.todo") }
+                        ]
+                    }
+                },
+                default: "shopping"
+            },
             {
                 name: "entity",
                 required: false,
@@ -996,7 +1083,7 @@ class HaShoppingListImproved extends HTMLElement {
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
                     ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;` : ``}
                     ${this._showExportButton ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
-                    <button id="clearBtn">${translate("editor.labels.clear_button")}</button>
+                    ${this._showClearButton ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
                 </div>
             </div>
         `;
@@ -1005,7 +1092,7 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
-        this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
+        if (this._showClearButton)     this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
 		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
@@ -1037,6 +1124,58 @@ class HaShoppingListImproved extends HTMLElement {
             });
         }
     }
+
+	// EAN
+	async _checkEAN(text) {
+        const eanRegex = /^\d{13}$/;
+        if (!eanRegex.test(text)) {
+            return { name: text, brands: null, imageUrl: null };
+        }
+
+        const url = `https://world.openfoodfacts.org/api/v2/product/${text}.json`;
+
+        try {
+            const response = await fetch(url, {
+            headers: {
+                "Accept": "application/json",
+                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v1.2.0)"
+            }
+            });
+
+            if (!response.ok) {
+                console.error(`HTTP error: ${response.status}`);
+                return false;
+            }
+
+            const data = await response.json();
+
+            if (data.status === 1 && data.product) {
+            const p = data.product;
+
+            const lang = detectLanguage();
+
+            // Productname: local language -> English -> common Name
+            const name =
+                p[`product_name_${lang}`]?.trim() ||
+                p.product_name_en?.trim() ||
+                p.product_name?.trim() ||
+                false;
+
+            const brands = p.brands?.trim() || false;
+            let imageUrl = p.image_front_thumb_url || false;
+
+            if (debugMode) console.log("[Product]", { name, brands, imageUrl });
+
+            return { name, brands, imageUrl };
+            }
+
+            return null;
+
+        } catch (error) {
+            console.error("Error trying EAN request :", error);
+            return null;
+        }
+	}
 
 	// QR-Scanner
 	async _onScanSuccess(decodedText, decodedResult) {
@@ -1161,8 +1300,90 @@ class HaShoppingListImproved extends HTMLElement {
 
 		// start QR-Scanner
 		const html5QrCodeScanner = new window.Html5QrcodeScanner(scannerDivId, {fps: 10, qrbox: 250, showTorchButton: true }, false);
-
 		html5QrCodeScanner.render(decodedText => this._onScanSuccess(decodedText));
+
+        // wait till rendering is finished
+        setTimeout(() => {
+            const btn = scannerDiv.querySelector("button");
+            if (btn) {
+                btn.style.fontSize = "24px";
+                btn.style.padding = "10px 20px";
+                btn.style.borderRadius = "8px";
+                btn.className = "qr-close-btn";
+            }
+            // Link "Scan an Image File"
+            const scanFileLink = scannerDiv.querySelector("div.html5-qrcode-file-input-wrapper > label");
+            if (scanFileLink) {
+                scanFileLink.style.fontSize = "20px";
+                scanFileLink.style.fontWeight = "bold";
+            }
+            
+            const scanFileSpan = document.getElementById("html5-qrcode-anchor-scan-type-change");
+            if (scanFileSpan) {
+                scanFileSpan.style.fontSize = "20px";
+                scanFileSpan.style.fontWeight = "bold"; 
+                scanFileSpan.className = "qr-close-btn";
+                scanFileSpan.style.textDecoration = "none";
+                scanFileSpan.style.display = "inline-flex";
+                scanFileSpan.style.alignItems = "center"; 
+                scanFileSpan.style.justifyContent = "center";
+                scanFileSpan.style.height = "36px";
+                scanFileSpan.style.padding = "0 16px";
+            }
+        }, 100);
+
+        // Observer to monitor changes ion the DOM to detect changes in the buttons
+        const observer = new MutationObserver(() => {
+            const scanFileSpan = document.getElementById("html5-qrcode-anchor-scan-type-change");
+            if (scanFileSpan) {
+                // if "display: none" dont change to avaoid didplaying an displayed element
+                const currentDisplay = getComputedStyle(scanFileSpan).display;
+                if (currentDisplay !== "none") {
+                    scanFileSpan.style.fontSize = "20px";
+                    scanFileSpan.style.fontWeight = "bold";
+                    scanFileSpan.style.textDecoration = "none";
+                    scanFileSpan.style.display = "inline-flex";
+                    scanFileSpan.style.alignItems = "center";
+                    scanFileSpan.style.justifyContent = "center";
+                    scanFileSpan.style.height = "36px";
+                    scanFileSpan.style.padding = "0 16px";
+                    scanFileSpan.className = "qr-close-btn";
+                }
+            }
+
+            // html5-qrcode-button-camera-start
+            const cameraStart = document.getElementById("html5-qrcode-button-camera-start");
+            if (cameraStart) {
+                const currentDisplay = getComputedStyle(cameraStart).display;
+                if (currentDisplay !== "none") {
+                    cameraStart.style.fontSize = "20px";
+                    //cameraStart.style.fontWeight = "bold";
+                    cameraStart.style.textDecoration = "none";
+                    cameraStart.style.display = "inline-flex";
+                    cameraStart.style.alignItems = "center";
+                    cameraStart.style.justifyContent = "center";
+                    cameraStart.style.height = "36px";
+                    cameraStart.style.padding = "0 16px";
+                    cameraStart.className = "qr-close-btn";
+                }
+            }	
+            
+            const btn = scannerDiv.querySelector("button");
+            if (btn) {
+                // html5-qrcode-anchor-scan-type-change
+                btn.style.fontSize = "24px";
+                btn.style.padding = "10px 20px";
+                btn.style.borderRadius = "8px";
+                btn.className = "qr-close-btn";
+                
+                //btn.style.display = "inline-flex";
+                btn.style.alignItems = "center";
+                btn.style.justifyContent = "center";
+            }
+        });
+
+        // start observer for Scanner-Container
+        observer.observe(scannerDiv, { childList: true, subtree: true });
 
 		this._html5QrCodeScanner = html5QrCodeScanner;
 		this._scannerDiv = scannerDiv;
@@ -1231,7 +1452,8 @@ class HaShoppingListImproved extends HTMLElement {
             this._items = entityData.items.map(item => ({
                 name: (item.summary || "").trim(),
                 complete: item.status === "completed",
-                id: item.uid
+                id: item.uid,
+                due: item.due || null
             }));
 
 			// Sort function: A --> Z, ignore quantity and category
@@ -1393,11 +1615,36 @@ class HaShoppingListImproved extends HTMLElement {
         let n = name.replace(/^@.+?@\s*/, '');       // Category
         n = n.replace(/^(\d+)×\s*/, '');             // Quantity beginning
         n = n.replace(/\s*\(\d+\)$/, '');            // Quantity end
+        n = n.replace(/\s*\{\{.*?\}\}\s*$/, '');     // Intervall {{…}}
         return n.trim();
     }
 
+    // Intervall (e. g. "23D" from {{23D}})
+    _getInterval(name) {
+        const match = name.match(/\{\{\s*(\d+\s*[HDM])\s*\}\}/);
+        return match ? match[1].trim() : null;
+    }
+
+    // Remove only Intervall {{…}}
+    _removeInterval(name) {
+        return name.replace(/\s*\{\{.*?\}\}\s*$/, '').trim();
+    }
+
     // Edit PopUp for adding/editing items with category selection
-    async editItemPopup(currentName, mode = "edit") {
+    async editItemPopup(item, mode = "edit", imageUrl = false) {
+        let currentName;
+        let due;
+
+        // check if item is object or string
+        if (item && typeof item === 'object' && !Array.isArray(item)) {
+            currentName = item.name || '';
+            due = item.due || null;
+        } else if (typeof item === 'string') {
+            currentName = item;
+        } else {
+            currentName = '';
+        }
+
         return new Promise((resolve) => {
             let currentCategory = null;
             let nameOnly = currentName;
@@ -1458,6 +1705,16 @@ class HaShoppingListImproved extends HTMLElement {
             popup.style.color = 'var(--primary-text-color, black)';
             popup.style.pointerEvents = 'auto';
 
+            // EAN Image
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.style.maxWidth = '100%';
+                img.style.marginBottom = '12px';
+                img.style.borderRadius = '4px';
+                popup.appendChild(img);
+            }
+
             // Label
             const label = document.createElement('p');
             label.textContent = mode === "add"
@@ -1476,8 +1733,8 @@ class HaShoppingListImproved extends HTMLElement {
             }
 
             // Input
-            const input = document.createElement('input');
-            input.type = 'text';
+            const input = document.createElement('ha-textfield');
+            input.type = 'input';
             input.value = displayName;
             input.style.width = '100%';
             input.style.padding = '6px 8px';
@@ -1703,6 +1960,135 @@ class HaShoppingListImproved extends HTMLElement {
             popup.appendChild(label);
             popup.appendChild(input);
             popup.appendChild(catContainer);
+            
+            // TooDo Mode
+            let intervalInput;
+            let intervalUnitSelect;
+            let dueDateInput;
+            let dueTimeInput;
+            let currentInterval = this._getInterval(currentName);
+
+            if (this._mode === "todo") {
+                const container = document.createElement('div');
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+                container.style.alignItems = 'flex-start';
+                container.style.gap = '12px';
+                container.style.marginBottom = '12px';
+
+                // Intervall
+                const intervalLabel = document.createElement('label');
+                intervalLabel.textContent = translate("ui.todo.due_every");
+                intervalLabel.style.fontWeight = '500';
+                container.appendChild(intervalLabel);
+
+                const intervalRow = document.createElement('div');
+                intervalRow.style.display = 'flex';
+                intervalRow.style.gap = '8px';
+                intervalRow.style.alignItems = 'center';
+
+                // ha-textfield
+                intervalInput = document.createElement('ha-textfield');
+                intervalInput.type = 'number';
+                intervalInput.min = '1';
+                intervalInput.value = '';
+                intervalInput.style.width = '130px';
+                intervalInput.setAttribute('outlined', '');
+
+                // HA Select for interval
+                intervalUnitSelect = document.createElement('ha-select');
+                intervalUnitSelect.style.width = '120px';
+                intervalUnitSelect.setAttribute('naturalMenuWidth', '');
+                intervalUnitSelect.setAttribute('fixedMenuPosition', '');
+
+                ['H', 'D', 'M'].forEach((unit, index) => {
+                    const labels = [translate("ui.todo.hours"), translate("ui.todo.days"), translate("ui.todo.months")];
+                    const option = document.createElement('mwc-list-item');
+                    option.setAttribute('value', unit);
+                    option.textContent = labels[index];
+                    intervalUnitSelect.appendChild(option);
+                });
+
+                intervalRow.appendChild(intervalInput);
+                intervalRow.appendChild(intervalUnitSelect);
+                container.appendChild(intervalRow);
+
+                // Format {{23D}} H = hours, D = Days, M = Mounths
+                if (currentInterval) {
+                    const match = currentInterval.match(/^(\d+)\s*([HDM])$/i);
+                    if (match) {
+                        const [, value, unit] = match;
+                        intervalInput.value = value;
+                        intervalUnitSelect.value = unit.toUpperCase();
+                    }
+                }
+
+                // Date and Time Picker
+                const dueDateLabel = document.createElement('label');
+                dueDateLabel.textContent = translate("ui.todo.next_due");
+                dueDateLabel.style.fontWeight = '500';
+                container.appendChild(dueDateLabel);
+
+                const dueRow = document.createElement('div');
+                dueRow.style.display = 'flex';
+                dueRow.style.gap = '8px';
+                dueRow.style.alignItems = 'center';
+
+                dueDateInput = document.createElement('input');
+                dueDateInput.type = 'date';
+                dueDateInput.class = 'mdc-text-field__input';
+                dueDateInput.style.width = '150px';
+                dueDateInput.style.height = '34px';
+
+                dueTimeInput = document.createElement('input');
+                dueTimeInput.type = 'time';
+                dueTimeInput.style.width = '90px';
+                dueTimeInput.style.height = '34px';
+
+                // Format existing due date/time
+                if (due) {
+                    try {
+                        if (due.length === 10) {
+                            // only date --> Format "YYYY-MM-DD"
+                            dueDateInput.value = due;
+                            dueTimeInput.value = '';
+                        } else {
+                            const dt = new Date(due);
+                            if (!isNaN(dt)) {
+                                // date --> Format yyyy-MM-dd for input[type=date]
+                                const yyyy = dt.getFullYear();
+                                const mm = String(dt.getMonth() + 1).padStart(2, '0');
+                                const dd = String(dt.getDate()).padStart(2, '0');
+                                dueDateInput.value = `${yyyy}-${mm}-${dd}`;
+
+                                // Time --> Format HH:mm for input[type=time]
+                                const hh = String(dt.getHours()).padStart(2, '0');
+                                const min = String(dt.getMinutes()).padStart(2, '0');
+
+                                // if time = 00:00 --> empty time field
+                                //if (hh === '00' && min === '00') {
+                                //    dueTimeInput.value = '';
+                                //} else {
+                                //    dueTimeInput.value = `${hh}:${min}`;
+                                //}
+
+                                dueTimeInput.value = `${hh}:${min}`;
+                            }
+                        }
+                    } catch (e) {
+                        // Parsing error, use default empty values
+                        dueDateInput.value = '';
+                        dueTimeInput.value = '';
+                    }
+                }
+
+                dueRow.appendChild(dueDateInput);
+                dueRow.appendChild(dueTimeInput);
+                container.appendChild(dueRow);
+
+                popup.appendChild(container);
+            }
+
             popup.appendChild(btnContainer);
             overlay.appendChild(popup);
             document.body.appendChild(overlay);
@@ -1719,7 +2105,7 @@ class HaShoppingListImproved extends HTMLElement {
                 document.body.removeChild(overlay);
                 resolve(null);
             });
-
+            /*
             okBtn.addEventListener('click', () => {
                 let finalName = input.value.trim();
                 if (selectedCategory) {
@@ -1728,14 +2114,52 @@ class HaShoppingListImproved extends HTMLElement {
                 document.body.removeChild(overlay);
                 resolve(finalName || null);
             });
+            */
+
+            okBtn.addEventListener('click', () => {
+                let finalName = input.value.trim();
+                if (selectedCategory) {
+                    finalName = `@${selectedCategory}@ ${finalName}`;
+                }
+
+                let result = { name: finalName };
+
+                if (this._mode === "todo") {
+                    const intervalValue = intervalInput.value.trim();
+                    const intervalUnit = intervalUnitSelect.value; // H, D or M
+
+                    if (intervalValue && !isNaN(intervalValue) && intervalValue > 0 && ['H', 'D', 'M'].includes(intervalUnit)) {
+                        result.name += ` {{${intervalValue}${intervalUnit}}}`;
+                    }
+
+                    const dueDateValue = dueDateInput.value;   // yyyy-mm-dd
+                    const dueTimeValue = dueTimeInput.value;   // HH:MM
+
+                    if (dueDateValue) {
+                        if (dueTimeValue) {
+                            result.due_datetime = `${dueDateValue} ${dueTimeValue}:00`;
+                            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] due_datetime", result.due_datetime);
+                        } else {
+                            result.due_date = dueDateValue;
+                            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] due_date", result.due_date);
+                        }
+                    } else {
+                        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] dueValue <empty>");
+                    }
+                }
+
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] finalName", result.name);
+                document.body.removeChild(overlay);
+                resolve(result);
+            });
 
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') okBtn.click();
                 if (e.key === 'Escape') cancelBtn.click();
             });
 
-            input.focus();
-            input.select();
+            //input.focus();
+            //input.select();
         });
     }
 
@@ -1758,7 +2182,7 @@ class HaShoppingListImproved extends HTMLElement {
         completeBtn.style.marginRight = '8px';
         completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
 
-        // Name Span
+        // Name Span (Container)
         const nameSpan = document.createElement('div');
         nameSpan.className = 'name';
 
@@ -1772,30 +2196,267 @@ class HaShoppingListImproved extends HTMLElement {
                 : `${nameOnly} (${qty})`;
         }
 
-        nameSpan.textContent = displayName;
-		nameSpan.addEventListener('dblclick', async () => {
-			const newName = await this.editItemPopup(item.name, "edit");
-			if (!newName || newName === item.name) return;
+        if (item.due && this._mode === "todo") {
+            nameSpan.style.width = '100%';
 
-			// check if delete button was pressed
-			if (newName === "__DELETE__") {
-				await this._removeItem(item);
-				return;
-			}
+            // Name + Intervall
+            const firstRow = document.createElement('div');
+            firstRow.style.display = 'flex';
+            firstRow.style.justifyContent = 'space-between';
+            firstRow.style.alignItems = 'center';
 
-			try {
-				await this._hass.connection.sendMessagePromise({
-					type: "call_service",
-					domain: "todo",
-					service: "update_item",
-					target: { entity_id: this._entity },
-					service_data: { item: item.id, rename: newName }
-				});
-				await this._refresh();
-			} catch (err) {
-				console.error('[ha-shopping-list-improved] Unable to rename item:', err);
-			}
-		});
+            const nameDiv = document.createElement('div');
+            nameDiv.textContent = displayName;
+            nameDiv.style.flex = '1';
+
+            // Interval
+            let interval = this._getInterval(item.name);
+            const intervalText = interval ? `${interval}` : translate("ui.todo.interval_once");
+            const intervalDiv = document.createElement('div');
+            intervalDiv.textContent = intervalText;
+            intervalDiv.style.whiteSpace = 'nowrap';
+            intervalDiv.style.marginLeft = '12px';
+            intervalDiv.style.textAlign = 'right';
+
+            firstRow.appendChild(nameDiv);
+            firstRow.appendChild(intervalDiv);
+            nameSpan.appendChild(firstRow);
+
+            // DueDate
+            const dueDate = new Date(item.due);
+            const now = new Date();
+
+            const hasTime = item.due.includes('T') && item.due.includes(':');
+            const userLocale = this._hass?.language || navigator.language || 'de-DE';
+
+            function uses12HourFormat(locale) {
+                const dtf = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
+                return dtf.resolvedOptions().hour12;
+            }
+
+            const is12Hour = uses12HourFormat(userLocale);
+
+            const options = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                ...(hasTime ? { hour: '2-digit', minute: '2-digit', hour12: is12Hour } : {})
+            };
+
+            const formattedDate = dueDate.toLocaleString(userLocale, options);
+
+            const baseFontSize = this._listFontSize;
+            const smallerFontSize = Math.round(baseFontSize * 0.8);
+
+            const dueDiv = document.createElement('div');
+            dueDiv.style.fontSize = 'smaller';
+            dueDiv.style.display = 'flex';
+            dueDiv.style.justifyContent = 'space-between';
+            dueDiv.style.alignItems = 'center';
+
+            const dueLeft = document.createElement('div');
+            dueLeft.style.display = 'flex';
+            dueLeft.style.alignItems = 'center';
+
+            const icon = document.createElement('ha-icon');
+            icon.setAttribute('icon', 'mdi:calendar-clock');
+            icon.style.verticalAlign = 'middle';
+            icon.style.marginRight = '6px';
+            icon.style.fontSize = smallerFontSize + 'px';
+            icon.style.setProperty('--mdc-icon-size', smallerFontSize + 'px');
+
+            dueLeft.appendChild(icon);
+            dueLeft.appendChild(document.createTextNode(formattedDate));
+
+            // time till due - right side
+            const dueRight = document.createElement('div');
+            dueRight.style.whiteSpace = 'nowrap';
+            dueRight.style.marginLeft = '12px';
+            dueRight.style.textAlign = 'right';
+
+            const diffMs = dueDate - now;
+
+            if (diffMs > 0) {
+                const msInMinute = 1000 * 60;
+                const msInHour = msInMinute * 60;
+                const msInDay = msInHour * 24;
+                const msInMonth = msInDay * 30;  // round about
+                const msInYear = msInDay * 365;  // round about
+
+                let remaining = diffMs;
+
+                const years = Math.floor(remaining / msInYear);
+                remaining %= msInYear;
+
+                const months = Math.floor(remaining / msInMonth);
+                remaining %= msInMonth;
+
+                const days = Math.floor(remaining / msInDay);
+                remaining %= msInDay;
+
+                const hours = Math.floor(remaining / msInHour);
+                remaining %= msInHour;
+
+                const minutes = Math.floor(remaining / msInMinute);
+
+                // Singular/Plural labels
+                const timeLabels = {
+                    year:   [translate("ui.todo.list.year"),   translate("ui.todo.list.years")],
+                    month:  [translate("ui.todo.list.month"),  translate("ui.todo.list.months")],
+                    day:    [translate("ui.todo.list.day"),    translate("ui.todo.list.days")],
+                    hour:   [translate("ui.todo.list.hour"),   translate("ui.todo.list.hours")],
+                    minute: [translate("ui.todo.list.minute"), translate("ui.todo.list.minutes")]
+                };
+
+                // helper for format time parts
+                function formatTime(value, unit) {
+                    const label = value === 1 ? timeLabels[unit][0] : timeLabels[unit][1];
+                    return `${value} ${label}`;
+                }
+
+                // Filter only vaues > 0
+                const timeParts = [
+                    {value: years, unit: 'year'},
+                    {value: months, unit: 'month'},
+                    {value: days, unit: 'day'},
+                    {value: hours, unit: 'hour'},
+                    {value: minutes, unit: 'minute'},
+                ].filter(part => part.value > 0);
+
+                let displayParts = [];
+
+                if (timeParts.length === 0) {
+                    displayParts.push('0 Minuten');
+                } else if (timeParts.length === 1) {
+                    if (timeParts[0].unit === 'minute') {
+                        displayParts.push(formatTime(timeParts[0].value, 'minute'));
+                    } else {
+                        displayParts.push(formatTime(timeParts[0].value, timeParts[0].unit));
+                        // add next smaller unit if applicable
+                        const unitsOrder = ['year', 'month', 'day', 'hour', 'minute'];
+                        const idx = unitsOrder.indexOf(timeParts[0].unit);
+                        if (idx + 1 < unitsOrder.length) {
+                            const nextUnit = unitsOrder[idx + 1];
+                            const nextPart = timeParts.find(p => p.unit === nextUnit);
+                            if (nextPart) {
+                                displayParts.push(formatTime(nextPart.value, nextUnit));
+                            }
+                        }
+                    }
+                } else {
+                    displayParts.push(formatTime(timeParts[0].value, timeParts[0].unit));
+                    displayParts.push(formatTime(timeParts[1].value, timeParts[1].unit));
+                }
+
+                dueRight.textContent = displayParts.join(' ');
+
+                let remainingMinutes = null;
+
+                // if item.due is a date string without time, interpret as midnight
+                let dueDateTime = item.due ? new Date(item.due) : null;
+                if (dueDateTime) {
+                    // if time part is missing, set to midnight
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(item.due)) {
+                        dueDateTime = new Date(item.due + "T00:00:00");
+                    }
+                    const now = new Date();
+                    remainingMinutes = (dueDateTime - now) / (1000 * 60);
+                }
+
+                if (remainingMinutes !== null) {
+                    let orangeThreshold = null;
+
+                    if (!interval) {
+                        orangeThreshold = this._todoYellowS;
+                    } else if (interval.includes('D')) {
+                        orangeThreshold = this._todoYellowD;
+                    } else if (interval.includes('H')) {
+                        orangeThreshold = this._todoYellowH;
+                    } else if (interval.includes('M')) {
+                        orangeThreshold = this._todoYellowM;
+                    }
+
+                    if (remainingMinutes > 0 && remainingMinutes <= orangeThreshold) {
+                        dueDiv.style.color = '#f0ad4e';
+                    } else if (remainingMinutes <= 0) {
+                        dueDiv.style.color = '#d9534f';
+                        dueRight.textContent = translate("ui.todo.due_label");
+                    } else {
+                        dueDiv.style.color = '';
+                    }
+                } else {
+                    dueDiv.style.color = '';
+                }
+            } else {
+                dueRight.textContent = translate("ui.todo.due_label");
+                dueDiv.style.color = '#d9534f';
+            }
+
+            dueDiv.appendChild(dueLeft);
+            dueDiv.appendChild(dueRight);
+
+            nameSpan.appendChild(dueDiv);
+        } else {
+            // Shopping Mode
+            nameSpan.textContent = displayName;
+        }
+
+        nameSpan.addEventListener('dblclick', async () => {
+
+            if(debugMode) console.debug('[ha-shopping-list-improved] due:', item.due);
+
+            const updatedItem = await this.editItemPopup(item, "edit", false);
+
+            let newName = '';
+            let dueDate = null;
+            let dueDateTime = null;
+
+            if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
+                newName = updatedItem.name || '';
+
+                if (updatedItem.due_datetime) {
+                    dueDateTime = updatedItem.due_datetime;
+                } else if (updatedItem.due_date) {
+                    dueDate = updatedItem.due_date;
+                }
+            } else if (typeof updatedItem === 'string') {
+                newName = updatedItem;
+            }
+
+            if (!newName) return; // || newName === item.name
+
+            if (newName === "__DELETE__") {
+                await this._removeItem(item);
+                return;
+            }
+
+            // ServiceData
+            const serviceData = {
+                item: item.id,
+                rename: newName,
+            };
+
+            if (dueDateTime) {
+                serviceData.due_datetime = dueDateTime;
+            } else if (dueDate) {
+                serviceData.due_date = dueDate;
+            }
+
+            if(debugMode) console.debug('[ha-shopping-list-improved] serviceData:', serviceData);
+
+            try {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: serviceData,
+                });
+                await this._refresh();
+            } catch (err) {
+                console.error('[ha-shopping-list-improved] Unable to rename item:', err);
+            }
+        });
 
         left.appendChild(completeBtn);
         left.appendChild(nameSpan);
@@ -1899,9 +2560,9 @@ class HaShoppingListImproved extends HTMLElement {
             minusBtn._processing = false;
         });
 
-		if (this._showPlusMinus){
-				actions.appendChild(plusBtn);
-				actions.appendChild(minusBtn);
+		if (this._showPlusMinus && this._mode === "shopping") {
+			actions.appendChild(plusBtn);
+			actions.appendChild(minusBtn);
 		}
 		
         li.appendChild(left);
@@ -1917,8 +2578,32 @@ class HaShoppingListImproved extends HTMLElement {
         this._addingBusy = true;
 
         try {
-            let inputName = this._inputEl.value.trim();
-            if (!inputName) return;
+			let inputName = this._inputEl.value.trim();
+			if (!inputName) return;
+
+			// EAN check (13 digits)
+			let imageUrl = false;
+			let eanCheck = await this._checkEAN(inputName);
+
+			if (!eanCheck) {
+				await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
+			  
+				this._addingBusy = false;
+				return;
+			} else {
+				if (eanCheck.brands) {
+					inputName = eanCheck.brands + " - " + eanCheck.name;
+				} else {
+					inputName = eanCheck.name;
+				}
+				
+				imageUrl = eanCheck.imageUrl;
+
+				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Product name:", inputName);
+				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Brand:", eanCheck.brands);
+				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Thumbnail URL:", imageUrl);
+			}
+
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
             const quantityPosition = this._quantityPosition; // "beginning" or "end"
 
@@ -1958,20 +2643,52 @@ class HaShoppingListImproved extends HTMLElement {
             }
 
             // 4. If still no category and popup enabled, ask the user
+            let dueDate = null;
+            let dueDateTime = null;
+            let interval = null;
             if (!existing && !assignedCategory && this._showCatPopUp) {
-                const result = await this.editItemPopup(inputName, "add");
-                if (!result) {
+                const updatedItem = await this.editItemPopup(inputName, "add", imageUrl);
+                if (!updatedItem) {
                     this._addingBusy = false;
                     return;
                 }
-                inputName = this._getNameOnly(result);
-                assignedCategory = this._getCategory(result);
+
+                let newName = '';
+                // Check if updatedItem is an object
+                if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
+                    newName = updatedItem.name || '';
+                    if (updatedItem.due_datetime) {
+                        dueDateTime = updatedItem.due_datetime;
+                    } else if (updatedItem.due_date) {
+                        dueDate = updatedItem.due_date;
+                    }
+
+                    // intervall
+                    interval = this._getInterval(updatedItem.name);
+                    if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Create new --> interval:", interval);
+                    if (interval) {
+                        interval = ` {{${interval}}}`;
+                    }
+                } else if (typeof updatedItem === 'string') {
+                    newName = updatedItem;
+                }
+
+                inputName = this._getNameOnly(newName);
+                assignedCategory = this._getCategory(newName);
             }
 
 			let finalName = inputName;
 
 			if (existing) {
 				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
+
+                // in todo mode --> return
+                if (this._mode === "todo") {
+                    await this.confirmPopup(translate("ui.labels.alert_item_exists_todo").replace("{item}", nameOnly), true);
+                    
+                    this._addingBusy = false;
+                    return;
+                }
 
 				let currentQty = this._getQuantity(existing.name) || 1;
 				const newQty = currentQty + inputQty;
@@ -2017,8 +2734,19 @@ class HaShoppingListImproved extends HTMLElement {
 					}
 				}
 				if (assignedCategory) {
-					finalName = `@${assignedCategory}@ ${finalName}`;
+					finalName = `@${assignedCategory}@ ${finalName}${interval || ''}`;
 				}
+
+                // Service Data
+                const serviceData = {
+                    item: finalName,
+                };
+
+                if (dueDateTime) {
+                    serviceData.due_datetime = dueDateTime;
+                } else if (dueDate) {
+                    serviceData.due_date = dueDate;
+                }               
 
 				try {
 					const addMsg = {
@@ -2026,7 +2754,7 @@ class HaShoppingListImproved extends HTMLElement {
 						domain: "todo",
 						service: "add_item",
 						target: { entity_id: this._entity },
-						service_data: { item: finalName },
+						service_data: serviceData,
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
 					await this._hass.connection.sendMessagePromise(addMsg);
@@ -2044,8 +2772,327 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 
+    // ToDo Mode edit popup
+    async _confirmToDoPopup(item) {
+        // Overlay
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.background = 'rgba(0,0,0,0.4)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+        overlay.style.pointerEvents = 'auto';
+
+        // Popup-Box
+        const popup = document.createElement('div');
+        popup.style.background = 'var(--card-background-color, white)';
+        popup.style.padding = '16px';
+        popup.style.borderRadius = '8px';
+        popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        popup.style.maxWidth = '340px';
+        popup.style.textAlign = 'left';
+        popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+        popup.style.color = 'var(--primary-text-color, black)';
+        popup.style.pointerEvents = 'auto';
+
+        // Message
+        const msg = document.createElement('p');
+        msg.textContent = this._getNameOnly(item.name);
+        msg.style.marginBottom = '12px';
+        msg.style.fontWeight = '500';
+        msg.style.textAlign = 'center';
+        msg.style.fontSize = '20px';
+        popup.appendChild(msg);
+
+        // Sub Message
+        const subMsg = document.createElement('p');
+        subMsg.textContent = translate("ui.todo.select_action");
+        subMsg.style.margin = '8px 0';
+        subMsg.style.fontSize = '0.9em';
+        subMsg.style.color = 'var(--secondary-text-color, #666)';
+        popup.appendChild(subMsg);
+
+        // Radio Buttons
+        let interval = this._getInterval(item.name); // "2D", "1M", "3H"
+        let disabled = !interval;
+
+        const options = [
+            { id: 'remove_due',   label: translate("ui.todo.remove_due"),   value: 'remove', disabled: disabled },
+            { id: 'next_due',     label: translate("ui.todo.next_due"),     value: 'next',   disabled: disabled, checked: !disabled },
+            { id: 'next_due_now', label: translate("ui.todo.next_due_now"), value: 'now',    disabled: disabled },
+            { id: 'edit',         label: translate("ui.todo.edit"),         value: 'edit' },
+            { id: 'delete',       label: translate("ui.todo.delete"),       value: 'delete', checked: disabled },
+        ];
+
+        const radioContainer = document.createElement('div');
+        radioContainer.style.display = 'flex';
+        radioContainer.style.flexDirection = 'column';
+        radioContainer.style.gap = '6px';
+        radioContainer.style.marginBottom = '16px';
+
+        options.forEach(opt => {
+            const label = document.createElement('label');
+            label.style.display = 'flex';
+            label.style.alignItems = 'center';
+            label.style.gap = '6px';
+            label.style.cursor = opt.disabled ? 'not-allowed' : 'pointer';
+            label.style.userSelect = 'none';
+            label.style.opacity = opt.disabled ? '0.5' : '1.0';
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'todo_action';
+            input.value = opt.value;
+            if (opt.checked) input.checked = true;
+            if (opt.disabled) input.disabled = true;
+
+            const span = document.createElement('span');
+            span.textContent = opt.label;
+
+            label.appendChild(input);
+            label.appendChild(span);
+            radioContainer.appendChild(label);
+        });
+
+        popup.appendChild(radioContainer);
+
+        // Buttons
+        const btnContainer = document.createElement('div');
+        btnContainer.style.display = 'flex';
+        btnContainer.style.justifyContent = 'center';
+        btnContainer.style.gap = '12px';
+
+        const yesBtn = document.createElement('button');
+        yesBtn.textContent = translate("ui.common.ok");
+        yesBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+        yesBtn.style.color = 'white';
+        yesBtn.style.border = 'none';
+        yesBtn.style.padding = '8px 16px';
+        yesBtn.style.borderRadius = '4px';
+        yesBtn.style.cursor = 'pointer';
+
+        const noBtn = document.createElement('button');
+        noBtn.textContent = translate("ui.common.cancel");
+        noBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+        noBtn.style.border = 'none';
+        noBtn.style.padding = '8px 16px';
+        noBtn.style.borderRadius = '4px';
+        noBtn.style.cursor = 'pointer';
+
+
+        yesBtn.addEventListener('click', async () => {
+            const selected = popup.querySelector('input[name="todo_action"]:checked')?.value || 'next';
+
+            let dueDate = null;
+            let dueDateTime = null;
+            let currentDue = item.due ? item.due : null; // ISO or YYYY-MM-DD
+            //let interval = this._getInterval(item.name); // "2D", "1M", "3H"
+
+            const isDateOnlyString = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s);
+
+            // Parse Interval like "2D", "3H", "1M"
+            function parseShortInterval(str) {
+                if (!str || typeof str !== 'string') return null;
+                const m = str.trim().match(/^(\d+)\s*([HDMhdm])$/);
+                if (!m) return null;
+                return { value: parseInt(m[1], 10), unit: m[2].toUpperCase() }; // unit in 'H'|'D'|'M'
+            }
+
+            // add interval to a JS Date object (mutates copy)
+            function addIntervalToDate(dateObj, value, unit) {
+                const d = new Date(dateObj.getTime());
+                if (unit === 'H') {
+                    d.setHours(d.getHours() + value);
+                } else if (unit === 'D') {
+                    d.setDate(d.getDate() + value);
+                } else if (unit === 'M') {
+                    d.setMonth(d.getMonth() + value);
+                }
+                return d;
+            }
+
+            // Format: YYYY-MM-DD
+            function formatDateOnly(d) {
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${day}`;
+            }
+
+            // Format: YYYY-MM-DD HH:MM:SS (local, without TZ)
+            function formatDateTime(d) {
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const hh = String(d.getHours()).padStart(2, '0');
+                const mm = String(d.getMinutes()).padStart(2, '0');
+                const ss = String(d.getSeconds()).padStart(2, '0');
+                return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
+            }
+
+            const parsed = parseShortInterval(interval); // {value, unit} or null
+
+            // rules
+            // if currentDue exists and date-only (YYYY-MM-DD)
+            const currentDueIsDateOnly = currentDue && isDateOnlyString(currentDue);
+
+            // if Intervall H is used and currentDue is date-only -> fallback to 1D
+            let effectiveInterval = parsed;
+            if (parsed) {
+                if (currentDueIsDateOnly && parsed.unit === 'H') {
+                    // use 1 day instead
+                    effectiveInterval = { value: 1, unit: 'D' };
+                }
+            }
+
+            const now = new Date();
+
+            if (selected === 'remove') {
+                // leave dueDate / dueDateTime null
+                dueDate = null;
+                dueDateTime = null;
+            } else if (selected === 'next') {
+                // current due + interval
+                if (effectiveInterval && currentDue) {
+                    if (currentDueIsDateOnly) {
+                        // parse date-only into local midnight
+                        const [y, mm, dd] = currentDue.split('-').map(n => parseInt(n, 10));
+                        const base = new Date(y, mm - 1, dd, 0, 0, 0);
+                        const next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+                        // if (D or M) use due_date
+                        if (effectiveInterval.unit === 'D' || effectiveInterval.unit === 'M') {
+                            dueDate = formatDateOnly(next);
+                        } else {
+                            // fallback: if H (shouldn't happen due to above), set datetime
+                            dueDateTime = formatDateTime(next);
+                        }
+                    } else {
+                        // currentDue has time (ISO)
+                        // create Date from ISO (handles offsets)
+                        const base = new Date(currentDue);
+                        const next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+                        // set due_datetime
+                        dueDateTime = formatDateTime(next);
+                    }
+                } else {
+                    // no Intervall or no currentDue -> do nothing
+                }
+            } else if (selected === 'now') {
+                // now + Intervall
+                if (effectiveInterval) {
+                    const next = addIntervalToDate(now, effectiveInterval.value, effectiveInterval.unit);
+                    dueDateTime = formatDateTime(next);
+                }
+            } else if (selected === 'delete') {
+                // Delete Item
+                await this._removeItem(item);
+
+                document.body.removeChild(overlay);
+                return;
+            } else if (selected === 'edit') {
+                // Edit Item
+                await this.editItemPopup(item, "edit", false);
+
+                document.body.removeChild(overlay);
+                return;
+            }
+
+            // ServiceData
+            let serviceData = {
+                item: item.id,
+            };
+
+            if (dueDateTime) {
+                // "YYYY-MM-DD HH:MM:SS"
+                serviceData.due_datetime = dueDateTime;
+            } else if (dueDate) {
+                serviceData.due_date = dueDate;
+            }
+
+            try {
+                // as there is no option to set the due to an empty value we have to remove and readd the item
+                if(selected === 'remove') {
+                    const removeMsg = {
+                        type: "call_service",
+                        domain: "todo",
+                        service: "remove_item",
+                        target: { entity_id: this._entity },
+                        service_data: {
+                            item: item.id
+                        }
+                    };
+
+                    if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", removeMsg);
+
+                    await this._hass.connection.sendMessagePromise(removeMsg);
+
+                    // Add the item again as a new item without due date
+                    // Service Data
+                    const serviceData = {
+                        item: item.name,
+                    };
+
+                    const addMsg = {
+                        type: "call_service",
+                        domain: "todo",
+                        service: "add_item",
+                        target: { entity_id: this._entity },
+                        service_data: serviceData,
+                    };
+                    if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
+                    await this._hass.connection.sendMessagePromise(addMsg);
+                } else {
+                    const msg = {
+                        type: "call_service",
+                        domain: "todo",
+                        service: "update_item",
+                        target: { entity_id: this._entity },
+                        service_data: serviceData,
+                    };
+
+                    if(debugMode) console.debug("[ha-shopping-list-improved] Sending toggleComplete WS message:", msg);
+
+                    await this._hass.connection.sendMessagePromise(msg);
+                    await this._refresh();
+                }
+            } catch (err) {
+                console.error("[ha-shopping-list-improved] Update ToDo failed", err);
+            }
+
+            document.body.removeChild(overlay);
+        });
+
+        noBtn.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });
+
+        btnContainer.appendChild(yesBtn);
+        btnContainer.appendChild(noBtn);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+            }
+        });
+
+        popup.appendChild(btnContainer);
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }
+
     async _toggleComplete(item) {
         if (!this._entity) return;
+
+        // ToDo Mode
+        if (this._mode === "todo") {
+            await this._confirmToDoPopup(item);
+            return;
+        }
 
         try {
             const newStatus = item.complete ? "needs_action" : "completed";
@@ -2077,7 +3124,10 @@ class HaShoppingListImproved extends HTMLElement {
 		const itemNameOnly = this._getNameOnly(item.name);
 		const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
     
-		if (!(await this.confirmPopup(msgRemove))) return;
+		if (!(await this.confirmPopup(msgRemove))) {
+            if(this._mode ===  "todo") await this._confirmToDoPopup(item);
+            return;
+        }
 
         try {
             const msg = {
@@ -2402,7 +3452,6 @@ class HaShoppingListImproved extends HTMLElement {
             this._historyEl.appendChild(chip);
         });
 		
-
 		// Add dishes
 		const dishes = this._dishes || [];
 
