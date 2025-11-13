@@ -218,30 +218,72 @@ With dishes you can add multiple items at once. Each dish starts with - name: <D
 
 
 
+### Global Chips
+
+With this feature, you can save chips in a text file (e.g., via the file editor), and these chips will optionally be available in all cards.
+You can also merge the Global Chips with the Standard and Browser Chips.
+
+<img width="481" height="606" alt="grafik" src="https://github.com/user-attachments/assets/6d8c62c5-436a-4343-9462-a1a1d4db942c" />
+
+In the input field, you need to specify the path to the chips file. Including the leading `/`.
+Example: `/local/chips.txt` if the file is named `chips.txt` and located in the `www` folder. And yes, `local` points to the www folder.
+Each chip must be placed on a separate line.
+
+You might also need to add the `www` folder (or your specific folder) to the `allowlist_external_dirs` in your `configuration.yaml` and restart Home Assistant afterwards:
+
+```
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# add your path to the file here
+homeassistant:
+  allowlist_external_dirs:
+    - "/config/www/"
+```
+
+
+
+
+
+
 
 
 ### Export as HTML file (only in Shopping List Mode)
+
 This allows you to use your shopping list offline (e.g., when you don’t have network access in the supermarket).
 If you wish, you can assign a long-lived access token to your profile to enable the sync function.
+
+
 The sync function allows you to easily (push the button in the offline export) synchronize your offline list to Home Assistant (note: synchronization only works one way — from the offline list to Home Assistant).
 How it works: Click the export button, open the saved HTML file in your browser, check your items, and when you’re back at home (or within network range when using an external URL), click the sync button. If your browser clears the cache when you close it, syncing may not work correctly. Warning: Treat the token confidentially as it grants (full) access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.
+
 
 **Using the html export file on an iPhone**
 Shortly after finishing this feature, I realized that there is no official way to open a locally stored HTML file on my iPhone (shame on you, Apple). 
 You need an additional app such as HTML Viewer Q:
 https://apps.apple.com/de/app/html-viewer-q/id810042973
 
+
 Config:
+
 <img width="514" height="361" alt="grafik" src="https://github.com/user-attachments/assets/7c4ac691-281d-4d8f-a867-f687f3e6f4c2" />
 
-Export Button
-<img width="491" height="267" alt="grafik" src="https://github.com/user-attachments/assets/24c3468a-aca6-48f9-ba55-b119838f81dc" />
+Export Button:
 
-Offline List
+<img width="504" height="415" alt="grafik" src="https://github.com/user-attachments/assets/1eddf1cc-cc7a-4731-9537-49298a4704db" />
+
+
+Offline List:
+
 <img width="480" height="793" alt="grafik" src="https://github.com/user-attachments/assets/9772ec6e-8586-47c0-a142-320ba4464228" />
 
 
 
+### PDF Export (only in Shopping List Mode)
+
+Generate and download the list as a PDF document with checkboxes. You can check/uncheck items within the PDF, but currently there is no synchronization option with Home Assistant.
+
+<img width="736" height="809" alt="grafik" src="https://github.com/user-attachments/assets/73c78186-192e-4f09-913c-43ea9abd0c00" />
 
 
 
