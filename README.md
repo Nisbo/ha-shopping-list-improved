@@ -11,7 +11,7 @@ How did this add-on come about? Simple: I was looking for a way to manage my sho
 In the end, I had no choice but to develop something myself.  
 The biggest challenge was: **keeping the WAF intact 😄**
 
-Now with version 1.2.0 its much more than a simple shopping list.
+Now with version 2.0.0 its much more than a simple shopping list.
 
 ---
 
