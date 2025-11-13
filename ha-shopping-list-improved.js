@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0
+ * Version: 2.0.0
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -1140,7 +1140,7 @@ class HaShoppingListImproved extends HTMLElement {
             const response = await fetch(url, {
             headers: {
                 "Accept": "application/json",
-                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v1.2.0)"
+                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.0.0)"
             }
             });
 
