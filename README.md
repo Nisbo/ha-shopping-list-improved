@@ -35,6 +35,7 @@ You have an Shopping List and a ToDo mode for different usecases.
 | Shopping List | Inventary Freezer | ToDo Mode |
 | ---- | ----- | ----- |
 |   ![2E0EACF1-6EEF-4C61-A3CC-5676A5C2CC3C_1_102_o](https://github.com/user-attachments/assets/3393b1b0-080d-4ae8-b314-e01df944cbee) |   ![2B4BB96F-5A97-4C13-BE6D-890148E3B3D5_1_102_o](https://github.com/user-attachments/assets/10a7f29c-de68-4e18-9ece-52aee948a00b)   |  ![8ADA2EC3-1224-4808-A196-1CD7C969D82B_1_102_o](https://github.com/user-attachments/assets/ecb45659-e31e-4b4b-832f-5348fe494863) |
+| <img width="511" height="868" alt="grafik" src="https://github.com/user-attachments/assets/6b101d82-13e2-4c2b-946d-cd19277698ab" /> | <img width="359" height="445" alt="grafik" src="https://github.com/user-attachments/assets/7f26a41b-eef1-41da-b61c-c2dc6a001bf1" /> <img width="232" height="272" alt="grafik" src="https://github.com/user-attachments/assets/01a1a797-3839-4ee2-ac26-f3f54d381fff" /> | <img width="507" height="910" alt="grafik" src="https://github.com/user-attachments/assets/5a3f93a6-342f-4ec2-a9c8-d3e366691213" />  |
 
 
 ---
@@ -499,10 +500,15 @@ sub_text: "Hint: Use chips to quickly add items again."
 | ![C7515C5E-3769-40FE-AA6B-D57B7259C420_1_102_o](https://github.com/user-attachments/assets/decf6cd0-c3db-4355-adfe-2f29d26fbc66) | ![73778741-17BF-44F2-A49C-2E3B343E96C5_1_102_o](https://github.com/user-attachments/assets/dc2c9a5f-6500-49b3-99c6-a2bc996e494e) | 
 
 
+<img width="618" height="719" alt="grafik" src="https://github.com/user-attachments/assets/abcdebef-c2dd-45b8-b8a0-90973e572433" />
 
+<img width="236" height="272" alt="grafik" src="https://github.com/user-attachments/assets/dfa1ffa3-52c6-4c29-ba90-9d7c05c5407a" />
 
+<img width="351" height="399" alt="grafik" src="https://github.com/user-attachments/assets/e414db2d-ec7f-4cb9-8d2e-b53bff04fd30" />
 
+<img width="349" height="300" alt="grafik" src="https://github.com/user-attachments/assets/a64a63f2-bc8a-4130-8a5c-63a6cb30360d" />
 
+<img width="499" height="873" alt="grafik" src="https://github.com/user-attachments/assets/c9eccaec-fbdc-49d8-83f3-c0975bad69df" />
 
 
 
