@@ -106,6 +106,74 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 
 # Advaced Configuration 
 
+### Categories (via config editor)
+
+Categories are stored in the item name in the format `@Category@ Item (2)`.
+The card itself will not display this formatting, but if you use other add-ons or cards for the same To-Do list, you will see it.
+
+You can define categories in the config editor
+
+<img width="503" height="677" alt="grafik" src="https://github.com/user-attachments/assets/524c95cb-6de0-49f1-80b1-a34d24db92a7" />
+
+
+this has to be done in YAML code e.g.
+```
+- name: Fruit
+  items:
+    - Strawberries
+    - Plums
+    - Pears
+    - Bananas
+- name: Vegetables
+  icon: mdi:apple
+  bgcolor: "#247645"
+  items:
+    - Avocado
+    - Arugula
+- name: Household Items
+  bgcolor: darkblue
+  icon: mdi:basket
+  items:
+    - Sponge
+    - Dish Soap
+- name: Meat
+  icon: mdi:food-steak
+  bgcolor: "#FF4040"
+  items:
+    - Chicken Breast Fillet
+    - Schnitzel
+- name: Beverages
+  bgcolor: "#528B8B"
+  icon: mdi:bottle-soda
+  items:
+    - Sparkling Wine
+    - Beer
+```
+If you add an item that belongs to a defined category, it will be automatically assigned to that category.
+If you add an item that is not in any defined category, a popup (which can be disabled) will appear allowing you to assign the item to a category.
+If you rename or remove a category all manually (to this category) assigned items (changed via edit option) will not show up anymore in the list.
+
+<img width="360" height="311" alt="grafik" src="https://github.com/user-attachments/assets/2a421d24-887e-43dc-ab41-1304c67f31d4" />
+
+If you want to change the category later, double-click on the item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Global Categories
 With this feature, you can save categories in a text file (e.g., via the file editor), and these categories will optionally be available in all cards.
 You can also merge the Global Categories with the Standard Categories.
