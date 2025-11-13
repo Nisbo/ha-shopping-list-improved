@@ -241,7 +241,13 @@ homeassistant:
     - "/config/www/"
 ```
 
-
+Example `chips.txt` - One chip per line.
+```
+Bananas
+Pears
+Apples
+Beer
+```
 
 
 
