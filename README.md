@@ -158,22 +158,6 @@ If you rename or remove a category all manually (to this category) assigned item
 If you want to change the category later, double-click on the item.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Global Categories
 With this feature, you can save categories in a text file (e.g., via the file editor), and these categories will optionally be available in all cards.
 You can also merge the Global Categories with the Standard Categories.
@@ -231,6 +215,35 @@ With dishes you can add multiple items at once. Each dish starts with - name: <D
     - French Fries (2)
     - BigKing
 ```
+
+
+
+
+
+### Export as HTML file (only in Shopping List Mode)
+This allows you to use your shopping list offline (e.g., when you don’t have network access in the supermarket).
+If you wish, you can assign a long-lived access token to your profile to enable the sync function.
+The sync function allows you to easily (push the button in the offline export) synchronize your offline list to Home Assistant (note: synchronization only works one way — from the offline list to Home Assistant).
+How it works: Click the export button, open the saved HTML file in your browser, check your items, and when you’re back at home (or within network range when using an external URL), click the sync button. If your browser clears the cache when you close it, syncing may not work correctly. Warning: Treat the token confidentially as it grants (full) access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.
+
+**Using the html export file on an iPhone**
+Shortly after finishing this feature, I realized that there is no official way to open a locally stored HTML file on my iPhone (shame on you, Apple). 
+You need an additional app such as HTML Viewer Q:
+https://apps.apple.com/de/app/html-viewer-q/id810042973
+
+Config:
+<img width="514" height="361" alt="grafik" src="https://github.com/user-attachments/assets/7c4ac691-281d-4d8f-a867-f687f3e6f4c2" />
+
+Export Button
+<img width="491" height="267" alt="grafik" src="https://github.com/user-attachments/assets/24c3468a-aca6-48f9-ba55-b119838f81dc" />
+
+Offline List
+<img width="480" height="793" alt="grafik" src="https://github.com/user-attachments/assets/9772ec6e-8586-47c0-a142-320ba4464228" />
+
+
+
+
+
 
 
 
