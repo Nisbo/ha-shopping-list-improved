@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 1.2.0-BETA-8
+ * Version: 1.2.0
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -30,6 +30,7 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Schließen",
 
+        "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
         "ui.todo.days"                                  : "Tage",
         "ui.todo.months"                                : "Monate",
@@ -170,7 +171,7 @@ const TRANSLATIONS = {
         "editor.helpers.category_file"                  : "Beispiel: /local/categories.txt, wenn die Datei im www-Ordner liegt. Für den Aufbau der Datei, bitte in die Dokumentation gucken.",
 		"editor.helpers.category_merge_mode"			: "Wähle, wie globale und lokale Kategorien zusammengeführt werden sollen. „Standard_only“ zeigt nur die lokal definierten Kategorien, „global_only“ nur die globalen Kategorien. Die anderen Optionen kombinieren beide auf verschiedene Weise.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
-        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt.",
+        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im ToDo Modus wird die Anzahl ivertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.) So kann man z.B. bei (5/5) einfach sehen, dass aktuell keine Einträge zu erledigen sind.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
@@ -200,6 +201,7 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Close",
 
+        "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
         "ui.todo.days"                                  : "Days",
         "ui.todo.months"                                : "Months",
@@ -340,7 +342,7 @@ const TRANSLATIONS = {
         "editor.helpers.category_file"                  : "Example: /local/categories.txt if the file is located in the www folder. For file format, refer to the documentation.",
         "editor.helpers.category_merge_mode"			: "Choose how global and local categories should be merged. “standard_only” shows only local categories, “global_only” only global categories. Other options combine both in different ways.",
 		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
-        "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name.",
+        "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
@@ -1520,9 +1522,86 @@ class HaShoppingListImproved extends HTMLElement {
                 c.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())
             );
         });
+        /*
+                if (uncategorized.length) {
+                    uncategorized.forEach(item => this._renderItem(item, this._listEl));
+                }
+        */
 
         if (uncategorized.length) {
-            uncategorized.forEach(item => this._renderItem(item, this._listEl));
+            const total = uncategorized.length;
+            let done;
+
+            if (this._mode === "todo") {
+                const now = new Date();
+                done = uncategorized.filter(i => {
+                    if (!i.due) return true;
+                    const dueDate = new Date(i.due);
+                    return dueDate >= now;
+                }).length;
+            } else {
+                done = uncategorized.filter(i => i.complete).length;
+            }
+
+            const storageKey = `${this._entity}_category_no_category`;
+            const collapsed = localStorage.getItem(storageKey) === 'true';
+
+            const liCat = document.createElement('li');
+            liCat.classList.add('category-header');
+            liCat.style.padding = '4px 8px';
+            liCat.style.borderRadius = '4px';
+            //liCat.style.backgroundColor = '#eee';
+            liCat.style.cursor = 'pointer';
+            liCat.style.userSelect = 'none';
+
+            const container = document.createElement('div');
+            container.style.display = 'inline-flex';
+            container.style.alignItems = 'center';
+            container.style.gap = '6px';
+
+            const catIcon = "mdi:folder-question";
+            if (catIcon) {
+                const iconEl = document.createElement('ha-icon');
+                iconEl.setAttribute('icon', catIcon);
+                iconEl.style.width = `${this._catFontSize}px`;
+                iconEl.style.height = `${this._catFontSize}px`;
+                iconEl.style.display = 'inline-flex';
+                iconEl.style.alignItems = 'center';
+                iconEl.style.justifyContent = 'center';
+                iconEl.style.flexShrink = '0';
+                container.appendChild(iconEl);
+            }
+
+            const textEl = document.createElement('span');
+            if (this._showCatCount) {
+                textEl.textContent = `${translate("ui.todo.general")} (${done}/${total})`;
+            } else {
+                textEl.textContent = translate("ui.todo.general");
+            }
+
+            container.appendChild(textEl);
+
+            if (this._mode === "todo" && done < total) {
+                const warningEl = document.createElement('span');
+                warningEl.textContent = ' \u26A0';
+                container.appendChild(warningEl);
+            }
+
+            liCat.appendChild(container);
+            this._listEl.appendChild(liCat);
+
+            const itemsContainer = document.createElement('div');
+            itemsContainer.style.margin = '4px 0 12px 0';
+            itemsContainer.style.display = collapsed ? 'none' : 'block';
+
+            uncategorized.forEach(item => this._renderItem(item, itemsContainer));
+            this._listEl.appendChild(itemsContainer);
+
+            liCat.addEventListener('click', () => {
+                const isCollapsed = itemsContainer.style.display === 'none';
+                itemsContainer.style.display = isCollapsed ? 'block' : 'none';
+                localStorage.setItem(storageKey, isCollapsed ? 'false' : 'true');
+            });
         }
 
         // Articles with category
@@ -1540,9 +1619,20 @@ class HaShoppingListImproved extends HTMLElement {
 
             if (catItems.length) {
                 const total = catItems.length;
-                const done = catItems.filter(i => i.complete).length;
-                const storageKey = `${this._entity}_category_${cat.name}`;
+                let done;
 
+                if (this._mode === "todo") {
+                    const now = new Date();
+                    done = catItems.filter(i => {
+                        if (!i.due) return true; // Items without due are considered done
+                        const dueDate = new Date(i.due);
+                        return dueDate >= now;
+                    }).length;
+                } else {
+                    done = catItems.filter(i => i.complete).length;
+                }
+
+                const storageKey = `${this._entity}_category_${cat.name}`;
                 const collapsed = localStorage.getItem(storageKey) === 'true';
 
                 const liCat = document.createElement('li');
@@ -1572,11 +1662,22 @@ class HaShoppingListImproved extends HTMLElement {
 
                 const textEl = document.createElement('span');
                 if (this._showCatCount) {
-                    textEl.textContent = `${cat.name} (${done}/${total})`;
+                    if (this._mode === "todo") {
+                        textEl.textContent = `${cat.name} (${done}/${total})`;
+                    } else {
+                        textEl.textContent = `${cat.name} (${done}/${total})`;
+                    }
                 } else {
                     textEl.textContent = cat.name;
                 }
                 container.appendChild(textEl);
+
+                // Show icon if done < total in todo mode
+                if (this._mode === "todo" && done < total) {
+                    const warningEl = document.createElement('span');
+                    warningEl.textContent = ' \u26A0';
+                    container.appendChild(warningEl);
+                }
 
                 liCat.appendChild(container);
                 this._listEl.appendChild(liCat);
