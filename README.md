@@ -405,6 +405,57 @@ todo_yellow_s: 60    # 1 hour for dates without time
 
 # Parameter
 
+
+# Parameters
+
+| Parameter               | Type          | Default                          | Description                                                                                     |
+|-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
+| `chips_position`        | `string`      | `"auto"`                        | Position of the chips: `auto`, `right`, `bottom`, `full`, `auto_panel`.                         |
+| `chips_width`           | `number`      | `250`                          | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
+| `quantity`              | `string`      | `"end"`                        | Position of the quantity: `beginning` or `end`.                                                |
+| `acknowledged`          | `string`      | `"show"`                       | Show/hide completed items: `show`, `hide`, or `end`.                                           |
+| `chip_click`            | `string`      | `"single"`                     | Click behavior: `"single"` for single click, `"dblclick"` for double click.                    |
+| `sub_text`              | `string`      | `"Tip: Use chips to quickly re-add items."` | Helper text displayed below the input field.                                |
+| `chip_merge`            | `string`      | `"combined"`                   | Order of chips: `combined`, `standard_first`, `browser_first`, `global_combined`, `global_only`. |
+| `chip_font_size`        | `number`      | `12`                           | Font size of the chips in pixels.                                                              |
+| `list_font_size`        | `number`      | `14`                           | Font size of the list items in pixels.                                                         |
+| `cat_font_size`         | `number`      | `16`                           | Font size of the category headers in pixels.                                                   |
+| `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`     | Color for local (browser) chips. Supports rgba and HEX formats.                                |
+| `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`     | Color for standard chips. Supports rgba and HEX formats.                                      |
+| `chip_color_global`     | `string`      | `"rgba(100,100,100,0.3)"`     | Color for global chips.                                                                        |
+| `chip_color_dish`       | `string`      | `"#745E3D"`                   | Color for chips related to dishes.                                                            |
+| `highlight_words`       | `string`      | `""`                           | List of keywords to highlight in chips, comma- or semicolon-separated.                        |
+| `highlight_color`       | `string`      | `"#D9534F"`                   | Color used for highlighted keywords. Supports rgba and HEX formats.                           |
+| `local_chips`           | `boolean`     | `true`                         | Enables or disables local (browser) chips.                                                    |
+| `chips`                 | `string`      | `""`                           | Default chips, comma- or semicolon-separated list.                                            |
+| `show_quantity_box`     | `boolean`     | `true`                         | Shows the quantity selection box.                                                             |
+| `show_submit_button`    | `boolean`     | `true`                         | Shows the submit ("Add") button.                                                              |
+| `show_plus_minus`       | `boolean`     | `true`                         | Shows plus and minus buttons for quantity adjustment.                                         |
+| `show_input_mask`       | `boolean`     | `true`                         | Shows the input mask (input field).                                                           |
+| `show_quantity_one`     | `boolean`     | `false`                        | Shows quantity "1" by default.                                                                |
+| `show_cat_popup`        | `boolean`     | `true`                         | Shows popup for category selection.                                                           |
+| `show_cat_count`        | `boolean`     | `true`                         | Shows the count of done/total items per category.                                             |
+| `show_export_button`    | `boolean`     | `false`                        | Shows the export button.                                                                       |
+| `show_export_button_pdf`| `boolean`     | `false`                        | Shows the export as PDF button.                                                               |
+| `show_clear_button`     | `boolean`     | `true`                         | Shows the button to clear the list.                                                           |
+| `longlived_token`       | `string`      | `""`                           | Long-lived access token for API access.                                                      |
+| `external_url`          | `string`      | `""`                           | External URL, e.g. for QR scanner integration.                                                |
+| `bubble_card`           | `boolean`     | `false`                        | Enables bubble card mode.                                                                     |
+| `chip_file`             | `string`      | `""`                           | File path for an external chip definitions file.                                             |
+| `category_file`         | `string`      | `""`                           | File path for an external category definitions file.                                         |
+| `category_merge_mode`   | `string`      | `"standard_only"`              | Category merging mode: `standard_only`, `global_only`, `local_first`, `global_first`, `global_combined`. |
+| `show_qrscan_button`    | `boolean`     | `false`                        | Shows a button for QR code scanning.                                                         |
+| `mode`                  | `string`      | `"shopping"`                   | Mode of the list: `"shopping"` or `"todo"`.                                                  |
+| `todo_yellow_m`         | `number`      | `1440`                         | TODO mode: time in minutes for yellow highlight (months).                                    |
+| `todo_yellow_d`         | `number`      | `120`                          | TODO mode: time in minutes for yellow highlight (days).                                      |
+| `todo_yellow_h`         | `number`      | `10`                           | TODO mode: time in minutes for yellow highlight (hours).                                     |
+| `todo_yellow_s`         | `number`      | `120`                          | TODO mode: time in minutes for yellow highlight (seconds).                                   |
+
+
+
+
+
+
 | Parameter               | Type          | Default                          | Description                                                                                     |
 |-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
 | `chips_position`        | `string`      | `"auto"`                         | Position of the chips: `auto`, `right`, `bottom`, `full`.                                       |
