@@ -455,27 +455,6 @@ todo_yellow_s: 60    # 1 hour for dates without time
 
 
 
-
-| Parameter               | Type          | Default                          | Description                                                                                     |
-|-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
-| `chips_position`        | `string`      | `"auto"`                         | Position of the chips: `auto`, `right`, `bottom`, `full`.                                       |
-| `chips_width`           | `number`      | `250`                            | Width of the chips area in pixels, only relevant when `chips_position: "full"`.                |
-| `quantity`              | `string`      | `"end"`                          | Position of the quantity: `beginning` or `end`.                                                |
-| `acknowledged`          | `string`      | `"show"`                         | Show/hide completed items: `show`, `hide`, `end`.                                              |
-| `chip_click`            | `string`      | `"single"`                       | Click behavior: `"single"` for single click, `"dblclick"` for double click.                   |
-| `sub_text`              | `string`      | `"Tip: Use chips to quickly re-add items."` | Helper text below the input field.                                           |
-| `chip_merge`            | `string`      | `"combined"`                     | Order of chips: `combined`, `standard_first`, `browser_first`.                                 |
-| `chip_font_size`        | `number`      | `12`                             | Font size of the chips in pixels.                                                              |
-| `list_font_size`        | `number`      | `14`                             | Font size of the list items in pixels.                                                        |
-| `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`       | Color of local (browser) chips. Supports rgba and HEX.                                         |
-| `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`       | Color of standard chips. Supports rgba and HEX.                                                |
-| `highlight_words`       | `string`       | ` `                             | List of keywords to highlight when present in a chip. Comma- or semicolon-separated list.     |
-| `highlight_color`       | `string`      | `"rgba(255,80,80,0.8)"`         | Color for highlighted keywords. Supports rgba and HEX.                                         |
-| `local_chips`           | `boolean`     | `true`                           | Whether local (browser) chips are allowed.                                                     |
-| `chips`                 | `string`      | ` `                             | Default chips, as a comma- or semicolon-separated list.                                        |
-
-
-
 # Example
 
 Panel
