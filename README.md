@@ -31,10 +31,6 @@ You have an Shopping List and a ToDo mode for different usecases.
 
 ![36BEAE63-5A5B-4642-8118-FBF62A201483_1_201_a](https://github.com/user-attachments/assets/9f98127a-df6b-44e2-8444-6d429d04a505)
 
-| Mobile View | in German |
-| ---- | ----- |
-| ![17721741-9434-47A2-BB8F-FB2D2811C039_1_102_o](https://github.com/user-attachments/assets/5916d87d-f18a-4b5f-96ad-a9fbd0d0fbac) | ![FD780BD5-35D2-4686-9AA6-00CC4EBF05F3_1_102_o](https://github.com/user-attachments/assets/4762f5b5-2851-41fd-ba65-5495808c1134) |
-
 
 | Shopping List | Inventary Freezer | ToDo Mode |
 | ---- | ----- | ----- |
