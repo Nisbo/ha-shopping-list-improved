@@ -94,44 +94,88 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 - Works with **global text files** for chips and categories (`/local/chips.txt`, `/local/categories.txt`).   
 - Fully localized in **English** 🇬🇧 and **German** 🇩🇪.
 
----
-
-💡 *Tip:*  
-The card can act as a complete replacement for the original Home Assistant Shopping List — with extra customization, offline support, and optional To-Do automation features.
-
-
-
-
-
-
-
-
-
-
----
-
-## ⚙️ 🇬🇧 Features
-
-- 🧩 Display as a **normal card** or in **panel mode** (page with only one card)  
-- 🔤 **Alphabetical sorting** of items  
-- 👀 Ability to **hide completed items**, move them to the end, or leave them in the order  
-- 🎨 **Colored marking** of completed items  
-- ➕ **Change quantity** via + and − buttons  
-- 🏷️ **Chips** for quickly adding frequently used items  
-- 🌐 Support for **standard (config)** and **local (browser) chips**  
-- ✴️ **Highlighting** for specific items (e.g., *butter*, *bananas*, *flour*)  
-- 🗑️ **Easy removal** of items using the minus button  
-- ⚙️ **Customizable design**: colors, font sizes, chip positions, and more
 
 > 💡 **Tip:**  
 > Check the screenshots below to see what’s possible!
 
-
 ---
-
 
 # Installation HACS
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
+
+
+# Advaced Configuration 
+
+### Global Categories
+With this feature, you can save categories in a text file (e.g., via the file editor), and these categories will optionally be available in all cards.
+You can also merge the Global Categories with the Standard Categories.
+
+<img width="619" height="301" alt="grafik" src="https://github.com/user-attachments/assets/6f439e08-e0da-4dab-adc8-ec86fc7b4758" />
+
+
+In the input field, you need to specify the path to the categories file. Including the leading `/` !
+Example: `/local/categories.txt` if the file is named `categories.txt` and located in the `www` folder. And yes, `local` points to the www folder.
+
+Text file Format:
+```
+[Fruits]
+icon = mdi:apple
+bgcolor = #247645
+items = Apples, Plums, Pears, Bananas
+
+[Beverages]
+icon = mdi:bottle-soda
+bgcolor = #528B8B
+items = Beer, Sparkling Wine, Cola
+```
+
+You might also need to add the `www` folder (or your specific folder) to the `allowlist_external_dirs` in your `configuration.yaml` and restart Home Assistant afterwards:
+
+```
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# add your path to the file here
+homeassistant:
+  allowlist_external_dirs:
+    - "/config/www/"
+```
+
+
+### Dishes
+
+<img width="638" height="586" alt="grafik" src="https://github.com/user-attachments/assets/d9981563-b34e-41e1-b4bf-defb2caf8061" />
+
+<img width="604" height="509" alt="grafik" src="https://github.com/user-attachments/assets/37b4255b-3b0c-4386-856f-e89a4904282c" />
+
+With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). Dishes will be always added at the end of the other chips.
+
+```
+- name: McDonalds
+  bgcolor: #000000
+  items:
+    - Hamburger (2)
+    - Cheeseburger (3)
+    - BigMac
+    - French Fries
+- name: Burger King
+  items:
+    - French Fries (2)
+    - BigKing
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Parameter
 
