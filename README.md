@@ -4,7 +4,7 @@
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
 
-## 📖 🇬🇧 Foreword
+# 📖 🇬🇧 Foreword
 
 How did this add-on come about? Simple: I was looking for a way to manage my shopping list directly through **Home Assistant**. The built-in list is unfortunately very basic. Then I tried **Tandoor** – quite nice, but it didn’t offer what I wanted. There was another shopping list add-on, but maintaining it was cumbersome, and you had to create a separate card for every item.
 
@@ -15,7 +15,7 @@ Now with version 1.2.0 its much more than a simple shopping list.
 
 ---
 
-## 💡 🇬🇧 What is the *Improved Shopping List Card*?
+# 💡 🇬🇧 What is the *Improved Shopping List Card*?
 
 The **Improved Shopping List Card** is a card for Home Assistant,  
 which significantly improves the original ToDo lists and makes it much easier to use.
@@ -37,7 +37,7 @@ You have an Shopping List and a ToDo mode for different usecases.
 
 ---
 
-## ⚙️ 🇬🇧 Features
+# ⚙️ 🇬🇧 Features
 
 Since I prefer spending my time coding rather than writing documentation, I asked ChatGPT to create this feature overview based on the translation variables. It turned out quite well — even if some parts sound a bit funny. 😄
 
@@ -104,9 +104,9 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
 
-# Advaced Configuration 
+# Advaced Configuration / Information
 
-### Categories (via config editor)
+## Categories (via config editor)
 
 Categories are stored in the item name in the format `@Category@ Item (2)`.
 The card itself will not display this formatting, but if you use other add-ons or cards for the same To-Do list, you will see it.
@@ -194,7 +194,7 @@ homeassistant:
 ```
 
 
-### Dishes
+## Dishes
 
 <img width="638" height="586" alt="grafik" src="https://github.com/user-attachments/assets/d9981563-b34e-41e1-b4bf-defb2caf8061" />
 
@@ -218,7 +218,7 @@ With dishes you can add multiple items at once. Each dish starts with - name: <D
 
 
 
-### Global Chips
+## Global Chips
 
 With this feature, you can save chips in a text file (e.g., via the file editor), and these chips will optionally be available in all cards.
 You can also merge the Global Chips with the Standard and Browser Chips.
@@ -254,7 +254,7 @@ Beer
 
 
 
-### Export as HTML file (only in Shopping List Mode)
+## Export as HTML file (only in Shopping List Mode)
 
 This allows you to use your shopping list offline (e.g., when you don’t have network access in the supermarket).
 If you wish, you can assign a long-lived access token to your profile to enable the sync function.
@@ -285,7 +285,7 @@ Offline List:
 
 
 
-### PDF Export (only in Shopping List Mode)
+## PDF Export (only in Shopping List Mode)
 
 Generate and download the list as a PDF document with checkboxes. You can check/uncheck items within the PDF, but currently there is no synchronization option with Home Assistant.
 
@@ -295,7 +295,7 @@ Generate and download the list as a PDF document with checkboxes. You can check/
 
 
 
-### QR Code Scanner 
+## QR Code Scanner 
 Allows scanning one or multiple items at once via QR code. 
 
 > [!IMPORTANT]
@@ -353,7 +353,7 @@ https://goqr.me/de/
 
 
 
-### EAN Code Reader
+## EAN Code Reader
 
 This feature currently supports **EAN-13 barcodes**, limited to **food products only**.  
 The reason is simple — there is no free global EAN database available, except for the **Open Food Facts** project:  
@@ -371,7 +371,7 @@ You can test it by entering this example code: **4337256383165**
 
 
 
-### Configuration of Warning Thresholds for ToDo Due Dates
+## Configuration of Warning Thresholds for ToDo Due Dates
 
 In **ToDo Mode**, you can configure when upcoming tasks are visually marked as “due soon” based on configurable warning thresholds. These thresholds are defined in minutes and differ depending on the type of interval or due date format:
 
@@ -384,7 +384,7 @@ In **ToDo Mode**, you can configure when upcoming tasks are visually marked as �
 
 If the remaining time until the due date is within the configured threshold, the task will be highlighted in orange to remind you in time.
 
-#### Example Configuration
+### Example Configuration
 
 ```
 todo_yellow_m: 2880  # 2 days (in minutes) for monthly intervals
