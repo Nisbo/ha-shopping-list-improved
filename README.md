@@ -35,6 +35,8 @@ You have an Shopping List and a ToDo mode for different usecases.
 | ---- | ----- |
 | ![17721741-9434-47A2-BB8F-FB2D2811C039_1_102_o](https://github.com/user-attachments/assets/5916d87d-f18a-4b5f-96ad-a9fbd0d0fbac) | ![FD780BD5-35D2-4686-9AA6-00CC4EBF05F3_1_102_o](https://github.com/user-attachments/assets/4762f5b5-2851-41fd-ba65-5495808c1134) |
 
+
+
 ---
 
 # ⚙️ 🇬🇧 Features
@@ -494,6 +496,18 @@ sub_text: "Hint: Use chips to quickly add items again."
 | 🇬🇧 Configuration  | 🇩🇪 Konfiguration | 
 | <img width="521" height="1728" alt="grafik" src="https://github.com/user-attachments/assets/1ce6ac25-ec3b-4c59-a189-dc8d9b4c8691" /> | <img width="522" height="1705" alt="grafik" src="https://github.com/user-attachments/assets/e80794cd-4a5c-4989-877f-6f491e02dfa6" /> | 
 | <img width="521" height="738" alt="grafik" src="https://github.com/user-attachments/assets/4824d683-ef85-4fa2-a946-d15b6bc8ff95" /> | <img width="519" height="703" alt="grafik" src="https://github.com/user-attachments/assets/3f61606b-4f7d-43e6-bbb5-de40048c2f56" /> | 
+
+
+| Mobile View | Editor |
+| ---- | ----- |
+| in English | in German |
+| ![17721741-9434-47A2-BB8F-FB2D2811C039_1_102_o](https://github.com/user-attachments/assets/5916d87d-f18a-4b5f-96ad-a9fbd0d0fbac) | ![FD780BD5-35D2-4686-9AA6-00CC4EBF05F3_1_102_o](https://github.com/user-attachments/assets/4762f5b5-2851-41fd-ba65-5495808c1134) |
+| ![C7515C5E-3769-40FE-AA6B-D57B7259C420_1_102_o](https://github.com/user-attachments/assets/decf6cd0-c3db-4355-adfe-2f29d26fbc66) | ![73778741-17BF-44F2-A49C-2E3B343E96C5_1_102_o](https://github.com/user-attachments/assets/dc2c9a5f-6500-49b3-99c6-a2bc996e494e) | 
+
+
+
+
+
 
 
 
