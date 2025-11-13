@@ -295,6 +295,62 @@ Generate and download the list as a PDF document with checkboxes. You can check/
 
 
 
+### QR Code Scanner 
+Allows scanning one or multiple items at once via QR code. 
+
+> [!IMPORTANT]
+> You must access Home Assistant via a **https://** connection for the QR scanner to work.
+
+QR Button
+<img width="577" height="97" alt="grafik" src="https://github.com/user-attachments/assets/c7e8c1b2-02aa-4c77-b331-b4134989b8ce" />
+
+You have to allow camera access
+<img width="548" height="293" alt="grafik" src="https://github.com/user-attachments/assets/202ab31f-7767-47a0-b0bf-c5052f128b59" />
+
+Scan the code. If the scan was successfully, the scan window will disappear.
+<img width="527" height="508" alt="grafik" src="https://github.com/user-attachments/assets/a11c1da6-e9e3-47ac-89d8-1f5d9677836a" />
+
+Configuration option:
+
+<img width="646" height="143" alt="grafik" src="https://github.com/user-attachments/assets/51c8c5a9-f62e-4ce8-962d-37150b67e212" />
+
+
+For multiple items, each item must be on a separate line. Quantities can be specified in parentheses, e.g., `Bananas (6)`. 
+
+
+
+### Generate your QR Codes in this format
+If you want to add bananes
+```
+bananas
+```
+
+If you want to add 6 bananas at once
+```
+bananas (6)
+```
+
+if you want to add more items like for a dish
+```
+bananas (6)
+plums (33)
+apples (2)
+peach
+beer
+```
+
+
+You can generate QR Codes here:
+https://goqr.me/de/
+
+
+
+
+
+
+
+
+
 
 
 
