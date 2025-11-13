@@ -400,12 +400,6 @@ todo_yellow_s: 60    # 1 hour for dates without time
 
 
 
-
-
-
-# Parameter
-
-
 # Parameters
 
 | Parameter               | Type          | Default                          | Description                                                                                     |
