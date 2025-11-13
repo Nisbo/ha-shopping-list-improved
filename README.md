@@ -302,12 +302,15 @@ Allows scanning one or multiple items at once via QR code.
 > You must access Home Assistant via a **https://** connection for the QR scanner to work.
 
 QR Button
+
 <img width="577" height="97" alt="grafik" src="https://github.com/user-attachments/assets/c7e8c1b2-02aa-4c77-b331-b4134989b8ce" />
 
 You have to allow camera access
+
 <img width="548" height="293" alt="grafik" src="https://github.com/user-attachments/assets/202ab31f-7767-47a0-b0bf-c5052f128b59" />
 
 Scan the code. If the scan was successfully, the scan window will disappear.
+
 <img width="527" height="508" alt="grafik" src="https://github.com/user-attachments/assets/a11c1da6-e9e3-47ac-89d8-1f5d9677836a" />
 
 Configuration option:
@@ -350,10 +353,45 @@ https://goqr.me/de/
 
 
 
+### EAN Code Reader
+
+This feature currently supports **EAN-13 barcodes**, limited to **food products only**.  
+The reason is simple — there is no free global EAN database available, except for the **Open Food Facts** project:  
+🔗 [https://world.openfoodfacts.org](https://world.openfoodfacts.org)
+
+In the future, I might add support for a **local EAN list** (similar to the local categories or local chips feature).
+
+### How to use
+The feature is automatically triggered when:
+- an **EAN-13 barcode** is scanned using the camera (https required), **or**
+- an **EAN-13 number** is entered manually into the input field.
+
+You can test it by entering this example code: **4337256383165**
 
 
 
 
+### Configuration of Warning Thresholds for ToDo Due Dates
+
+In **ToDo Mode**, you can configure when upcoming tasks are visually marked as “due soon” based on configurable warning thresholds. These thresholds are defined in minutes and differ depending on the type of interval or due date format:
+
+| Configuration Parameter | Description                                         | Default Value (Minutes) |
+|-------------------------|-----------------------------------------------------|------------------------|
+| `todo_yellow_m`         | Warning threshold for intervals in **months**       | 1440 (24 hours)        |
+| `todo_yellow_d`         | Warning threshold for intervals in **days**         | 120  (2 hours)         |
+| `todo_yellow_h`         | Warning threshold for intervals in **hours**        | 10 (10 minutes)        |
+| `todo_yellow_s`         | Warning threshold for due dates **without time**    | 120 (2 hours)          |
+
+If the remaining time until the due date is within the configured threshold, the task will be highlighted in orange to remind you in time.
+
+#### Example Configuration
+
+```
+todo_yellow_m: 2880  # 2 days (in minutes) for monthly intervals
+todo_yellow_d: 240   # 4 hours for daily intervals
+todo_yellow_h: 15    # 15 minutes for hourly intervals
+todo_yellow_s: 60    # 1 hour for dates without time
+```
 
 
 
