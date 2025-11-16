@@ -371,6 +371,46 @@ The feature is automatically triggered when:
 
 You can test it by entering this example code: **4337256383165**
 
+# Local EAN file
+
+You can use a local EAN file to define your own product names.
+Supported formats: `EAN-8, UPC (12), EAN-13, and GS1-14.`
+
+If a scanned or typed EAN is found in this local file, it will be used instead of querying the online database.
+This also allows you to override product names from the online source.
+
+The feature is automatically triggered when:
+- an **EAN-8, UPC (12), EAN-13, and GS1-14 barcode** is scanned using the camera (https required), **or**
+- an **EAN-8, UPC (12), EAN-13, and GS1-14** is entered manually into the input field.
+
+Each line in the file must follow the format:
+`EAN Name`
+
+Example:
+```
+1234567890121 Test Item 1
+1234567890122 Test Item 2
+1234567890123 Test Item 3
+```
+
+Example Path: `/local/ean.txt`, if the file is located in the www folder.
+
+To use this, you might also need to add the `www` folder (or your specific folder) to the `allowlist_external_dirs` in your `configuration.yaml` and restart Home Assistant afterwards:
+
+```
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# add your path to the file here
+homeassistant:
+  allowlist_external_dirs:
+    - "/config/www/"
+```
+
+
+
+
+
 
 
 
