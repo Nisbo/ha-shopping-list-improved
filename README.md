@@ -404,6 +404,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 
 | Parameter               | Type          | Default                          | Description                                                                                     |
 |-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
+| `title`        | `string`      | `""`                        | Title of the card. Leave empty to hide the title.                         |
 | `chips_position`        | `string`      | `"auto"`                        | Position of the chips: `auto`, `right`, `bottom`, `full`, `auto_panel`.                         |
 | `chips_width`           | `number`      | `250`                          | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
 | `quantity`              | `string`      | `"end"`                        | Position of the quantity: `beginning` or `end`.                                                |
@@ -414,6 +415,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `chip_font_size`        | `number`      | `12`                           | Font size of the chips in pixels.                                                              |
 | `list_font_size`        | `number`      | `14`                           | Font size of the list items in pixels.                                                         |
 | `cat_font_size`         | `number`      | `16`                           | Font size of the category headers in pixels.                                                   |
+| `title_font_size`         | `number`      | `16`                           | Font size of title in pixels.                                                   |
 | `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`     | Color for local (browser) chips. Supports rgba and HEX formats.                                |
 | `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`     | Color for standard chips. Supports rgba and HEX formats.                                      |
 | `chip_color_global`     | `string`      | `"rgba(100,100,100,0.3)"`     | Color for global chips.                                                                        |
@@ -429,6 +431,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `show_quantity_one`     | `boolean`     | `false`                        | Shows quantity "1" by default.                                                                |
 | `show_cat_popup`        | `boolean`     | `true`                         | Shows popup for category selection.                                                           |
 | `show_cat_count`        | `boolean`     | `true`                         | Shows the count of done/total items per category.                                             |
+| `show_cat_exclamation_mark` | `boolean` | `true`                         | Shows an exclamation mark in the category and title if there is a due item (ToDo Mode only).   |
 | `show_export_button`    | `boolean`     | `false`                        | Shows the export button.                                                                       |
 | `show_export_button_pdf`| `boolean`     | `false`                        | Shows the export as PDF button.                                                               |
 | `show_clear_button`     | `boolean`     | `true`                         | Shows the button to clear the list.                                                           |
@@ -436,6 +439,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `external_url`          | `string`      | `""`                           | External URL, e.g. for QR scanner integration.                                                |
 | `bubble_card`           | `boolean`     | `false`                        | Enables bubble card mode.                                                                     |
 | `chip_file`             | `string`      | `""`                           | File path for an external chip definitions file.                                             |
+| `ean_file`              | `string`      | `""`                           | File path for a local EAN list.                                             |
 | `category_file`         | `string`      | `""`                           | File path for an external category definitions file.                                         |
 | `category_merge_mode`   | `string`      | `"standard_only"`              | Category merging mode: `standard_only`, `global_only`, `local_first`, `global_first`, `global_combined`. |
 | `show_qrscan_button`    | `boolean`     | `false`                        | Shows a button for QR code scanning.                                                         |
