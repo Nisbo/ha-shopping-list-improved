@@ -371,6 +371,46 @@ The feature is automatically triggered when:
 
 You can test it by entering this example code: **4337256383165**
 
+# Local EAN file
+
+You can use a local EAN file to define your own product names.
+Supported formats: `EAN-8, UPC (12), EAN-13, and GS1-14.`
+
+If a scanned or typed EAN is found in this local file, it will be used instead of querying the online database.
+This also allows you to override product names from the online source.
+
+The feature is automatically triggered when:
+- an **EAN-8, UPC (12), EAN-13, and GS1-14 barcode** is scanned using the camera (https required), **or**
+- an **EAN-8, UPC (12), EAN-13, and GS1-14** is entered manually into the input field.
+
+Each line in the file must follow the format:
+`EAN Name`
+
+Example:
+```
+1234567890121 Test Item 1
+1234567890122 Test Item 2
+1234567890123 Test Item 3
+```
+
+Example Path: `/local/ean.txt`, if the file is located in the www folder.
+
+To use this, you might also need to add the `www` folder (or your specific folder) to the `allowlist_external_dirs` in your `configuration.yaml` and restart Home Assistant afterwards:
+
+```
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# add your path to the file here
+homeassistant:
+  allowlist_external_dirs:
+    - "/config/www/"
+```
+
+
+
+
+
 
 
 
@@ -404,6 +444,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 
 | Parameter               | Type          | Default                          | Description                                                                                     |
 |-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
+| `title`        | `string`      | `""`                        | Title of the card. Leave empty to hide the title.                         |
 | `chips_position`        | `string`      | `"auto"`                        | Position of the chips: `auto`, `right`, `bottom`, `full`, `auto_panel`.                         |
 | `chips_width`           | `number`      | `250`                          | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
 | `quantity`              | `string`      | `"end"`                        | Position of the quantity: `beginning` or `end`.                                                |
@@ -414,6 +455,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `chip_font_size`        | `number`      | `12`                           | Font size of the chips in pixels.                                                              |
 | `list_font_size`        | `number`      | `14`                           | Font size of the list items in pixels.                                                         |
 | `cat_font_size`         | `number`      | `16`                           | Font size of the category headers in pixels.                                                   |
+| `title_font_size`         | `number`      | `16`                           | Font size of title in pixels.                                                   |
 | `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`     | Color for local (browser) chips. Supports rgba and HEX formats.                                |
 | `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`     | Color for standard chips. Supports rgba and HEX formats.                                      |
 | `chip_color_global`     | `string`      | `"rgba(100,100,100,0.3)"`     | Color for global chips.                                                                        |
@@ -429,6 +471,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `show_quantity_one`     | `boolean`     | `false`                        | Shows quantity "1" by default.                                                                |
 | `show_cat_popup`        | `boolean`     | `true`                         | Shows popup for category selection.                                                           |
 | `show_cat_count`        | `boolean`     | `true`                         | Shows the count of done/total items per category.                                             |
+| `show_cat_exclamation_mark` | `boolean` | `true`                         | Shows an exclamation mark in the category and title if there is a due item (ToDo Mode only).   |
 | `show_export_button`    | `boolean`     | `false`                        | Shows the export button.                                                                       |
 | `show_export_button_pdf`| `boolean`     | `false`                        | Shows the export as PDF button.                                                               |
 | `show_clear_button`     | `boolean`     | `true`                         | Shows the button to clear the list.                                                           |
@@ -436,6 +479,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `external_url`          | `string`      | `""`                           | External URL, e.g. for QR scanner integration.                                                |
 | `bubble_card`           | `boolean`     | `false`                        | Enables bubble card mode.                                                                     |
 | `chip_file`             | `string`      | `""`                           | File path for an external chip definitions file.                                             |
+| `ean_file`              | `string`      | `""`                           | File path for a local EAN list.                                             |
 | `category_file`         | `string`      | `""`                           | File path for an external category definitions file.                                         |
 | `category_merge_mode`   | `string`      | `"standard_only"`              | Category merging mode: `standard_only`, `global_only`, `local_first`, `global_first`, `global_combined`. |
 | `show_qrscan_button`    | `boolean`     | `false`                        | Shows a button for QR code scanning.                                                         |
