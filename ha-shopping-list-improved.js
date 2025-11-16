@@ -1,6 +1,6 @@
 /*
  * Improved Shopping List Card
- * Version: 2.0.0
+ * Version: 2.1.0
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
@@ -75,10 +75,19 @@ const TRANSLATIONS = {
 		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
 		"editor.labels.categories"                   	: "Kategorien",
         "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
+        "editor.labels.show_cat_exclamation_mark"       : "Ausrufezeichen für fällige Einträge",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
 		"editor.labels.dishes" 							: "Gerichte",
         "editor.labels.mode"                            : "Modus",
+        "editor.labels.font.sizes"                      : "Schriftgrößen",
+        "editor.labels.colors"                          : "Farbeinstellungen",
+        "editor.labels.category.options"                : "Kategorien",
+        "editor.labels.export.options"                  : "Export-Optionen",
+        "editor.labels.dishes.options"                  : "Gerichte",
+        "editor.labels.chips.options"                   : "Chips",
+        "editor.labels.item.options"                    : "Artikel",
+        "editor.labels.general.options"                 : "Allgemeine Einstellungen",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -106,7 +115,7 @@ const TRANSLATIONS = {
         "editor.options.mode.shopping"                  : "Einkaufsliste",
         "editor.options.mode.todo"                      : "To-Do-Liste",
 		
-        "editor.labels.entity"                          : "To-Do-Liste",
+        "editor.labels.entity"                          : "To-Do-Liste (Entität)",
         "editor.helpers.mode"                           : "Legt fest, wie die Liste verwendet wird. Im Modus „Einkaufsliste“ stehen erweiterte Funktionen zur originalen Einkaufsliste zur Verfügung, jedoch ohne Fälligkeiten. Im Modus „To-Do-Liste“ können zusätzlich Fälligkeitsdaten gesetzt und verwaltet werden, die Bedienung unterscheidet sich dabei leicht. Hinweis: Die originale Home Assistant Einkaufsliste mit der Entität 'Einkaufsliste' unterstützt keine Fälligkeiten. Zusätzlich gibt es im To-Do-Modus keine Anzahleingabe, keine Plus- und Minus-Buttons, keine Export-Buttons sowie keinen Button, um erledigte Einträge zu löschen.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
@@ -119,6 +128,7 @@ const TRANSLATIONS = {
 		"editor.labels.chip_color_dish"              	: "Farbe der Chips für Gerichte",
         "editor.labels.list_font_size"                  : "Schriftgröße der Listeneinträge (px)",
 		"editor.labels.cat_font_size"                   : "Schriftgröße der Kategorien (px)",
+        "editor.labels.title_font_size"                 : "Schriftgröße vom Titel (px)",
         "editor.labels.chips_width"                     : "Breite der Chips im '(Auto) Panel Mode'",
         "editor.labels.chips_position"                  : "Position der Chips",
         "editor.labels.quantity"                        : "Position der Artikelanzahl",
@@ -138,14 +148,38 @@ const TRANSLATIONS = {
         "editor.labels.external_url"                    : "(Externe) URL von Home Assistant (für den Zugriff via Export-Datei)",
         "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
         "editor.labels.chip_file"                       : "Path zur Textdatei mit den Globalen Chips",
+        "editor.labels.ean_file"                        : "Path zur Textdatei mit der lokalen EAN Liste",
 		"editor.labels.category_file"                   : "Path zur Textdatei mit den Globalen Kategorien",
+        "editor.labels.title"                           : "Titel",
+        "editor.labels.title_icon"                      : "Titel-Icon",
+        "editor.labels.todo_yellow_m"                   : "Warnschwelle für Intervalle in Monaten",
+        "editor.labels.todo_yellow_d"                   : "Warnschwelle für Intervalle in Tagen",
+        "editor.labels.todo_yellow_h"                   : "Warnschwelle für Intervalle in Stunden",
+        "editor.labels.todo_yellow_s"                   : "Warnschwelle für fällige Aufgaben ohne Zeitangabe",
+        "editor.labels.todo_warning_thresholds"         : "Warnschwellen für ToDo-Modus",
 
-        "editor.helpers.entity"                         : "Wenn keine To-Do-Liste ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet.",
+        "editor.helpers.todo_warning_thresholds"        : "Konfiguration der Warnschwellen im ToDo-Modus. Die Werte sind in Minuten anzugeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
+        "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
+        "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
+        "editor.helpers.todo_yellow_h"                  : "Warnschwelle für Intervalle in Stunden, definiert in Minuten (Standard: 10)",
+        "editor.helpers.todo_yellow_s"                  : "Warnschwelle für fällige Aufgaben ohne Zeitangabe, definiert in Minuten (Standard: 120 = 2 Stunden)",
+        "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
+        "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
+        "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
+        "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
+        "editor.helpers.category.options"               : "Hier kannst du Kategorien konfigurieren, die in der Einkaufs- und ToDo-liste verwendet werden. Du kannst lokale Kategorien (hier in der Karte) definieren oder eine Textdatei mit globalen Kategorien laden. Weitere Informationen zum Aufbau der Kategorien findest du in der Dokumentation.",
+        "editor.helpers.export.options"                 : "Hier kannst du die Export-Optionen konfigurieren.",
+        "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
+        "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
+        "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
+        "editor.helpers.general.options"                : "Hier kannst du allgemeine Einstellungen für die Karte konfigurieren.",
+        "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet. Diese hat allerdings keine Fälligkeits-Funktion und sollte somit nur im Modus 'Einkaufsliste' und nicht im Modus 'To-Do-Liste' verwendet werden.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
         "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
         "editor.helpers.chip_merge"                     : "Legt fest, wie Globale-, Standard- und Browser-Chips zusammen angezeigt werden.",
         "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
-		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. STandard: 16px.",
+		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. Standard: 16px.",
+        "editor.helpers.title_font_size"                : "Legt die Schriftgröße für den Titel fest. Standard: 16px.",
         "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
         "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
 		"editor.helpers.chip_color_global"              : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
@@ -167,10 +201,13 @@ const TRANSLATIONS = {
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
+        
+        "editor.helpers.ean_file"                       : "Beispiel: /local/ean.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Eintrag im Format 'EAN Name' stehen, z. B. '1234567890123 Test-Artikel'. Unterstützt werden die EAN-Formate EAN-8, UPC (12), EAN-13 und GS1-14.",
         "editor.helpers.chip_file"                      : "Beispiel: /local/chips.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Chip eingetragen werden.",
         "editor.helpers.category_file"                  : "Beispiel: /local/categories.txt, wenn die Datei im www-Ordner liegt. Für den Aufbau der Datei, bitte in die Dokumentation gucken.",
 		"editor.helpers.category_merge_mode"			: "Wähle, wie globale und lokale Kategorien zusammengeführt werden sollen. „Standard_only“ zeigt nur die lokal definierten Kategorien, „global_only“ nur die globalen Kategorien. Die anderen Optionen kombinieren beide auf verschiedene Weise.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
+        "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
         "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im ToDo Modus wird die Anzahl ivertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.) So kann man z.B. bei (5/5) einfach sehen, dass aktuell keine Einträge zu erledigen sind.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
@@ -245,11 +282,20 @@ const TRANSLATIONS = {
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
 		"editor.labels.categories"                   	: "Categories",
-        "editor.labels.show_cat_count"                  : "Show item count in categories ?  ",
+        "editor.labels.show_cat_count"                  : "Show item count in categories ?",
+        "editor.labels.show_cat_exclamation_mark"       : "Show an exclamation mark for due items",
         "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
 		"editor.labels.dishes" 							: "Dishes",
         "editor.labels.mode"                            : "Mode",
+        "editor.labels.font.sizes"                      : "Font sizes",
+        "editor.labels.colors"                          : "Color settings",
+        "editor.labels.category.options"                : "Categories",
+        "editor.labels.export.options"                  : "Export options",
+        "editor.labels.dishes.options"                  : "Dishes",
+        "editor.labels.chips.options"                   : "Chips",
+        "editor.labels.item.options"                    : "Items",
+        "editor.labels.general.options"                 : "General settings",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -277,7 +323,7 @@ const TRANSLATIONS = {
         "editor.options.mode.shopping"                  : "Shopping list",
         "editor.options.mode.todo"                      : "To-do list",
 
-        "editor.labels.entity"                          : "To-Do-List",
+        "editor.labels.entity"                          : "To-Do-List (Entity)",
         "editor.labels.highlight_words"                 : "Highlight words",
         "editor.labels.highlight_color"                 : "Highlight color",
         "editor.labels.chip_merge"                      : "Combine chips",
@@ -288,6 +334,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_color_default"              : "Color of standard chips",
 		"editor.labels.chip_color_dish"              	: "Color of dishes chips",
         "editor.labels.list_font_size"                  : "List item font size (px)",
+        "editor.labels.title_font_size"                 : "Title font size (px)",
 		"editor.labels.cat_font_size"                   : "Category font size (px)",
         "editor.labels.chips_width"                     : "Chip width - Only for '(Auto) Panel Mode'",
         "editor.labels.chips_position"                  : "Chip position",
@@ -308,14 +355,38 @@ const TRANSLATIONS = {
         "editor.labels.external_url"                    : "(External) URL of Home Assistant (for access via export file)",
         "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
         "editor.labels.chip_file"                       : "Path to the text file with the global chips",
+        "editor.labels.ean_file"                        : "Path to the text file with the local EAN list",
 		"editor.labels.category_file"                   : "Path to the text file with the global categories",
+        "editor.labels.title"                           : "Title",
+        "editor.labels.title_icon"                      : "Title Icon",
+        "editor.labels.todo_yellow_m"                   : "Warning threshold for intervals in months",
+        "editor.labels.todo_yellow_d"                   : "Warning threshold for intervals in days",
+        "editor.labels.todo_yellow_h"                   : "Warning threshold for intervals in hours",
+        "editor.labels.todo_yellow_s"                   : "Warning threshold for due dates without time",
+        "editor.labels.todo_warning_thresholds"         : "Warning thresholds for ToDo mode",
 
-        "editor.helpers.entity"                         : "If no To-Do list is selected, Home Assistant's default shopping list will be used automatically.",
+        "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
+        "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
+        "editor.helpers.todo_yellow_d"                  : "Warning threshold for intervals in days, defined in minutes (Default: 120 = 2 hours)",
+        "editor.helpers.todo_yellow_h"                  : "Warning threshold for intervals in hours, defined in minutes (Default: 10)",
+        "editor.helpers.todo_yellow_s"                  : "Warning threshold for due dates without time, defined in minutes (Default: 120 = 2 hours)",
+        "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
+        "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
+        "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
+        "editor.helpers.colors"                         : "Defines the color settings for the chips.",
+        "editor.helpers.category.options"               : "Here you can configure categories used in the shopping and to-do list. You can define local categories (here in the card) or load a text file with global categories. For more information on the structure of the categories, please refer to the documentation.",
+        "editor.helpers.export.options"                 : "Here you can configure the export options.",
+        "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
+        "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
+        "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
+        "editor.helpers.general.options"                : "Here you can configure general settings for the card.",
+        "editor.helpers.entity"                         : "If no Entity is selected, Home Assistant's default shopping list will be used automatically. However, this list does not have a due date function and should therefore only be used in 'Shopping List' mode, not in 'To-Do List' mode.",
         "editor.helpers.mode"                           : "Defines how the list is used. In 'Shopping List' mode, extended functions for the original shopping list are available, but without due dates. In 'To-Do List' mode, due dates can additionally be set and managed, with slightly different handling. Note: The original Home Assistant shopping list entity 'Shopping List' does not support due dates. In To-Do mode, there is also no quantity input, no plus or minus buttons, no export buttons, and no button to delete completed entries.",
         "editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
 		"editor.helpers.chip_merge"                     : "Determines how global, standard and browser chips are combined and displayed.",
 		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
+        "editor.helpers.title_font_size"                : "Sets the font size for the title. Default: 16px.",
 		"editor.helpers.cat_font_size"                  : "Sets the font size for categories in the list. Default: 16px.",
 		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
 		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
@@ -339,9 +410,11 @@ const TRANSLATIONS = {
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
+        "editor.helpers.ean_file"                       : "Example: /local/ean.txt, if the file is located in the www folder. Each line must contain an entry in the format 'EAN Name', e.g. '1234567890123 Test Item'. Supports EAN formats EAN-8, UPC (12), EAN-13, and GS1-14.",
         "editor.helpers.category_file"                  : "Example: /local/categories.txt if the file is located in the www folder. For file format, refer to the documentation.",
         "editor.helpers.category_merge_mode"			: "Choose how global and local categories should be merged. “standard_only” shows only local categories, “global_only” only global categories. Other options combine both in different ways.",
 		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
+        "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the title and the category while in To-Do mode if there are due items in that category.",
         "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
@@ -419,6 +492,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._entity = entity || null;
         if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Verwendete Entity:", this._entity);
 
+        this._title                 = config.title || "";
+        this._titleIcon             = config.title_icon || "";
         this._quantityPosition      = (config.quantity === "beginning") ? "beginning" : "end";
         this._acknowledgedMode      = ["hide", "end"].includes(config.acknowledged) ? config.acknowledged : "show";
         this._chipClick             = (config.chip_click === "dblclick") ? "dblclick" : "click";
@@ -431,10 +506,11 @@ class HaShoppingListImproved extends HTMLElement {
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
         this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel"].includes(config.chips_position) ? config.chips_position : "auto";
 		this._chipWidth             = (["full", "auto_panel"].includes(this._chipPosition) && typeof config.chips_width === "number") ? `${config.chips_width}px` : "300px";
-        this._listFontSize          = config.list_font_size || 14; // Standard: 14px
-		this._catFontSize           = config.cat_font_size  || 16; // Standard: 16px
-        this._chipFontSize          = config.chip_font_size || 12; // Standard: 12px
-        this._chipColor             = config.chip_color     || "rgba(100,100,100,0.3)";
+        this._listFontSize          = config.list_font_size  || 14; // Standard: 14px
+		this._catFontSize           = config.cat_font_size   || 16; // Standard: 16px
+        this._chipFontSize          = config.chip_font_size  || 12; // Standard: 12px
+        this._titleFontSize         = config.title_font_size || 16; // Standard: 16px
+        this._chipColor             = config.chip_color      || "rgba(100,100,100,0.3)";
         this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
 		this._chipGlobalColor		= config.chip_color_global || "rgba(100,100,100,0.3)";
 		this._chipColorDish 		= config.chip_color_dish || "#745E3D";
@@ -442,6 +518,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
+        this._showCatExclamation    = (config.show_cat_exclamation_mark === false) ? false : true;
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._showClearButton       = (config.show_clear_button === false) ? false : true;
@@ -449,6 +526,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._externalUrl           = config.external_url || "";
         this._bubbleCardMode        = (config.bubble_card === true) ? true : false;
         this._chipFile              = config.chip_file || "";
+        this._eanFile               = config.ean_file || "";
 		this._categoryFile          = config.category_file || "";
 		this._categoryMergeMode		= ["standard_only", "global_only", "local_first", "global_first", "global_combined"].includes(config.category_merge_mode) ? config.category_merge_mode : "standard_only";
 		this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
@@ -503,6 +581,10 @@ class HaShoppingListImproved extends HTMLElement {
 		// load Global Categories
 		this._globalCategories = [];
         this._loadGlobalCategoriesFromFile();
+
+        // load local EAN
+        this._localEAN = [];
+        this._loadLocalEANFromFile();
     }
 
     // Global Chips
@@ -530,6 +612,43 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 	
+
+    // Local EAN
+async _loadLocalEANFromFile() {
+    if (!this._eanFile || !this._eanFile.trim()) {
+        if(debugMode) console.info("[ha-shopping-list-improved] No path specified for local EAN, skipping load.");
+        return;
+    }
+
+    try {
+        const path = this._eanFile.trim() + "?" + new Date().getTime();
+        const response = await fetch(path);
+        if (!response.ok) throw new Error("Error loading file for local EAN");
+        const text = await response.text();
+
+        // Parsing: jede Zeile aufteilen in EAN und Artikelname
+        this._localEAN = text
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .map(line => {
+                const [ean, ...nameParts] = line.split(/\s+/);
+                return {
+                    ean,
+                    name: nameParts.join(' ')
+                };
+            });
+
+        if (debugMode) console.info("[ha-shopping-list-improved] local EAN loaded:", this._localEAN);
+
+        this._renderHistory(); // rerun to apply global chips
+    } catch (err) {
+        console.warn("[ha-shopping-list-improved] Unable to load local EAN:", err);
+    }
+}
+
+
+
 	// Global Categories
 	async _loadGlobalCategoriesFromFile() {
 		if (!this._categoryFile || !this._categoryFile.trim()) {
@@ -603,20 +722,7 @@ class HaShoppingListImproved extends HTMLElement {
     static getConfigForm() {
     return {
         schema: [
-            {
-                name: "mode",
-                label: translate("editor.labels.mode"),
-                selector: {
-                    select: {
-                        mode: "dropdown",
-                        options: [
-                            { value: "shopping", label: translate("editor.options.mode.shopping") },
-                            { value: "todo",     label: translate("editor.options.mode.todo") }
-                        ]
-                    }
-                },
-                default: "shopping"
-            },
+            // Entity Selection
             {
                 name: "entity",
                 required: false,
@@ -626,198 +732,334 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 },
             },
-            {
-                name: "chips_position",
-                selector: {
-                    select: {
-                        options: [
-                            { value: "auto", label: translate("editor.options.chips_position.auto") },
-							{ value: "auto_panel", label: translate("editor.options.chips_position.auto_panel") },
-                            { value: "bottom", label: translate("editor.options.chips_position.bottom") },
-                            { value: "right", label: translate("editor.options.chips_position.right") },
-                            { value: "full", label: translate("editor.options.chips_position.full") }
-                        ]
-                    }
-                },
-                default: "auto"
-            },
-            {
-                name: "chips_width",
-                selector: { number: { min: 100, max: 800, step: 10 } },
-                default: 300
-            },
-            {
-                name: "chip_click",
-                selector: {
-                    select: {
-                        options: [
-                            { value: "single", label: translate("editor.options.chip_click.single") },
-                            { value: "dblclick", label: translate("editor.options.chip_click.dblclick") }
-                        ]
-                    }
-                },
-                default: "single"
-            },
-            {
-                name: "chip_merge",
-                selector: {
-                    select: {
-                        options: [
-                            { value: "combined", label: translate("editor.options.chip_merge.combined") },
-                            { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
-                            { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") },
 
-                            { value: "global_only", label: translate("editor.options.chip_merge.global_only") },
-                            { value: "global_combined", label: translate("editor.options.chip_merge.global_combined") }
-                        ]
-                    }
-                },
-                default: "combined"
-            },
-            { name: "chips", selector: { text: {} }, default: "" },
-            { name: "highlight_words", selector: { text: {} }, default: "" },
-
+            // General Settings
             {
-                name: "chip_file",
-                selector: { text: {} },
-                default: ""
+                type: 'expandable',
+                label: 'general.options',
+                icon: 'mdi:cog-outline',
+                schema: [
+                    {
+                        name: "mode",
+                        label: translate("editor.labels.mode"),
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "shopping", label: translate("editor.options.mode.shopping") },
+                                    { value: "todo",     label: translate("editor.options.mode.todo") }
+                                ]
+                            }
+                        },
+                        default: "shopping"
+                    },
+                    { name: "title", selector: { text: {} }, default: ""},
+                    { name: "title_icon", selector: { icon: {} }, default: ""},
+                    { name: "show_quantity_box", selector: { boolean: {} }, default: true },
+                    { name: "show_input_mask", selector: { boolean: {} }, default: true },
+                    { name: "show_submit_button", selector: { boolean: {} }, default: true },
+                    { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
+                    { name: "sub_text", selector: { text: {} }, default: " "},
+                    { name: "bubble_card", selector: { boolean: {} }, default: false }
+                ]
             },
 
-			{ name: "cat_font_size",  selector: { number: { min: 8, max: 30, step: 1 } }, default: 16},
-            { name: "list_font_size", selector: { number: { min: 8, max: 30, step: 1 } }, default: 14},
-            { name: "chip_font_size", selector: { number: { min: 8, max: 30, step: 1 } }, default: 12},
+            // Item Options
             {
-                name: "chip_color",
-                selector: { text: {} },
-                default: "rgba(100,100,100,0.3)"
-            },
-            {
-                name: "chip_color_default",
-                selector: { text: {} },
-                default: "rgba(100,100,255,0.3)"  
-            },
-            {
-                name: "highlight_color",
-                selector: { text: {} },
-                default: "red"
-            },
-			
-			{
-                name: "chip_color_global",
-                selector: { text: {} },
-                default: "rgba(100,100,100,0.3)"
-            },
-			
-			{
-                name: "chip_color_dish",
-                selector: { text: {} },
-                default: "rgba(100,100,100,0.3)"
-            },
-			
-            {
-                name: "quantity",
-                selector: {
-                    select: {
-                        options: [
-                            { value: "beginning", label: translate("editor.options.quantity.beginning") },
-                            { value: "end", label: translate("editor.options.quantity.end") }
+                type: 'expandable',
+                label: 'item.options',
+                icon: 'mdi:format-list-checks',
+                schema: [
+                    {
+                        name: "quantity",
+                        selector: {
+                            select: {
+                                options: [
+                                    { value: "beginning", label: translate("editor.options.quantity.beginning") },
+                                    { value: "end", label: translate("editor.options.quantity.end") }
+                                ]
+                            }
+                        },
+                        default: "end"
+                    },
+                    {
+                        name: "acknowledged",
+                        selector: {
+                            select: {
+                                options: [
+                                    { value: "show", label: translate("editor.options.acknowledged.show") },
+                                    { value: "hide", label: translate("editor.options.acknowledged.hide") },
+                                    { value: "end", label: translate("editor.options.acknowledged.end") }
+                                ]
+                            }
+                        },
+                        default: "show"
+                    },
+                    { name: "show_plus_minus", selector: { boolean: {} }, default: true },
+                    { name: "show_quantity_one", selector: { boolean: {} }, default: false },
+                    {
+                        name: "ean_file",
+                        selector: { text: {} },
+                        default: ""
+                    },
+                    {
+                        type: 'expandable',
+                        label: 'todo_warning_thresholds',
+                        icon: 'mdi:alarm-light',
+                        schema: [
+                            {
+                                name: "todo_yellow_m",
+                                selector: { number: { min: 1, max: 300000, step: 1 } },
+                                default: 1440
+                            },
+                            {
+                                name: "todo_yellow_d",
+                                selector: { number: { min: 1, max: 300000, step: 1 } },
+                                default: 120
+                            },
+                            {
+                                name: "todo_yellow_h",
+                                selector: { number: { min: 1, max: 300000, step: 1 } },
+                                default: 10
+                            },
+                            {
+                                name: "todo_yellow_s",
+                                selector: { number: { min: 1, max: 300000, step: 1 } },
+                                default: 120
+                            }
                         ]
                     }
-                },
-                default: "end"
+                ]
             },
+
+            // Chips
             {
-                name: "acknowledged",
-                selector: {
-                    select: {
-                        options: [
-                            { value: "show", label: translate("editor.options.acknowledged.show") },
-                            { value: "hide", label: translate("editor.options.acknowledged.hide") },
-                            { value: "end", label: translate("editor.options.acknowledged.end") }
-                        ]
+                type: 'expandable',
+                label: 'chips.options',
+                icon: 'mdi:shape-outline',
+                schema: [
+                    { name: "local_chips", selector: { boolean: {} }, default: true },
+                    {
+                        name: "chips_position",
+                        selector: {
+                            select: {
+                                options: [
+                                    { value: "auto", label: translate("editor.options.chips_position.auto") },
+                                    { value: "auto_panel", label: translate("editor.options.chips_position.auto_panel") },
+                                    { value: "bottom", label: translate("editor.options.chips_position.bottom") },
+                                    { value: "right", label: translate("editor.options.chips_position.right") },
+                                    { value: "full", label: translate("editor.options.chips_position.full") }
+                                ]
+                            }
+                        },
+                        default: "auto"
+                    },
+                    {
+                        name: "chips_width",
+                        selector: { number: { min: 100, max: 800, step: 10 } },
+                        default: 300
+                    },
+                    {
+                        name: "chip_click",
+                        selector: {
+                            select: {
+                                options: [
+                                    { value: "single", label: translate("editor.options.chip_click.single") },
+                                    { value: "dblclick", label: translate("editor.options.chip_click.dblclick") }
+                                ]
+                            }
+                        },
+                        default: "single"
+                    },
+                    {
+                        name: "chip_merge",
+                        selector: {
+                            select: {
+                                options: [
+                                    { value: "combined", label: translate("editor.options.chip_merge.combined") },
+                                    { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
+                                    { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") },
+
+                                    { value: "global_only", label: translate("editor.options.chip_merge.global_only") },
+                                    { value: "global_combined", label: translate("editor.options.chip_merge.global_combined") }
+                                ]
+                            }
+                        },
+                        default: "combined"
+                    },
+                    { name: "chips", selector: { text: {} }, default: "" },
+                    { name: "highlight_words", selector: { text: {} }, default: "" },
+                    {
+                        name: "chip_file",
+                        selector: { text: {} },
+                        default: ""
                     }
-                },
-                default: "show"
+                ]
             },
-            { name: "local_chips", selector: { boolean: {} }, default: true },
-            { name: "show_quantity_box", selector: { boolean: {} }, default: true },
-            { name: "show_submit_button", selector: { boolean: {} }, default: true },
-			{ name: "show_qrscan_button", selector: { boolean: {} }, default: false },
-            { name: "show_input_mask", selector: { boolean: {} }, default: true },
-			{ name: "show_plus_minus", selector: { boolean: {} }, default: true },
-            { name: "show_quantity_one", selector: { boolean: {} }, default: false },
-            { name: "sub_text", selector: { text: {} }, default: " "},
-            { name: "show_cat_popup", selector: { boolean: {} }, default: true },
-            { name: "show_cat_count", selector: { boolean: {} }, default: true },
+
+            // Category Options
             {
-                name: "categories",
-                required: false,
-                selector: {
-                    object: {
-                        properties: {
-                            "category1": { type: "string", name: "Only a placeholder" },
-                            "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+            type: 'expandable',
+            label: 'category.options',
+            icon: 'mdi:format-list-bulleted',
+            schema: [
+                    {
+                        name: "categories",
+                        required: false,
+                        selector: {
+                            object: {
+                                properties: {
+                                    "category1": { type: "string", name: "Only a placeholder" },
+                                    "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+                                }
+                            }
+                        }
+                    },
+                    { name: "show_cat_popup", selector: { boolean: {} }, default: true },
+                    { name: "show_cat_count", selector: { boolean: {} }, default: true },
+                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },			
+                    {
+                        name: "category_merge_mode",
+                        label: translate("editor.labels.category_merge_mode"),
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "standard_only",   label: translate("editor.options.category_merge.standard_only") },
+                                    { value: "global_only",     label: translate("editor.options.category_merge.global_only") },
+                                    { value: "local_first",     label: translate("editor.options.category_merge.local_first") },
+                                    { value: "global_first",    label: translate("editor.options.category_merge.global_first") },
+                                    { value: "global_combined", label: translate("editor.options.category_merge.global_combined") }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        name: "category_file",
+                        selector: { text: {} },
+                        default: ""
+                    }
+                ]
+            },
+
+            // Dishes Options
+            {
+                type: 'expandable',
+                label: 'dishes.options',
+                icon: 'mdi:food-fork-drink',
+                schema: [
+                    {
+                        name: "dishes",
+                        required: false,
+                        selector: {
+                            object: {
+                                properties: {
+                                    "category1": { type: "string", name: "Only a placeholder" },
+                                    "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+                                }
+                            }
                         }
                     }
-                }
-            },
-			
-			{
-				name: "category_merge_mode",
-				label: translate("editor.labels.category_merge_mode"),
-				selector: {
-					select: {
-						mode: "dropdown",
-						options: [
-							{ value: "standard_only",   label: translate("editor.options.category_merge.standard_only") },
-							{ value: "global_only",     label: translate("editor.options.category_merge.global_only") },
-							{ value: "local_first",     label: translate("editor.options.category_merge.local_first") },
-							{ value: "global_first",    label: translate("editor.options.category_merge.global_first") },
-							{ value: "global_combined", label: translate("editor.options.category_merge.global_combined") }
-						]
-					}
-				}
-			},
-
-            {
-                name: "category_file",
-                selector: { text: {} },
-                default: ""
+                ]
             },
 
+            // Font Sizes
             {
-                name: "dishes",
-                required: false,
-                selector: {
-                    object: {
-                        properties: {
-                            "category1": { type: "string", name: "Only a placeholder" },
-                            "items1": { type: "text", name: "to let HA fall back to yaml mode" }
-                        }
+                type: 'expandable',
+                label: 'font.sizes',
+                icon: 'mdi:format-size',
+                schema: [
+                    {
+                    name: "title_font_size",
+                    selector: { number: { min: 8, max: 30, step: 1 } },
+                    default: 16
+                    },
+                    {
+                    name: "cat_font_size",
+                    selector: { number: { min: 8, max: 30, step: 1 } },
+                    default: 16
+                    },
+                    {
+                    name: "list_font_size",
+                    selector: { number: { min: 8, max: 30, step: 1 } },
+                    default: 14
+                    },
+                    {
+                    name: "chip_font_size",
+                    selector: { number: { min: 8, max: 30, step: 1 } },
+                    default: 12
                     }
-                }
+                ]
             },
 
-            { name: "show_export_button_pdf", selector: { boolean: {} }, default: false },
-            { name: "show_export_button", selector: { boolean: {} }, default: false },
+            // Color Options
             {
-                name: "longlived_token",
-                selector: { text: {} },
-                default: ""
+                type: 'expandable',
+                label: 'colors',
+                icon: 'mdi:format-color-fill',
+                schema: [
+                    {
+                        name: "chip_color",
+                        selector: { text: {} },
+                        default: "rgba(100,100,100,0.3)"
+                    },
+                    {
+                        name: "chip_color_default",
+                        selector: { text: {} },
+                        default: "rgba(100,100,255,0.3)"  
+                    },
+                    {
+                        name: "chip_color_global",
+                        selector: { text: {} },
+                        default: "rgba(100,100,100,0.3)"
+                    },                    
+                    {
+                        name: "highlight_color",
+                        selector: { text: {} },
+                        default: "red"
+                    },
+                    {
+                        name: "chip_color_dish",
+                        selector: { text: {} },
+                        default: "rgba(100,100,100,0.3)"
+                    }
+                ]
             },
+
+            // Export Options
             {
-                name: "external_url",
-                selector: { text: {} },
-                default: ""
-            },
-            { name: "bubble_card", selector: { boolean: {} }, default: false }
+                type: 'expandable',
+                label: 'export.options',
+                icon: 'mdi:file-export',
+                schema: [           
+                    { name: "show_export_button_pdf", selector: { boolean: {} }, default: false },
+                    { name: "show_export_button", selector: { boolean: {} }, default: false },
+                    {
+                        name: "longlived_token",
+                        selector: { text: {} },
+                        default: ""
+                    },
+                    {
+                        name: "external_url",
+                        selector: { text: {} },
+                        default: ""
+                    }
+                ]
+            }
             ],
 
             computeLabel: (schema) => {
+                if (!schema.name) {
+                    return translate(`editor.labels.${schema.label}`);
+                }
                 return translate(`editor.labels.${schema.name}`);
             },
 
             computeHelper: (schema) => {
+                if (!schema.name) {
+                    return translate(`editor.helpers.${schema.label}`);
+                }
+
                 return translate(`editor.helpers.${schema.name}`);
             },
 
@@ -961,7 +1203,7 @@ class HaShoppingListImproved extends HTMLElement {
                 color: var(--text-primary-color, #fff);
             }
             .small { font-size:12px; }
-            .hidden {display: none;}
+            .hidden {display: none !important;}
 
             .list-history-container {
                 display: flex;
@@ -1046,46 +1288,82 @@ class HaShoppingListImproved extends HTMLElement {
                 overflow-y: auto;
                 width: var(--chips-width, ${this._chipWidth});
             }
+            .cardname {
+                display: flex;
+                align-items: center;   /* <<< sorgt für perfekte vertikale Ausrichtung */
+                gap: 6px;              /* Abstand zwischen Icon und Text */
+                font-weight: bold;
+                font-size: ${this._titleFontSize}px;
+                margin-bottom:8px;
+                color: var(--primary-text-color);
+            }
+            .cardname-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: ${this._titleFontSize}px;
+                height: ${this._titleFontSize}px;
+                cursor: pointer;
+                color: var(--primary-text-color);
+            }
+            .cardname-alert {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: ${this._titleFontSize}px;
+                height: ${this._titleFontSize}px;
+                color: var(--primary-text-color);
+            }
+            .collapsed .content {
+                display: none;
+            }
         `;
 
         this._shadow.innerHTML = `
             <div class="card">
-                <div class="input-row ${this._showInputMask ? '' : 'hidden'}">
-                    ${this._showQuantitySelection
-                    ?   `
-                        <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="${translate("editor.placeholders.quantity")}">
-                        <datalist id="quantityOptions">
-                            <option value="1"><option value="2"><option value="3"><option value="4"><option value="5">
-                            <option value="6"><option value="7"><option value="8"><option value="9"><option value="10">
-                            <option value="15"><option value="20">
-                        </datalist>
-                        `
-                    :   `
-                        <input type="hidden" id="quantitySelect" value="1">
-                        `
-                    }
-                    <input id="itemInput" type="text" placeholder="${translate("editor.placeholders.item")}" autocomplete="off">
-                    <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">${translate("editor.labels.add_button")}</button>
-					<ha-icon id="qrScanBtn" ${this._showQrScanButton ? '' : ' class="hidden"'}" icon="mdi:qrcode-scan" style="
-						cursor: pointer;
-						width: 24px;
-						height: 24px;
-						vertical-align: middle;
-					"></ha-icon>
+                <div class="cardname ${this._title ? '' : 'hidden'}" id="cardtitle">
+                    <ha-icon id="titleicon" ${this._titleIcon ? ' class="cardname-icon"' : ' class="hidden"'} icon="${this._titleIcon}"></ha-icon>
+                    ${this._title}
+                    <span id="titlealert" class="hidden cardname-alert">\u26A0</span>
                 </div>
-                <div class="small">
-                    ${ this._subText }
-                </div>
+                <div id="collapsible">
+                    <div class="input-row ${this._showInputMask ? '' : 'hidden'}">
+                        ${this._showQuantitySelection
+                        ?   `
+                            <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="${translate("editor.placeholders.quantity")}">
+                            <datalist id="quantityOptions">
+                                <option value="1"><option value="2"><option value="3"><option value="4"><option value="5">
+                                <option value="6"><option value="7"><option value="8"><option value="9"><option value="10">
+                                <option value="15"><option value="20">
+                            </datalist>
+                            `
+                        :   `
+                            <input type="hidden" id="quantitySelect" value="1">
+                            `
+                        }
+                        <input id="itemInput" type="text" placeholder="${translate("editor.placeholders.item")}" autocomplete="off">
+                        <button id="addBtn" class="primary ${this._showSubmitButton ? '' : 'hidden'}">${translate("editor.labels.add_button")}</button>
+                        <ha-icon id="qrScanBtn" ${this._showQrScanButton ? '' : ' class="hidden"'}" icon="mdi:qrcode-scan" style="
+                            cursor: pointer;
+                            width: 24px;
+                            height: 24px;
+                            vertical-align: middle;
+                        "></ha-icon>
+                    </div>
+                    <div class="small">
+                        ${ this._subText }
+                    </div>
 
-                <div class="${containerClass}">
-                    <ul id="list"></ul>
-                    <div class="history" id="history"></div>
-                </div>
+                    <div class="${containerClass}">
+                        <ul id="list"></ul>
+                        <div class="history" id="history"></div>
+                    </div>
 
-                <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                    ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;` : ``}
-                    ${this._showExportButton ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
-                    ${this._showClearButton ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
+                    <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                        ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;` : ``}
+                        ${this._showExportButton ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
+                        ${this._showClearButton ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
+                    </div>
                 </div>
             </div>
         `;
@@ -1098,11 +1376,13 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
 		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
+        if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
 
-        this._listEl    = this._shadow.getElementById('list');
-        this._historyEl = this._shadow.getElementById('history');
-        this._inputEl   = this._shadow.getElementById('itemInput');
-        this._qtyEl     = this._shadow.getElementById('quantitySelect');
+        this._listEl     = this._shadow.getElementById('list');
+        this._historyEl  = this._shadow.getElementById('history');
+        this._inputEl    = this._shadow.getElementById('itemInput');
+        this._qtyEl      = this._shadow.getElementById('quantitySelect');
+        this._titleAlert = this._shadow.getElementById('titlealert');
 
         this._renderHistory();
 		
@@ -1129,10 +1409,29 @@ class HaShoppingListImproved extends HTMLElement {
 
 	// EAN
 	async _checkEAN(text) {
+        // 1st localEAN check - EAN-8, UPC (12), EAN-13 er GS1-14
+        const eanRegexL = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
+        if (!eanRegexL.test(text)) {
+            return { name: text, brands: null, imageUrl: null };
+        }
+
+        if (this._localEAN && Array.isArray(this._localEAN)) {
+            const localEntry = this._localEAN.find(entry => entry.ean === text);
+            if (localEntry) {
+                if (debugMode) console.log("[EAN] Local entry found:", localEntry);
+                return {
+                    name: localEntry.name,
+                    brands: null,
+                    imageUrl: null
+                };
+            }
+        }
+
+        // 2nd internet EAN check
         const eanRegex = /^\d{13}$/;
         if (!eanRegex.test(text)) {
             return { name: text, brands: null, imageUrl: null };
-        }
+        }        
 
         const url = `https://world.openfoodfacts.org/api/v2/product/${text}.json`;
 
@@ -1140,7 +1439,7 @@ class HaShoppingListImproved extends HTMLElement {
             const response = await fetch(url, {
             headers: {
                 "Accept": "application/json",
-                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.0.0)"
+                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.1.0)"
             }
             });
 
@@ -1483,6 +1782,14 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 
+    _collapse() {
+        const container = this._shadow.getElementById("collapsible");
+        const storageKey = this._entity + "_collapsed";
+
+        const isHidden = container.classList.toggle("hidden");
+        localStorage.setItem(storageKey, isHidden ? "true" : "false");
+    }
+
     _renderList() {
         if (!this._hass) return;
         if (!this._listEl) return;
@@ -1492,6 +1799,8 @@ class HaShoppingListImproved extends HTMLElement {
             this._listEl.innerHTML = `<li class="small">${translate("editor.labels.no_items")}</li>`;
             return;
         }
+
+        this._titleAlert.classList.add("hidden");
 
         // acknowledged-Filter
         let itemsToRender = [...this._items];
@@ -1581,9 +1890,11 @@ class HaShoppingListImproved extends HTMLElement {
 
             container.appendChild(textEl);
 
-            if (this._mode === "todo" && done < total) {
+            if (this._mode === "todo" && done < total && this._showCatExclamation) {
                 const warningEl = document.createElement('span');
                 warningEl.textContent = ' \u26A0';
+                console.log("hidden removed");
+                this._titleAlert.classList.remove("hidden");
                 container.appendChild(warningEl);
             }
 
@@ -1673,9 +1984,11 @@ class HaShoppingListImproved extends HTMLElement {
                 container.appendChild(textEl);
 
                 // Show icon if done < total in todo mode
-                if (this._mode === "todo" && done < total) {
+                if (this._mode === "todo" && done < total && this._showCatExclamation) {
                     const warningEl = document.createElement('span');
                     warningEl.textContent = ' \u26A0';
+                    this._titleAlert.classList.remove("hidden");
+                    console.log("hidden removed");
                     container.appendChild(warningEl);
                 }
 
@@ -1799,7 +2112,7 @@ class HaShoppingListImproved extends HTMLElement {
             popup.style.padding = '16px';
             popup.style.borderRadius = '8px';
             popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            popup.style.maxWidth = '320px';
+            popup.style.maxWidth = '330px';
             popup.style.width = '90%';
             popup.style.textAlign = 'center';
             popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
@@ -2124,27 +2437,155 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 }
 
-                // Date and Time Picker
-                const dueDateLabel = document.createElement('label');
-                dueDateLabel.textContent = translate("ui.todo.next_due");
-                dueDateLabel.style.fontWeight = '500';
-                container.appendChild(dueDateLabel);
+				// Chip selection for paste function
+				function selectCategoryChip(categoryName) {
+					Array.from(catContainer.children).forEach(c => {
+						const cBg = c._chip.dataset.bgcolor || 'var(--secondary-background-color)';
+						c._chip.style.background = cBg;
+						c._chip.style.boxShadow = 'none';
+						c._chip.style.transform = 'translateY(0)';
+						c._chip.style.color = 'var(--primary-text-color)';
+						c._underline.style.background = 'transparent';
+					});
 
-                const dueRow = document.createElement('div');
-                dueRow.style.display = 'flex';
-                dueRow.style.gap = '8px';
-                dueRow.style.alignItems = 'center';
+					let targetChipWrapper;
 
-                dueDateInput = document.createElement('input');
-                dueDateInput.type = 'date';
-                dueDateInput.class = 'mdc-text-field__input';
-                dueDateInput.style.width = '150px';
-                dueDateInput.style.height = '34px';
+					if (categoryName === "none") {
+						targetChipWrapper = catContainer.children[0];
+					} else {
+						targetChipWrapper = Array.from(catContainer.children).find(c => {
+							const span = c._chip.querySelector('span');
+							return span && span.textContent === categoryName;
+						});
+					}
 
-                dueTimeInput = document.createElement('input');
-                dueTimeInput.type = 'time';
-                dueTimeInput.style.width = '90px';
-                dueTimeInput.style.height = '34px';
+					if (targetChipWrapper) {
+						const bgColor = targetChipWrapper._chip.dataset.bgcolor || 'var(--secondary-background-color)';
+						selectedCategory = categoryName;
+						targetChipWrapper._chip.style.background = bgColor;
+						targetChipWrapper._chip.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.4)';
+						targetChipWrapper._chip.style.transform = 'translateY(1px)';
+						targetChipWrapper._chip.style.color = 'white';
+						targetChipWrapper._underline.style.background = bgColor || 'var(--primary-color)';
+					}
+				}
+
+				// Date and Time Picker
+				const dueDateLabel = document.createElement('label');
+				dueDateLabel.textContent = translate("ui.todo.next_due");
+				dueDateLabel.style.fontWeight = '500';
+				container.appendChild(dueDateLabel);
+
+				const dueRow = document.createElement('div');
+				dueRow.style.display = 'flex';
+				dueRow.style.gap = '8px';
+				dueRow.style.alignItems = 'center';
+
+				dueDateInput = document.createElement('input');
+				dueDateInput.type = 'date';
+				dueDateInput.class = 'mdc-text-field__input';
+				dueDateInput.style.width = '130px';
+				dueDateInput.style.height = '34px';
+
+				dueTimeInput = document.createElement('input');
+				dueTimeInput.type = 'time';
+				dueTimeInput.style.width = '80px';
+				dueTimeInput.style.height = '34px';
+
+				// Copy / Paste Button animation
+				if (!document.getElementById('btn-pressed-style')) {
+				  const style = document.createElement('style');
+				  style.id = 'btn-pressed-style';
+				  style.textContent = `
+					.btn-pressed {
+					  filter: brightness(0.7);
+					  transition: filter 0.2s ease;
+					}
+				  `;
+				  document.head.appendChild(style);
+				}
+
+				function animateButtonPress(btn) {
+				  btn.classList.add('btn-pressed');
+				  setTimeout(() => {
+					btn.classList.remove('btn-pressed');
+				  }, 400);
+				}
+
+				// Copy Button
+				const copyBtn = document.createElement('button');
+				copyBtn.title = 'Copy date & time';
+				copyBtn.style.cursor = 'pointer';
+				copyBtn.style.border = 'none';
+				copyBtn.style.background = 'transparent';
+				copyBtn.style.padding = '4px';
+
+				// Icon
+				const copyIcon = document.createElement('ha-icon');
+				copyIcon.setAttribute('icon', 'mdi:content-copy');
+				copyBtn.appendChild(copyIcon);
+
+				// Paste Button
+				const pasteBtn = document.createElement('button');
+				pasteBtn.title = 'Paste date & time';
+				pasteBtn.style.cursor = 'pointer';
+				pasteBtn.style.border = 'none';
+				pasteBtn.style.background = 'transparent';
+				pasteBtn.style.padding = '4px';
+
+				// Icon
+				const pasteIcon = document.createElement('ha-icon');
+				pasteIcon.setAttribute('icon', 'mdi:content-paste');
+				pasteBtn.appendChild(pasteIcon);
+
+				// Copy action: localStorage
+				copyBtn.addEventListener('click', () => {
+					animateButtonPress(copyBtn);
+					const copyObj = {
+						date: dueDateInput.value || '',
+						time: dueTimeInput.value || '',
+						intervalInput: intervalInput.value || '',
+						intervalUnitSelect: intervalUnitSelect.value || '',
+						selectedCategory: selectedCategory || 'none'
+					};
+					try {
+						localStorage.setItem('dueDateTimeData', JSON.stringify(copyObj));
+						if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Saved due date/time to localStorage:", copyObj);
+					} catch (e) {
+						alert('Saving to localStorage failed');
+					}
+				});
+
+				// Paste action: localStorage
+				pasteBtn.addEventListener('click', () => {
+					animateButtonPress(pasteBtn);
+					try {
+						const storedText = localStorage.getItem('dueDateTimeData');
+						if (!storedText) {
+							alert('No saved date/time data found in localStorage');
+							return;
+						}
+						const obj = JSON.parse(storedText);
+						if(obj.date !== undefined && obj.time !== undefined) {
+							dueDateInput.value = obj.date;
+							dueTimeInput.value = obj.time;
+							intervalInput.value = obj.intervalInput || '';
+							intervalUnitSelect.value = obj.intervalUnitSelect || '';
+							
+							if (obj.selectedCategory !== undefined) {
+								// select the chip - optically
+								selectCategoryChip(obj.selectedCategory);
+								selectedCategory = obj.selectedCategory;
+							}							
+							
+							if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded due date/time from localStorage:", obj);
+						} else {
+							alert('Saved data in localStorage is invalid');
+						}
+					} catch(e) {
+						alert('Failed to read/parse localStorage data');
+					}
+				});
 
                 // Format existing due date/time
                 if (due) {
@@ -2183,9 +2624,11 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 }
 
-                dueRow.appendChild(dueDateInput);
-                dueRow.appendChild(dueTimeInput);
-                container.appendChild(dueRow);
+				dueRow.appendChild(dueDateInput);
+				dueRow.appendChild(dueTimeInput);
+				dueRow.appendChild(copyBtn);
+				dueRow.appendChild(pasteBtn);
+				container.appendChild(dueRow);
 
                 popup.appendChild(container);
             }
@@ -3374,6 +3817,14 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
 	_renderHistory() {
+        // collapable by title click
+        const storageKey = this._entity + "_collapsed";
+        const stored = localStorage.getItem(storageKey);
+
+        if (stored === "true") {
+            this._shadow.getElementById("collapsible").classList.add("hidden");
+        }
+
 		// Category Merge logic
 		const mergeMode = this._categoryMergeMode || "standard_only";
 
