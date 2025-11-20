@@ -1,0 +1,18 @@
+{
+  "name": "Ha shopping list improved DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      },
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  },
+  "mounts": [
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh"
+  ],
+  "postCreateCommand": "npm install"
+}

@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      # Build
+      - name: Build the file
+        run: |
+          npm install
+          npm run build
+
+      # Upload build file to the releas as an asset.
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: dist/ha-shopping-list-improved.js
+          prerelease: true
+          tag: ${{ github.ref }}
+          overwrite: true

@@ -1,0 +1,24 @@
+{
+  "name": "ha-shopping-list-improved",
+  "version": "2.1.0",
+  "description": "Improved shopping list with alphabetical sorting, templates for adding items, quantity at start or end, customizable chip position, and plus/minus buttons to adjust quantity.",
+  "main": "ha-shopping-list-improved.js",
+  "scripts": {
+    "build": "mkdir -p dist && npx terser ha-shopping-list-improved.js -o dist/ha-shopping-list-improved.js -c -m --comments false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nisbo/ha-shopping-list-improved"
+  },
+  "keywords": [
+    "home-assistant",
+    "custom-card",
+    "shopping-list",
+    "lovelace"
+  ],
+  "author": "Nisbo",
+  "license": "MIT",
+  "devDependencies": {
+    "terser": "^5.36.0"
+  }
+}
