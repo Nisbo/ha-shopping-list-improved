@@ -1,10 +1,10 @@
+/* Improved Shopping List Card */
+const version = "2.2.0-BETA-1";
 /*
- * Improved Shopping List Card
- * Version: 2.1.0
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
  * @license MIT
-  ha-shopping-list-improved.js
+ * ha-shopping-list-improved.js
 */
 
 const TRANSLATIONS = {
@@ -29,6 +29,7 @@ const TRANSLATIONS = {
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Schließen",
+        "ui.common.dynamic_category"                    : "Neue (dynamische) Kategorie",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -37,8 +38,8 @@ const TRANSLATIONS = {
         "ui.todo.due_every"                             : "Fälligkeit alle:",
         "ui.todo.next_due"                              : "Nächste Fälligkeit:",
         "ui.todo.remove_due"                            : "Fälligkeitsdatum entfernen",
-        "ui.todo.next_due"                              : "nächste Fälligkeit setzen",
-        "ui.todo.next_due_now"                          : "nächste Fälligkeit ab jetzt setzen",
+        "ui.todo.next_due"                              : "Nächste Fälligkeit setzen",
+        "ui.todo.next_due_now"                          : "Nächste Fälligkeit ab jetzt setzen",
         "ui.todo.edit"                                  : "Eintrag bearbeiten",
         "ui.todo.delete"                                : "Eintrag löschen",
         "ui.todo.interval_once"                         : "Einmalig",
@@ -54,6 +55,8 @@ const TRANSLATIONS = {
         "ui.todo.list.hours"                            : "Stunden",
         "ui.todo.list.minute"                           : "Minute",
         "ui.todo.list.minutes"                          : "Minuten",
+        "ui.todo.set.completed.true"                    : "Als erledigt markieren",
+        "ui.todo.set.completed.false"                   : "Erledigt entfernen",
         "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.", 
 		
         "editor.placeholders.quantity"                  : "Anzahl",
@@ -75,7 +78,10 @@ const TRANSLATIONS = {
 		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
 		"editor.labels.categories"                   	: "Kategorien",
         "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
+        "editor.labels.show_cat_next_due"               : "Nächste Fälligkeit in Kategorie anzeigen ?",
+        "editor.labels.cat_double_sized_icon"           : "Größeres Icon anzeigen ?",
         "editor.labels.show_cat_exclamation_mark"       : "Ausrufezeichen für fällige Einträge",
+        "editor.labels.show_title_exclamation_mark"     : "Ausrufezeichen für fällige Einträge",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
 		"editor.labels.dishes" 							: "Gerichte",
@@ -88,12 +94,15 @@ const TRANSLATIONS = {
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Artikel",
         "editor.labels.general.options"                 : "Allgemeine Einstellungen",
+        "editor.labels.input_row_position"              : "Position der Eingabemaske",
+        "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom"          : "Immer unten",
 		"editor.options.chips_position.right"           : "Immer rechts",
 		"editor.options.chips_position.full"            : "Rechts, mehrspaltig (nur Panel-Mode)",
+        "editor.options.chips_position.none"            : "Keine Chips (Chips ausblenden)",
 		"editor.options.chip_click.single"              : "Klick",
 		"editor.options.chip_click.dblclick"            : "Doppelklick",
 		"editor.options.chip_merge.combined"            : "Standard und Browser-Chips kombinieren (Standard)",
@@ -107,17 +116,66 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.hide"              : "Erledigte Artikel ausblenden",
 		"editor.options.acknowledged.end"               : "Erledigte Artikel am Ende der Kategorie anzeigen",
         "editor.defaults.sub_text"                      : "Tipp: Nutze die Chips, um Artikel erneut hinzuzufügen.",
-		"editor.options.category_merge.standard_only"   : "Nur lokale Kategorien (Standard)",
-		"editor.options.category_merge.global_only"     : "Nur globale Kategorien (aus Textdatei)",
-		"editor.options.category_merge.local_first"     : "Lokale Kategorien zuerst, dann globale",
-		"editor.options.category_merge.global_first"    : "Globale Kategorien zuerst, dann lokale",
-		"editor.options.category_merge.global_combined" : "Alle Kategorien kombiniert und alphabetisch sortiert",
+
+        "editor.options.category_merge.local_only"                          : "[1] Nur lokale Kategorien (Standard)",
+        "editor.options.category_merge.global_only"                         : "[1] Nur globale Kategorien (aus Textdatei)",
+        "editor.options.category_merge.dynamic_only"                        : "[1] Nur dynamische Kategorien",
+
+        "editor.options.category_merge.local_only_sorted"                   : "[1] Nur lokale Kategorien (sortiert)",
+        "editor.options.category_merge.global_only_sorted"                  : "[1] Nur globale Kategorien (sortiert)",
+        "editor.options.category_merge.dynamic_only_sorted"                 : "[1] Nur dynamische Kategorien (sortiert)",
+
+        "editor.options.category_merge.local_global"                        : "[2] Lokal → Global",
+        "editor.options.category_merge.local_dynamic"                       : "[2] Lokal → Dynamisch",
+        "editor.options.category_merge.global_dynamic"                      : "[2] Global → Dynamisch",
+        "editor.options.category_merge.global_local"                        : "[2] Global → Lokal",
+        "editor.options.category_merge.dynamic_local"                       : "[2] Dynamisch → Lokal",
+        "editor.options.category_merge.dynamic_global"                      : "[2] Dynamisch → Global",
+
+        "editor.options.category_merge.local_global_sorted"                 : "[2] Lokal → Global (sortiert)",
+        "editor.options.category_merge.local_dynamic_sorted"                : "[2] Lokal → Dynamisch (sortiert)",
+        "editor.options.category_merge.global_dynamic_sorted"               : "[2] Global → Dynamisch (sortiert)",
+        "editor.options.category_merge.global_local_sorted"                 : "[2] Global → Lokal (sortiert)",
+        "editor.options.category_merge.dynamic_local_sorted"                : "[2] Dynamisch → Lokal (sortiert)",
+        "editor.options.category_merge.dynamic_global_sorted"               : "[2] Dynamisch → Global (sortiert)",
+
+        "editor.options.category_merge.local_global_sorted_total"           : "[2] Lokal + Global (komplett sortiert)",
+        "editor.options.category_merge.local_dynamic_sorted_total"          : "[2] Lokal + Dynamisch (komplett sortiert)",
+        "editor.options.category_merge.global_dynamic_sorted_total"         : "[2] Global + Dynamisch (komplett sortiert)",
+        "editor.options.category_merge.global_local_sorted_total"           : "[2] Global + Lokal (komplett sortiert)",
+        "editor.options.category_merge.dynamic_local_sorted_total"          : "[2] Dynamisch + Lokal (komplett sortiert)",
+        "editor.options.category_merge.dynamic_global_sorted_total"         : "[2] Dynamisch + Global (komplett sortiert)",
+
+        "editor.options.category_merge.local_global_dynamic"                : "[3] Lokal → Global → Dynamisch",
+        "editor.options.category_merge.local_dynamic_global"                : "[3] Lokal → Dynamisch → Global",
+        "editor.options.category_merge.global_local_dynamic"                : "[3] Global → Lokal → Dynamisch",
+        "editor.options.category_merge.global_dynamic_local"                : "[3] Global → Dynamisch → Lokal",
+        "editor.options.category_merge.dynamic_local_global"                : "[3] Dynamisch → Lokal → Global",
+        "editor.options.category_merge.dynamic_global_local"                : "[3] Dynamisch → Global → Lokal",
+
+        "editor.options.category_merge.local_global_dynamic_sorted"         : "[3] Lokal → Global → Dynamisch (sortiert)",
+        "editor.options.category_merge.local_dynamic_global_sorted"         : "[3] Lokal → Dynamisch → Global (sortiert)",
+        "editor.options.category_merge.global_local_dynamic_sorted"         : "[3] Global → Lokal → Dynamisch (sortiert)",
+        "editor.options.category_merge.global_dynamic_local_sorted"         : "[3] Global → Dynamisch → Lokal (sortiert)",
+        "editor.options.category_merge.dynamic_local_global_sorted"         : "[3] Dynamisch → Lokal → Global (sortiert)",
+        "editor.options.category_merge.dynamic_global_local_sorted"         : "[3] Dynamisch → Global → Lokal (sortiert)",
+
+        "editor.options.category_merge.local_global_dynamic_sorted_total"   : "[3] Lokal + Global + Dynamisch (komplett sortiert)",
+        "editor.options.category_merge.local_dynamic_global_sorted_total"   : "[3] Lokal + Dynamisch + Global (komplett sortiert)",
+        "editor.options.category_merge.global_local_dynamic_sorted_total"   : "[3] Global + Lokal + Dynamisch (komplett sortiert)",
+        "editor.options.category_merge.global_dynamic_local_sorted_total"   : "[3] Global + Dynamisch + Lokal (komplett sortiert)",
+        "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamisch + Lokal + Global (komplett sortiert)",
+        "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamisch + Global + Lokal (komplett sortiert)",
+
         "editor.options.mode.shopping"                  : "Einkaufsliste",
         "editor.options.mode.todo"                      : "To-Do-Liste",
+        "editor.options.inputrow.top"                   : "Oben",
+        "editor.options.inputrow.bottom"                : "Unten",
 		
         "editor.labels.entity"                          : "To-Do-Liste (Entität)",
         "editor.helpers.mode"                           : "Legt fest, wie die Liste verwendet wird. Im Modus „Einkaufsliste“ stehen erweiterte Funktionen zur originalen Einkaufsliste zur Verfügung, jedoch ohne Fälligkeiten. Im Modus „To-Do-Liste“ können zusätzlich Fälligkeitsdaten gesetzt und verwaltet werden, die Bedienung unterscheidet sich dabei leicht. Hinweis: Die originale Home Assistant Einkaufsliste mit der Entität 'Einkaufsliste' unterstützt keine Fälligkeiten. Zusätzlich gibt es im To-Do-Modus keine Anzahleingabe, keine Plus- und Minus-Buttons, keine Export-Buttons sowie keinen Button, um erledigte Einträge zu löschen.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
+        "editor.labels.chips_with_cat_color"            : "Farbe der Kategorien nutzen",
         "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
         "editor.labels.chip_merge"                      : "Chips kombinieren",
         "editor.labels.local_chips"                     : "Lokale Chips erlauben?",
@@ -157,13 +215,19 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_h"                   : "Warnschwelle für Intervalle in Stunden",
         "editor.labels.todo_yellow_s"                   : "Warnschwelle für fällige Aufgaben ohne Zeitangabe",
         "editor.labels.todo_warning_thresholds"         : "Warnschwellen für ToDo-Modus",
+        "editor.labels.show_title_info"                 : "Nächste Fälligkeit im ToDo-Modus anzeigen",
+        "editor.labels.show_title_info_icon"            : "Icon für nächste Fälligkeit anzeigen",
 
+        "editor.helpers.show_title_info"                : "Zeigt im ToDo-Modus, sofern ein Titel angegeben wurde, die nächste Fälligkeit aller Einträge aller Kategorien unter dem Titel an. Abgelaufene Einträge werden hier nicht angezeigt, diese werden durch ein Ausrufezeichen rechts vom Namen angezeigt.",
+        "editor.helpers.show_title_info_icon"           : "Zeigt vor dem Fälligkeitsdatum als optische Hervorhebung ein Kalender-Icon an.",
         "editor.helpers.todo_warning_thresholds"        : "Konfiguration der Warnschwellen im ToDo-Modus. Die Werte sind in Minuten anzugeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
         "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
         "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
         "editor.helpers.todo_yellow_h"                  : "Warnschwelle für Intervalle in Stunden, definiert in Minuten (Standard: 10)",
         "editor.helpers.todo_yellow_s"                  : "Warnschwelle für fällige Aufgaben ohne Zeitangabe, definiert in Minuten (Standard: 120 = 2 Stunden)",
         "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
+        "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
+        "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
@@ -175,6 +239,7 @@ const TRANSLATIONS = {
         "editor.helpers.general.options"                : "Hier kannst du allgemeine Einstellungen für die Karte konfigurieren.",
         "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet. Diese hat allerdings keine Fälligkeits-Funktion und sollte somit nur im Modus 'Einkaufsliste' und nicht im Modus 'To-Do-Liste' verwendet werden.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
+        "editor.helpers.chips_with_cat_color"           : "Sofern ein Chip einer Kategorie als 'item' zugewiesen wurde und für die Kategorie eine Farbe angegeben wurde, wird der Chip in der Farbe der Kategorie angezeigt. Die Reihenfolge, wie die Farben vergeben werden: Highlight > Kategorie > Global > Standard > Browser.",
         "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
         "editor.helpers.chip_merge"                     : "Legt fest, wie Globale-, Standard- und Browser-Chips zusammen angezeigt werden.",
         "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
@@ -201,14 +266,16 @@ const TRANSLATIONS = {
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
-        
         "editor.helpers.ean_file"                       : "Beispiel: /local/ean.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Eintrag im Format 'EAN Name' stehen, z. B. '1234567890123 Test-Artikel'. Unterstützt werden die EAN-Formate EAN-8, UPC (12), EAN-13 und GS1-14.",
         "editor.helpers.chip_file"                      : "Beispiel: /local/chips.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Chip eingetragen werden.",
         "editor.helpers.category_file"                  : "Beispiel: /local/categories.txt, wenn die Datei im www-Ordner liegt. Für den Aufbau der Datei, bitte in die Dokumentation gucken.",
-		"editor.helpers.category_merge_mode"			: "Wähle, wie globale und lokale Kategorien zusammengeführt werden sollen. „Standard_only“ zeigt nur die lokal definierten Kategorien, „global_only“ nur die globalen Kategorien. Die anderen Optionen kombinieren beide auf verschiedene Weise.",
+		"editor.helpers.category_merge_mode"            : "Wähle, wie lokale, globale und dynamische Kategorien zusammengeführt werden sollen. 'local_only' zeigt nur die lokal definierten Kategorien, 'global_only' nur die globalen Kategorien und 'dynamic_only' nur die dynamischen Kategorien. Die anderen Optionen kombinieren zwei oder alle drei Varianten auf unterschiedliche Weise. Die Priorität, in der Kategorien zusammengeführt werden, entspricht der Reihenfolge der Begriffe von links nach rechts.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
         "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
+        "editor.helpers.show_title_exclamation_mark"    : "Zeigt im To-Do Mode im Titel ein Ausrufezeichen an, sofern es in einer Kategorie fällige Einträge gibt.",
         "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im ToDo Modus wird die Anzahl ivertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.) So kann man z.B. bei (5/5) einfach sehen, dass aktuell keine Einträge zu erledigen sind.",
+        "editor.helpers.show_cat_next_due"              : "Wenn diese Option aktiviert ist, wird im To-Do Modus das nächste Fälligkeitsdatum unter dem Kategorienamen angezeigt. So kann man auf einen Blick sehen, wann der nächste Eintrag in dieser Kategorie fällig ist.",
+        "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passt.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
@@ -237,6 +304,7 @@ const TRANSLATIONS = {
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Close",
+        "ui.common.dynamic_category"                    : "New (dynamic) Category",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -262,6 +330,8 @@ const TRANSLATIONS = {
         "ui.todo.list.hours"                            : "Hours",
         "ui.todo.list.minute"                           : "Minute",
         "ui.todo.list.minutes"                          : "Minutes",
+        "ui.todo.set.completed.true"                    : "Mark as completed",
+        "ui.todo.set.completed.false"                   : "Unmark completed",
         "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.", 
 
         "editor.placeholders.quantity"                  : "Quantity",
@@ -283,7 +353,10 @@ const TRANSLATIONS = {
 		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
 		"editor.labels.categories"                   	: "Categories",
         "editor.labels.show_cat_count"                  : "Show item count in categories ?",
+        "editor.labels.show_cat_next_due"               : "Show next due in category ?",
+        "editor.labels.cat_double_sized_icon"           : "Show bigger Icon ?",
         "editor.labels.show_cat_exclamation_mark"       : "Show an exclamation mark for due items",
+        "editor.labels.show_title_exclamation_mark"     : "Show an exclamation mark for due items",
         "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
 		"editor.labels.dishes" 							: "Dishes",
@@ -296,12 +369,15 @@ const TRANSLATIONS = {
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Items",
         "editor.labels.general.options"                 : "General settings",
+        "editor.labels.input_row_position"              : "Input row position",
+        "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
 		"editor.options.chips_position.bottom"          : "Always at bottom",
 		"editor.options.chips_position.right"           : "Always at right",
 		"editor.options.chips_position.full"            : "Right, multi-column (panel mode only)",
+        "editor.options.chips_position.none"            : "No chips (hide chips)",
 		"editor.options.chip_click.single"              : "Click",
 		"editor.options.chip_click.dblclick"            : "Double-click",
         "editor.options.chip_merge.combined"            : "Combine standard and browser chips (default)",
@@ -315,16 +391,65 @@ const TRANSLATIONS = {
 		"editor.options.acknowledged.hide"              : "Hide completed items",
 		"editor.options.acknowledged.end"               : "Show completed items at the end of the category",
         "editor.defaults.sub_text"                      : "Hint: Use chips to quickly add items again.",
-		"editor.options.category_merge.standard_only"   : "Local categories only (default)",
-		"editor.options.category_merge.global_only"     : "Global categories only (from text file)",
-		"editor.options.category_merge.local_first"     : "Local categories first, then global",
-		"editor.options.category_merge.global_first"    : "Global categories first, then local",
-		"editor.options.category_merge.global_combined" : "All categories combined and sorted alphabetically",
+
+        "editor.options.category_merge.local_only"                          : "[1] Only Local Categories (default)",
+        "editor.options.category_merge.global_only"                         : "[1] Only Global Categories (from file)",
+        "editor.options.category_merge.dynamic_only"                        : "[1] Only Dynamic Categories",
+
+        "editor.options.category_merge.local_only_sorted"                   : "[1] Only Local Categories (sorted)",
+        "editor.options.category_merge.global_only_sorted"                  : "[1] Only Global Categories (sorted)",
+        "editor.options.category_merge.dynamic_only_sorted"                 : "[1] Only Dynamic Categories (sorted)",
+
+        "editor.options.category_merge.local_global"                        : "[2] Local → Global",
+        "editor.options.category_merge.local_dynamic"                       : "[2] Local → Dynamic",
+        "editor.options.category_merge.global_dynamic"                      : "[2] Global → Dynamic",
+        "editor.options.category_merge.global_local"                        : "[2] Global → Local",
+        "editor.options.category_merge.dynamic_local"                       : "[2] Dynamic → Local",
+        "editor.options.category_merge.dynamic_global"                      : "[2] Dynamic → Global",
+
+        "editor.options.category_merge.local_global_sorted"                 : "[2] Local → Global (sorted)",
+        "editor.options.category_merge.local_dynamic_sorted"                : "[2] Local → Dynamic (sorted)",
+        "editor.options.category_merge.global_dynamic_sorted"               : "[2] Global → Dynamic (sorted)",
+        "editor.options.category_merge.global_local_sorted"                 : "[2] Global → Local (sorted)",
+        "editor.options.category_merge.dynamic_local_sorted"                : "[2] Dynamic → Local (sorted)",
+        "editor.options.category_merge.dynamic_global_sorted"               : "[2] Dynamic → Global (sorted)",
+
+        "editor.options.category_merge.local_global_sorted_total"           : "[2] Local + Global (fully sorted)",
+        "editor.options.category_merge.local_dynamic_sorted_total"          : "[2] Local + Dynamic (fully sorted)",
+        "editor.options.category_merge.global_dynamic_sorted_total"         : "[2] Global + Dynamic (fully sorted)",
+        "editor.options.category_merge.global_local_sorted_total"           : "[2] Global + Local (fully sorted)",
+        "editor.options.category_merge.dynamic_local_sorted_total"          : "[2] Dynamic + Local (fully sorted)",
+        "editor.options.category_merge.dynamic_global_sorted_total"         : "[2] Dynamic + Global (fully sorted)",
+
+        "editor.options.category_merge.local_global_dynamic"                : "[3] Local → Global → Dynamic",
+        "editor.options.category_merge.local_dynamic_global"                : "[3] Local → Dynamic → Global",
+        "editor.options.category_merge.global_local_dynamic"                : "[3] Global → Local → Dynamic",
+        "editor.options.category_merge.global_dynamic_local"                : "[3] Global → Dynamic → Local",
+        "editor.options.category_merge.dynamic_local_global"                : "[3] Dynamic → Local → Global",
+        "editor.options.category_merge.dynamic_global_local"                : "[3] Dynamic → Global → Local",
+
+        "editor.options.category_merge.local_global_dynamic_sorted"         : "[3] Local → Global → Dynamic (sorted)",
+        "editor.options.category_merge.local_dynamic_global_sorted"         : "[3] Local → Dynamic → Global (sorted)",
+        "editor.options.category_merge.global_local_dynamic_sorted"         : "[3] Global → Local → Dynamic (sorted)",
+        "editor.options.category_merge.global_dynamic_local_sorted"         : "[3] Global → Dynamic → Local (sorted)",
+        "editor.options.category_merge.dynamic_local_global_sorted"         : "[3] Dynamic → Local → Global (sorted)",
+        "editor.options.category_merge.dynamic_global_local_sorted"         : "[3] Dynamic → Global → Local (sorted)",
+
+        "editor.options.category_merge.local_global_dynamic_sorted_total"   : "[3] Local + Global + Dynamic (fully sorted)",
+        "editor.options.category_merge.local_dynamic_global_sorted_total"   : "[3] Local + Dynamic + Global (fully sorted)",
+        "editor.options.category_merge.global_local_dynamic_sorted_total"   : "[3] Global + Local + Dynamic (fully sorted)",
+        "editor.options.category_merge.global_dynamic_local_sorted_total"   : "[3] Global + Dynamic + Local (fully sorted)",
+        "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamic + Local + Global (fully sorted)",
+        "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamic + Global + Local (fully sorted)",
+
         "editor.options.mode.shopping"                  : "Shopping list",
         "editor.options.mode.todo"                      : "To-do list",
+        "editor.options.inputrow.top"                   : "Top",
+        "editor.options.inputrow.bottom"                : "Bottom",
 
         "editor.labels.entity"                          : "To-Do-List (Entity)",
         "editor.labels.highlight_words"                 : "Highlight words",
+        "editor.labels.chips_with_cat_color"            : "Use category colors",
         "editor.labels.highlight_color"                 : "Highlight color",
         "editor.labels.chip_merge"                      : "Combine chips",
         "editor.labels.local_chips"                     : "Allow local chips?",
@@ -364,13 +489,19 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_h"                   : "Warning threshold for intervals in hours",
         "editor.labels.todo_yellow_s"                   : "Warning threshold for due dates without time",
         "editor.labels.todo_warning_thresholds"         : "Warning thresholds for ToDo mode",
+        "editor.labels.show_title_info"                 : "Show next due date in ToDo mode",
+        "editor.labels.show_title_info_icon"            : "Show icon for next due date",
 
+        "editor.helpers.show_title_info"                : "Displays the next due date of all items from all categories under the title when in ToDo mode, provided a title is set. Expired items are not shown here; they are indicated by an exclamation mark to the right of the name.",
+        "editor.helpers.show_title_info_icon"           : "Displays a calendar icon before the due date as a visual highlight.",
         "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
         "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
         "editor.helpers.todo_yellow_d"                  : "Warning threshold for intervals in days, defined in minutes (Default: 120 = 2 hours)",
         "editor.helpers.todo_yellow_h"                  : "Warning threshold for intervals in hours, defined in minutes (Default: 10)",
         "editor.helpers.todo_yellow_s"                  : "Warning threshold for due dates without time, defined in minutes (Default: 120 = 2 hours)",
         "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
+        "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
+        "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
@@ -383,7 +514,8 @@ const TRANSLATIONS = {
         "editor.helpers.entity"                         : "If no Entity is selected, Home Assistant's default shopping list will be used automatically. However, this list does not have a due date function and should therefore only be used in 'Shopping List' mode, not in 'To-Do List' mode.",
         "editor.helpers.mode"                           : "Defines how the list is used. In 'Shopping List' mode, extended functions for the original shopping list are available, but without due dates. In 'To-Do List' mode, due dates can additionally be set and managed, with slightly different handling. Note: The original Home Assistant shopping list entity 'Shopping List' does not support due dates. In To-Do mode, there is also no quantity input, no plus or minus buttons, no export buttons, and no button to delete completed entries.",
         "editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
-		"editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+		"editor.helpers.chips_with_cat_color"           : "If a chip is assigned as an 'item' to a category and that category has a color defined, the chip will be displayed in the category's color. The order of color priority is: Highlight > Category > Global > Standard > Browser.",
+        "editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
 		"editor.helpers.chip_merge"                     : "Determines how global, standard and browser chips are combined and displayed.",
 		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
         "editor.helpers.title_font_size"                : "Sets the font size for the title. Default: 16px.",
@@ -412,9 +544,12 @@ const TRANSLATIONS = {
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
         "editor.helpers.ean_file"                       : "Example: /local/ean.txt, if the file is located in the www folder. Each line must contain an entry in the format 'EAN Name', e.g. '1234567890123 Test Item'. Supports EAN formats EAN-8, UPC (12), EAN-13, and GS1-14.",
         "editor.helpers.category_file"                  : "Example: /local/categories.txt if the file is located in the www folder. For file format, refer to the documentation.",
-        "editor.helpers.category_merge_mode"			: "Choose how global and local categories should be merged. “standard_only” shows only local categories, “global_only” only global categories. Other options combine both in different ways.",
+        "editor.helpers.category_merge_mode"            : "Choose how local, global and dynamic categories should be merged. 'local_only' shows only the locally defined categories, 'global_only' shows only the global categories, and 'dynamic_only' shows only the dynamic categories. All other options combine two or all three types in different ways. The priority in which categories are merged follows the order in which they appear from left to right.",
 		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
-        "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the title and the category while in To-Do mode if there are due items in that category.",
+        "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the category while in To-Do mode if there are due items in that category.",
+        "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",       
+        "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
+        "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passtIf the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
         "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
@@ -434,7 +569,6 @@ function detectLanguage() {
     return lang;
 }
 
-
 // translate-Function 
 function translate(key) {
     const lang = detectLanguage();
@@ -443,6 +577,12 @@ function translate(key) {
     return key;
 }
 
+// smaller fontsize
+function getSmallerFontSize(size, smallerby = 0.8, defaultSize = 14) {
+    const baseFontSize = size || defaultSize;
+    const smallerFontSize = Math.round(baseFontSize * smallerby);
+    return smallerFontSize;
+}
 
 // determine the default Shopping List entity
 function getDefaultShoppingListEntity(hass) {
@@ -475,11 +615,16 @@ class HaShoppingListImproved extends HTMLElement {
         super();
         this._onAdd = this._onAdd.bind(this);
         this._clearCompleted = this._clearCompleted.bind(this);
+
+        console.log(
+            "%cImproved Shopping List Card %cv" + version,
+            "color:#fff;background:#2196f3;padding:2px 6px;border-radius:3px;",
+            "color:#fff;background:#4caf50;padding:2px 6px;border-radius:3px;"
+        );
     }
 
     set hass(hass) {
         this._hass = hass;
-        //this._loadGlobalChipsFromFile();
         this.render();
 		this._refresh();
     }
@@ -490,11 +635,14 @@ class HaShoppingListImproved extends HTMLElement {
         // Entity
         const entity = config.entity || getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass);
         this._entity = entity || null;
-        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Verwendete Entity:", this._entity);
+        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Used Entity:", this._entity);
 
         this._title                 = config.title || "";
         this._titleIcon             = config.title_icon || "";
+        this._showTitleInfo         = (config.show_title_info === false) ? false : true;
+        this._showTitleInfoIcon     = (config.show_title_info_icon === false) ? false : true;
         this._quantityPosition      = (config.quantity === "beginning") ? "beginning" : "end";
+        this._inputRowPosition      = (config.input_row_position === "bottom") ? "bottom" : "top";
         this._acknowledgedMode      = ["hide", "end"].includes(config.acknowledged) ? config.acknowledged : "show";
         this._chipClick             = (config.chip_click === "dblclick") ? "dblclick" : "click";
         this._showQuantitySelection = (config.show_quantity_box === false) ? false : true;
@@ -504,7 +652,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
-        this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel"].includes(config.chips_position) ? config.chips_position : "auto";
+        this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel", "none"].includes(config.chips_position) ? config.chips_position : "auto";
 		this._chipWidth             = (["full", "auto_panel"].includes(this._chipPosition) && typeof config.chips_width === "number") ? `${config.chips_width}px` : "300px";
         this._listFontSize          = config.list_font_size  || 14; // Standard: 14px
 		this._catFontSize           = config.cat_font_size   || 16; // Standard: 16px
@@ -515,10 +663,14 @@ class HaShoppingListImproved extends HTMLElement {
 		this._chipGlobalColor		= config.chip_color_global || "rgba(100,100,100,0.3)";
 		this._chipColorDish 		= config.chip_color_dish || "#745E3D";
         this._chipMergeMode         = ["combined", "standard_first", "browser_first", "global_combined", "global_only"].includes(config.chip_merge) ? config.chip_merge : "combined";
+        this._chipsWithCatColor     = (config.chips_with_cat_color === false) ? false : true;
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
+        this._showCatNextDue        = (config.show_cat_next_due === false) ? false : true;
+        this._doubleSizedIcon       = (config.cat_double_sized_icon === false) ? false : true;
         this._showCatExclamation    = (config.show_cat_exclamation_mark === false) ? false : true;
+        this._showTitleExclamation  = (config.show_title_exclamation_mark === false) ? false : true;
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._showClearButton       = (config.show_clear_button === false) ? false : true;
@@ -528,8 +680,65 @@ class HaShoppingListImproved extends HTMLElement {
         this._chipFile              = config.chip_file || "";
         this._eanFile               = config.ean_file || "";
 		this._categoryFile          = config.category_file || "";
-		this._categoryMergeMode		= ["standard_only", "global_only", "local_first", "global_first", "global_combined"].includes(config.category_merge_mode) ? config.category_merge_mode : "standard_only";
-		this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
+        this._allowDynamicCats      = (config.allow_dynamic_categories === true) ? true : false;
+
+        const allowedModes = [
+            // 1 Cat
+            "local_only", "standard_only", // old
+            "global_only",
+            "dynamic_only",
+
+            "local_only_sorted",
+            "global_only_sorted",
+            "dynamic_only_sorted",
+
+            // 2 Cats
+            "local_global", "local_first", // old
+            "local_dynamic",
+            "global_dynamic",
+            "global_local", "global_first", // old
+            "dynamic_local",
+            "dynamic_global",
+
+            "local_global_sorted",
+            "local_dynamic_sorted",
+            "global_dynamic_sorted",
+            "global_local_sorted",
+            "dynamic_local_sorted",
+            "dynamic_global_sorted",
+
+            "local_global_sorted_total", "global_combined", // old
+            "local_dynamic_sorted_total",
+            "global_dynamic_sorted_total",
+            "global_local_sorted_total",
+            "dynamic_local_sorted_total",
+            "dynamic_global_sorted_total",
+
+            // 3 Cats
+            "local_global_dynamic",
+            "local_dynamic_global",
+            "global_local_dynamic",
+            "global_dynamic_local",
+            "dynamic_local_global",
+            "dynamic_global_local",
+
+            "local_global_dynamic_sorted",
+            "local_dynamic_global_sorted",
+            "global_local_dynamic_sorted",
+            "global_dynamic_local_sorted",
+            "dynamic_local_global_sorted",
+            "dynamic_global_local_sorted",
+
+            "local_global_dynamic_sorted_total",
+            "local_dynamic_global_sorted_total",
+            "global_local_dynamic_sorted_total",
+            "global_dynamic_local_sorted_total",
+            "dynamic_local_global_sorted_total",
+            "dynamic_global_local_sorted_total",
+        ];
+
+        this._categoryMergeMode     = allowedModes.includes(config.category_merge_mode) ? config.category_merge_mode : "local_only";
+        this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
 		this._mode                  = (config.mode === "todo") ? "todo" : "shopping";
         this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
         this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
@@ -541,7 +750,7 @@ class HaShoppingListImproved extends HTMLElement {
             this._showQuantitySelection = false;
             this._showExportButton      = false;
             this._showExportButtonPdf   = false;
-            this._showClearButton       = false;
+            //this._showClearButton       = false;
         }
 
         if (typeof config.highlight_words === "string") {
@@ -612,42 +821,39 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 	
-
     // Local EAN
-async _loadLocalEANFromFile() {
-    if (!this._eanFile || !this._eanFile.trim()) {
-        if(debugMode) console.info("[ha-shopping-list-improved] No path specified for local EAN, skipping load.");
-        return;
+    async _loadLocalEANFromFile() {
+        if (!this._eanFile || !this._eanFile.trim()) {
+            if(debugMode) console.info("[ha-shopping-list-improved] No path specified for local EAN, skipping load.");
+            return;
+        }
+
+        try {
+            const path = this._eanFile.trim() + "?" + new Date().getTime();
+            const response = await fetch(path);
+            if (!response.ok) throw new Error("Error loading file for local EAN");
+            const text = await response.text();
+
+            // Parsing
+            this._localEAN = text
+                .split(/\r?\n/)
+                .map(line => line.trim())
+                .filter(line => line.length > 0)
+                .map(line => {
+                    const [ean, ...nameParts] = line.split(/\s+/);
+                    return {
+                        ean,
+                        name: nameParts.join(' ')
+                    };
+                });
+
+            if (debugMode) console.info("[ha-shopping-list-improved] local EAN loaded:", this._localEAN);
+
+            this._renderHistory(); // rerun to apply global chips
+        } catch (err) {
+            console.warn("[ha-shopping-list-improved] Unable to load local EAN:", err);
+        }
     }
-
-    try {
-        const path = this._eanFile.trim() + "?" + new Date().getTime();
-        const response = await fetch(path);
-        if (!response.ok) throw new Error("Error loading file for local EAN");
-        const text = await response.text();
-
-        // Parsing: jede Zeile aufteilen in EAN und Artikelname
-        this._localEAN = text
-            .split(/\r?\n/)
-            .map(line => line.trim())
-            .filter(line => line.length > 0)
-            .map(line => {
-                const [ean, ...nameParts] = line.split(/\s+/);
-                return {
-                    ean,
-                    name: nameParts.join(' ')
-                };
-            });
-
-        if (debugMode) console.info("[ha-shopping-list-improved] local EAN loaded:", this._localEAN);
-
-        this._renderHistory(); // rerun to apply global chips
-    } catch (err) {
-        console.warn("[ha-shopping-list-improved] Unable to load local EAN:", err);
-    }
-}
-
-
 
 	// Global Categories
 	async _loadGlobalCategoriesFromFile() {
@@ -663,7 +869,7 @@ async _loadLocalEANFromFile() {
 			const text = await response.text();
 
 			const categories = [];
-			const blocks = text.split(/\n(?=\[)/); // Split by new category section
+			const blocks = text.split(/\n(?=\[)/);
 
 			for (const block of blocks) {
 				const nameMatch = block.match(/^\[(.+?)\]/);
@@ -673,11 +879,13 @@ async _loadLocalEANFromFile() {
 				const iconMatch = block.match(/icon\s*=\s*(.+)/);
 				const bgcolorMatch = block.match(/bgcolor\s*=\s*(.+)/);
 				const itemsMatch = block.match(/items\s*=\s*(.+)/);
+                const isDynamic = false;
 
 				const category = {
 					name,
 					icon: iconMatch ? iconMatch[1].trim() : "",
 					bgcolor: bgcolorMatch ? bgcolorMatch[1].trim() : "",
+                    isDynamic,
 					items: itemsMatch ? itemsMatch[1].split(/\s*,\s*/).filter(i => i) : []
 				};
 				categories.push(category);
@@ -697,6 +905,7 @@ async _loadLocalEANFromFile() {
         return {
             entity: getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass),
             chips_position: "auto",
+            input_row_position: "top",
             quantity: "end",
             acknowledged: "show",
             mode: "shopping",
@@ -755,6 +964,22 @@ async _loadLocalEANFromFile() {
                     },
                     { name: "title", selector: { text: {} }, default: ""},
                     { name: "title_icon", selector: { icon: {} }, default: ""},
+                    { name: "show_title_info", selector: { boolean: {} }, default: true },
+                    { name: "show_title_info_icon", selector: { boolean: {} }, default: true },
+                    { name: "show_title_exclamation_mark", selector: { boolean: {} }, default: true },
+                    {
+                        name: "input_row_position",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "top", label: translate("editor.options.inputrow.top") },
+                                    { value: "bottom", label: translate("editor.options.inputrow.bottom") }
+                                ]
+                            }
+                        },
+                        default: "top"
+                    },
                     { name: "show_quantity_box", selector: { boolean: {} }, default: true },
                     { name: "show_input_mask", selector: { boolean: {} }, default: true },
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
@@ -848,7 +1073,8 @@ async _loadLocalEANFromFile() {
                                     { value: "auto_panel", label: translate("editor.options.chips_position.auto_panel") },
                                     { value: "bottom", label: translate("editor.options.chips_position.bottom") },
                                     { value: "right", label: translate("editor.options.chips_position.right") },
-                                    { value: "full", label: translate("editor.options.chips_position.full") }
+                                    { value: "full", label: translate("editor.options.chips_position.full") },
+                                    { value: "none", label: translate("editor.options.chips_position.none") }
                                 ]
                             }
                         },
@@ -879,7 +1105,6 @@ async _loadLocalEANFromFile() {
                                     { value: "combined", label: translate("editor.options.chip_merge.combined") },
                                     { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
                                     { value: "browser_first", label: translate("editor.options.chip_merge.browser_first") },
-
                                     { value: "global_only", label: translate("editor.options.chip_merge.global_only") },
                                     { value: "global_combined", label: translate("editor.options.chip_merge.global_combined") }
                                 ]
@@ -887,13 +1112,10 @@ async _loadLocalEANFromFile() {
                         },
                         default: "combined"
                     },
-                    { name: "chips", selector: { text: {} }, default: "" },
+                    { name: "chips",           selector: { text: {} }, default: "" },
                     { name: "highlight_words", selector: { text: {} }, default: "" },
-                    {
-                        name: "chip_file",
-                        selector: { text: {} },
-                        default: ""
-                    }
+                    { name: "chips_with_cat_color", selector: { boolean: {} }, default: true },
+                    { name: "chip_file",       selector: { text: {} }, default: "" }
                 ]
             },
 
@@ -917,7 +1139,10 @@ async _loadLocalEANFromFile() {
                     },
                     { name: "show_cat_popup", selector: { boolean: {} }, default: true },
                     { name: "show_cat_count", selector: { boolean: {} }, default: true },
-                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },			
+                    { name: "show_cat_next_due", selector: { boolean: {} }, default: true },
+                    { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
+                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
+                    { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },    
                     {
                         name: "category_merge_mode",
                         label: translate("editor.labels.category_merge_mode"),
@@ -925,11 +1150,58 @@ async _loadLocalEANFromFile() {
                             select: {
                                 mode: "dropdown",
                                 options: [
-                                    { value: "standard_only",   label: translate("editor.options.category_merge.standard_only") },
+                                    // 1-Cat
+                                    { value: "local_only",      label: translate("editor.options.category_merge.local_only") },
+                                    { value: "local_only_sorted", label: translate("editor.options.category_merge.local_only_sorted") },
                                     { value: "global_only",     label: translate("editor.options.category_merge.global_only") },
-                                    { value: "local_first",     label: translate("editor.options.category_merge.local_first") },
-                                    { value: "global_first",    label: translate("editor.options.category_merge.global_first") },
-                                    { value: "global_combined", label: translate("editor.options.category_merge.global_combined") }
+                                    { value: "global_only_sorted", label: translate("editor.options.category_merge.global_only_sorted") },
+                                    { value: "dynamic_only",    label: translate("editor.options.category_merge.dynamic_only") },
+                                    { value: "dynamic_only_sorted", label: translate("editor.options.category_merge.dynamic_only_sorted") },
+
+                                    // 2-Cat
+                                    { value: "local_global",    label: translate("editor.options.category_merge.local_global") },
+                                    { value: "local_global_sorted",   label: translate("editor.options.category_merge.local_global_sorted") },
+                                    { value: "local_global_sorted_total",   label: translate("editor.options.category_merge.local_global_sorted_total") },
+
+                                    { value: "local_dynamic",   label: translate("editor.options.category_merge.local_dynamic") },
+                                    { value: "local_dynamic_sorted",  label: translate("editor.options.category_merge.local_dynamic_sorted") },
+                                    { value: "local_dynamic_sorted_total",  label: translate("editor.options.category_merge.local_dynamic_sorted_total") },
+
+                                    { value: "global_dynamic",  label: translate("editor.options.category_merge.global_dynamic") },
+                                    { value: "global_dynamic_sorted", label: translate("editor.options.category_merge.global_dynamic_sorted") },
+                                    { value: "global_dynamic_sorted_total", label: translate("editor.options.category_merge.global_dynamic_sorted_total") },
+
+                                    { value: "global_local",    label: translate("editor.options.category_merge.global_local") },
+                                    { value: "global_local_sorted",   label: translate("editor.options.category_merge.global_local_sorted") },
+                                    { value: "global_local_sorted_total",   label: translate("editor.options.category_merge.global_local_sorted_total") },
+
+                                    { value: "dynamic_local",   label: translate("editor.options.category_merge.dynamic_local") },
+                                    { value: "dynamic_local_sorted",  label: translate("editor.options.category_merge.dynamic_local_sorted") },
+                                    { value: "dynamic_local_sorted_total",  label: translate("editor.options.category_merge.dynamic_local_sorted_total") },
+
+                                    { value: "dynamic_global",  label: translate("editor.options.category_merge.dynamic_global") },
+                                    { value: "dynamic_global_sorted", label: translate("editor.options.category_merge.dynamic_global_sorted") },
+                                    { value: "dynamic_global_sorted_total", label: translate("editor.options.category_merge.dynamic_global_sorted_total") },
+
+                                    // 3-Cat
+                                    { value: "local_global_dynamic", label: translate("editor.options.category_merge.local_global_dynamic") },
+                                    { value: "local_global_dynamic_sorted", label: translate("editor.options.category_merge.local_global_dynamic_sorted") },
+                                    { value: "local_global_dynamic_sorted_total", label: translate("editor.options.category_merge.local_global_dynamic_sorted_total") },
+                                    { value: "local_dynamic_global", label: translate("editor.options.category_merge.local_dynamic_global") },
+                                    { value: "local_dynamic_global_sorted", label: translate("editor.options.category_merge.local_dynamic_global_sorted") },
+                                    { value: "local_dynamic_global_sorted_total", label: translate("editor.options.category_merge.local_dynamic_global_sorted_total") },
+                                    { value: "global_local_dynamic", label: translate("editor.options.category_merge.global_local_dynamic") },
+                                    { value: "global_local_dynamic_sorted", label: translate("editor.options.category_merge.global_local_dynamic_sorted") },
+                                    { value: "global_local_dynamic_sorted_total", label: translate("editor.options.category_merge.global_local_dynamic_sorted_total") },
+                                    { value: "global_dynamic_local", label: translate("editor.options.category_merge.global_dynamic_local") },
+                                    { value: "global_dynamic_local_sorted", label: translate("editor.options.category_merge.global_dynamic_local_sorted") },
+                                    { value: "global_dynamic_local_sorted_total", label: translate("editor.options.category_merge.global_dynamic_local_sorted_total") },
+                                    { value: "dynamic_local_global", label: translate("editor.options.category_merge.dynamic_local_global") },
+                                    { value: "dynamic_local_global_sorted", label: translate("editor.options.category_merge.dynamic_local_global_sorted") },
+                                    { value: "dynamic_local_global_sorted_total", label: translate("editor.options.category_merge.dynamic_local_global_sorted_total") },
+                                    { value: "dynamic_global_local", label: translate("editor.options.category_merge.dynamic_global_local") },
+                                    { value: "dynamic_global_local_sorted", label: translate("editor.options.category_merge.dynamic_global_local_sorted") },
+                                    { value: "dynamic_global_local_sorted_total", label: translate("editor.options.category_merge.dynamic_global_local_sorted_total") }
                                 ]
                             }
                         }
@@ -970,24 +1242,24 @@ async _loadLocalEANFromFile() {
                 icon: 'mdi:format-size',
                 schema: [
                     {
-                    name: "title_font_size",
-                    selector: { number: { min: 8, max: 30, step: 1 } },
-                    default: 16
+                        name: "title_font_size",
+                        selector: { number: { min: 8, max: 30, step: 1 } },
+                        default: 16
                     },
                     {
-                    name: "cat_font_size",
-                    selector: { number: { min: 8, max: 30, step: 1 } },
-                    default: 16
+                        name: "cat_font_size",
+                        selector: { number: { min: 8, max: 30, step: 1 } },
+                        default: 16
                     },
                     {
-                    name: "list_font_size",
-                    selector: { number: { min: 8, max: 30, step: 1 } },
-                    default: 14
+                        name: "list_font_size",
+                        selector: { number: { min: 8, max: 30, step: 1 } },
+                        default: 14
                     },
                     {
-                    name: "chip_font_size",
-                    selector: { number: { min: 8, max: 30, step: 1 } },
-                    default: 12
+                        name: "chip_font_size",
+                        selector: { number: { min: 8, max: 30, step: 1 } },
+                        default: 12
                     }
                 ]
             },
@@ -1090,7 +1362,6 @@ async _loadLocalEANFromFile() {
 
         // render Skeleton (HTML + Styles)
         this._renderSkeleton();
-        //this._refresh(); // moved to set hass to ensure availability of hass
 
         // Event-Listener for external Updates
         this._eventListener = (e) => {
@@ -1110,6 +1381,62 @@ async _loadLocalEANFromFile() {
         window.removeEventListener('shopping_list_updated', this._eventListener);
     }
 
+    _addDynamicCategories(itemsArray) {
+        if (!itemsArray || !Array.isArray(itemsArray)) return;
+        if(!this._allowDynamicCats) return;
+
+        if(debugMode) console.debug("[ha-shopping-list-improved] _addDynamicCategories() called: ", itemsArray);
+
+        // get the cats again to avoid already merged (with dynamic) cats
+        if (this._config.categories) {
+            this._categories = this._parseCategories(this._config.categories);
+        } else {
+            this._categories = [];
+        }
+
+        if(debugMode) console.debug("[ha-shopping-list-improved] _addDynamicCategories() this._categories: ", this._categories);
+        const existingCategories = (this._categories || [])
+            .filter(c => c.isDynamic !== true)  // only static categories
+            .map(c => c.name.toLowerCase());
+
+        if(debugMode) console.debug("[ha-shopping-list-improved] _addDynamicCategories() existingCategories: ", existingCategories);
+        for (const item of itemsArray) {
+            const name = this._getCategory(item.name);
+            if (!name || name === "none") continue;
+
+            const lowerName = name.toLowerCase();
+
+            if (existingCategories.includes(lowerName)) continue;
+            if(debugMode) console.debug(`Dynamic Category added: ${name}`);
+
+            this._categories.push({
+                name,
+                items: [],
+                icon: null,
+                bgcolor: null,
+                isDynamic: true
+            });
+
+            existingCategories.push(lowerName);
+        }
+
+        this._renderHistory(); // rerun if needed
+    }
+
+    _getDynamicCategories() {
+        if (!Array.isArray(this._categories)) return [];
+        if(debugMode) console.debug("[ha-shopping-list-improved] _getDynamicCategories() called: ", this._categories);
+
+        return this._categories.filter(c => c.isDynamic === true);
+    }
+
+    _getLocalCategories() {
+        if (!Array.isArray(this._categories)) return [];
+        if(debugMode) console.debug("[ha-shopping-list-improved] _getLocalCategories() called: ", this._categories);
+
+        return this._categories.filter(c => c.isDynamic === false);
+    }
+
     _parseCategories(categoriesArray) {
         const categories = [];
 
@@ -1118,6 +1445,7 @@ async _loadLocalEANFromFile() {
             const items = Array.isArray(cat.items) ? cat.items : [];
             const icon = cat.icon || null;        // optional Icon
             const bgcolor = cat.bgcolor || null;  // optional bgcolor
+            const isDynamic = false;
 
             if(debugMode) console.log(`Category ${name}: ${items.length ? items.join(", ") : "(empty)"}, icon: ${icon}, bgcolor: ${bgcolor}`);
 
@@ -1125,10 +1453,11 @@ async _loadLocalEANFromFile() {
                 name,
                 items,
                 icon,
+                isDynamic,
                 bgcolor
             });
         }
-
+        if(debugMode) console.debug(`Categories builded: `, categories);
         return categories;
     }
 	
@@ -1226,7 +1555,7 @@ async _loadLocalEANFromFile() {
 
             /* Auto: Chips right if size > 700px */
             @media (min-width: 700px) {
-                    .list-history-container.auto {
+                .list-history-container.auto {
                     flex-direction: row;
                     align-items: flex-start;
                 }
@@ -1273,6 +1602,11 @@ async _loadLocalEANFromFile() {
                 flex-direction: column;
             }
 
+            /* None: Hide Chips */
+            .list-history-container.none {
+                /* Hide Chips */
+            }
+
             /* Full: Always right (multi column) */
             .list-history-container.full {
                 flex-direction: row;
@@ -1296,6 +1630,7 @@ async _loadLocalEANFromFile() {
                 font-size: ${this._titleFontSize}px;
                 margin-bottom:8px;
                 color: var(--primary-text-color);
+                cursor: pointer;
             }
             .cardname-icon {
                 display: inline-flex;
@@ -1314,6 +1649,33 @@ async _loadLocalEANFromFile() {
                 height: ${this._titleFontSize}px;
                 color: var(--primary-text-color);
             }
+
+            .cardname-alert-desc {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: ${getSmallerFontSize(this._titleFontSize, 0.7, 14) }px;
+                color: var(--secondary-text-color);
+                margin-top: -12px;
+            }
+
+            .input-position {
+                display: flex;
+                flex-direction: column;
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .cardname-alert-desc-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: ${getSmallerFontSize(this._titleFontSize, 0.7, 14) }px;
+                height: ${getSmallerFontSize(this._titleFontSize, 0.7, 14) }px;
+                color: var(--secondary-text-color);
+                margin-top: -12px;
+            }
+
             .collapsed .content {
                 display: none;
             }
@@ -1326,8 +1688,14 @@ async _loadLocalEANFromFile() {
                     ${this._title}
                     <span id="titlealert" class="hidden cardname-alert">\u26A0</span>
                 </div>
+
+                <div class="cardname ${this._title ? '' : 'hidden'}" id="cardtitledesc">
+                    <ha-icon id="titleicondesc" class="hidden cardname-alert-desc-icon" icon="mdi:calendar-clock"></ha-icon>
+                    <span id="titlealertdesc" class="hidden cardname-alert-desc">innerHTML</span>
+                </div>
+
                 <div id="collapsible">
-                    <div class="input-row ${this._showInputMask ? '' : 'hidden'}">
+                    <div id="inputRow" class="input-row ${this._showInputMask ? '' : 'hidden'}">
                         ${this._showQuantitySelection
                         ?   `
                             <input list="quantityOptions" class="quantityselect" id="quantitySelect" placeholder="${translate("editor.placeholders.quantity")}">
@@ -1351,18 +1719,20 @@ async _loadLocalEANFromFile() {
                         "></ha-icon>
                     </div>
                     <div class="small">
-                        ${ this._subText }
+                        ${this._subText }
                     </div>
 
-                    <div class="${containerClass}">
-                        <ul id="list"></ul>
+                    <div id="containerClass" class="${containerClass}">
+                        <div id="inputPosition" class="input-position">
+                            <ul id="list"></ul>
+                        </div>
                         <div class="history" id="history"></div>
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                        ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;` : ``}
-                        ${this._showExportButton ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
-                        ${this._showClearButton ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
+                        ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;`  : ``}
+                        ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
+                        ${this._showClearButton     ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
                     </div>
                 </div>
             </div>
@@ -1377,12 +1747,15 @@ async _loadLocalEANFromFile() {
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
 		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
         if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
+        if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
 
-        this._listEl     = this._shadow.getElementById('list');
-        this._historyEl  = this._shadow.getElementById('history');
-        this._inputEl    = this._shadow.getElementById('itemInput');
-        this._qtyEl      = this._shadow.getElementById('quantitySelect');
-        this._titleAlert = this._shadow.getElementById('titlealert');
+        this._listEl             = this._shadow.getElementById('list');
+        this._historyEl          = this._shadow.getElementById('history');
+        this._inputEl            = this._shadow.getElementById('itemInput');
+        this._qtyEl              = this._shadow.getElementById('quantitySelect');
+        this._titleAlert         = this._shadow.getElementById('titlealert');
+        this._titleAlertDesc     = this._shadow.getElementById('titlealertdesc');
+        this._titleAlertDescIcon = this._shadow.getElementById('titleicondesc');
 
         this._renderHistory();
 		
@@ -1390,7 +1763,7 @@ async _loadLocalEANFromFile() {
         if(this._bubbleCardMode){
             requestAnimationFrame(() => {
                 const card = this._shadow.querySelector('.card');
-                card.style.minHeight = window.outerHeight + "px";//'520px';
+                card.style.minHeight = window.outerHeight + "px";
 
                 if(debugMode) console.debug("[ha-shopping-list-improved] window.outerHeight:", card.offsetHeight);
             });
@@ -1404,6 +1777,45 @@ async _loadLocalEANFromFile() {
                     if(debugMode) console.debug("[ha-shopping-list-improved] Resized: window.outerHeight:", window.outerHeight);
                 });
             });
+        }
+
+        // Input Row Positioning
+        this._positionInputRow() ;
+        window.addEventListener('resize', () => {
+            this._positionInputRow();
+        });
+    }
+
+    // Input Row Positioning
+    _positionInputRow() {
+        if (this._inputRowPosition === 'top') return;
+        const inputRow = this._shadow.getElementById("inputRow");
+        const listEl = this._shadow.getElementById("list");
+        const historyEl = this._shadow.getElementById("history");
+        const container = historyEl.parentElement;
+        const chipPosition = this._chipPosition;
+        const windowWidth = window.innerWidth;
+
+        if (inputRow && listEl && historyEl && container) {
+            if (chipPosition === 'bottom' || chipPosition === 'none') {
+            if (inputRow.parentElement !== container) {
+                inputRow.remove();
+                listEl.insertAdjacentElement('afterend', inputRow);
+            }
+            } else if (chipPosition === 'right' || chipPosition === 'panel' 
+                    || (chipPosition === 'auto_panel' && windowWidth >= 700)
+                    || (chipPosition === 'auto' && windowWidth >= 700)) {
+                if (inputRow.parentElement === container) {
+                    container.removeChild(inputRow);
+                }
+                inputRow.remove();
+                listEl.insertAdjacentElement('afterend', inputRow);
+            } else if (chipPosition === 'auto_panel' && windowWidth < 700 || chipPosition === 'auto' && windowWidth < 700) {
+                if (inputRow.parentElement !== container) {
+                    inputRow.remove();
+                    listEl.insertAdjacentElement('afterend', inputRow);
+                }
+            }
         }
     }
 
@@ -1713,6 +2125,7 @@ async _loadLocalEANFromFile() {
 
     async _refresh() {
 		if (!this._hass) return;
+        if(debugMode) console.debug("[ha-shopping-list-improved] _refresh() called");
 
         try {
             /*
@@ -1776,6 +2189,9 @@ async _loadLocalEANFromFile() {
                 this._items = [...notDone, ...done];
             }     
             
+            // after we have the items, extract dynamic categories from items
+            this._addDynamicCategories(this._items);
+
             this._renderList();
         } catch (err) {
             console.error("[ha-shopping-list-improved]: unable to load items via API", err);
@@ -1791,6 +2207,8 @@ async _loadLocalEANFromFile() {
     }
 
     _renderList() {
+        if(debugMode) console.info("[ha-shopping-list-improved] _renderList() called");
+
         if (!this._hass) return;
         if (!this._listEl) return;
 
@@ -1801,6 +2219,10 @@ async _loadLocalEANFromFile() {
         }
 
         this._titleAlert.classList.add("hidden");
+        this._titleAlertDesc.classList.add("hidden");
+        this._titleAlertDescIcon.classList.add("hidden");
+
+        let nearestDueDateGlobalObj = null;
 
         // acknowledged-Filter
         let itemsToRender = [...this._items];
@@ -1840,17 +2262,54 @@ async _loadLocalEANFromFile() {
         if (uncategorized.length) {
             const total = uncategorized.length;
             let done;
+            let nearestDueDate = null;
+            let nearestDueDateObj = null;
 
             if (this._mode === "todo") {
                 const now = new Date();
                 done = uncategorized.filter(i => {
-                    if (!i.due) return true;
+                    //if (!i.due) return true;
+                    if (i.complete) return true;
                     const dueDate = new Date(i.due);
                     return dueDate >= now;
                 }).length;
+
+                const futureItemsWithDue = uncategorized
+                    .filter(i => !i.complete) 
+                    .filter(i => i.due)
+                    .map(i => ({
+                        dueDate: new Date(i.due),
+                        dueString: i.due
+                    }))
+                    .filter(d => d.dueDate > now);
+
+                if (futureItemsWithDue.length > 0) {
+                    const nextItem = futureItemsWithDue.reduce((earliest, current) =>
+                        current.dueDate < earliest.dueDate ? current : earliest
+                    );
+
+                    nearestDueDateObj = {
+                        dueDate: nextItem.dueDate,
+                        dueString: nextItem.dueString
+                    };
+
+                    if (nearestDueDateObj) {
+                        if (
+                            !nearestDueDateGlobalObj ||
+                            nearestDueDateObj.dueDate < nearestDueDateGlobalObj.dueDate
+                        ) {
+                            nearestDueDateGlobalObj = nearestDueDateObj;
+                        }
+                    }
+
+                    nearestDueDate = this._formatDueDate(nextItem.dueDate, nextItem.dueString);
+                }
+
             } else {
                 done = uncategorized.filter(i => i.complete).length;
             }
+            
+            if(debugMode) console.log("WithOutCategory - Nearest Due Date (formatted):", nearestDueDate);
 
             const storageKey = `${this._entity}_category_no_category`;
             const collapsed = localStorage.getItem(storageKey) === 'true';
@@ -1859,7 +2318,6 @@ async _loadLocalEANFromFile() {
             liCat.classList.add('category-header');
             liCat.style.padding = '4px 8px';
             liCat.style.borderRadius = '4px';
-            //liCat.style.backgroundColor = '#eee';
             liCat.style.cursor = 'pointer';
             liCat.style.userSelect = 'none';
 
@@ -1868,34 +2326,91 @@ async _loadLocalEANFromFile() {
             container.style.alignItems = 'center';
             container.style.gap = '6px';
 
+            // Icon for uncategorized
             const catIcon = "mdi:folder-question";
+
             if (catIcon) {
+                // doubleSizedIcon
+                const base = this._catFontSize;
+                const size = this._doubleSizedIcon && this._mode === "todo" && this._showCatNextDue ? base * 1.6 : base;
+
                 const iconEl = document.createElement('ha-icon');
                 iconEl.setAttribute('icon', catIcon);
-                iconEl.style.width = `${this._catFontSize}px`;
-                iconEl.style.height = `${this._catFontSize}px`;
+                iconEl.style.width = `${size}px`;
+                iconEl.style.height = `${size}px`;
+                iconEl.style.setProperty('--mdc-icon-size', `${size}px`);
                 iconEl.style.display = 'inline-flex';
                 iconEl.style.alignItems = 'center';
                 iconEl.style.justifyContent = 'center';
                 iconEl.style.flexShrink = '0';
+
                 container.appendChild(iconEl);
             }
 
-            const textEl = document.createElement('span');
-            if (this._showCatCount) {
-                textEl.textContent = `${translate("ui.todo.general")} (${done}/${total})`;
-            } else {
-                textEl.textContent = translate("ui.todo.general");
-            }
+            // Textcontainer with Name + Count + nearestDueDate
+            const textContainer = document.createElement('div');
+            textContainer.style.display = 'flex';
+            textContainer.style.flexDirection = 'column';
 
-            container.appendChild(textEl);
+            const firstRow = document.createElement('div');
+            firstRow.style.display = 'flex';
+            firstRow.style.justifyContent = 'flex-start';
+            firstRow.style.alignItems = 'center';
+
+            const nameDiv = document.createElement('div');
+            nameDiv.textContent = translate("ui.todo.general");
+            firstRow.appendChild(nameDiv);
+
+            if (this._showCatCount) {
+                const doneDiv = document.createElement('div');
+                doneDiv.textContent = `(${done}/${total})`;
+                doneDiv.style.marginLeft = '8px';
+                doneDiv.style.whiteSpace = 'nowrap';
+                firstRow.appendChild(doneDiv);
+            }
 
             if (this._mode === "todo" && done < total && this._showCatExclamation) {
                 const warningEl = document.createElement('span');
                 warningEl.textContent = ' \u26A0';
-                console.log("hidden removed");
+                warningEl.style.marginLeft = '8px';
+                firstRow.appendChild(warningEl);
+            }
+
+            textContainer.appendChild(firstRow);
+
+            if (this._mode === "todo" && nearestDueDate && this._showCatNextDue ) {
+                const smallerFontSize = getSmallerFontSize(this._catFontSize, 0.8, 14);
+
+                const dueDiv = document.createElement('div');
+                dueDiv.style.fontSize = smallerFontSize + 'px';
+                dueDiv.style.color = 'var(--secondary-text-color)';
+                dueDiv.style.marginTop = '-7px';
+                dueDiv.style.display = 'flex';
+                dueDiv.style.alignItems = 'center';
+                dueDiv.style.gap = '6px';
+
+                const icon = document.createElement('ha-icon');
+                icon.setAttribute('icon', 'mdi:calendar-clock');
+                icon.style.verticalAlign = 'middle';
+                icon.style.fontSize = smallerFontSize + 'px';
+                icon.style.setProperty('--mdc-icon-size', smallerFontSize + 'px');
+
+                dueDiv.appendChild(icon);
+                dueDiv.appendChild(document.createTextNode(nearestDueDate));
+
+                textContainer.appendChild(dueDiv);
+            }
+
+            container.appendChild(textContainer);
+
+            if (this._mode === "todo" && done < total && this._showCatExclamation) {
+                const warningEl = document.createElement('span');
+                warningEl.textContent = ' \u26A0';
+                //container.appendChild(warningEl);
+            }
+
+            if (this._mode === "todo" && done < total && this._showTitleExclamation) {
                 this._titleAlert.classList.remove("hidden");
-                container.appendChild(warningEl);
             }
 
             liCat.appendChild(container);
@@ -1931,17 +2446,54 @@ async _loadLocalEANFromFile() {
             if (catItems.length) {
                 const total = catItems.length;
                 let done;
+                let nearestDueDate = null;
+                let nearestDueDateObj = null;
 
                 if (this._mode === "todo") {
                     const now = new Date();
+
                     done = catItems.filter(i => {
-                        if (!i.due) return true; // Items without due are considered done
+                        if (i.complete) return true;
+                        //if (!i.due) return true;
                         const dueDate = new Date(i.due);
                         return dueDate >= now;
                     }).length;
+
+                    const futureItemsWithDue = catItems
+                        .filter(i => !i.complete) 
+                        .filter(i => i.due)
+                        .map(i => ({ 
+                            dueDate: new Date(i.due), 
+                            dueString: i.due 
+                        }))
+                        .filter(d => d.dueDate > now);
+
+                    if (futureItemsWithDue.length > 0) {
+                        const nextItem = futureItemsWithDue.reduce((earliest, current) =>
+                            current.dueDate < earliest.dueDate ? current : earliest
+                        );
+
+                        nearestDueDateObj = {
+                            dueDate: nextItem.dueDate,
+                            dueString: nextItem.dueString
+                        };
+
+                        if (nearestDueDateObj) {
+                            if (
+                                !nearestDueDateGlobalObj ||
+                                nearestDueDateObj.dueDate < nearestDueDateGlobalObj.dueDate
+                            ) {
+                                nearestDueDateGlobalObj = nearestDueDateObj;
+                            }
+                        }
+
+                        nearestDueDate = this._formatDueDate(nextItem.dueDate, nextItem.dueString);
+                    }
                 } else {
                     done = catItems.filter(i => i.complete).length;
                 }
+
+                if(debugMode) console.log("WithCategory - Nearest Due Date (formatted):", nearestDueDate);
 
                 const storageKey = `${this._entity}_category_${cat.name}`;
                 const collapsed = localStorage.getItem(storageKey) === 'true';
@@ -1960,36 +2512,88 @@ async _loadLocalEANFromFile() {
                 container.style.gap = '6px';
 
                 if (cat.icon) {
+                    // doubleSizedIcon
+                    const base = this._catFontSize;
+                    const size = this._doubleSizedIcon && this._mode === "todo" && this._showCatNextDue ? base * 1.6 : base;
+
                     const iconEl = document.createElement('ha-icon');
                     iconEl.setAttribute('icon', cat.icon);
-                    iconEl.style.width = `${this._catFontSize}px`;
-                    iconEl.style.height = `${this._catFontSize}px`;
+                    iconEl.style.width = `${size}px`;
+                    iconEl.style.height = `${size}px`;
+                    iconEl.style.setProperty('--mdc-icon-size', `${size}px`);
                     iconEl.style.display = 'inline-flex';
                     iconEl.style.alignItems = 'center';
                     iconEl.style.justifyContent = 'center';
                     iconEl.style.flexShrink = '0';
+
                     container.appendChild(iconEl);
                 }
 
-                const textEl = document.createElement('span');
+                const textContainer = document.createElement('div');
+                textContainer.style.display = 'flex';
+                textContainer.style.flexDirection = 'column';
+
+                const firstRow = document.createElement('div');
+                firstRow.style.display = 'flex';
+                firstRow.style.justifyContent = 'flex-start';
+                firstRow.style.alignItems = 'center';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.textContent = cat.name;
+
+                firstRow.appendChild(nameDiv);
+
                 if (this._showCatCount) {
-                    if (this._mode === "todo") {
-                        textEl.textContent = `${cat.name} (${done}/${total})`;
-                    } else {
-                        textEl.textContent = `${cat.name} (${done}/${total})`;
-                    }
-                } else {
-                    textEl.textContent = cat.name;
+                    const doneDiv = document.createElement('div');
+                    doneDiv.textContent = `(${done}/${total})`;
+                    doneDiv.style.marginLeft = '8px';
+                    doneDiv.style.whiteSpace = 'nowrap';
+                    firstRow.appendChild(doneDiv);
                 }
-                container.appendChild(textEl);
+
+                if (this._mode === "todo" && done < total && this._showCatExclamation) {
+                    const warningEl = document.createElement('span');
+                    warningEl.textContent = ' \u26A0';
+                    warningEl.style.marginLeft = '8px';
+                    firstRow.appendChild(warningEl);
+                }
+
+                textContainer.appendChild(firstRow);
+                
+                if (this._mode === "todo" && nearestDueDate &&  this._showCatNextDue) {
+                    const smallerFontSize = getSmallerFontSize(this._catFontSize, 0.8, 14);
+
+                    const dueDiv = document.createElement('div');
+                    dueDiv.style.fontSize = smallerFontSize + 'px';
+                    dueDiv.style.color = 'var(--secondary-text-color)';
+                    dueDiv.style.marginTop = '-7px';
+                    dueDiv.style.display = 'flex';
+                    dueDiv.style.alignItems = 'center';
+                    dueDiv.style.gap = '6px';
+
+                    const icon = document.createElement('ha-icon');
+                    icon.setAttribute('icon', 'mdi:calendar-clock');
+                    icon.style.verticalAlign = 'middle';
+                    icon.style.fontSize = smallerFontSize + 'px';
+                    icon.style.setProperty('--mdc-icon-size', smallerFontSize + 'px');
+
+                    dueDiv.appendChild(icon);
+                    dueDiv.appendChild(document.createTextNode(nearestDueDate));
+
+                    textContainer.appendChild(dueDiv);
+                }
+
+                container.appendChild(textContainer);
 
                 // Show icon if done < total in todo mode
                 if (this._mode === "todo" && done < total && this._showCatExclamation) {
                     const warningEl = document.createElement('span');
                     warningEl.textContent = ' \u26A0';
+                    //container.appendChild(warningEl);
+                }
+
+                if (this._mode === "todo" && done < total && this._showTitleExclamation) {
                     this._titleAlert.classList.remove("hidden");
-                    console.log("hidden removed");
-                    container.appendChild(warningEl);
                 }
 
                 liCat.appendChild(container);
@@ -2009,6 +2613,22 @@ async _loadLocalEANFromFile() {
                 });
             }
         });
+
+        if (nearestDueDateGlobalObj) {
+            if (this._showTitleInfo) {
+                if (this._showTitleInfoIcon) this._titleAlertDescIcon.classList.remove("hidden");
+                this._titleAlertDesc.classList.remove("hidden");
+
+                const formattedGlobal = this._formatDueDate(
+                    nearestDueDateGlobalObj.dueDate,
+                    nearestDueDateGlobalObj.dueString
+                );
+
+                if(debugMode) console.log("Next global due date: ", formattedGlobal);
+
+                this._titleAlertDesc.textContent = formattedGlobal;    
+            }
+        }
     }
 
     // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
@@ -2042,6 +2662,33 @@ async _loadLocalEANFromFile() {
     // Remove only Intervall {{…}}
     _removeInterval(name) {
         return name.replace(/\s*\{\{.*?\}\}\s*$/, '').trim();
+    }
+
+    // local date-time format
+    _formatDueDate(dueDate, dueString, locale) {
+        const userLocale = locale || this._hass?.language || navigator.language || 'de-DE';
+
+        if(debugMode) console.log("User locale for due date formatting:", userLocale);
+        if(debugMode) console.log("User locale (hass) for due date formatting:", this._hass?.language);
+        if(debugMode) console.log("User locale (navigator) for due date formatting:", navigator.language);
+        
+        const uses12HourFormat = (locale) => {
+            const dtf = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
+            return dtf.resolvedOptions().hour12;
+        };
+
+        const is12Hour = uses12HourFormat(userLocale);
+
+        const hasTime = dueString.includes('T') && dueString.includes(':');
+
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            ...(hasTime ? { hour: '2-digit', minute: '2-digit', hour12: is12Hour } : {})
+        };
+
+        return dueDate.toLocaleString(userLocale, options);
     }
 
     // Edit PopUp for adding/editing items with category selection
@@ -2307,6 +2954,20 @@ async _loadLocalEANFromFile() {
                     catContainer.appendChild(chipWrapper);
                 });
 
+            // Own Categorie in Allow Dynamic Cat Mode
+            const dynamicCategory = document.createElement('ha-textfield');
+            dynamicCategory.type = 'input';
+            dynamicCategory.value = '';
+            dynamicCategory.style.width = '100%';
+            dynamicCategory.style.padding = '6px 8px';
+            dynamicCategory.style.marginBottom = '12px';
+            dynamicCategory.style.border = '1px solid var(--divider-color, #ccc)';
+            dynamicCategory.style.borderRadius = '4px';
+            dynamicCategory.style.fontSize = '14px';
+            dynamicCategory.style.boxSizing = 'border-box';
+            //dynamicCategory.placeholder = 'Insert the name for the dynamic category...';
+            dynamicCategory.label = translate("ui.common.dynamic_category");
+
             // Buttons container
             const btnContainer = document.createElement('div');
             btnContainer.style.display = 'flex';
@@ -2374,6 +3035,7 @@ async _loadLocalEANFromFile() {
             popup.appendChild(label);
             popup.appendChild(input);
             popup.appendChild(catContainer);
+            if(this._allowDynamicCats) popup.appendChild(dynamicCategory);
             
             // TooDo Mode
             let intervalInput;
@@ -2637,6 +3299,12 @@ async _loadLocalEANFromFile() {
             overlay.appendChild(popup);
             document.body.appendChild(overlay);
 
+            // Focus the input when popup opens
+            setTimeout(() => {
+                const realInput = input.renderRoot?.querySelector("input");
+                if (realInput) realInput.focus();
+            }, 50);
+
             // Click outside = cancel
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
@@ -2649,19 +3317,14 @@ async _loadLocalEANFromFile() {
                 document.body.removeChild(overlay);
                 resolve(null);
             });
-            /*
-            okBtn.addEventListener('click', () => {
-                let finalName = input.value.trim();
-                if (selectedCategory) {
-                    finalName = `@${selectedCategory}@ ${finalName}`;
-                }
-                document.body.removeChild(overlay);
-                resolve(finalName || null);
-            });
-            */
 
             okBtn.addEventListener('click', () => {
                 let finalName = input.value.trim();
+
+                if (this._allowDynamicCats && dynamicCategory.value.trim() && finalName && finalName.trim()) {
+                    selectedCategory = dynamicCategory.value.trim();
+                }
+
                 if (selectedCategory) {
                     finalName = `@${selectedCategory}@ ${finalName}`;
                 }
@@ -2708,6 +3371,8 @@ async _loadLocalEANFromFile() {
     }
 
     _renderItem(item, parentEl) {
+        if(debugMode) console.info("[ha-shopping-list-improved] _renderItem() called");
+
         const li = document.createElement('li');
         li.dataset.name = item.name;
         if (item.complete) li.classList.add('done', 'green');
@@ -2761,6 +3426,7 @@ async _loadLocalEANFromFile() {
             intervalDiv.style.whiteSpace = 'nowrap';
             intervalDiv.style.marginLeft = '12px';
             intervalDiv.style.textAlign = 'right';
+            intervalDiv.style.color = 'var(--secondary-text-color)';
 
             firstRow.appendChild(nameDiv);
             firstRow.appendChild(intervalDiv);
@@ -2770,27 +3436,9 @@ async _loadLocalEANFromFile() {
             const dueDate = new Date(item.due);
             const now = new Date();
 
-            const hasTime = item.due.includes('T') && item.due.includes(':');
-            const userLocale = this._hass?.language || navigator.language || 'de-DE';
+            const formattedDate = this._formatDueDate(dueDate, item.due);
 
-            function uses12HourFormat(locale) {
-                const dtf = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
-                return dtf.resolvedOptions().hour12;
-            }
-
-            const is12Hour = uses12HourFormat(userLocale);
-
-            const options = {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                ...(hasTime ? { hour: '2-digit', minute: '2-digit', hour12: is12Hour } : {})
-            };
-
-            const formattedDate = dueDate.toLocaleString(userLocale, options);
-
-            const baseFontSize = this._listFontSize;
-            const smallerFontSize = Math.round(baseFontSize * 0.8);
+            const smallerFontSize = getSmallerFontSize(this._listFontSize, 0.8, 14);
 
             const dueDiv = document.createElement('div');
             dueDiv.style.fontSize = 'smaller';
@@ -2926,10 +3574,10 @@ async _loadLocalEANFromFile() {
                         dueDiv.style.color = '#d9534f';
                         dueRight.textContent = translate("ui.todo.due_label");
                     } else {
-                        dueDiv.style.color = '';
+                        dueDiv.style.color = 'var(--secondary-text-color)';
                     }
                 } else {
-                    dueDiv.style.color = '';
+                    dueDiv.style.color = 'var(--secondary-text-color)';
                 }
             } else {
                 dueRight.textContent = translate("ui.todo.due_label");
@@ -2945,62 +3593,8 @@ async _loadLocalEANFromFile() {
             nameSpan.textContent = displayName;
         }
 
-        nameSpan.addEventListener('dblclick', async () => {
-
-            if(debugMode) console.debug('[ha-shopping-list-improved] due:', item.due);
-
-            const updatedItem = await this.editItemPopup(item, "edit", false);
-
-            let newName = '';
-            let dueDate = null;
-            let dueDateTime = null;
-
-            if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
-                newName = updatedItem.name || '';
-
-                if (updatedItem.due_datetime) {
-                    dueDateTime = updatedItem.due_datetime;
-                } else if (updatedItem.due_date) {
-                    dueDate = updatedItem.due_date;
-                }
-            } else if (typeof updatedItem === 'string') {
-                newName = updatedItem;
-            }
-
-            if (!newName) return; // || newName === item.name
-
-            if (newName === "__DELETE__") {
-                await this._removeItem(item);
-                return;
-            }
-
-            // ServiceData
-            const serviceData = {
-                item: item.id,
-                rename: newName,
-            };
-
-            if (dueDateTime) {
-                serviceData.due_datetime = dueDateTime;
-            } else if (dueDate) {
-                serviceData.due_date = dueDate;
-            }
-
-            if(debugMode) console.debug('[ha-shopping-list-improved] serviceData:', serviceData);
-
-            try {
-                await this._hass.connection.sendMessagePromise({
-                    type: "call_service",
-                    domain: "todo",
-                    service: "update_item",
-                    target: { entity_id: this._entity },
-                    service_data: serviceData,
-                });
-                await this._refresh();
-            } catch (err) {
-                console.error('[ha-shopping-list-improved] Unable to rename item:', err);
-            }
-        });
+        // EDIT
+        nameSpan.addEventListener('dblclick', () => this._handleEditItem(item));
 
         left.appendChild(completeBtn);
         left.appendChild(nameSpan);
@@ -3114,6 +3708,64 @@ async _loadLocalEANFromFile() {
         parentEl.appendChild(li);
     }
 
+    // save edited item
+    async _handleEditItem(item) {
+        if(debugMode) console.debug('[ha-shopping-list-improved] due:', item.due);
+
+        const updatedItem = await this.editItemPopup(item, "edit", false);
+
+        let newName = '';
+        let dueDate = null;
+        let dueDateTime = null;
+
+        if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
+            newName = updatedItem.name || '';
+
+            if (updatedItem.due_datetime) {
+                dueDateTime = updatedItem.due_datetime;
+            } else if (updatedItem.due_date) {
+                dueDate = updatedItem.due_date;
+            }
+        } else if (typeof updatedItem === 'string') {
+            newName = updatedItem;
+        }
+
+        if (!newName) return; // || newName === item.name
+
+        if (newName === "__DELETE__") {
+            await this._removeItem(item);
+            return;
+        }
+
+        // ServiceData
+        const serviceData = {
+            item: item.id,
+            rename: newName,
+        };
+
+        if (dueDateTime) {
+            serviceData.due_datetime = dueDateTime;
+        } else if (dueDate) {
+            serviceData.due_date = dueDate;
+        }
+
+        if(debugMode) console.debug('[ha-shopping-list-improved] serviceData:', serviceData);
+
+        try {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "todo",
+                service: "update_item",
+                target: { entity_id: this._entity },
+                service_data: serviceData,
+            });
+            await this._refresh();
+        } catch (err) {
+            console.error('[ha-shopping-list-improved] Unable to rename item:', err);
+        }
+    }
+
+    // add new item
     async _onAdd() {
         if (this._addingBusy) {
             console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
@@ -3365,12 +4017,22 @@ async _loadLocalEANFromFile() {
         let interval = this._getInterval(item.name); // "2D", "1M", "3H"
         let disabled = !interval;
 
+        if(debugMode) console.debug("ITEM: ", item);
+
+        let completedStatusSwitch = null;
+        if (item.complete) {
+            completedStatusSwitch = translate("ui.todo.set.completed.false");
+        } else {
+            completedStatusSwitch = translate("ui.todo.set.completed.true");
+        }
+
         const options = [
             { id: 'remove_due',   label: translate("ui.todo.remove_due"),   value: 'remove', disabled: disabled },
             { id: 'next_due',     label: translate("ui.todo.next_due"),     value: 'next',   disabled: disabled, checked: !disabled },
             { id: 'next_due_now', label: translate("ui.todo.next_due_now"), value: 'now',    disabled: disabled },
             { id: 'edit',         label: translate("ui.todo.edit"),         value: 'edit' },
             { id: 'delete',       label: translate("ui.todo.delete"),       value: 'delete', checked: disabled },
+            { id: 'done',         label: completedStatusSwitch,             value: 'done' },
         ];
 
         const radioContainer = document.createElement('div');
@@ -3427,7 +4089,6 @@ async _loadLocalEANFromFile() {
         noBtn.style.padding = '8px 16px';
         noBtn.style.borderRadius = '4px';
         noBtn.style.cursor = 'pointer';
-
 
         yesBtn.addEventListener('click', async () => {
             const selected = popup.querySelector('input[name="todo_action"]:checked')?.value || 'next';
@@ -3500,6 +4161,11 @@ async _loadLocalEANFromFile() {
                 // leave dueDate / dueDateTime null
                 dueDate = null;
                 dueDateTime = null;
+            } else if (selected === 'done') {
+                await this._toggleComplete(item, true);
+
+                document.body.removeChild(overlay);
+                return;
             } else if (selected === 'next') {
                 // current due + interval
                 if (effectiveInterval && currentDue) {
@@ -3540,7 +4206,7 @@ async _loadLocalEANFromFile() {
                 return;
             } else if (selected === 'edit') {
                 // Edit Item
-                await this.editItemPopup(item, "edit", false);
+                await this._handleEditItem(item);
 
                 document.body.removeChild(overlay);
                 return;
@@ -3629,11 +4295,11 @@ async _loadLocalEANFromFile() {
         document.body.appendChild(overlay);
     }
 
-    async _toggleComplete(item) {
+    async _toggleComplete(item, toggleInToDoMode = false) {
         if (!this._entity) return;
 
         // ToDo Mode
-        if (this._mode === "todo") {
+        if (this._mode === "todo" && !toggleInToDoMode) {
             await this._confirmToDoPopup(item);
             return;
         }
@@ -3817,6 +4483,8 @@ async _loadLocalEANFromFile() {
     }
 
 	_renderHistory() {
+        if(debugMode) console.info("[ha-shopping-list-improved] _renderHistory() called");
+
         // collapable by title click
         const storageKey = this._entity + "_collapsed";
         const stored = localStorage.getItem(storageKey);
@@ -3826,66 +4494,15 @@ async _loadLocalEANFromFile() {
         }
 
 		// Category Merge logic
-		const mergeMode = this._categoryMergeMode || "standard_only";
-
-		if(debugMode) console.info("[ha-shopping-list-improved] Category merge mode:", mergeMode);
-
-		const localCats = Array.isArray(this._categories) ? this._categories : [];
-		const globalCats = Array.isArray(this._globalCategories) ? this._globalCategories : [];
-		let merged = [];
-
-		switch (mergeMode) {
-			case "standard_only":
-				merged = [...localCats];
-				break;
-
-			case "global_only":
-				merged = [...globalCats];
-				break;
-
-			case "local_first": {
-				const existingNames = localCats.map(c => c.name.toLowerCase());
-				merged = [
-					...localCats,
-					...globalCats.filter(gc => !existingNames.includes(gc.name.toLowerCase()))
-				];
-				break;
-			}
-
-			case "global_first": {
-				const existingNames = globalCats.map(c => c.name.toLowerCase());
-				merged = [
-					...globalCats,
-					...localCats.filter(lc => !existingNames.includes(lc.name.toLowerCase()))
-				];
-				break;
-			}
-
-			case "global_combined": {
-				const all = [...localCats, ...globalCats];
-				const unique = [];
-				const names = new Set();
-				for (const c of all) {
-					const lower = c.name.toLowerCase();
-					if (!names.has(lower)) {
-						names.add(lower);
-						unique.push(c);
-					}
-				}
-				merged = unique.sort((a, b) =>
-					a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
-				);
-				break;
-			}
-
-			default:
-				merged = [...localCats];
-				break;
-		}
-
-		this._categories = merged;
+        const mergeMode   = this._categoryMergeMode || "local_only";
+        const localCats   = this._getLocalCategories();
+        const globalCats  = Array.isArray(this._globalCategories) ? this._globalCategories : [];
+        const dynamicCats = this._getDynamicCategories();
+        const merged      = mergeCategories(mergeMode, localCats, globalCats, dynamicCats);
+        this._categories  = merged;
 
 		if (debugMode) {
+            console.info("[ha-shopping-list-improved] Dynamic categories:", dynamicCats);
 			console.info("[ha-shopping-list-improved] Local categories:", localCats);
 			console.info("[ha-shopping-list-improved] Global categories:", globalCats);
 			console.info("[ha-shopping-list-improved] All categories after merge:", this._categories);
@@ -3939,15 +4556,24 @@ async _loadLocalEANFromFile() {
         }
 		
         combined.forEach(chipText => {
+            if (this._chipPosition === 'none') return;
             const chip = document.createElement('div');
             chip.className = 'chip';
             chip.textContent = chipText;
 
-			// Color Priority: Highlight > Global > Standard > Local
-			if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
+            // check if chip is assigned to a category
+            const catWithBg = this._categories?.find(
+                c => c.bgcolor && c.items?.some(item => item.toLowerCase() === chipText.toLowerCase())
+            );
+
+			// Color Priority: Highlight > Category > Global > Standard > Local
+			 if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
 				chip.style.background = this._highlightColor;
 				chip.title = translate("editor.labels.chip_highlighted");
-			} else if (this._globalChips?.includes(chipText)) {
+			} else if (catWithBg && this._chipsWithCatColor) {
+                chip.style.background = catWithBg.bgcolor;
+                chip.title = `${translate("editor.labels.category_color")}: ${catWithBg.name}`;
+            } else if (this._globalChips?.includes(chipText)) {
 				chip.style.background = this._chipGlobalColor;
 				chip.title = translate("editor.labels.chip_global");
 			} else if (this._defaultChips?.includes(chipText)) {
@@ -4514,8 +5140,8 @@ async _loadLocalEANFromFile() {
                 cleanHex = cleanHex.split('').map(ch => ch + ch).join('');
             }
 
+            // not valid
             if (cleanHex.length !== 6) {
-                // Ungültiger Wert
                 return [0, 0, 0, 1];
             }
 
@@ -4583,6 +5209,220 @@ async _loadLocalEANFromFile() {
 
 	render(){ if (!this._hass) return; }
 }
+
+
+// removes Items from arr2, if they are in arr1 (via Name lowercase)
+function filterUnique(arr1, arr2) {
+    const names1 = new Set(arr1.map(c => c.name.toLowerCase()));
+    return arr2.filter(c => !names1.has(c.name.toLowerCase()));
+}
+
+// sort array by name (case-insensitive)
+function sortByName(arr) {
+    return [...arr].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+}
+
+/**
+ * Merge Categories
+ * @param {string} mergeMode
+ * @param {Array} localCats
+ * @param {Array} globalCats
+ * @param {Array} dynamicCats
+ * @returns {Array} merged categories
+ */
+function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
+    // Single source helpers
+    const sortedLocal   = sortByName(localCats);
+    const sortedGlobal  = sortByName(globalCats);
+    const sortedDynamic = sortByName(dynamicCats);
+
+    switch (mergeMode) {
+        // 1-Cat
+        case "standard_only": // old
+        case "local_only": return [...localCats];
+        case "global_only": return [...globalCats];
+        case "dynamic_only": return [...dynamicCats];
+
+        case "local_only_sorted": return sortedLocal;
+        case "global_only_sorted": return sortedGlobal;
+        case "dynamic_only_sorted": return sortedDynamic;
+
+        // 2-Cat
+        case "local_first": // old
+        case "local_global":
+            return [...localCats, ...filterUnique(localCats, globalCats)];
+        case "local_dynamic":
+            return [...localCats, ...filterUnique(localCats, dynamicCats)];
+        case "dynamic_local":
+            return [...dynamicCats, ...filterUnique(dynamicCats, localCats)];
+        case "global_dynamic":
+            return [...globalCats, ...filterUnique(globalCats, dynamicCats)];
+        case "dynamic_global":
+            return [...dynamicCats, ...filterUnique(dynamicCats, globalCats)];
+        case "global_first": // old
+        case "global_local":
+            return [...globalCats, ...filterUnique(globalCats, localCats)];
+
+        case "local_global_sorted":
+            return [...sortedLocal, ...filterUnique(sortedLocal, sortedGlobal)];
+        case "local_dynamic_sorted":
+            return [...sortedLocal, ...filterUnique(sortedLocal, sortedDynamic)];
+        case "dynamic_local_sorted":
+            return [...sortedDynamic, ...filterUnique(sortedDynamic, sortedLocal)];
+        case "global_dynamic_sorted":
+            return [...sortedGlobal, ...filterUnique(sortedGlobal, sortedDynamic)];
+        case "dynamic_global_sorted":
+            return [...sortedDynamic, ...filterUnique(sortedDynamic, sortedGlobal)];
+        case "global_local_sorted":
+            return [...sortedGlobal, ...filterUnique(sortedGlobal, sortedLocal)];
+
+        case "global_combined": // old
+        case "local_global_sorted_total": {
+            const all = [...localCats, ...filterUnique(localCats, globalCats)];
+            return sortByName(all);
+        }
+        case "local_dynamic_sorted_total": {
+            const all = [...localCats, ...filterUnique(localCats, dynamicCats)];
+            return sortByName(all);
+        }
+        
+        case "dynamic_local_sorted_total": {
+            const all = [...dynamicCats, ...filterUnique(dynamicCats, localCats)];
+            return sortByName(all);
+        }
+        case "global_dynamic_sorted_total": {
+            const all = [...globalCats, ...filterUnique(globalCats, dynamicCats)];
+            return sortByName(all);
+        }
+        
+        case "dynamic_global_sorted_total": {
+            const all = [...dynamicCats, ...filterUnique(dynamicCats, globalCats)];
+            return sortByName(all);
+        }
+
+        case "global_local_sorted_total": {
+            const all = [...globalCats, ...filterUnique(globalCats, localCats)];
+            return sortByName(all);
+        }
+
+        // 3-Cat
+        case "local_global_dynamic":
+            return [
+                ...localCats,
+                ...filterUnique(localCats, globalCats),
+                ...filterUnique([...localCats, ...globalCats], dynamicCats),
+            ];
+        case "local_dynamic_global":
+            return [
+                ...localCats,
+                ...filterUnique(localCats, dynamicCats),
+                ...filterUnique([...localCats, ...dynamicCats], globalCats),
+            ];
+        case "global_dynamic_local":
+            return [
+                ...globalCats,
+                ...filterUnique(globalCats, dynamicCats),
+                ...filterUnique([...globalCats, ...dynamicCats], localCats),
+            ];
+        case "global_local_dynamic":
+            return [
+                ...globalCats,
+                ...filterUnique(globalCats, localCats),
+                ...filterUnique([...globalCats, ...localCats], dynamicCats),
+            ];
+        case "dynamic_local_global":
+            return [
+                ...dynamicCats,
+                ...filterUnique(dynamicCats, localCats),
+                ...filterUnique([...dynamicCats, ...localCats], globalCats),
+            ];
+        case "dynamic_global_local":
+            return [
+                ...dynamicCats,
+                ...filterUnique(dynamicCats, globalCats),
+                ...filterUnique([...dynamicCats, ...globalCats], localCats),
+            ];
+
+        case "local_global_dynamic_sorted":
+            return [
+                ...sortedLocal,
+                ...filterUnique(sortedLocal, sortedGlobal),
+                ...filterUnique([...sortedLocal, ...sortedGlobal], sortedDynamic),
+            ];
+        case "local_dynamic_global_sorted":
+            return [
+                ...sortedLocal,
+                ...filterUnique(sortedLocal, sortedDynamic),
+                ...filterUnique([...sortedLocal, ...sortedDynamic], sortedGlobal),
+            ];
+        case "global_dynamic_local_sorted":
+            return [
+                ...sortedGlobal,
+                ...filterUnique(sortedGlobal, sortedDynamic),
+                ...filterUnique([...sortedGlobal, ...sortedDynamic], sortedLocal),
+            ];
+        case "global_local_dynamic_sorted":
+            return [
+                ...sortedGlobal,
+                ...filterUnique(sortedGlobal, sortedLocal),
+                ...filterUnique([...sortedGlobal, ...sortedLocal], sortedDynamic),
+            ];
+        case "dynamic_local_global_sorted":
+            return [
+                ...sortedDynamic,
+                ...filterUnique(sortedDynamic, sortedLocal),
+                ...filterUnique([...sortedDynamic, ...sortedLocal], sortedGlobal),
+            ];
+        case "dynamic_global_local_sorted":
+            return [
+                ...sortedDynamic,
+                ...filterUnique(sortedDynamic, sortedGlobal),
+                ...filterUnique([...sortedDynamic, ...sortedGlobal], sortedLocal),
+            ];
+
+        case "local_global_dynamic_sorted_total":
+            return sortByName([
+                ...localCats,
+                ...filterUnique(localCats, globalCats),
+                ...filterUnique([...localCats, ...globalCats], dynamicCats),
+            ]);
+
+        case "local_dynamic_global_sorted_total":
+            return sortByName([
+                ...localCats,
+                ...filterUnique(localCats, dynamicCats),
+                ...filterUnique([...localCats, ...dynamicCats], globalCats),
+            ]);
+        case "global_dynamic_local_sorted_total":
+            return sortByName([
+                ...globalCats,
+                ...filterUnique(globalCats, dynamicCats),
+                ...filterUnique([...globalCats, ...dynamicCats], localCats),
+            ]);
+        case "global_local_dynamic_sorted_total":
+            return sortByName([
+                ...globalCats,
+                ...filterUnique(globalCats, localCats),
+                ...filterUnique([...globalCats, ...localCats], dynamicCats),
+            ]);
+        case "dynamic_local_global_sorted_total":
+            return sortByName([
+                ...dynamicCats,
+                ...filterUnique(dynamicCats, localCats),
+                ...filterUnique([...dynamicCats, ...localCats], globalCats),
+            ]);
+        case "dynamic_global_local_sorted_total":
+            return sortByName([
+                ...dynamicCats,
+                ...filterUnique(dynamicCats, globalCats),
+                ...filterUnique([...dynamicCats, ...globalCats], localCats),
+            ]);
+
+        default:
+            return [...localCats];
+    }
+}
+
 
 customElements.define('ha-shopping-list-improved', HaShoppingListImproved);
 
