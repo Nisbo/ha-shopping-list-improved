@@ -549,7 +549,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the category while in To-Do mode if there are due items in that category.",
         "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",       
         "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
-        "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passtIf the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
+        "editor.helpers.cat_double_sized_icon"          : "If the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
         "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
@@ -1851,7 +1851,7 @@ class HaShoppingListImproved extends HTMLElement {
             const response = await fetch(url, {
             headers: {
                 "Accept": "application/json",
-                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.1.0)"
+                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.2.0)"
             }
             });
 
