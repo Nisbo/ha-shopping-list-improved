@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-2";
+const version = "2.2.0-BETA-3";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -2251,20 +2251,50 @@ async _adminOptions() {
                 return acc;
             }, {});
 
-            const formattedManualItems = Object.entries(grouped)
-                .map(([catName, items]) => {
-                    const catObj = manualAssignedItems.find(i => (i.category.name || i.category) === catName)?.category;
+            const originalOrder = [
+                ...localCats.map(c => c.name),
+                ...globalCats.map(c => c.name)
+            ];
 
-                    let extraProps = "";
-                    if (catObj && this._includeDefined) {
-                        if (catObj.icon) extraProps += `  icon: ${catObj.icon}\n`;
-                        if (catObj.bgcolor) extraProps += `  bgcolor: ${catObj.bgcolor}\n`;
+            const formattedManualItems = originalOrder
+                .map(catName => {
+                    const items = grouped[catName] || [];
+
+                    let catObj = manualAssignedItems.find(i =>
+                        (i.category.name || i.category) === catName
+                    )?.category;
+
+                    // if no items are assigned to this category
+                    if (!catObj) {
+                        catObj =
+                            localCats.find(c => c.name === catName) ||
+                            globalCats.find(c => c.name === catName) ||
+                            null;
                     }
 
-                    const itemsFormatted = items.map(item => `    - ${item}`).join("\n");
+                    const extraLines = [];
+                    if (catObj && this._includeDefined) {
+                        if (catObj.icon) extraLines.push(`  icon: ${catObj.icon}`);
+                        if (catObj.bgcolor) extraLines.push(`  bgcolor: "${catObj.bgcolor}"`);
+                    }
+                    const extraProps = extraLines.join("\n");
 
-                    return `- name: ${catName}\n${extraProps}  items:\n${itemsFormatted}`;
+                    // with items
+                    if (items.length > 0) {
+                        const itemsFormatted = items.map(item => `    - ${item}`).join("\n");
+                        return extraProps
+                            ? `- name: ${catName}\n${extraProps}\n  items:\n${itemsFormatted}`
+                            : `- name: ${catName}\n  items:\n${itemsFormatted}`;
+                    }
+
+                    // without items
+                    if (this._includeDefined) {
+                        return extraProps ? `- name: ${catName}\n${extraProps}` : `- name: ${catName}`;
+                    }
+
+                    return "";
                 })
+                .filter(Boolean)
                 .join("\n");
 
             block3Textarea.value = formattedManualItems || "";
