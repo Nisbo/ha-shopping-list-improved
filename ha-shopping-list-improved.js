@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-1";
+const version = "2.2.0-BETA-2";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -30,6 +30,17 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Schließen",
         "ui.common.dynamic_category"                    : "Neue (dynamische) Kategorie",
+        "ui.admin.options"                              : "Admin Optionen",
+        "ui.admin.options.browser_chips"                : "Browser Chips",
+        "ui.admin.options.browser_chips_copy"           : "Kopieren",
+        "ui.admin.options.browser_chips_delete"         : "Browser Chips löschen",
+        "ui.admin.options.browser_chips_delete_con"     : "Möchten Sie wirklich alle Browser Chips löschen ?",
+        "ui.admin.options.dynamic_categories"           : "Dynamische Kategorien",
+        "ui.admin.options.dynamic_categories_copy"      : "Kopieren",
+        "ui.admin.options.dynamic_categories_include"   : "Inklusive Artikel",
+        "ui.admin.options.manual_assigned"              : "Manuell zugewiesene Artikel",
+        "ui.admin.options.manual_assigned_copy"         : "Kopieren",
+        "ui.admin.options.manual_assigned_include"      : "Inklusive bereits konfigurierte Artikel",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -96,6 +107,7 @@ const TRANSLATIONS = {
         "editor.labels.general.options"                 : "Allgemeine Einstellungen",
         "editor.labels.input_row_position"              : "Position der Eingabemaske",
         "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
+        "editor.labels.show_admin_button"               : "Admin-Button anzeigen",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -228,6 +240,7 @@ const TRANSLATIONS = {
         "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
+        "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
@@ -305,6 +318,17 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Close",
         "ui.common.dynamic_category"                    : "New (dynamic) Category",
+        "ui.admin.options"                              : "Admin Options",
+        "ui.admin.options.browser_chips"                : "Browser Chips",
+        "ui.admin.options.browser_chips_copy"           : "Copy",
+        "ui.admin.options.browser_chips_delete"         : "Delete Browser Chips",
+        "ui.admin.options.browser_chips_delete_con"     : "Are you sure you want to delete all Browser Chips ?",
+        "ui.admin.options.dynamic_categories"           : "Dynamic Categories",
+        "ui.admin.options.dynamic_categories_copy"      : "Copy",
+        "ui.admin.options.dynamic_categories_include"   : "Include items",
+        "ui.admin.options.manual_assigned"              : "Manually Assigned Items",
+        "ui.admin.options.manual_assigned_copy"         : "Copy",
+        "ui.admin.options.manual_assigned_include"      : "Include already configured items",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -371,6 +395,7 @@ const TRANSLATIONS = {
         "editor.labels.general.options"                 : "General settings",
         "editor.labels.input_row_position"              : "Input row position",
         "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
+        "editor.labels.show_admin_button"               : "Show admin options button",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -502,6 +527,7 @@ const TRANSLATIONS = {
         "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
+        "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
@@ -673,6 +699,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showTitleExclamation  = (config.show_title_exclamation_mark === false) ? false : true;
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
+        this._showAdminButton       = (config.show_admin_button === false) ? false : true;
         this._showClearButton       = (config.show_clear_button === false) ? false : true;
         this._longLivedToken        = config.longlived_token || "";
         this._externalUrl           = config.external_url || "";
@@ -984,6 +1011,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_input_mask", selector: { boolean: {} }, default: true },
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
                     { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
+                    { name: "show_admin_button", selector: { boolean: {} }, default: true },
                     { name: "sub_text", selector: { text: {} }, default: " "},
                     { name: "bubble_card", selector: { boolean: {} }, default: false }
                 ]
@@ -1730,6 +1758,7 @@ class HaShoppingListImproved extends HTMLElement {
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                        ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
                         ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;`  : ``}
                         ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
                         ${this._showClearButton     ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
@@ -1748,6 +1777,7 @@ class HaShoppingListImproved extends HTMLElement {
 		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
         if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
         if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
+        if (this._showAdminButton)     this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
 
         this._listEl             = this._shadow.getElementById('list');
         this._historyEl          = this._shadow.getElementById('history');
@@ -1785,6 +1815,503 @@ class HaShoppingListImproved extends HTMLElement {
             this._positionInputRow();
         });
     }
+
+
+// Admin Options Popup
+async _adminOptions() {
+    return new Promise((resolve) => {
+        // Overlay
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.background = 'rgba(0,0,0,0.4)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+        overlay.style.pointerEvents = 'auto';
+
+        // Popup
+        const popup = document.createElement('div');
+        popup.style.background = 'var(--card-background-color, white)';
+        popup.style.padding = '16px';
+        popup.style.borderRadius = '8px';
+        popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        popup.style.maxWidth = '420px';
+        popup.style.width = '90%';
+        popup.style.textAlign = 'center';
+        popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+        popup.style.color = 'var(--primary-text-color, black)';
+        popup.style.pointerEvents = 'auto';
+        popup.style.display = 'flex';
+        popup.style.flexDirection = 'column';
+        popup.style.gap = '20px';
+
+        // Title
+        const title = document.createElement('h2');
+        title.textContent = translate("ui.admin.options");
+        title.style.margin = '0 0 4px 0';
+        title.style.fontSize = '20px';
+        popup.appendChild(title);
+
+        // Browser Chips
+        const block1Container = document.createElement('div');
+        block1Container.style.textAlign = 'left';
+
+        const block1Label = document.createElement('label');
+        block1Label.textContent = translate("ui.admin.options.browser_chips");
+        block1Label.style.fontWeight = '600';
+        block1Label.style.display = 'block';
+        block1Label.style.marginBottom = '4px';
+
+        const block1Textarea = document.createElement('textarea');
+        block1Textarea.style.width = '100%';
+        block1Textarea.style.height = '90px';
+        block1Textarea.style.boxSizing = 'border-box';
+        block1Textarea.style.padding = '10px';
+        block1Textarea.style.resize = 'vertical';
+        block1Textarea.style.border = '1px solid var(--divider-color, #ccc)';
+        block1Textarea.style.borderRadius = '4px';
+        block1Textarea.style.fontSize = '14px';
+
+        // Buttons container
+        const block1Buttons = document.createElement('div');
+        block1Buttons.style.marginTop = '6px';
+        block1Buttons.style.display = 'flex';
+        block1Buttons.style.gap = '8px';
+
+        // Copy Browser Chips Button
+        const block1CopyBtn = document.createElement('button');
+        block1CopyBtn.textContent = translate("ui.admin.options.browser_chips_copy");
+        block1CopyBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+        block1CopyBtn.style.color = 'white';
+        block1CopyBtn.style.border = 'none';
+        block1CopyBtn.style.padding = '6px 12px';
+        block1CopyBtn.style.borderRadius = '4px';
+        block1CopyBtn.style.cursor = 'pointer';
+
+        block1CopyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(block1Textarea.value);
+                block1CopyBtn.style.filter = "brightness(0.8)";
+                setTimeout(() => (block1CopyBtn.style.filter = ""), 200);
+            } catch {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = block1Textarea.value;
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    const success = document.execCommand('copy');
+                    if (!success) throw new Error('execCommand copy failed');
+                        block1CopyBtn.style.filter = "brightness(0.8)";
+                        setTimeout(() => (block1CopyBtn.style.filter = ""), 200);
+                } catch {
+                    alert("Copy failed – Clipboard API not available?");
+                }
+                document.body.removeChild(ta);
+            }
+        });
+
+        // Delete Browser Chips Button
+        const block1DeleteBtn = document.createElement('button');
+        block1DeleteBtn.textContent = translate("ui.admin.options.browser_chips_delete");
+        block1DeleteBtn.style.backgroundColor = 'var(--warn-color, #f44336)';
+        block1DeleteBtn.style.color = 'white';
+        block1DeleteBtn.style.border = 'none';
+        block1DeleteBtn.style.padding = '6px 12px';
+        block1DeleteBtn.style.borderRadius = '4px';
+        block1DeleteBtn.style.cursor = 'pointer';
+
+        block1DeleteBtn.addEventListener('click', async () => {
+
+        if (!this.confirmPopup(translate("ui.admin.options.browser_chips_delete_con"))) return;
+            // Clear history array and localStorage, update textarea
+            this._previous = [];
+            this._saveHistory();
+            this._renderHistory();
+            block1Textarea.value = "";
+        });
+
+        block1Buttons.appendChild(block1CopyBtn);
+        block1Buttons.appendChild(block1DeleteBtn);
+
+        block1Container.appendChild(block1Label);
+        block1Container.appendChild(block1Textarea);
+        block1Container.appendChild(block1Buttons);
+
+        // Dynamic Categories
+        const block2Container = document.createElement('div');
+        block2Container.style.textAlign = 'left';
+
+        const block2Label = document.createElement('label');
+        block2Label.textContent = translate("ui.admin.options.dynamic_categories");
+        block2Label.style.fontWeight = '600';
+        block2Label.style.display = 'block';
+        block2Label.style.marginBottom = '4px';
+
+        const block2Textarea = document.createElement('textarea');
+        block2Textarea.style.width = '100%';
+        block2Textarea.style.height = '90px';
+        block2Textarea.style.boxSizing = 'border-box';
+        block2Textarea.style.padding = '10px';
+        block2Textarea.style.resize = 'vertical';
+        block2Textarea.style.border = '1px solid var(--divider-color, #ccc)';
+        block2Textarea.style.borderRadius = '4px';
+        block2Textarea.style.fontSize = '14px';
+
+        const block2CopyBtn = document.createElement('button');
+        block2CopyBtn.textContent = translate("ui.admin.options.dynamic_categories_copy");
+        block2CopyBtn.style.marginTop = '6px';
+        block2CopyBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+        block2CopyBtn.style.color = 'white';
+        block2CopyBtn.style.border = 'none';
+        block2CopyBtn.style.padding = '6px 12px';
+        block2CopyBtn.style.borderRadius = '4px';
+        block2CopyBtn.style.cursor = 'pointer';
+
+        block2CopyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(block2Textarea.value);
+                block2CopyBtn.style.filter = "brightness(0.8)";
+                setTimeout(() => (block2CopyBtn.style.filter = ""), 200);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = block2Textarea.value;
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    const success = document.execCommand('copy');
+                    if (!success) throw new Error('execCommand copy failed');
+                    block2CopyBtn.style.filter = "brightness(0.8)";
+                    setTimeout(() => (block2CopyBtn.style.filter = ""), 200);
+                } catch {
+                    alert("Copy failed – Clipboard API not available?");
+                }
+                document.body.removeChild(ta);
+            }
+        });
+
+        // Append label + textarea
+        block2Container.appendChild(block2Label);
+        block2Container.appendChild(block2Textarea);
+
+        // Buttons container for block2 (copy + checkbox side-by-side)
+        const block2Controls = document.createElement('div');
+        block2Controls.style.display = 'flex';
+        block2Controls.style.alignItems = 'center';
+        block2Controls.style.gap = '8px';
+        block2Controls.style.marginTop = '6px';
+
+        block2Controls.appendChild(block2CopyBtn);
+
+        // Checkbox: Include Items
+        const includeItemsContainer = document.createElement('div');
+        includeItemsContainer.style.display = 'flex';
+        includeItemsContainer.style.alignItems = 'center';
+        includeItemsContainer.style.gap = '6px';
+
+        const includeItemsCheckbox = document.createElement('input');
+        includeItemsCheckbox.type = 'checkbox';
+        includeItemsCheckbox.id = 'includeItemsCheckbox';
+
+        const includeItemsLabel = document.createElement('label');
+        includeItemsLabel.setAttribute('for', 'includeItemsCheckbox');
+        includeItemsLabel.textContent = translate("ui.admin.options.dynamic_categories_include");
+
+        includeItemsContainer.appendChild(includeItemsCheckbox);
+        includeItemsContainer.appendChild(includeItemsLabel);
+
+        block2Controls.appendChild(includeItemsContainer);
+        block2Container.appendChild(block2Controls);
+
+        // --- Block 3: Manual Assigned Items ---
+        const block3Container = document.createElement('div');
+        block3Container.style.textAlign = 'left';
+
+        const block3Label = document.createElement('label');
+        block3Label.textContent = translate("ui.admin.options.manual_assigned");
+        block3Label.style.fontWeight = '600';
+        block3Label.style.display = 'block';
+        block3Label.style.marginBottom = '4px';
+
+        const block3Textarea = document.createElement('textarea');
+        block3Textarea.style.width = '100%';
+        block3Textarea.style.height = '90px';
+        block3Textarea.style.boxSizing = 'border-box';
+        block3Textarea.style.padding = '10px';
+        block3Textarea.style.resize = 'vertical';
+        block3Textarea.style.border = '1px solid var(--divider-color, #ccc)';
+        block3Textarea.style.borderRadius = '4px';
+        block3Textarea.style.fontSize = '14px';
+
+        // Buttons container side-by-side for block3 buttons
+        const block3Buttons = document.createElement('div');
+        block3Buttons.style.marginTop = '6px';
+        block3Buttons.style.display = 'flex';
+        block3Buttons.style.gap = '8px';
+
+        // Copy Manual Assigned Items Button
+        const block3CopyBtn = document.createElement('button');
+        block3CopyBtn.textContent = translate("ui.admin.options.manual_assigned_copy");
+        block3CopyBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+        block3CopyBtn.style.color = 'white';
+        block3CopyBtn.style.border = 'none';
+        block3CopyBtn.style.padding = '6px 12px';
+        block3CopyBtn.style.borderRadius = '4px';
+        block3CopyBtn.style.cursor = 'pointer';
+
+        block3CopyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(block3Textarea.value);
+                block3CopyBtn.style.filter = "brightness(0.8)";
+                setTimeout(() => (block3CopyBtn.style.filter = ""), 200);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = block3Textarea.value;
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    const success = document.execCommand('copy');
+                    if (!success) throw new Error('execCommand copy failed');
+                    block3CopyBtn.style.filter = "brightness(0.8)";
+                    setTimeout(() => (block3CopyBtn.style.filter = ""), 200);
+                } catch {
+                    alert("Copy failed – Clipboard API not available?");
+                }
+                document.body.removeChild(ta);
+            }
+        });
+
+        // Toggle Checkbox: Include Defined Items
+        const includeDefinedContainer = document.createElement("div");
+        includeDefinedContainer.style.display = "flex";
+        includeDefinedContainer.style.alignItems = "center";
+        includeDefinedContainer.style.gap = "6px";
+
+        const includeDefinedCheckbox = document.createElement("input");
+        includeDefinedCheckbox.type = "checkbox";
+        includeDefinedCheckbox.id = "includeDefinedCheckbox";
+
+        const includeDefinedLabel = document.createElement("label");
+        includeDefinedLabel.setAttribute("for", "includeDefinedCheckbox");
+        includeDefinedLabel.textContent = translate("ui.admin.options.manual_assigned_include");
+
+        includeDefinedCheckbox.addEventListener("change", () => {
+            const val = includeDefinedCheckbox.checked;
+            /*
+            includeDefinedLabel.textContent = val
+                ? "Include only new items"
+                : "Include already defined items";
+            */
+            this._includeDefined = val;
+            computeManualItems(val);
+        });
+
+        includeDefinedContainer.appendChild(includeDefinedCheckbox);
+        includeDefinedContainer.appendChild(includeDefinedLabel);
+
+        block3Buttons.appendChild(block3CopyBtn);
+        block3Buttons.appendChild(includeDefinedContainer);
+
+        block3Container.appendChild(block3Label);
+        block3Container.appendChild(block3Textarea);
+        block3Container.appendChild(block3Buttons);
+
+        // Add all blocks to popup
+        popup.appendChild(block1Container);
+        popup.appendChild(block2Container);
+        popup.appendChild(block3Container);
+
+        // --- Fill Browser Chips ---
+        const browserChips = this._loadHistory();
+        if (Array.isArray(browserChips)) {
+            block1Textarea.value = browserChips.join(", ");
+        }
+
+        // --- Fill Dynamic Categories ---
+        try {
+            const dynamicCats = this._getDynamicCategories() || [];
+
+            const formatted = dynamicCats
+                .map(cat => `- name: ${cat.name}`)
+                .join("\n");
+
+            block2Textarea.value = formatted;
+        } catch (e) {
+            block2Textarea.value = "Error reading categories.";
+            console.error(e);
+        }
+
+        const localCats = this._getLocalCategories() || [];
+        const dynamicCats = this._getDynamicCategories() || [];
+        const globalCats = this._globalCategories || [];
+
+        function isCategoryDynamic(catName) {
+            return dynamicCats.some(dc => dc.name === catName);
+        }
+
+        function isItemInCategories(itemName, categories) {
+            return categories.some(cat => cat.items && cat.items.includes(itemName));
+        }
+
+        // computeDynamicCategories
+        const computeDynamicCategories = (includeItems) => {
+            const dynamicCatsList = this._getDynamicCategories() || [];
+            const items = Array.isArray(this._items) ? this._items : [];
+
+            if (!includeItems) {
+                const formatted = dynamicCatsList
+                    .map(cat => `- name: ${cat.name}`)
+                    .join("\n");
+                block2Textarea.value = formatted || "";
+                return;
+            }
+
+            const grouped = {};
+
+            for (const it of items) {
+                const catName = this._getCategory(it.name);
+                if (!catName || catName === "none") continue;
+
+                // only dynamic cats
+                if (!dynamicCatsList.some(dc => dc.name === catName)) continue;
+
+                const itemName = this._getNameOnly(it.name);
+                if (!grouped[catName]) grouped[catName] = [];
+                // avoid duplicates
+                if (!grouped[catName].includes(itemName)) grouped[catName].push(itemName);
+            }
+
+            // Format:
+            // - name: Cat
+            //   items:
+            //     - Item1
+            //     - Item2
+            const formatted = dynamicCatsList.map(dc => {
+                const catItems = grouped[dc.name] || [];
+                if (catItems.length === 0) {
+                    return `- name: ${dc.name}\n  items: []`;
+                }
+                const itemsFormatted = catItems.map(it => `    - ${it}`).join("\n");
+                return `- name: ${dc.name}\n  items:\n${itemsFormatted}`;
+            }).join("\n");
+
+            block2Textarea.value = formatted || "";
+        };
+
+        includeItemsCheckbox.addEventListener('change', () => {
+            const include = includeItemsCheckbox.checked;
+            computeDynamicCategories(include);
+        });
+
+        // initial fill (default: without Items)
+        computeDynamicCategories(false);
+
+        this._includeDefined = false;
+
+        const computeManualItems = (includeDefined) => {
+            const manualAssignedItems = [];
+
+            function findCategoryByName(catName) {
+                return (
+                    localCats.find(c => c.name === catName) ||
+                    globalCats.find(c => c.name === catName) ||
+                    dynamicCats.find(c => c.name === catName) ||
+                    { name: catName }
+                );
+            }
+
+            for (const item of this._items) {
+                const catName = this._getCategory(item.name);
+                if (!catName || catName === "none") continue;
+                if (isCategoryDynamic(catName)) continue;
+
+                const itemName = this._getNameOnly(item.name);
+
+                const inLocal = isItemInCategories(itemName, localCats);
+                const inGlobal = isItemInCategories(itemName, globalCats);
+
+                if (includeDefined) {
+                    manualAssignedItems.push({ name: itemName, category: findCategoryByName(catName) });
+                } else {
+                    if (!inLocal && !inGlobal) {
+                        manualAssignedItems.push({ name: itemName, category: findCategoryByName(catName) });
+                    }
+                }
+            }
+
+            const grouped = manualAssignedItems.reduce((acc, curr) => {
+                const catName = curr.category.name || curr.category;
+                if (!acc[catName]) acc[catName] = [];
+                acc[catName].push(curr.name);
+                return acc;
+            }, {});
+
+            const formattedManualItems = Object.entries(grouped)
+                .map(([catName, items]) => {
+                    const catObj = manualAssignedItems.find(i => (i.category.name || i.category) === catName)?.category;
+
+                    let extraProps = "";
+                    if (catObj && this._includeDefined) {
+                        if (catObj.icon) extraProps += `  icon: ${catObj.icon}\n`;
+                        if (catObj.bgcolor) extraProps += `  bgcolor: ${catObj.bgcolor}\n`;
+                    }
+
+                    const itemsFormatted = items.map(item => `    - ${item}`).join("\n");
+
+                    return `- name: ${catName}\n${extraProps}  items:\n${itemsFormatted}`;
+                })
+                .join("\n");
+
+            block3Textarea.value = formattedManualItems || "";
+        };
+
+        let includeDefined = false;
+        computeManualItems(includeDefined);
+
+        // Close Button
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = translate("ui.common.close");
+        closeBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+        closeBtn.style.border = 'none';
+        closeBtn.style.padding = '8px 16px';
+        closeBtn.style.borderRadius = '4px';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.marginTop = '10px';
+
+        closeBtn.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+            resolve(true);
+        });
+
+        popup.appendChild(closeBtn);
+
+        // Append popup and overlay
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+
+        // Close on overlay click outside popup
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+                resolve(null);
+            }
+        });
+
+        // Close on ESC key
+        window.addEventListener('keydown', function handler(e) {
+            if (e.key === "Escape") {
+                window.removeEventListener('keydown', handler);
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve(null);
+            }
+        });
+    });
+}
 
     // Input Row Positioning
     _positionInputRow() {
