@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-4";
+const version = "2.2.0-BETA-5";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -652,7 +652,11 @@ class HaShoppingListImproved extends HTMLElement {
     set hass(hass) {
         this._hass = hass;
         this.render();
-		this._refresh();
+
+        if(!this._firstStartDone){
+            this._firstStartDone = true;
+		    this._refresh();
+        }
     }
     
 	setConfig(config){
@@ -708,6 +712,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanFile               = config.ean_file || "";
 		this._categoryFile          = config.category_file || "";
         this._allowDynamicCats      = (config.allow_dynamic_categories === true) ? true : false;
+        this._listReloadTime        = Math.min(Math.max(config.list_reload_time || 10, 1), 3600) * 1000; // in seconds, min 1s, max 1h
 
         const allowedModes = [
             // 1 Cat
@@ -1400,6 +1405,13 @@ class HaShoppingListImproved extends HTMLElement {
 
             if(debugMode) console.debug("[ha-shopping-list-improved] WS subscribed to shopping_list_updated events. ", this._entity);
         }
+
+        // Timer for ToDo Time till next due updates
+        if(this._mode === "todo"){
+            this._timeInterval = setInterval(() => {
+                this._updateTimes();
+            }, this._listReloadTime); // every xx seconds, standard --> 10 seconds            
+        }
     }
 
     disconnectedCallback() {
@@ -1412,7 +1424,19 @@ class HaShoppingListImproved extends HTMLElement {
                 console.warn("[ha-shopping-list-improved] WS unsubscribe failed:", e);
             }
         }
+
+        if (this._timeInterval) {
+            clearInterval(this._timeInterval);
+            this._timeInterval = null;
+        }
+
         this._unsubEvents = null;
+        this._firstStartDone = false;
+    }
+
+    _updateTimes() {
+        if(debugMode) console.debug("[ha-shopping-list-improved] List rendered");
+        this._renderList(); // render list to update time displays in ToDo mode
     }
 
     _addDynamicCategories(itemsArray) {
