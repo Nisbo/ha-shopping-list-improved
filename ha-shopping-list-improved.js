@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-3";
+const version = "2.2.0-BETA-4";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -1375,7 +1375,7 @@ class HaShoppingListImproved extends HTMLElement {
         return 3;
     }
 
-	connectedCallback() {
+    connectedCallback() {
         // Shadow DOM - create only once
         if (!this._shadow) {
             this._shadow = this.attachShadow({ mode: 'open' });
@@ -1391,22 +1391,28 @@ class HaShoppingListImproved extends HTMLElement {
         // render Skeleton (HTML + Styles)
         this._renderSkeleton();
 
-        // Event-Listener for external Updates
-        this._eventListener = (e) => {
-            if (e.detail && e.detail.action) this._refresh();
-        };
-
-	    window.addEventListener('shopping_list_updated', this._eventListener);
-
-        // subscribe HA Events
+        // subscribe HA WebSocket Events, but store the unsubscribe function
         if (this._hass?.connection?.subscribeEvents) {
-            this._hass.connection.subscribeEvents(() => this._refresh(), "shopping_list_updated");
+            this._unsubEvents = this._hass.connection.subscribeEvents(
+                () => this._refresh(),
+                "shopping_list_updated"
+            );
+
+            if(debugMode) console.debug("[ha-shopping-list-improved] WS subscribed to shopping_list_updated events. ", this._entity);
         }
-	}
+    }
 
     disconnectedCallback() {
-		this._stopScan();
-        window.removeEventListener('shopping_list_updated', this._eventListener);
+        this._stopScan();
+
+        if (typeof this._unsubEvents === "function") {
+            try {
+                this._unsubEvents();
+            } catch(e) {
+                console.warn("[ha-shopping-list-improved] WS unsubscribe failed:", e);
+            }
+        }
+        this._unsubEvents = null;
     }
 
     _addDynamicCategories(itemsArray) {
@@ -5744,26 +5750,6 @@ async _adminOptions() {
         this._renderHistory();
     }
     
-	// Wait that Home Assistant is firering the shopping_list_updated-Event
-	_waitForShoppingListUpdate(timeout = 1000) {
-        return new Promise((resolve) => {
-            let done = false;
-            const finish = () => {
-                if (!done) {
-                    done = true;
-                    resolve();
-                    window.removeEventListener("shopping_list_updated", handler);
-                }
-            };
-
-            const handler = () => finish();
-            window.addEventListener("shopping_list_updated", handler);
-
-            // Fallback: after Timeout continue
-            setTimeout(() => finish(), timeout);
-        });
-	}
-
 	render(){ if (!this._hass) return; }
 }
 
