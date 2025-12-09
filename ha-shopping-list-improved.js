@@ -1411,6 +1411,11 @@ class HaShoppingListImproved extends HTMLElement {
             this._timeInterval = setInterval(() => {
                 this._updateTimes();
             }, this._listReloadTime); // every xx seconds, standard --> 10 seconds            
+        } else {
+            // Check after 5 seconds once if not in ToDo mode
+            setTimeout(() => {
+                this._updateTimes();
+            }, 5000);
         }
     }
 
