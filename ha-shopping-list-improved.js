@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-5";
+const version = "2.2.0-BETA-6";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -1435,8 +1435,13 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _updateTimes() {
-        if(debugMode) console.debug("[ha-shopping-list-improved] List rendered");
-        this._renderList(); // render list to update time displays in ToDo mode
+        if(!this._items || this._items.length === 0) {
+            if(debugMode) console.debug("[ha-shopping-list-improved] Runninng _refresh() because there were no items for:", this._entity);
+            this._refresh(); // if the items are not loaded, try to refresh from HA
+        } else {
+            if(debugMode) console.debug("[ha-shopping-list-improved] List rendered");
+            this._renderList(); // render list to update time displays in ToDo mode            
+        }
     }
 
     _addDynamicCategories(itemsArray) {
@@ -5071,7 +5076,10 @@ async _adminOptions() {
 
 	_renderHistory() {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderHistory() called");
-
+if (!this._historyEl) {
+    console.warn("[ha-shopping-list-improved] _historyEl NOT found");
+    return;
+}
         // collapable by title click
         const storageKey = this._entity + "_collapsed";
         const stored = localStorage.getItem(storageKey);
@@ -5762,18 +5770,29 @@ async _adminOptions() {
     _addToHistory(name){
         name = (name || '').trim();
         if(!name) return;
-        
-        // Dont add Standard-Chips to local History
-        if (this._defaultChips?.includes(name) || !this._allowLocalChips) return;
-        
-        const idx = this._previous.findIndex(x=> x.toLowerCase() === name.toLowerCase());
-        if(idx!==-1) this._previous.splice(idx,1);
-        this._previous.unshift(name);
+
+        const nameLower = name.toLowerCase();
+
+        if (this._defaultChips?.some(chip => chip.toLowerCase() === nameLower) || !this._allowLocalChips) {
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Name is already in DefaultChips (case-insensitive):", name);
+            return;
+        }
+
+        const idx = this._previous.findIndex(x => x.toLowerCase() === nameLower);
+
+        if(idx !== -1){
+            const original = this._previous[idx];
+            this._previous.splice(idx,1);
+            this._previous.unshift(original);
+        } else {
+            this._previous.unshift(name);
+        }
+
         this._previous = this._previous.slice(0,2000);
         this._saveHistory();
         this._renderHistory();
     }
-    
+
 	render(){ if (!this._hass) return; }
 }
 
