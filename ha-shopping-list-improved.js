@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-6";
+const version = "2.2.0-BETA-7";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -30,6 +30,14 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Schließen",
         "ui.common.dynamic_category"                    : "Neue (dynamische) Kategorie",
+        "ui.common.loading_list"           				: "Lade Liste...",
+
+        "ui.message.quantity_increased"                 : "Anzahl erhöht",
+        "ui.message.quantity_decreased"                 : "Anzahl verringert",
+        "ui.message.edited"                             : "Artikel bearbeitet",
+        "ui.message.item_added"                         : "Artikel hinzugefügt",
+        "ui.message.item_removed"                       : "Artikel entfernt",
+
         "ui.admin.options"                              : "Admin Optionen",
         "ui.admin.options.browser_chips"                : "Browser Chips",
         "ui.admin.options.browser_chips_copy"           : "Kopieren",
@@ -72,6 +80,8 @@ const TRANSLATIONS = {
 		
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
+        "editor.labels.show_message_button"             : "Nachrichten-Button anzeigen",
+        "editor.labels.notify_entity"                   : "Notify-Entität",
         "editor.labels.add_button"                      : "Hinzufügen",
         "editor.labels.clear_button"                    : "Erledigte löschen",
         "editor.labels.no_items"                        : "Keine Einträge",
@@ -101,6 +111,7 @@ const TRANSLATIONS = {
         "editor.labels.colors"                          : "Farbeinstellungen",
         "editor.labels.category.options"                : "Kategorien",
         "editor.labels.export.options"                  : "Export-Optionen",
+        "editor.labels.message.options"                 : "Benachrichtigungen",
         "editor.labels.dishes.options"                  : "Gerichte",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Artikel",
@@ -240,12 +251,15 @@ const TRANSLATIONS = {
         "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
+        "editor.helpers.show_message_button"            : "Zeigt einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
+        "editor.helpers.notify_entity"                  : "Die Notify-Entität, die verwendet wird, um die Liste zu senden, wenn z.B. der Nachrichten-Button gedrückt wird. Beispiel: 'notify.mobile_app_mein_telefon' oder 'notify.telegram'.",
         "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
         "editor.helpers.category.options"               : "Hier kannst du Kategorien konfigurieren, die in der Einkaufs- und ToDo-liste verwendet werden. Du kannst lokale Kategorien (hier in der Karte) definieren oder eine Textdatei mit globalen Kategorien laden. Weitere Informationen zum Aufbau der Kategorien findest du in der Dokumentation.",
         "editor.helpers.export.options"                 : "Hier kannst du die Export-Optionen konfigurieren.",
+        "editor.helpers.message.options"                : "Hier kannst du einstellen, wie das Nachrichtensystem funktioniert und welche Notify-Entität verwendet wird, um die Liste zu senden.",
         "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
         "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
         "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
@@ -318,6 +332,14 @@ const TRANSLATIONS = {
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Close",
         "ui.common.dynamic_category"                    : "New (dynamic) Category",
+        "ui.common.loading_list"           				: "Loading list...",
+
+        "ui.message.quantity_increased"                 : "Quantity increased",
+        "ui.message.quantity_decreased"                 : "Quantity decreased",
+        "ui.message.edited"                             : "Item edited",
+        "ui.message.item_added"                         : "Item added",
+        "ui.message.item_removed"                       : "Item removed",
+
         "ui.admin.options"                              : "Admin Options",
         "ui.admin.options.browser_chips"                : "Browser Chips",
         "ui.admin.options.browser_chips_copy"           : "Copy",
@@ -360,6 +382,8 @@ const TRANSLATIONS = {
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
+        "editor.labels.show_message_button"             : "Show message button",
+        "editor.labels.notify_entity"                   : "Notify-Entity",
         "editor.labels.add_button"                      : "Add",
         "editor.labels.clear_button"                    : "Clear completed",
         "editor.labels.no_items"                        : "No items",
@@ -389,6 +413,7 @@ const TRANSLATIONS = {
         "editor.labels.colors"                          : "Color settings",
         "editor.labels.category.options"                : "Categories",
         "editor.labels.export.options"                  : "Export options",
+        "editor.labels.message.options"                 : "Notifications",
         "editor.labels.dishes.options"                  : "Dishes",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Items",
@@ -527,12 +552,15 @@ const TRANSLATIONS = {
         "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
+        "editor.helpers.show_message_button"            : "Displays a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
+        "editor.helpers.notify_entity"                  : "The notify entity used to send the list when the message button is pressed. This entity must be configured in Home Assistant beforehand (e.g. 'notify.mobile_app_xyz' or 'notify.telegram').",
         "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
         "editor.helpers.category.options"               : "Here you can configure categories used in the shopping and to-do list. You can define local categories (here in the card) or load a text file with global categories. For more information on the structure of the categories, please refer to the documentation.",
         "editor.helpers.export.options"                 : "Here you can configure the export options.",
+        "editor.helpers.message.options"                : "Here you can configure how the message system works and which notify entity is used to send the list.",
         "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
         "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
         "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
@@ -585,7 +613,7 @@ const TRANSLATIONS = {
     }
 };
 
-const debugMode = false;
+let debugMode = false;
 
 // Detect HA-Language via home-assistant element
 function detectLanguage() {
@@ -641,6 +669,10 @@ class HaShoppingListImproved extends HTMLElement {
         super();
         this._onAdd = this._onAdd.bind(this);
         this._clearCompleted = this._clearCompleted.bind(this);
+        this._messageCache = "";
+
+        this.sendMessageTimer = null;
+        this._sendMessageDelay = 30; // 30 Seconds
 
         console.log(
             "%cImproved Shopping List Card %cv" + version,
@@ -704,6 +736,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._showAdminButton       = (config.show_admin_button === false) ? false : true;
+        this._showMessageButton     = (config.show_message_button === true) ? true : false;
         this._showClearButton       = (config.show_clear_button === false) ? false : true;
         this._longLivedToken        = config.longlived_token || "";
         this._externalUrl           = config.external_url || "";
@@ -713,7 +746,12 @@ class HaShoppingListImproved extends HTMLElement {
 		this._categoryFile          = config.category_file || "";
         this._allowDynamicCats      = (config.allow_dynamic_categories === true) ? true : false;
         this._listReloadTime        = Math.min(Math.max(config.list_reload_time || 10, 1), 3600) * 1000; // in seconds, min 1s, max 1h
-
+        this._notifyEntity          = config.notify_entity || "";
+        this._notifyOnChangeEna     = (config.notify_on_change === true) ? true : false;
+        this._notifyOnChangeAll     = (config.notify_on_change_all === true) ? true : false;
+        this._sendMessageDelay      = config.notify_on_change_time || 0;
+        debugMode                   = (config.debug_mode === true) ? true : false;
+        
         const allowedModes = [
             // 1 Cat
             "local_only", "standard_only", // old
@@ -826,6 +864,18 @@ class HaShoppingListImproved extends HTMLElement {
         // load local EAN
         this._localEAN = [];
         this._loadLocalEANFromFile();
+    }
+
+    // Start / Restart Send Message Timer
+    _resetSendMessageTimer() {
+        if (this.sendMessageTimer) {
+            clearTimeout(this.sendMessageTimer);
+        }
+
+        this.sendMessageTimer = setTimeout(() => {
+            this.sendMessageTimer = null;
+            this._sendMessage();
+        }, this._sendMessageDelay * 1000);
     }
 
     // Global Chips
@@ -1017,6 +1067,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
                     { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
                     { name: "show_admin_button", selector: { boolean: {} }, default: true },
+                    { name: "show_message_button", selector: { boolean: {} }, default: false },
                     { name: "sub_text", selector: { text: {} }, default: " "},
                     { name: "bubble_card", selector: { boolean: {} }, default: false }
                 ]
@@ -1350,6 +1401,31 @@ class HaShoppingListImproved extends HTMLElement {
                         default: ""
                     }
                 ]
+            },
+
+            // Message Options
+            {
+                type: 'expandable',
+                label: 'message.options',
+                icon: 'mdi:message-badge',
+                schema: [       
+                    {
+                        name: "notify_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["notify"] // only entities with domain "notify"
+                            }
+                        }
+                    },
+                    { name: "notify_on_change", selector: { boolean: {} }, default: false },
+                    { name: "notify_on_change_all", selector: { boolean: {} }, default: false },
+                    {
+                        name: "notify_on_change_time",
+                        selector: { number: { min: 0, max: 300, step: 1 } },
+                        default: 0
+                    },
+                ]
             }
             ],
 
@@ -1369,8 +1445,8 @@ class HaShoppingListImproved extends HTMLElement {
             },
 
             assertConfig: (config) => {
-                if (config.other_option) {
-                    throw new Error("'other_option' is not allowed.");
+                if (config.notify_on_change_time !== undefined && isNaN(Number(config.notify_on_change_time))) {
+                    throw new Error('Configuration error: "notify_on_change_time" must be a valid number between 0 and 300.');
                 }
             }
         };
@@ -1433,6 +1509,11 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._timeInterval) {
             clearInterval(this._timeInterval);
             this._timeInterval = null;
+        }
+
+        if (this.sendMessageTimer) {
+            clearTimeout(this.sendMessageTimer);
+            this.sendMessageTimer = null;
         }
 
         this._unsubEvents = null;
@@ -1792,12 +1873,13 @@ class HaShoppingListImproved extends HTMLElement {
 
                     <div id="containerClass" class="${containerClass}">
                         <div id="inputPosition" class="input-position">
-                            <ul id="list"></ul>
+                            <ul id="list"><li>${translate("ui.common.loading_list")}</li></ul>
                         </div>
                         <div class="history" id="history"></div>
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                        ${this._showMessageButton   ? `<button id="msgBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2709;&#xFE0F;</button> ` : ``}
                         ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
                         ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;`  : ``}
                         ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
@@ -1818,6 +1900,7 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
         if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
         if (this._showAdminButton)     this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
+        if (this._showMessageButton)   this._shadow.getElementById('msgBtn').addEventListener('click', () => this._sendMessage());
 
         this._listEl             = this._shadow.getElementById('list');
         this._historyEl          = this._shadow.getElementById('history');
@@ -2805,6 +2888,7 @@ async _adminOptions() {
 
     _renderList() {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderList() called");
+        this._messageCache = "";
 
         if (!this._hass) return;
         if (!this._listEl) return;
@@ -3017,7 +3101,25 @@ async _adminOptions() {
             itemsContainer.style.margin = '4px 0 12px 0';
             itemsContainer.style.display = collapsed ? 'none' : 'block';
 
-            uncategorized.forEach(item => this._renderItem(item, itemsContainer));
+            // Add also to message list aka this._messageCache
+            this._messageCache += `\n<b><u>${translate("ui.todo.general")}</u></b>\n`;
+
+            uncategorized.forEach(item => {
+                this._renderItem(item, itemsContainer);
+
+                let nameOnly = this._getNameOnly(item.name);
+                let qty = this._getQuantity(item.name);
+                let displayName = nameOnly;
+
+                if (qty > 1 || this._showQuantityOne) {
+                    displayName = this._quantityPosition === "beginning"
+                        ? `${qty}× ${nameOnly}`
+                        : `${nameOnly} (${qty})`;
+                }
+
+                this._messageCache += `- ${item.complete ? `<s>${displayName}</s>` : displayName}\n`;
+            });
+
             this._listEl.appendChild(itemsContainer);
 
             liCat.addEventListener('click', () => {
@@ -3200,7 +3302,25 @@ async _adminOptions() {
                 itemsContainer.style.margin = '4px 0 12px 0';
                 itemsContainer.style.display = collapsed ? 'none' : 'block';
 
-                catItems.forEach(item => this._renderItem(item, itemsContainer, cat));
+                // Add also to message list aka this._messageCache
+                this._messageCache += `\n<b><u>${cat.name}</u></b>\n`;
+
+                catItems.forEach(item => {
+                    this._renderItem(item, itemsContainer, cat);
+
+                    let nameOnly = this._getNameOnly(item.name);
+                    let qty = this._getQuantity(item.name);
+                    let displayName = nameOnly;
+
+                    if (qty > 1 || this._showQuantityOne) {
+                        displayName = this._quantityPosition === "beginning"
+                            ? `${qty}× ${nameOnly}`
+                            : `${nameOnly} (${qty})`;
+                    }
+
+                    this._messageCache += `- ${item.complete ? `<s>${displayName}</s>` : displayName}\n`;
+                });
+
                 this._listEl.appendChild(itemsContainer);
 
                 liCat.addEventListener('click', () => {
@@ -4237,7 +4357,9 @@ async _adminOptions() {
                     target: { entity_id: this._entity },
                     service_data: { item: item.id, rename: formattedName }
                 });
+
                 await this._refresh();
+                await this._notifyOnChange(translate("ui.message.quantity_increased") + ": " + nameOnly +  ` (${newQty})`);
             } catch (err) {
                 console.error('[ha-shopping-list-improved] Plus button failed', err);
             }
@@ -4285,6 +4407,7 @@ async _adminOptions() {
                         service_data: { item: item.id, rename: formattedName }
                     });
                     await this._refresh();
+                    await this._notifyOnChange(translate("ui.message.quantity_decreased") + ": " + nameOnly +  ` (${newQty})`);
                 } else {
                     await this._removeItem(item);
                 }
@@ -4356,7 +4479,12 @@ async _adminOptions() {
                 target: { entity_id: this._entity },
                 service_data: serviceData,
             });
+            
+            const nameOnly = this._getNameOnly(newName);
+            const newQty = this._getQuantity(newName);
+
             await this._refresh();
+            await this._notifyOnChange(translate("ui.message.edited") + ": " + nameOnly +  ` (${newQty})`);
         } catch (err) {
             console.error('[ha-shopping-list-improved] Unable to rename item:', err);
         }
@@ -4471,6 +4599,9 @@ async _adminOptions() {
             }
 
 			let finalName = inputName;
+            let msgNameOnly = "";
+            let msgTask = "";
+            let msgQty = "";
 
 			if (existing) {
 				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Found existing Item:", existing.name);
@@ -4496,6 +4627,10 @@ async _adminOptions() {
 				} else {
 					finalName = inputName;
 				}
+
+                msgNameOnly = inputName;
+                msgTask = translate("ui.message.quantity_increased");
+                msgQty = newQty;
 
 				const existingCat = this._getCategory(existing.name);
 				const effectiveCat = assignedCategory || existingCat;
@@ -4530,6 +4665,10 @@ async _adminOptions() {
 					finalName = `@${assignedCategory}@ ${finalName}${interval || ''}`;
 				}
 
+                msgNameOnly = inputName;
+                msgTask = translate("ui.message.item_added");
+                msgQty = inputQty;
+
                 // Service Data
                 const serviceData = {
                     item: finalName,
@@ -4560,6 +4699,7 @@ async _adminOptions() {
 			this._inputEl.value = '';
 			this._qtyEl.value = '';
 			await this._refresh();
+            await this._notifyOnChange(`${msgTask}: ${msgNameOnly} (${msgQty})`);
         } finally {
             this._addingBusy = false;
         }
@@ -4853,6 +4993,8 @@ async _adminOptions() {
                     };
                     if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
                     await this._hass.connection.sendMessagePromise(addMsg);
+                    await this._refresh();
+                    await this._notifyOnChange();
                 } else {
                     const msg = {
                         type: "call_service",
@@ -4866,6 +5008,7 @@ async _adminOptions() {
 
                     await this._hass.connection.sendMessagePromise(msg);
                     await this._refresh();
+                    await this._notifyOnChange();
                 }
             } catch (err) {
                 console.error("[ha-shopping-list-improved] Update ToDo failed", err);
@@ -4918,8 +5061,8 @@ async _adminOptions() {
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending toggleComplete WS message:", msg);
 
             await this._hass.connection.sendMessagePromise(msg);
-
             await this._refresh();
+            await this._notifyOnChange();
         } catch (err) {
             console.error("[ha-shopping-list-improved] Toggle complete failed", err);
         }
@@ -4929,6 +5072,7 @@ async _adminOptions() {
         if (!this._entity) return;
 
 		const itemNameOnly = this._getNameOnly(item.name);
+        const itemQtyOnly  = this._getQuantity(item.name);
 		const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
     
 		if (!(await this.confirmPopup(msgRemove))) {
@@ -4950,8 +5094,8 @@ async _adminOptions() {
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", msg);
 
             await this._hass.connection.sendMessagePromise(msg);
-
             await this._refresh();
+            await this._notifyOnChange(translate("ui.message.item_removed") + ": " + itemNameOnly +  ` (${itemQtyOnly})`);
         } catch (err) {
             console.error("[ha-shopping-list-improved] Remove failed", err);
         }
@@ -4973,8 +5117,8 @@ async _adminOptions() {
 
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending clearCompleted WS message:", msg);
             await this._hass.connection.sendMessagePromise(msg);
-
             await this._refresh();
+            await this._notifyOnChange();
         } catch (err) {
             console.error("[ha-shopping-list-improved] Clear completed failed", err);
         }
@@ -5770,6 +5914,58 @@ if (!this._historyEl) {
 
     _saveHistory(){ 
         try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){} 
+    }
+
+
+    async _notifyOnChange(info = ""){
+        if (this._notifyOnChangeEna !== true) return;
+        if (this._mode !== "shopping") return; // not in ToDo Mode
+
+        if(this._sendMessageDelay > 0){
+            this._resetSendMessageTimer();
+        }else{
+            await this._sendMessage(info);
+        }
+    }
+
+    async _sendMessage(info = ""){
+        if (!this._hass || !this._hass.connection) return;
+        if (!this._notifyEntity || !this._notifyEntity.trim()) return;
+        if (this._mode !== "shopping") return; // not in ToDo Mode
+
+        // generate the message
+        // options for - only changes or complete list
+        // option for title or entity name
+        // option for html --> parse_mode muss html beim bot sein
+        // option send only every 60 seconds (store the timestamp of last send in a variable) set current time + 60 secs and if > send it
+        let message = "";
+        if (info && info.trim()) {
+            message += `${info.trim()}`;
+        }
+
+        const stateObj = this._hass.states[this._entity];
+        const name = stateObj?.attributes?.friendly_name;
+
+if (this._notifyOnChangeAll && info && info.trim()){
+    message = `${info.trim()}\n${this._messageCache}`;
+} else if (info && info.trim()){
+    message = `${info.trim()}`;
+} else {
+    message = this._messageCache;
+}
+        
+        await this._hass.connection.sendMessagePromise({
+            type: "call_service",
+            domain: "notify",
+            service: "send_message",
+            target: {
+                entity_id: this._notifyEntity
+            },
+            service_data: {
+                title: name,
+                message: message
+            }
+        });
     }
 
     _addToHistory(name){
