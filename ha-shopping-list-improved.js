@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-7";
+const version = "2.2.0-BETA-8";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -37,6 +37,7 @@ const TRANSLATIONS = {
         "ui.message.edited"                             : "Artikel bearbeitet",
         "ui.message.item_added"                         : "Artikel hinzugefügt",
         "ui.message.item_removed"                       : "Artikel entfernt",
+        "ui.message.sent"                               : "Nachricht gesendet",
 
         "ui.admin.options"                              : "Admin Optionen",
         "ui.admin.options.browser_chips"                : "Browser Chips",
@@ -119,6 +120,10 @@ const TRANSLATIONS = {
         "editor.labels.input_row_position"              : "Position der Eingabemaske",
         "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
         "editor.labels.show_admin_button"               : "Admin-Button anzeigen",
+        "editor.labels.notify_on_change"                : "Bei Änderungen benachrichtigen",
+        "editor.labels.notify_on_change_all"            : "Immer die komplette Liste schicken",
+        "editor.labels.notify_on_change_time"           : "Zeit bevor eine Benachrichtigung verschickt wird",
+        "editor.labels.notify_entity_smtp"              : "Name des SMTP-Notify-Eintrags",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -251,15 +256,19 @@ const TRANSLATIONS = {
         "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
-        "editor.helpers.show_message_button"            : "Zeigt einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
-        "editor.helpers.notify_entity"                  : "Die Notify-Entität, die verwendet wird, um die Liste zu senden, wenn z.B. der Nachrichten-Button gedrückt wird. Beispiel: 'notify.mobile_app_mein_telefon' oder 'notify.telegram'.",
+        "editor.helpers.show_message_button"            : "Zeigt Mode 'Einkaufsliste' einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
+        "editor.helpers.notify_entity"                  : "Die Notify-Entität, die verwendet wird, um die Liste zu senden, wenn z.B. der Nachrichten-Button gedrückt wird. Beispiel: 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Die Benachrichtigungen enthalten HTML Formattierungen, um die Lesbarkeit zu verbessern. Stelle sicher, dass die verwendete Notify-Entität HTML-Formattierungen unterstützt. Benachrichtigungen über die SMTP Platform, sind in der Auswahl nicht vorhanden und müssen separat konfiguriert werden.",
         "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
+        "editor.helpers.notify_on_change"               : "Sendet eine Benachrichtigung über die konfigurierte Notify-Entität, sobald ein Artikel hinzugefügt, bearbeitet oder entfernt wurde.",
+        "editor.helpers.notify_on_change_all"           : "Standardmäßig wird nur der hinzugefügte, bearbeitete oder entfernte Artikel in der Benachrichtigung erwähnt. Wenn diese Option aktiviert ist, wird zusätzlich die komplette Liste gesendet.",
+        "editor.helpers.notify_on_change_time"          : "Legt fest (in Sekunden), wie lange gewartet wird, bevor eine Benachrichtigung (komplette Liste) gesendet wird. Dies ist nützlich, wenn mehrere Änderungen in kurzer Zeit vorgenommen werden, um zu vermeiden, dass zu viele Benachrichtigungen gesendet werden. Um diese Funktion zu deaktivieren '0' (Null) eingeben.",
+        "editor.helpers.notify_entity_smtp"             : "Name der SMTP-Notify-Plattform (aus der configuration.yaml), die für den Versand von HTML-E-Mail-Benachrichtigungen genutzt wird. Wichtig: Hier ist nur der Name der Notify-Plattform gemeint den ihr als 'name: meinName' angegeben habt, z.B. 'email_notification', nicht die vollständige Entität wie 'notify.email_notification'.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
         "editor.helpers.category.options"               : "Hier kannst du Kategorien konfigurieren, die in der Einkaufs- und ToDo-liste verwendet werden. Du kannst lokale Kategorien (hier in der Karte) definieren oder eine Textdatei mit globalen Kategorien laden. Weitere Informationen zum Aufbau der Kategorien findest du in der Dokumentation.",
         "editor.helpers.export.options"                 : "Hier kannst du die Export-Optionen konfigurieren.",
-        "editor.helpers.message.options"                : "Hier kannst du einstellen, wie das Nachrichtensystem funktioniert und welche Notify-Entität verwendet wird, um die Liste zu senden.",
+        "editor.helpers.message.options"                : "Hier kannst du einstellen, wie das Nachrichtensystem funktioniert und welche Notify-Entität verwendet wird, um die Liste zu senden. Das Nachrichtensystem funktioniert nur im Modus 'Einkaufsliste'.",
         "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
         "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
         "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
@@ -339,6 +348,7 @@ const TRANSLATIONS = {
         "ui.message.edited"                             : "Item edited",
         "ui.message.item_added"                         : "Item added",
         "ui.message.item_removed"                       : "Item removed",
+        "ui.message.sent"                               : "Message sent",
 
         "ui.admin.options"                              : "Admin Options",
         "ui.admin.options.browser_chips"                : "Browser Chips",
@@ -421,6 +431,10 @@ const TRANSLATIONS = {
         "editor.labels.input_row_position"              : "Input row position",
         "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
         "editor.labels.show_admin_button"               : "Show admin options button",
+        "editor.labels.notify_on_change"                : "Notify on change",
+        "editor.labels.notify_on_change_all"            : "Send always full list",
+        "editor.labels.notify_on_change_time"           : "Time before sending notifications",
+        "editor.labels.notify_entity_smtp"              : "Name of your SMTP-Notify-Entity",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -552,15 +566,19 @@ const TRANSLATIONS = {
         "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
-        "editor.helpers.show_message_button"            : "Displays a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
-        "editor.helpers.notify_entity"                  : "The notify entity used to send the list when the message button is pressed. This entity must be configured in Home Assistant beforehand (e.g. 'notify.mobile_app_xyz' or 'notify.telegram').",
+        "editor.helpers.show_message_button"            : "Displays (in Shopping List Mode) a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
+        "editor.helpers.notify_entity"                  : "The notify entity used e.g. to send the list when the message button is pressed. This entity must be configured in Home Assistant beforehand (e.g. 'notify.mobile_app_xyz' or 'notify.telegram'). Notifications include HTML formatting to improve readability. Make sure the configured notify entity supports HTML formatting. Notifications via SMTP platform are not included here; for SMTP, use the 'notify_entity_smtp' option.",
         "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
+        "editor.helpers.notify_on_change"               : "Sends a notification via the configured notify entity whenever an item is added, edited, or removed.",
+        "editor.helpers.notify_on_change_all"           : "Sends also the entire list with each notification, rather than just the changed item.",
+        "editor.helpers.notify_on_change_time"          : "Defines (in seconds) how long to wait before sending a notification (entire list). This is useful when multiple changes are made in a short time to avoid sending too many notifications. Enter '0' (zero) to disable this feature.",
+        "editor.helpers.notify_entity_smtp"             : "Name of the SMTP notify platform (from configuration.yaml) used for sending HTML email notifications. Important: Only the name of the notify platform you set as 'name: myName' is meant here, e.g. 'email_notification', not the full entity like 'notify.email_notification'.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
         "editor.helpers.category.options"               : "Here you can configure categories used in the shopping and to-do list. You can define local categories (here in the card) or load a text file with global categories. For more information on the structure of the categories, please refer to the documentation.",
         "editor.helpers.export.options"                 : "Here you can configure the export options.",
-        "editor.helpers.message.options"                : "Here you can configure how the message system works and which notify entity is used to send the list.",
+        "editor.helpers.message.options"                : "Here you can configure how the message system works and which notify entity is used to send the list. The notification system only works in 'Shopping List' mode.",
         "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
         "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
         "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
@@ -750,6 +768,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._notifyOnChangeEna     = (config.notify_on_change === true) ? true : false;
         this._notifyOnChangeAll     = (config.notify_on_change_all === true) ? true : false;
         this._sendMessageDelay      = config.notify_on_change_time || 0;
+        this._notifyEntitySMTP      = config.notify_entity_smtp || "";
         debugMode                   = (config.debug_mode === true) ? true : false;
         
         const allowedModes = [
@@ -820,6 +839,7 @@ class HaShoppingListImproved extends HTMLElement {
             this._showQuantitySelection = false;
             this._showExportButton      = false;
             this._showExportButtonPdf   = false;
+            this._showMessageButton     = false;
             //this._showClearButton       = false;
         }
 
@@ -1418,6 +1438,14 @@ class HaShoppingListImproved extends HTMLElement {
                             }
                         }
                     },
+
+                    {
+                        name: "notify_entity_smtp",
+                        required: false,
+                        selector: { text: {} },
+                    },
+
+
                     { name: "notify_on_change", selector: { boolean: {} }, default: false },
                     { name: "notify_on_change_all", selector: { boolean: {} }, default: false },
                     {
@@ -1425,6 +1453,10 @@ class HaShoppingListImproved extends HTMLElement {
                         selector: { number: { min: 0, max: 300, step: 1 } },
                         default: 0
                     },
+
+
+
+
                 ]
             }
             ],
@@ -1900,7 +1932,7 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
         if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
         if (this._showAdminButton)     this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
-        if (this._showMessageButton)   this._shadow.getElementById('msgBtn').addEventListener('click', () => this._sendMessage());
+        if (this._showMessageButton)   this._shadow.getElementById('msgBtn').addEventListener('click', () => this._notifyButtonPressed());
 
         this._listEl             = this._shadow.getElementById('list');
         this._historyEl          = this._shadow.getElementById('history');
@@ -5916,6 +5948,14 @@ if (!this._historyEl) {
         try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){} 
     }
 
+    async _notifyButtonPressed(){
+        if (this._mode !== "shopping") return; // not in ToDo Mode
+        if ((!this._notifyEntity || !this._notifyEntity.trim()) && (!this._notifyEntitySMTP || !this._notifyEntitySMTP.trim())) {
+            return;
+        }
+        await this._sendMessage();
+        this.confirmPopup(translate("ui.message.sent"), true);
+    }
 
     async _notifyOnChange(info = ""){
         if (this._notifyOnChangeEna !== true) return;
@@ -5930,14 +5970,14 @@ if (!this._historyEl) {
 
     async _sendMessage(info = ""){
         if (!this._hass || !this._hass.connection) return;
-        if (!this._notifyEntity || !this._notifyEntity.trim()) return;
+
+        if ((!this._notifyEntity || !this._notifyEntity.trim()) && (!this._notifyEntitySMTP || !this._notifyEntitySMTP.trim())) {
+            return;
+        }
+
         if (this._mode !== "shopping") return; // not in ToDo Mode
 
         // generate the message
-        // options for - only changes or complete list
-        // option for title or entity name
-        // option for html --> parse_mode muss html beim bot sein
-        // option send only every 60 seconds (store the timestamp of last send in a variable) set current time + 60 secs and if > send it
         let message = "";
         if (info && info.trim()) {
             message += `${info.trim()}`;
@@ -5946,26 +5986,45 @@ if (!this._historyEl) {
         const stateObj = this._hass.states[this._entity];
         const name = stateObj?.attributes?.friendly_name;
 
-if (this._notifyOnChangeAll && info && info.trim()){
-    message = `${info.trim()}\n${this._messageCache}`;
-} else if (info && info.trim()){
-    message = `${info.trim()}`;
-} else {
-    message = this._messageCache;
-}
+        if (this._notifyOnChangeAll && info && info.trim()){
+            message = `${info.trim()}\n${this._messageCache}`;
+        } else if (info && info.trim()){
+            message = `${info.trim()}`;
+        } else {
+            message = this._messageCache;
+        }
         
-        await this._hass.connection.sendMessagePromise({
-            type: "call_service",
-            domain: "notify",
-            service: "send_message",
-            target: {
-                entity_id: this._notifyEntity
-            },
-            service_data: {
-                title: name,
-                message: message
-            }
-        });
+        // Standard Notification via 'real' notify 'send_message' service
+        if (this._notifyEntity && this._notifyEntity.trim()) {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "notify",
+                service: "send_message",
+                target: {
+                    entity_id: this._notifyEntity
+                },
+                service_data: {
+                    title: name,
+                    message: message
+                }
+            });
+        }
+
+        //SMTP HTML Notification via custom notify service
+        if (this._notifyEntitySMTP && this._notifyEntitySMTP.trim()) {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "notify",
+                service: this._notifyEntitySMTP, //"email_notification", 
+                service_data: {
+                    title: name,
+                    message: "You have to enable HTML view",
+                    data: {
+                        html: message.replace(/\n/g, "<br>")
+                    }
+                }
+            });
+        }
     }
 
     _addToHistory(name){
