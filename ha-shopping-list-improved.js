@@ -1806,7 +1806,7 @@ async _loadLocalEANFromFile() {
         let itemsToRender = [...this._items];
         const ack = this._config?.acknowledged;
 
-        itemsToRender = itemsToRender.filter(i => i.name && i.name.includes(_inputEl.value.trim()));
+        itemsToRender = itemsToRender.filter(i => i.name && i.name.includes(this._inputEl.value.trim()));
 
         if (ack === 'hide') {
             itemsToRender = itemsToRender.filter(i => !i.complete);
