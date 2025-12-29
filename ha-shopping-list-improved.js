@@ -1371,7 +1371,18 @@ async _loadLocalEANFromFile() {
         this._shadow.appendChild(style);
 
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
-        this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
+        this._shadow.getElementById('itemInput').addEventListener('keydown', (e) => { 
+            if (e.key === 'Enter') {
+                this._onAdd(); 
+            }
+        });
+        this._shadow.getElementById('itemInput').addEventListener('input', (e) => { 
+            this._renderList();
+            if(e.target.value.length > 0){
+                //Girlfriend Mode: first letter uppercase - She wanted it that way :-)
+                e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
+            }
+        });
         if (this._showClearButton)     this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
@@ -1806,7 +1817,9 @@ async _loadLocalEANFromFile() {
         let itemsToRender = [...this._items];
         const ack = this._config?.acknowledged;
 
-        itemsToRender = itemsToRender.filter(i => i.name && i.name.includes(this._inputEl.value.trim()));
+        if(this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
+            itemsToRender = itemsToRender.filter(i => i.name && i.name.trim().toLowerCase().includes(this._inputEl.value.trim().toLowerCase()));
+        }
 
         if (ack === 'hide') {
             itemsToRender = itemsToRender.filter(i => !i.complete);
