@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0-BETA-8";
+const version = "2.2.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -124,6 +124,10 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_change_all"            : "Immer die komplette Liste schicken",
         "editor.labels.notify_on_change_time"           : "Zeit bevor eine Benachrichtigung verschickt wird",
         "editor.labels.notify_entity_smtp"              : "Name des SMTP-Notify-Eintrags",
+        "editor.labels.notify_on_done"                  : "Benachrichtigung auch beim 'als erledigt' markieren",
+        "editor.labels.show_category_chips"             : "Chips aus Kategorie-Items generieren",
+        "editor.labels.allow_filter"                    : "Filterung der Artikel erlauben",
+        "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -263,6 +267,10 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_change_all"           : "Standardmäßig wird nur der hinzugefügte, bearbeitete oder entfernte Artikel in der Benachrichtigung erwähnt. Wenn diese Option aktiviert ist, wird zusätzlich die komplette Liste gesendet.",
         "editor.helpers.notify_on_change_time"          : "Legt fest (in Sekunden), wie lange gewartet wird, bevor eine Benachrichtigung (komplette Liste) gesendet wird. Dies ist nützlich, wenn mehrere Änderungen in kurzer Zeit vorgenommen werden, um zu vermeiden, dass zu viele Benachrichtigungen gesendet werden. Um diese Funktion zu deaktivieren '0' (Null) eingeben.",
         "editor.helpers.notify_entity_smtp"             : "Name der SMTP-Notify-Plattform (aus der configuration.yaml), die für den Versand von HTML-E-Mail-Benachrichtigungen genutzt wird. Wichtig: Hier ist nur der Name der Notify-Plattform gemeint den ihr als 'name: meinName' angegeben habt, z.B. 'email_notification', nicht die vollständige Entität wie 'notify.email_notification'.",
+        "editor.helpers.notify_on_done"                 : "Sendet auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wurde. Achtung, dies kann zu vielen Benachrichtigungen führen, wenn viele Artikel während des Einkaufs als erledigt markiert werden.",
+        "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
+        "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld.",
+        "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
@@ -435,6 +443,10 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_change_all"            : "Send always full list",
         "editor.labels.notify_on_change_time"           : "Time before sending notifications",
         "editor.labels.notify_entity_smtp"              : "Name of your SMTP-Notify-Entity",
+        "editor.labels.notify_on_done"                  : "Notify also when item is marked as done",
+        "editor.labels.show_category_chips"             : "Generate chips from categorie items",
+        "editor.labels.allow_filter"                    : "Allow filtering items",
+        "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -573,6 +585,10 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_change_all"           : "Sends also the entire list with each notification, rather than just the changed item.",
         "editor.helpers.notify_on_change_time"          : "Defines (in seconds) how long to wait before sending a notification (entire list). This is useful when multiple changes are made in a short time to avoid sending too many notifications. Enter '0' (zero) to disable this feature.",
         "editor.helpers.notify_entity_smtp"             : "Name of the SMTP notify platform (from configuration.yaml) used for sending HTML email notifications. Important: Only the name of the notify platform you set as 'name: myName' is meant here, e.g. 'email_notification', not the full entity like 'notify.email_notification'.",
+        "editor.helpers.notify_on_done"                 : "Also sends a notification when an item is marked as completed. Note: This may result in a large number of notifications if many items are marked as completed during shopping.",
+        "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
+        "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field.",
+        "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
@@ -767,8 +783,12 @@ class HaShoppingListImproved extends HTMLElement {
         this._notifyEntity          = config.notify_entity || "";
         this._notifyOnChangeEna     = (config.notify_on_change === true) ? true : false;
         this._notifyOnChangeAll     = (config.notify_on_change_all === true) ? true : false;
+        this._notifyOnDone          = (config.notify_on_done === true) ? true : false;
         this._sendMessageDelay      = config.notify_on_change_time || 0;
         this._notifyEntitySMTP      = config.notify_entity_smtp || "";
+        this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
+        this._allowFilter           = (config.allow_filter === true) ? true : false;
+        this._capitalizeFirst       = (config.capitalize_first_letter === true) ? true : false;
         debugMode                   = (config.debug_mode === true) ? true : false;
         
         const allowedModes = [
@@ -1126,6 +1146,8 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "show_plus_minus", selector: { boolean: {} }, default: true },
                     { name: "show_quantity_one", selector: { boolean: {} }, default: false },
+                    { name: "allow_filter", selector: { boolean: {} }, default: false },
+                    { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
                     {
                         name: "ean_file",
                         selector: { text: {} },
@@ -1216,6 +1238,7 @@ class HaShoppingListImproved extends HTMLElement {
                         },
                         default: "combined"
                     },
+                    { name: "show_category_chips", selector: { boolean: {} }, default: false },
                     { name: "chips",           selector: { text: {} }, default: "" },
                     { name: "highlight_words", selector: { text: {} }, default: "" },
                     { name: "chips_with_cat_color", selector: { boolean: {} }, default: true },
@@ -1445,6 +1468,7 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "notify_on_change", selector: { boolean: {} }, default: false },
                     { name: "notify_on_change_all", selector: { boolean: {} }, default: false },
+                    { name: "notify_on_done", selector: { boolean: {} }, default: false },
                     {
                         name: "notify_on_change_time",
                         selector: { number: { min: 0, max: 300, step: 1 } },
@@ -1853,6 +1877,27 @@ class HaShoppingListImproved extends HTMLElement {
             .collapsed .content {
                 display: none;
             }
+
+            .category-chip {
+                background: ${this._chipColor};
+                color: var(--primary-text-color);
+                padding: 6px 8px;
+                border-radius: 9px;
+                cursor: pointer;
+                transition: background 0.3s;
+                text-align: center;
+                font-size: ${this._chipFontSize}px;
+            }
+
+            .category-items {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                background: ${this._chipColor};
+                padding: 6px 8px;
+                border-radius: 9px;
+                transition: background 0.3s;
+            }
         `;
 
         this._shadow.innerHTML = `
@@ -1918,6 +1963,12 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
+        this._shadow.getElementById('itemInput').addEventListener('input', (e) => { 
+            if (this._allowFilter) this._renderList(); // to apply the filter while typing
+            if (this._capitalizeFirst && e.target.value.length > 0) {
+                e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
+            }
+        });
         if (this._showClearButton)     this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
@@ -2933,6 +2984,12 @@ async _adminOptions() {
         // acknowledged-Filter
         let itemsToRender = [...this._items];
         const ack = this._config?.acknowledged;
+
+        // Filter list while typing
+        if(this._allowFilter && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
+            itemsToRender = itemsToRender.filter(i => i.name && i.name.trim().toLowerCase().includes(this._inputEl.value.trim().toLowerCase()));
+        }
+
         if (ack === 'hide') {
             itemsToRender = itemsToRender.filter(i => !i.complete);
         } else if (ack === 'end') {
@@ -5087,7 +5144,7 @@ async _adminOptions() {
 
             await this._hass.connection.sendMessagePromise(msg);
             await this._refresh();
-            await this._notifyOnChange();
+            if(this._notifyOnDone) await this._notifyOnChange();
         } catch (err) {
             console.error("[ha-shopping-list-improved] Toggle complete failed", err);
         }
@@ -5250,10 +5307,11 @@ async _adminOptions() {
 
 	_renderHistory() {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderHistory() called");
-if (!this._historyEl) {
-    console.warn("[ha-shopping-list-improved] _historyEl NOT found");
-    return;
-}
+        if (!this._historyEl) {
+            console.warn("[ha-shopping-list-improved] _historyEl NOT found");
+            return;
+        }
+
         // collapable by title click
         const storageKey = this._entity + "_collapsed";
         const stored = localStorage.getItem(storageKey);
@@ -5426,6 +5484,98 @@ if (!this._historyEl) {
 
 			this._historyEl.appendChild(chip);
 		});
+
+        // Add Chips from Category
+        const hideConfiguredChips = false;        // to hide category chips if already in history or dishes --> not used at the moment
+        const allowDuplicateCategoryChips = true; // categories can show same items independently           --> not used at the moment
+
+        if (this._showCategoryChips && Array.isArray(this._categories)) {
+            let existingChips;
+            if (hideConfiguredChips) {
+                existingChips = new Set(
+                    [...combined /* from history/dishes */, ...(this._dishes || []).map(d => d.name)]
+                        .map(c => c.toLowerCase())
+                );
+            }
+
+            this._categories.forEach(category => {
+                if (!Array.isArray(category.items)) return;
+                if(category.isDynamic) return; // skip dynamic categories
+                if (category.items.length === 0) return;
+
+                const categoryChip = document.createElement('div');
+                categoryChip.className = 'category-chip';
+                categoryChip.textContent = category.name || "(no category)";
+                categoryChip.style.background = category.bgcolor || this._chipColor;
+
+                const storageKey = this._entity + "_category_collapsed_" + (category.name || "default");
+                const storedValue = localStorage.getItem(storageKey);
+                const isCollapsed = storedValue === null || storedValue === "true";
+
+                // Container for Item-Chips
+                const content = document.createElement('div');
+                content.className = 'category-items';
+                content.style.display = isCollapsed ? 'none' : 'flex';
+
+                // Click on Category-Chip to toggle
+                categoryChip.addEventListener('click', () => {
+                    if (content.style.display === 'none') {
+                        content.style.display = 'flex';
+                        localStorage.setItem(storageKey, "false");
+                    } else {
+                        content.style.display = 'none';
+                        localStorage.setItem(storageKey, "true");
+                    }
+                });
+
+                // Sort Items A --> Z
+                const sortedItems = [...category.items].sort((a, b) =>
+                    a.localeCompare(b, undefined, { sensitivity: 'base' })
+                );
+
+                sortedItems.forEach(itemText => {
+                    if (!itemText || typeof itemText !== "string") return;
+
+                    // Hide configured chips
+                    if (hideConfiguredChips && existingChips && existingChips.has(itemText.toLowerCase())) {
+                        return;
+                    }
+
+                    if (!allowDuplicateCategoryChips) {
+                        if (!existingChips) existingChips = new Set();
+                        if (existingChips.has(itemText.toLowerCase())) return;
+                        existingChips.add(itemText.toLowerCase());
+                    }
+
+                    if (this._chipPosition === 'none') return;
+
+                    // Item as inline Chip (Span)
+                    const chip = document.createElement('span');
+                    chip.className = 'chip';
+                    chip.textContent = itemText;
+
+                    if (category.bgcolor && this._chipsWithCatColor) {
+                        chip.style.background = category.bgcolor;
+                        chip.title = `${translate("editor.labels.category")}: ${category.name}`;
+                    } else {
+                        chip.style.background = this._chipColor;
+                    }
+
+                    const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
+                    chip.addEventListener(clickEvent, async () => {
+                        if (this._addingBusy) return;
+                        this._inputEl.value = itemText.trim();
+                        this._qtyEl.value = '';
+                        await this._onAdd();
+                    });
+
+                    content.appendChild(chip);
+                });
+
+                this._historyEl.appendChild(categoryChip);
+                this._historyEl.appendChild(content);
+            });
+        }
 	}
 
     async _removeHistoryItem(name){
