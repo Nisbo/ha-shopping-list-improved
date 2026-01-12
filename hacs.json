@@ -1,6 +1,5 @@
 {
   "name": "Improved Shopping List Card",
-  "url": "https://github.com/Nisbo/ha-shopping-list-improved",
   "content_in_root": true,
   "filename": "ha-shopping-list-improved.js",
   "render_readme": true,
