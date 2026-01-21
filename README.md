@@ -3,6 +3,8 @@
 
 > ⚠️  ### Screenshots and Features are still from 2.1.0
 
+### The card is now also available in HACS, search for `Improved Shopping List Card` or use the link below to add it as a custom repository. 
+
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
 
