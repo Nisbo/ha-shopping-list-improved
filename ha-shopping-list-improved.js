@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.3.0-BETA-6";
+const version = "2.3.0-BETA-7";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -130,6 +130,7 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_done"                  : "Benachrichtigung auch beim 'als erledigt' markieren",
         "editor.labels.show_category_chips"             : "Chips aus Kategorie-Items generieren",
         "editor.labels.allow_filter"                    : "Filterung der Artikel erlauben",
+        "editor.labels.allow_suggestions"               : "Vorschläge anzeigen",
         "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
         "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         
@@ -280,6 +281,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Sendet auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wurde. Achtung, dies kann zu vielen Benachrichtigungen führen, wenn viele Artikel während des Einkaufs als erledigt markiert werden.",
         "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
         "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld.",
+        "editor.helpers.allow_suggestions"              : "Zeigt Vorschläge unter dem Eingabefeld an, wenn die Eingabe mit einem, einer Kategorie zugeordneten Artikel, übereinstimmt. Ein Klick auf den Vorschlag fügt diesen zur Liste hinzu. Alternativ kann man auch mit den Pfeiltasten durch die Vorschläge navigieren und mit Enter bestätigen.",
         "editor.helpers.show_done_hidden_items_in_search": "Wenn die Filterfunktion aktiviert ist, werden auch erledigte (verborgene) Artikel in den Suchergebnissen angezeigt.",
         "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
@@ -463,6 +465,7 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_done"                  : "Notify also when item is marked as done",
         "editor.labels.show_category_chips"             : "Generate chips from categorie items",
         "editor.labels.allow_filter"                    : "Allow filtering items",
+        "editor.labels.allow_suggestions"               : "Allow suggestions",
         "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
         "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
 
@@ -612,6 +615,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Also sends a notification when an item is marked as completed. Note: This may result in a large number of notifications if many items are marked as completed during shopping.",
         "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
         "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field.",
+        "editor.helpers.allow_suggestions"              : "Shows suggestions below the input field when the entered text matches an item assigned to a category. Clicking a suggestion adds it to the list. Alternatively, you can navigate through the suggestions using the arrow keys and confirm with Enter.",
         "editor.helpers.show_done_hidden_items_in_search": "When filtering items in the list, this option ensures that completed (and hidden) items are also included in the search results.",
         "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
@@ -818,6 +822,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
         this._allowFilter           = (config.allow_filter === true) ? true : false;
         this._allowFilterChips      = (config.allow_filter_chips === true) ? true : false;
+        this._allowSuggestions      = (config.allow_suggestions === true) ? true : false;
         this._capitalizeFirst       = (config.capitalize_first_letter === true) ? true : false;
         this._sortItems             = (config.sort_items === false) ? false : true;
         this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true) ? true : false;
@@ -1198,6 +1203,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_plus_minus", selector: { boolean: {} }, default: true },
                     { name: "show_quantity_one", selector: { boolean: {} }, default: false },
                     { name: "allow_filter", selector: { boolean: {} }, default: false },
+                    { name: "allow_suggestions", selector: { boolean: {} }, default: false },
                     { name: "show_done_hidden_items_in_search", selector: { boolean: {} }, default: true },
                     { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
                     {
@@ -1742,7 +1748,17 @@ class HaShoppingListImproved extends HTMLElement {
         style.textContent = `
             :host { font-family: var(--font-family, Roboto, Noto, sans-serif); display:block; }
             .card { background: var(--card-background-color, var(--ha-card-background, #1c1c1c)); color: var(--primary-text-color); padding: 12px; border-radius: 8px; box-shadow: var(--ha-card-box-shadow); }
-            .input-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+            /* .input-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; } */
+            .input-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; position:relative; }
+
+            /* Suggestions */
+            .suggestions-container { width:100%; max-height:200px; overflow-y:auto; background:var(--card-background-color, #fff); border:1px solid var(--divider-color, #e0e0e0); border-radius:0 0 8px 8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:none; }
+            .suggestions-container.visible { display:block; }
+            .suggestion-item { padding:8px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid var(--divider-color, #f0f0f0); color:var(--primary-text-color, #333); }
+            .suggestion-item:last-child { border-bottom:none; }
+            .suggestion-item:hover, .suggestion-item.active { background:var(--primary-color, #03a9f4); color:#fff; }
+            .suggestion-item .suggestion-category { font-size:11px; opacity:0.7; margin-left:8px; }
+
             input[type="text"]{ flex:1; padding:8px; border-radius:4px; border:1px solid var(--divider-color);} 
             select { padding:6px; border-radius:4px; }
             .quantityselect { padding:8px; border-radius:4px; border:1px solid var(--divider-color); width:40px; }
@@ -1990,6 +2006,7 @@ class HaShoppingListImproved extends HTMLElement {
                             height: 24px;
                             vertical-align: middle;
                         "></ha-icon>
+                        <div id="suggestions" class="suggestions-container"></div>
                     </div>
                     <div id="subText" class="small">
                         ${this._subText }
@@ -2016,6 +2033,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._shadow.appendChild(style);
 
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
+
+/*
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
         this._shadow.getElementById('itemInput').addEventListener('input', (e) => { 
             if (this._allowFilter) {
@@ -2028,6 +2047,42 @@ class HaShoppingListImproved extends HTMLElement {
                 e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
             }
         });
+*/
+
+        this._shadow.getElementById('itemInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const activeSuggestion = this._shadow.querySelector('.suggestion-item.active');
+                if (activeSuggestion) {
+                    e.preventDefault();
+                    activeSuggestion.click();
+                } else {
+                    this._hideSuggestions();
+                    this._onAdd();
+                }
+            } else if (e.key === 'Escape') {
+                this._hideSuggestions();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                this._navigateSuggestions(e.key === 'ArrowDown' ? 1 : -1);
+            }
+        });
+        this._shadow.getElementById('itemInput').addEventListener('input', (e) => {
+            if (this._allowFilter) {
+                this._renderList(); // to apply the filter while typing
+            }
+            if (this._allowFilterChips) {
+                this._renderHistory(); // to search in chips as well
+            }
+            if (this._capitalizeFirst && e.target.value.length > 0) {
+                e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
+            }
+            if(this._allowSuggestions) this._updateSuggestions(e.target.value);
+        });
+        this._shadow.getElementById('itemInput').addEventListener('blur', () => {
+            // Delay to allow click on suggestion to fire first
+            setTimeout(() => this._hideSuggestions(), 150);
+        });
+
         if (this._showClearButton)     this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
@@ -2041,6 +2096,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._historyEl          = this._shadow.getElementById('history');
         this._inputEl            = this._shadow.getElementById('itemInput');
         this._qtyEl              = this._shadow.getElementById('quantitySelect');
+        this._suggestionsEl      = this._shadow.getElementById('suggestions');
         this._titleAlert         = this._shadow.getElementById('titlealert');
         this._titleAlertDesc     = this._shadow.getElementById('titlealertdesc');
         this._titleAlertDescIcon = this._shadow.getElementById('titleicondesc');
@@ -4660,6 +4716,97 @@ async _adminOptions() {
         }
     }
 
+    // ── Search Suggestions (based on category items) ──
+
+    _removeDiacritics(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    _getAllCategoryItems() {
+        const categories = Array.isArray(this._categories) ? this._categories : [];
+        const items = [];
+        for (const cat of categories) {
+            if (Array.isArray(cat.items)) {
+                for (const item of cat.items) {
+                    items.push({ name: item, category: cat.name });
+                }
+            }
+        }
+        return items;
+    }
+
+    _updateSuggestions(query) {
+        if (!this._suggestionsEl) return;
+        const trimmed = query.trim();
+        if (trimmed.length < 2) {
+            this._hideSuggestions();
+            return;
+        }
+
+        const allItems = this._getAllCategoryItems();
+        const searchWords = this._removeDiacritics(trimmed.toLowerCase()).split(/\s+/).filter(w => w.length > 0);
+        const matches = allItems.filter(item => {
+            const normalized = this._removeDiacritics(item.name.toLowerCase());
+            return searchWords.every(word => normalized.includes(word));
+        });
+
+        if (matches.length === 0) {
+            this._hideSuggestions();
+            return;
+        }
+
+        // Limit to 15 suggestions to keep it manageable
+        const limited = matches.slice(0, 15);
+        this._suggestionsEl.innerHTML = '';
+        for (const match of limited) {
+            const div = document.createElement('div');
+            div.classList.add('suggestion-item');
+            div.innerHTML = `${match.name}<span class="suggestion-category">${match.category}</span>`;
+
+            // avoid blur before click, which would hide the suggestions before the click event fires
+            div.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+            });
+
+            // click event on div to select suggestion
+            div.addEventListener('click', () => {
+                this._selectSuggestion(match.name);
+            });
+
+            this._suggestionsEl.appendChild(div);
+        }
+        this._suggestionsEl.classList.add('visible');
+    }
+
+    _selectSuggestion(name) {
+        this._inputEl.value = name;
+        this._hideSuggestions();
+        this._onAdd();
+    }
+
+    _hideSuggestions() {
+        if (this._suggestionsEl) {
+            this._suggestionsEl.classList.remove('visible');
+            this._suggestionsEl.innerHTML = '';
+        }
+    }
+
+    _navigateSuggestions(direction) {
+        if (!this._suggestionsEl || !this._suggestionsEl.classList.contains('visible')) return;
+        const items = this._suggestionsEl.querySelectorAll('.suggestion-item');
+        if (items.length === 0) return;
+
+        let activeIndex = -1;
+        items.forEach((item, i) => { if (item.classList.contains('active')) activeIndex = i; });
+
+        if (activeIndex >= 0) items[activeIndex].classList.remove('active');
+        let newIndex = activeIndex + direction;
+        if (newIndex < 0) newIndex = items.length - 1;
+        if (newIndex >= items.length) newIndex = 0;
+        items[newIndex].classList.add('active');
+        items[newIndex].scrollIntoView({ block: 'nearest' });
+    }
+
     // add new item
     async _onAdd() {
         if (this._addingBusy) {
@@ -4869,6 +5016,7 @@ async _adminOptions() {
 			this._addToHistory(inputName);
 			this._inputEl.value = '';
 			this._qtyEl.value = '';
+            this._hideSuggestions();
 			await this._refresh();
             await this._notifyOnChange(`${msgTask}: ${msgNameOnly} (${msgQty})`);
         } finally {
