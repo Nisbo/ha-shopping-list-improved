@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.3.0-BETA-7";
+const version = "2.3.0-BETA-8";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -218,6 +218,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_merge"                      : "Chips kombinieren",
         "editor.labels.local_chips"                     : "Lokale Chips erlauben?",
         "editor.labels.chip_font_size"                  : "Schriftgröße der Chips (px)",
+        "editor.labels.own_css"                         : "Eigenes CSS Code",
         "editor.labels.chip_color"                      : "Farbe der Lokalen (Browser) Chips",
 		"editor.labels.chip_color_global"               : "Farbe der Globalen (Textdatei) Chips",
         "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
@@ -304,6 +305,7 @@ const TRANSLATIONS = {
 		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. Standard: 16px.",
         "editor.helpers.title_font_size"                : "Legt die Schriftgröße für den Titel fest. Standard: 16px.",
         "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
+        "editor.helpers.own_css"                        : "Hier kannst du eigenen CSS Code eingeben, um die Karte individuell anzupassen. Beispiel: '.card { background: transparent;}'. Für Mehrzeilige CSS Eingaben, verwende in der ersten Zeile das Pipe Symbol '|' ohne weiteren Code. Wenn Du den CSS Code nur in eine Zeile schreiben möchtest, verwende die doppelten \"Anführungszeichen\" vor und nach dem Code. Achtung: Falscher CSS Code kann dazu führen, dass die Karte nicht mehr korrekt angezeigt wird.",
         "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
 		"editor.helpers.chip_color_global"              : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
         "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
@@ -552,6 +554,7 @@ const TRANSLATIONS = {
         "editor.labels.chip_merge"                      : "Combine chips",
         "editor.labels.local_chips"                     : "Allow local chips?",
         "editor.labels.chip_font_size"                  : "Chip font size (px)",
+        "editor.labels.own_css"                         : "Own CSS Code",
         "editor.labels.chip_color"                      : "Color of local (browser) chips",
 		"editor.labels.chip_color_global"               : "Color of global (text file) chips",
         "editor.labels.chip_color_default"              : "Color of standard chips",
@@ -639,6 +642,7 @@ const TRANSLATIONS = {
         "editor.helpers.title_font_size"                : "Sets the font size for the title. Default: 16px.",
 		"editor.helpers.cat_font_size"                  : "Sets the font size for categories in the list. Default: 16px.",
 		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
+        "editor.helpers.own_css"                        : "Here you can enter your own CSS code to customize the card. Example: '.card { background: transparent; }'. For multi-line CSS, use the pipe symbol '|' on the first line without any additional code. If you prefer to write the CSS in a single line, use double \"quotes\" before and after the code. Warning: Invalid CSS may cause the card to display incorrectly.",
 		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_global"              : "Hex or rgba color code for global (text file) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
@@ -828,6 +832,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true) ? true : false;
         this._showDoneItemsInSearch = (config.show_done_hidden_items_in_search === false) ? false : true;
         this._acknowledgeDeletion   = (config.acknowledge_deletion === false) ? false : true;
+        this._ownCss                = (config.own_css || "").toString();
         debugMode                   = (config.debug_mode === false) ? false : true;
         
         const allowedModes = [
@@ -1481,6 +1486,18 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "chip_color_dish",
                         selector: { text: {} },
                         default: "rgba(100,100,100,0.3)"
+                    },
+                    {
+                        name: "own_css",
+                        required: false,
+                        selector: {
+                            object: {
+                                properties: {
+                                    "category2": { type: "string", name: "Only a placeholder" },
+                                    "items2": { type: "text", name: "to let HA fall back to yaml mode" }
+                                }
+                            }
+                        }
                     }
                 ]
             },
@@ -1672,6 +1689,7 @@ class HaShoppingListImproved extends HTMLElement {
                 items: [],
                 icon: null,
                 bgcolor: null,
+                color: null,
                 isDynamic: true
             });
 
@@ -1703,6 +1721,7 @@ class HaShoppingListImproved extends HTMLElement {
             const items = Array.isArray(cat.items) ? cat.items : [];
             const icon = cat.icon || null;        // optional Icon
             const bgcolor = cat.bgcolor || null;  // optional bgcolor
+            const color = cat.color || null;      // optional font color
             const isDynamic = false;
 
             if(debugMode) console.log(`Category ${name}: ${items.length ? items.join(", ") : "(empty)"}, icon: ${icon}, bgcolor: ${bgcolor}`);
@@ -1712,7 +1731,8 @@ class HaShoppingListImproved extends HTMLElement {
                 items,
                 icon,
                 isDynamic,
-                bgcolor
+                bgcolor,
+                color
             });
         }
         if(debugMode) console.debug(`Categories builded: `, categories);
@@ -1968,6 +1988,8 @@ class HaShoppingListImproved extends HTMLElement {
                 border-radius: 9px;
                 transition: background 0.3s;
             }
+
+            ${this._ownCss}
         `;
 
         this._shadow.innerHTML = `
@@ -3446,6 +3468,7 @@ async _adminOptions() {
                     iconEl.style.alignItems = 'center';
                     iconEl.style.justifyContent = 'center';
                     iconEl.style.flexShrink = '0';
+                    if (cat.color) iconEl.style.color = cat.color;
 
                     container.appendChild(iconEl);
                 }
@@ -3461,6 +3484,7 @@ async _adminOptions() {
 
                 const nameDiv = document.createElement('div');
                 nameDiv.textContent = cat.name;
+                if (cat.color) nameDiv.style.color = cat.color;
 
                 firstRow.appendChild(nameDiv);
 
@@ -3473,6 +3497,7 @@ async _adminOptions() {
                     }
                     doneDiv.style.marginLeft = '8px';
                     doneDiv.style.whiteSpace = 'nowrap';
+                    if (cat.color) doneDiv.style.color = cat.color;
                     firstRow.appendChild(doneDiv);
                 }
 
@@ -3757,7 +3782,7 @@ async _adminOptions() {
 
             let selectedCategory = currentCategory;
 
-            function createStyledChip(label, isSelected, bgColor, icon, onClick) {
+            function createStyledChip(label, isSelected, bgColor, color, icon, onClick) {
                 // Wrapper for Chip + Underline
                 const chipWrapper = document.createElement('div');
                 chipWrapper.style.display = 'flex';
@@ -3775,7 +3800,7 @@ async _adminOptions() {
                 chip.style.fontSize = '13px';
                 chip.style.border = '1px solid var(--divider-color, #ccc)';
                 chip.style.background = bgColor || 'var(--secondary-background-color)';
-                chip.style.color = 'var(--primary-text-color)';
+                chip.style.color = color || 'var(--primary-text-color)';
                 chip.style.gap = '6px';
                 chip.style.lineHeight = '1.2';
                 chip.style.minHeight = '24px';
@@ -3803,7 +3828,7 @@ async _adminOptions() {
                 if (isSelected) {
                     chip.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.4)';
                     chip.style.transform = 'translateY(1px)';
-                    chip.style.color = 'white';
+                    chip.style.color = color || 'white';
                 }
 
                 // Unterlinie
@@ -3832,6 +3857,7 @@ async _adminOptions() {
                 translate("ui.common.no_cat"),
                 selectedCategory === "none",
                 'var(--secondary-background-color)',
+                null,
                 null,
                 (wrapperEl) => {
                     selectedCategory = "none";
@@ -3871,6 +3897,7 @@ async _adminOptions() {
                         cat.name,
                         cat.name === selectedCategory,
                         cat.bgcolor,
+                        cat.color,
                         cat.icon,
                         (wrapperEl) => {
                             // reset all chips
@@ -5644,13 +5671,15 @@ async _adminOptions() {
                 //console.info("[ha-shopping-list-improved] chipText:", chipText);
             }
 
-            // check if chip is assigned to a category
+            // check if chip is assigned to a category with background color
             const catWithBg = this._categories?.find(
                 c => c.bgcolor && c.items?.some(item => item.toLowerCase() === chipText.toLowerCase())
             );
 
+
+
 			// Color Priority: Highlight > Category > Global > Standard > Local
-			 if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
+			if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
 				chip.style.background = this._highlightColor;
 				chip.title = translate("editor.labels.chip_highlighted");
 			} else if (catWithBg && this._chipsWithCatColor) {
@@ -5665,6 +5694,15 @@ async _adminOptions() {
 			} else {
 				chip.style.background = this._chipColor;
 			}
+
+            // check if chip is assigned to a category with font color
+            const catWithFont = this._categories?.find(
+                c => c.color && c.items?.some(item => item.toLowerCase() === chipText.toLowerCase())
+            );
+
+            if (catWithFont && this._chipsWithCatColor) {
+                chip.style.color = catWithFont.color;
+            }
 
             // Click or Double-Click-Logic
             const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
@@ -5916,6 +5954,7 @@ async _adminOptions() {
                 categoryChip.className = 'category-chip';
                 categoryChip.textContent = category.name || "(no category)";
                 categoryChip.style.background = category.bgcolor || this._chipColor;
+                if(category.color && this._chipsWithCatColor) categoryChip.style.color = category.color;
 
                 const storageKey = this._entity + "_category_collapsed_" + (category.name || "default");
                 const storedValue = localStorage.getItem(storageKey);
@@ -5974,9 +6013,12 @@ async _adminOptions() {
 
                     if (category.bgcolor && this._chipsWithCatColor) {
                         chip.style.background = category.bgcolor;
-                        chip.title = `${translate("editor.labels.category")}: ${category.name}`;
                     } else {
                         chip.style.background = this._chipColor;
+                    }
+
+                    if (category.color && this._chipsWithCatColor) {
+                        chip.style.color = category.color;
                     }
 
                     const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
