@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.3.0-BETA-9";
+const version = "2.3.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
