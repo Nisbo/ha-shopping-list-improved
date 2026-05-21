@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.3.0-BETA-9";
+const version = "2.3.0-BETA-8";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -1622,12 +1622,7 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     disconnectedCallback() {
-       // this._stopScan();
-/* PERMISSION FIX START */
-this._stopScan().catch(err => {
-	console.error("Error during scanner cleanup:", err);
-});
-/* PERMISSION FIX END */
+        this._stopScan();
 
         if (typeof this._unsubEvents === "function") {
             try {
@@ -2808,7 +2803,7 @@ async _adminOptions() {
 			return;
 		}
 		
-		await this._stopScan();
+		this._stopScan();
 		
 		this._addingBusyQR = true;
 
@@ -2833,21 +2828,6 @@ async _adminOptions() {
 	}
 
 	async _startScan() {
-
-
-
-/* PERMISSION FIX START */
-if (this._scannerStarting || this._html5QrCodeScanner) {
-	if (debugMode) console.warn("Scanner already running or starting");
-	return;
-}
-
-this._scannerStarting = true;
-/* PERMISSION FIX END */
-
-
-
-
 		const wrapperDivId = `qr-wrapper-${this._entity}`;
 		const scannerDivId = `qr-reader-${this._entity}`;
 
@@ -2916,17 +2896,7 @@ this._scannerStarting = true;
 			closeButton = document.createElement("button");
 			closeButton.textContent = translate("ui.common.close");
 			closeButton.className = "qr-close-btn";
-			//closeButton.onclick = () => this._stopScan();
-
-
-/* PERMISSION FIX START */
-closeButton.onclick = () => {
-	this._stopScan().catch(err => {
-		console.error("Error during scanner cleanup:", err);
-	});
-};
-/* PERMISSION FIX END */  
-
+			closeButton.onclick = () => this._stopScan();
 			wrapperDiv.appendChild(closeButton);
 		}
 
@@ -2946,24 +2916,6 @@ closeButton.onclick = () => {
 			console.error("Html5QrcodeScanner class not found!");
 			return;
 		}
-
-
-
-/* PERMISSION FIX START */
-try {
-	await navigator.mediaDevices.getUserMedia({
-		video: { facingMode: "environment" }
-	});
-} catch (err) {
-	console.error("Camera permission error:", err);
-	this._scannerStarting = false;
-	return;
-}
-/* PERMISSION FIX END */
-
-
-
-
 
 		// start QR-Scanner
 		const html5QrCodeScanner = new window.Html5QrcodeScanner(scannerDivId, {fps: 10, qrbox: 250, showTorchButton: true }, false);
@@ -3000,12 +2952,7 @@ try {
         }, 100);
 
         // Observer to monitor changes ion the DOM to detect changes in the buttons
-
-/* PERMISSION FIX START */
-this._observer = new MutationObserver(() => {
-/* PERMISSION FIX END */
-
-        //const observer = new MutationObserver(() => {
+        const observer = new MutationObserver(() => {
             const scanFileSpan = document.getElementById("html5-qrcode-anchor-scan-type-change");
             if (scanFileSpan) {
                 // if "display: none" dont change to avaoid didplaying an displayed element
@@ -3055,74 +3002,13 @@ this._observer = new MutationObserver(() => {
         });
 
         // start observer for Scanner-Container
-
-/* PERMISSION FIX START */
-this._observer.observe(scannerDiv, {
-	childList: true,
-	subtree: true
-});
-/* PERMISSION FIX END */ 
-    //    observer.observe(scannerDiv, { childList: true, subtree: true });
+        observer.observe(scannerDiv, { childList: true, subtree: true });
 
 		this._html5QrCodeScanner = html5QrCodeScanner;
 		this._scannerDiv = scannerDiv;
 		this._wrapperDiv = wrapperDiv;
 	}
 
-
-/* PERMISSION FIX START */
-async _stopScan() {
-
-	if (this._stoppingScanner) {
-		return;
-	}
-
-	this._stoppingScanner = true;
-
-	if (this._observer) {
-		this._observer.disconnect();
-		this._observer = null;
-	}
-
-	if (!this._html5QrCodeScanner) {
-		this._scannerStarting = false;
-		this._stoppingScanner = false;
-		return;
-	}
-
-	try {
-
-		await this._html5QrCodeScanner.clear();
-
-		if (debugMode) {
-			console.log("QR-Scanner stopped.");
-		}
-
-	} catch (err) {
-
-		console.error(
-			"Error while stopping Html5QrcodeScanner:",
-			err
-		);
-
-	} finally {
-
-		if (this._wrapperDiv) {
-			this._wrapperDiv.remove();
-			this._wrapperDiv = null;
-		}
-
-		this._scannerDiv = null;
-		this._html5QrCodeScanner = null;
-
-		this._scannerStarting = false;
-		this._stoppingScanner = false;
-	}
-}
-/* PERMISSION FIX END */
-
-
-    /*
 	_stopScan() {
 		if (this._html5QrCodeScanner) {
 			this._html5QrCodeScanner.clear()
@@ -3142,7 +3028,6 @@ async _stopScan() {
 				});
 		}
 	}
-        */
 
     async _refresh() {
 		if (!this._hass) return;
@@ -3877,7 +3762,7 @@ async _stopScan() {
             }
 
             // Input
-            const input = document.createElement('ha-input');
+            const input = document.createElement('ha-textfield');
             input.type = 'input';
             input.value = displayName;
             input.style.width = '100%';
@@ -4040,7 +3925,7 @@ async _stopScan() {
                 });
 
             // Own Categorie in Allow Dynamic Cat Mode
-            const dynamicCategory = document.createElement('ha-input');
+            const dynamicCategory = document.createElement('ha-textfield');
             dynamicCategory.type = 'input';
             dynamicCategory.value = '';
             dynamicCategory.style.width = '100%';
@@ -4148,8 +4033,8 @@ async _stopScan() {
                 intervalRow.style.gap = '8px';
                 intervalRow.style.alignItems = 'center';
 
-                // ha-input
-                intervalInput = document.createElement('ha-input');
+                // ha-textfield
+                intervalInput = document.createElement('ha-textfield');
                 intervalInput.type = 'number';
                 intervalInput.min = '1';
                 intervalInput.value = '';
