@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "2.2.0";
+const version = "2.3.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -82,6 +82,7 @@ const TRANSLATIONS = {
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
         "editor.labels.show_message_button"             : "Nachrichten-Button anzeigen",
+        "editor.labels.show_clear_button"               : "'Erledigte löschen' Button anzeigen",
         "editor.labels.notify_entity"                   : "Notify-Entität",
         "editor.labels.add_button"                      : "Hinzufügen",
         "editor.labels.clear_button"                    : "Erledigte löschen",
@@ -100,6 +101,7 @@ const TRANSLATIONS = {
 		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
 		"editor.labels.categories"                   	: "Kategorien",
         "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
+        "editor.labels.hide_cat_count_all_done"         : "Artikelanzahl ausblenden, wenn alle erledigt ?",
         "editor.labels.show_cat_next_due"               : "Nächste Fälligkeit in Kategorie anzeigen ?",
         "editor.labels.cat_double_sized_icon"           : "Größeres Icon anzeigen ?",
         "editor.labels.show_cat_exclamation_mark"       : "Ausrufezeichen für fällige Einträge",
@@ -118,6 +120,7 @@ const TRANSLATIONS = {
         "editor.labels.item.options"                    : "Artikel",
         "editor.labels.general.options"                 : "Allgemeine Einstellungen",
         "editor.labels.input_row_position"              : "Position der Eingabemaske",
+        "editor.labels.option_row_position"             : "Position der Buttonleiste",
         "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
         "editor.labels.show_admin_button"               : "Admin-Button anzeigen",
         "editor.labels.notify_on_change"                : "Bei Änderungen benachrichtigen",
@@ -127,6 +130,8 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_done"                  : "Benachrichtigung auch beim 'als erledigt' markieren",
         "editor.labels.show_category_chips"             : "Chips aus Kategorie-Items generieren",
         "editor.labels.allow_filter"                    : "Filterung der Artikel erlauben",
+        "editor.labels.allow_suggestions"               : "Vorschläge anzeigen",
+        "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
         "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
@@ -208,10 +213,12 @@ const TRANSLATIONS = {
         "editor.helpers.mode"                           : "Legt fest, wie die Liste verwendet wird. Im Modus „Einkaufsliste“ stehen erweiterte Funktionen zur originalen Einkaufsliste zur Verfügung, jedoch ohne Fälligkeiten. Im Modus „To-Do-Liste“ können zusätzlich Fälligkeitsdaten gesetzt und verwaltet werden, die Bedienung unterscheidet sich dabei leicht. Hinweis: Die originale Home Assistant Einkaufsliste mit der Entität 'Einkaufsliste' unterstützt keine Fälligkeiten. Zusätzlich gibt es im To-Do-Modus keine Anzahleingabe, keine Plus- und Minus-Buttons, keine Export-Buttons sowie keinen Button, um erledigte Einträge zu löschen.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.chips_with_cat_color"            : "Farbe der Kategorien nutzen",
+        "editor.labels.allow_filter_chips"              : "Filterung der Chips erlauben",
         "editor.labels.highlight_color"                 : "Farbe für Hervorhebung",
         "editor.labels.chip_merge"                      : "Chips kombinieren",
         "editor.labels.local_chips"                     : "Lokale Chips erlauben?",
         "editor.labels.chip_font_size"                  : "Schriftgröße der Chips (px)",
+        "editor.labels.own_css"                         : "Eigenes CSS Code",
         "editor.labels.chip_color"                      : "Farbe der Lokalen (Browser) Chips",
 		"editor.labels.chip_color_global"               : "Farbe der Globalen (Textdatei) Chips",
         "editor.labels.chip_color_default"              : "Farbe der Standard Chips",
@@ -231,6 +238,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button"              : "HTML Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
 		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen (Nur im Modus 'Einkaufsliste')",
+        "editor.labels.acknowledge_deletion"            : "Löschbestätigung anzeigen",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
@@ -249,9 +257,11 @@ const TRANSLATIONS = {
         "editor.labels.todo_warning_thresholds"         : "Warnschwellen für ToDo-Modus",
         "editor.labels.show_title_info"                 : "Nächste Fälligkeit im ToDo-Modus anzeigen",
         "editor.labels.show_title_info_icon"            : "Icon für nächste Fälligkeit anzeigen",
+        "editor.labels.sort_items"                      : "Artikel alphabetisch sortieren",
 
         "editor.helpers.show_title_info"                : "Zeigt im ToDo-Modus, sofern ein Titel angegeben wurde, die nächste Fälligkeit aller Einträge aller Kategorien unter dem Titel an. Abgelaufene Einträge werden hier nicht angezeigt, diese werden durch ein Ausrufezeichen rechts vom Namen angezeigt.",
         "editor.helpers.show_title_info_icon"           : "Zeigt vor dem Fälligkeitsdatum als optische Hervorhebung ein Kalender-Icon an.",
+        "editor.helpers.sort_items"                     : "Sortiert die Artikel in der Liste alphabetisch (A → Z).",
         "editor.helpers.todo_warning_thresholds"        : "Konfiguration der Warnschwellen im ToDo-Modus. Die Werte sind in Minuten anzugeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
         "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
         "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
@@ -259,8 +269,10 @@ const TRANSLATIONS = {
         "editor.helpers.todo_yellow_s"                  : "Warnschwelle für fällige Aufgaben ohne Zeitangabe, definiert in Minuten (Standard: 120 = 2 Stunden)",
         "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
+        "editor.helpers.option_row_position"            : "Legt fest, ob die Buttonleiste (Export, Nachricht, Admin-Optionen) oben oder unten angezeigt wird.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
         "editor.helpers.show_message_button"            : "Zeigt im Modus 'Einkaufsliste' einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
+        "editor.helpers.show_clear_button"              : "Zeigt einen Button an, um alle als erledigt markierten Artikel aus der Liste zu entfernen.",
         "editor.helpers.notify_entity"                  : "Die Notify-Entität, die verwendet wird, um die Liste zu senden, wenn z.B. der Nachrichten-Button gedrückt wird. Beispiel: 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Die Benachrichtigungen enthalten HTML Formattierungen, um die Lesbarkeit zu verbessern. Stelle sicher, dass die verwendete Notify-Entität HTML-Formattierungen unterstützt. Benachrichtigungen über die SMTP Platform, sind in der Auswahl nicht vorhanden und müssen separat konfiguriert werden.",
         "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
         "editor.helpers.notify_on_change"               : "Sendet eine Benachrichtigung über die konfigurierte Notify-Entität, sobald ein Artikel hinzugefügt, bearbeitet oder entfernt wurde.",
@@ -270,6 +282,8 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Sendet auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wurde. Achtung, dies kann zu vielen Benachrichtigungen führen, wenn viele Artikel während des Einkaufs als erledigt markiert werden.",
         "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
         "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld.",
+        "editor.helpers.allow_suggestions"              : "Zeigt Vorschläge unter dem Eingabefeld an, wenn die Eingabe mit einem, einer Kategorie zugeordneten Artikel, übereinstimmt. Ein Klick auf den Vorschlag fügt diesen zur Liste hinzu. Alternativ kann man auch mit den Pfeiltasten durch die Vorschläge navigieren und mit Enter bestätigen.",
+        "editor.helpers.show_done_hidden_items_in_search": "Wenn die Filterfunktion aktiviert ist, werden auch erledigte (verborgene) Artikel in den Suchergebnissen angezeigt.",
         "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
@@ -284,12 +298,14 @@ const TRANSLATIONS = {
         "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet. Diese hat allerdings keine Fälligkeits-Funktion und sollte somit nur im Modus 'Einkaufsliste' und nicht im Modus 'To-Do-Liste' verwendet werden.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
         "editor.helpers.chips_with_cat_color"           : "Sofern ein Chip einer Kategorie als 'item' zugewiesen wurde und für die Kategorie eine Farbe angegeben wurde, wird der Chip in der Farbe der Kategorie angezeigt. Die Reihenfolge, wie die Farben vergeben werden: Highlight > Kategorie > Global > Standard > Browser.",
+        "editor.helpers.allow_filter_chips"             : "Ermöglicht die Filterung der Chips über das Eingabefeld.",
         "editor.helpers.highlight_color"                : "Hex- oder rgba-Farbcode für die hervorgehobenen Wörter. Beispiel: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
         "editor.helpers.chip_merge"                     : "Legt fest, wie Globale-, Standard- und Browser-Chips zusammen angezeigt werden.",
         "editor.helpers.list_font_size"                 : "Legt die Schriftgröße für die Artikel in der Liste fest. Standard: 14px.",
 		"editor.helpers.cat_font_size"                  : "Legt die Schriftgröße für die Kategorien in der Liste fest. Standard: 16px.",
         "editor.helpers.title_font_size"                : "Legt die Schriftgröße für den Titel fest. Standard: 16px.",
         "editor.helpers.chip_font_size"                 : "Legt die Schriftgröße der Schnell-Auswahl-Chips fest. Standard: 12px.",
+        "editor.helpers.own_css"                        : "Hier kannst du eigenen CSS Code eingeben, um die Karte individuell anzupassen. Beispiel: '.card { background: transparent;}'. Für Mehrzeilige CSS Eingaben, verwende in der ersten Zeile das Pipe Symbol '|' ohne weiteren Code. Wenn Du den CSS Code nur in eine Zeile schreiben möchtest, verwende die doppelten \"Anführungszeichen\" vor und nach dem Code. Achtung: Falscher CSS Code kann dazu führen, dass die Karte nicht mehr korrekt angezeigt wird.",
         "editor.helpers.chip_color"                     : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
 		"editor.helpers.chip_color_global"              : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,100,0.3)’",
         "editor.helpers.chip_color_default"             : "Hex- oder rgba-Farbcode eingeben, z. B. ‘#2196f3’, '#6464644D' oder ‘rgba(100,100,255,0.3)’",
@@ -307,6 +323,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_export_button"             : "Zeigt den HTML Export-Button unten an. Mit der HTML-Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
 		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht. Im Modus 'To-Do-Liste' sind diese Buttons nicht verfügbar.",
+        "editor.helpers.acknowledge_deletion"           : "Zeigt ein Bestätigung-Popup an, bevor ein Artikel gelöscht wird.",
         "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
@@ -318,6 +335,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
         "editor.helpers.show_title_exclamation_mark"    : "Zeigt im To-Do Mode im Titel ein Ausrufezeichen an, sofern es in einer Kategorie fällige Einträge gibt.",
         "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im ToDo Modus wird die Anzahl ivertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.) So kann man z.B. bei (5/5) einfach sehen, dass aktuell keine Einträge zu erledigen sind.",
+        "editor.helpers.hide_cat_count_all_done"        : "Wenn diese Option aktiviert ist, wird die Artikelanzahl in der Kategorie ausgeblendet, sobald alle Einträge in der Kategorie als erledigt markiert wurden.",
         "editor.helpers.show_cat_next_due"              : "Wenn diese Option aktiviert ist, wird im To-Do Modus das nächste Fälligkeitsdatum unter dem Kategorienamen angezeigt. So kann man auf einen Blick sehen, wann der nächste Eintrag in dieser Kategorie fällig ist.",
         "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passt.",
         "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
@@ -401,6 +419,7 @@ const TRANSLATIONS = {
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
         "editor.labels.show_message_button"             : "Show message button",
+        "editor.labels.show_clear_button"               : "Show 'clear completed' button",
         "editor.labels.notify_entity"                   : "Notify-Entity",
         "editor.labels.add_button"                      : "Add",
         "editor.labels.clear_button"                    : "Clear completed",
@@ -419,6 +438,7 @@ const TRANSLATIONS = {
 		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
 		"editor.labels.categories"                   	: "Categories",
         "editor.labels.show_cat_count"                  : "Show item count in categories ?",
+        "editor.labels.hide_cat_count_all_done"         : "Hide item count when all items are done ?",
         "editor.labels.show_cat_next_due"               : "Show next due in category ?",
         "editor.labels.cat_double_sized_icon"           : "Show bigger Icon ?",
         "editor.labels.show_cat_exclamation_mark"       : "Show an exclamation mark for due items",
@@ -437,6 +457,7 @@ const TRANSLATIONS = {
         "editor.labels.item.options"                    : "Items",
         "editor.labels.general.options"                 : "General settings",
         "editor.labels.input_row_position"              : "Input row position",
+        "editor.labels.option_row_position"             : "Button row position",
         "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
         "editor.labels.show_admin_button"               : "Show admin options button",
         "editor.labels.notify_on_change"                : "Notify on change",
@@ -446,6 +467,8 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_done"                  : "Notify also when item is marked as done",
         "editor.labels.show_category_chips"             : "Generate chips from categorie items",
         "editor.labels.allow_filter"                    : "Allow filtering items",
+        "editor.labels.allow_suggestions"               : "Allow suggestions",
+        "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
         "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
@@ -526,10 +549,12 @@ const TRANSLATIONS = {
         "editor.labels.entity"                          : "To-Do-List (Entity)",
         "editor.labels.highlight_words"                 : "Highlight words",
         "editor.labels.chips_with_cat_color"            : "Use category colors",
+        "editor.labels.allow_filter_chips"              : "Allow filtering chips",
         "editor.labels.highlight_color"                 : "Highlight color",
         "editor.labels.chip_merge"                      : "Combine chips",
         "editor.labels.local_chips"                     : "Allow local chips?",
         "editor.labels.chip_font_size"                  : "Chip font size (px)",
+        "editor.labels.own_css"                         : "Own CSS Code",
         "editor.labels.chip_color"                      : "Color of local (browser) chips",
 		"editor.labels.chip_color_global"               : "Color of global (text file) chips",
         "editor.labels.chip_color_default"              : "Color of standard chips",
@@ -549,6 +574,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button"              : "Show HTML Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
 		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons (Only in 'Shopping List' mode)",
+        "editor.labels.acknowledge_deletion"            : "Ask for confirmation when deleting items",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
         "editor.labels.sub_text"                        : "Hint text below the input field",
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
@@ -567,9 +593,11 @@ const TRANSLATIONS = {
         "editor.labels.todo_warning_thresholds"         : "Warning thresholds for ToDo mode",
         "editor.labels.show_title_info"                 : "Show next due date in ToDo mode",
         "editor.labels.show_title_info_icon"            : "Show icon for next due date",
+        "editor.labels.sort_items"                      : "Sort items alphabetically",
 
         "editor.helpers.show_title_info"                : "Displays the next due date of all items from all categories under the title when in ToDo mode, provided a title is set. Expired items are not shown here; they are indicated by an exclamation mark to the right of the name.",
         "editor.helpers.show_title_info_icon"           : "Displays a calendar icon before the due date as a visual highlight.",
+        "editor.helpers.sort_items"                     : "If enabled, items in the list will be sorted alphabetically.",
         "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
         "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
         "editor.helpers.todo_yellow_d"                  : "Warning threshold for intervals in days, defined in minutes (Default: 120 = 2 hours)",
@@ -577,8 +605,10 @@ const TRANSLATIONS = {
         "editor.helpers.todo_yellow_s"                  : "Warning threshold for due dates without time, defined in minutes (Default: 120 = 2 hours)",
         "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
+        "editor.helpers.option_row_position"            : "Determines whether the buttons (message, clear, export) are displayed top or bottom.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
         "editor.helpers.show_message_button"            : "Displays (in Shopping List Mode) a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
+        "editor.helpers.show_clear_button"              : "Displays a button to clear all completed items from the list.",
         "editor.helpers.notify_entity"                  : "The notify entity used e.g. to send the list when the message button is pressed. This entity must be configured in Home Assistant beforehand (e.g. 'notify.mobile_app_xyz' or 'notify.telegram'). Notifications include HTML formatting to improve readability. Make sure the configured notify entity supports HTML formatting. Notifications via SMTP platform are not included here; for SMTP, use the 'notify_entity_smtp' option.",
         "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
         "editor.helpers.notify_on_change"               : "Sends a notification via the configured notify entity whenever an item is added, edited, or removed.",
@@ -588,6 +618,8 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Also sends a notification when an item is marked as completed. Note: This may result in a large number of notifications if many items are marked as completed during shopping.",
         "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
         "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field.",
+        "editor.helpers.allow_suggestions"              : "Shows suggestions below the input field when the entered text matches an item assigned to a category. Clicking a suggestion adds it to the list. Alternatively, you can navigate through the suggestions using the arrow keys and confirm with Enter.",
+        "editor.helpers.show_done_hidden_items_in_search": "When filtering items in the list, this option ensures that completed (and hidden) items are also included in the search results.",
         "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
@@ -603,12 +635,14 @@ const TRANSLATIONS = {
         "editor.helpers.mode"                           : "Defines how the list is used. In 'Shopping List' mode, extended functions for the original shopping list are available, but without due dates. In 'To-Do List' mode, due dates can additionally be set and managed, with slightly different handling. Note: The original Home Assistant shopping list entity 'Shopping List' does not support due dates. In To-Do mode, there is also no quantity input, no plus or minus buttons, no export buttons, and no button to delete completed entries.",
         "editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.chips_with_cat_color"           : "If a chip is assigned as an 'item' to a category and that category has a color defined, the chip will be displayed in the category's color. The order of color priority is: Highlight > Category > Global > Standard > Browser.",
+        "editor.helpers.allow_filter_chips"             : "Allows filtering of chips via the input field.",
         "editor.helpers.highlight_color"                : "Hex or rgba color code for highlighted words. Examples: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
 		"editor.helpers.chip_merge"                     : "Determines how global, standard and browser chips are combined and displayed.",
 		"editor.helpers.list_font_size"                 : "Sets the font size for items in the list. Default: 14px.",
         "editor.helpers.title_font_size"                : "Sets the font size for the title. Default: 16px.",
 		"editor.helpers.cat_font_size"                  : "Sets the font size for categories in the list. Default: 16px.",
 		"editor.helpers.chip_font_size"                 : "Sets the font size for the quick-selection chips. Default: 12px.",
+        "editor.helpers.own_css"                        : "Here you can enter your own CSS code to customize the card. Example: '.card { background: transparent; }'. For multi-line CSS, use the pipe symbol '|' on the first line without any additional code. If you prefer to write the CSS in a single line, use double \"quotes\" before and after the code. Warning: Invalid CSS may cause the card to display incorrectly.",
 		"editor.helpers.chip_color"                     : "Hex or rgba color code for local (browser) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_global"              : "Hex or rgba color code for global (text file) chips, e.g. '#2196f3' or 'rgba(100,100,100,0.3)'.",
 		"editor.helpers.chip_color_default"             : "Hex or rgba color code for standard chips, e.g. '#2196f3' or 'rgba(100,100,255,0.3)'.",
@@ -626,7 +660,8 @@ const TRANSLATIONS = {
         "editor.helpers.show_export_button"             : "Shows the HTML Export button on the bottom. With the HTML-Export function, you can download the current todo list as an HTML file for offline use.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
 		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity. (Not available in 'To-Do List' mode).",
-		"editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
+		"editor.helpers.acknowledge_deletion"           : "Enables a confirmation dialog when deleting items to prevent accidental deletions.",
+        "editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
@@ -639,6 +674,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
         "editor.helpers.cat_double_sized_icon"          : "If the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
         "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
+        "editor.helpers.hide_cat_count_all_done"        : "If this option is enabled, the item count will be hidden for categories where all items are marked as completed.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
@@ -1048,6 +1084,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showTitleInfoIcon     = (config.show_title_info_icon === false) ? false : true;
         this._quantityPosition      = (config.quantity === "beginning") ? "beginning" : "end";
         this._inputRowPosition      = (config.input_row_position === "bottom") ? "bottom" : "top";
+        this._optionRowPosition     = (config.option_row_position === "top") ? "top" : "bottom";
         this._acknowledgedMode      = ["hide", "end"].includes(config.acknowledged) ? config.acknowledged : "show";
         this._chipClick             = (config.chip_click === "dblclick") ? "dblclick" : "click";
         this._showQuantitySelection = (config.show_quantity_box === false) ? false : true;
@@ -1097,8 +1134,15 @@ class HaShoppingListImproved extends HTMLElement {
         this._notifyEntitySMTP      = config.notify_entity_smtp || "";
         this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
         this._allowFilter           = (config.allow_filter === true) ? true : false;
+        this._allowFilterChips      = (config.allow_filter_chips === true) ? true : false;
+        this._allowSuggestions      = (config.allow_suggestions === true) ? true : false;
         this._capitalizeFirst       = (config.capitalize_first_letter === true) ? true : false;
-        debugMode                   = (config.debug_mode === true) ? true : false;
+        this._sortItems             = (config.sort_items === false) ? false : true;
+        this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true) ? true : false;
+        this._showDoneItemsInSearch = (config.show_done_hidden_items_in_search === false) ? false : true;
+        this._acknowledgeDeletion   = (config.acknowledge_deletion === false) ? false : true;
+        this._ownCss                = (config.own_css || "").toString();
+        debugMode                   = (config.debug_mode === false) ? false : true;
         
         const allowedModes = [
             // 1 Cat
@@ -1337,6 +1381,7 @@ class HaShoppingListImproved extends HTMLElement {
             entity: getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass),
             chips_position: "auto",
             input_row_position: "top",
+            option_row_position: "bottom",
             quantity: "end",
             acknowledged: "show",
             mode: "shopping",
@@ -1411,12 +1456,26 @@ class HaShoppingListImproved extends HTMLElement {
                         },
                         default: "top"
                     },
+                    {
+                        name: "option_row_position",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "top", label: translate("editor.options.inputrow.top") },
+                                    { value: "bottom", label: translate("editor.options.inputrow.bottom") }
+                                ]
+                            }
+                        },
+                        default: "bottom"
+                    },
                     { name: "show_quantity_box", selector: { boolean: {} }, default: true },
                     { name: "show_input_mask", selector: { boolean: {} }, default: true },
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
                     { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
                     { name: "show_admin_button", selector: { boolean: {} }, default: true },
                     { name: "show_message_button", selector: { boolean: {} }, default: false },
+                    { name: "show_clear_button", selector: { boolean: {} }, default: true },
                     { name: "sub_text", selector: { text: {} }, default: " "},
                     { name: "bubble_card", selector: { boolean: {} }, default: false }
                 ]
@@ -1428,6 +1487,7 @@ class HaShoppingListImproved extends HTMLElement {
                 label: 'item.options',
                 icon: 'mdi:format-list-checks',
                 schema: [
+                    { name: "sort_items", selector: { boolean: {} }, default: true },
                     {
                         name: "quantity",
                         selector: {
@@ -1453,9 +1513,12 @@ class HaShoppingListImproved extends HTMLElement {
                         },
                         default: "show"
                     },
+                    { name: "acknowledge_deletion", selector: { boolean: {} }, default: true },
                     { name: "show_plus_minus", selector: { boolean: {} }, default: true },
                     { name: "show_quantity_one", selector: { boolean: {} }, default: false },
                     { name: "allow_filter", selector: { boolean: {} }, default: false },
+                    { name: "allow_suggestions", selector: { boolean: {} }, default: false },
+                    { name: "show_done_hidden_items_in_search", selector: { boolean: {} }, default: true },
                     { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
                     {
                         name: "ean_file",
@@ -1551,6 +1614,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "chips",           selector: { text: {} }, default: "" },
                     { name: "highlight_words", selector: { text: {} }, default: "" },
                     { name: "chips_with_cat_color", selector: { boolean: {} }, default: true },
+                    { name: "allow_filter_chips", selector: { boolean: {} }, default: false },
                     { name: "chip_file",       selector: { text: {} }, default: "" }
                 ]
             },
@@ -1575,6 +1639,7 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "show_cat_popup", selector: { boolean: {} }, default: true },
                     { name: "show_cat_count", selector: { boolean: {} }, default: true },
+                    { name: "hide_cat_count_all_done", selector: { boolean: {} }, default: false },
                     { name: "show_cat_next_due", selector: { boolean: {} }, default: true },
                     { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
                     { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
@@ -1730,6 +1795,18 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "chip_color_dish",
                         selector: { text: {} },
                         default: "rgba(100,100,100,0.3)"
+                    },
+                    {
+                        name: "own_css",
+                        required: false,
+                        selector: {
+                            object: {
+                                properties: {
+                                    "category2": { type: "string", name: "Only a placeholder" },
+                                    "items2": { type: "text", name: "to let HA fall back to yaml mode" }
+                                }
+                            }
+                        }
                     }
                 ]
             },
@@ -1854,7 +1931,9 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this._stopScan();
+        this._stopScan().catch(err => {
+            console.error("Error during scanner cleanup:", err);
+        });
 
         if (typeof this._unsubEvents === "function") {
             try {
@@ -1921,6 +2000,7 @@ class HaShoppingListImproved extends HTMLElement {
                 items: [],
                 icon: null,
                 bgcolor: null,
+                color: null,
                 isDynamic: true
             });
 
@@ -1952,6 +2032,7 @@ class HaShoppingListImproved extends HTMLElement {
             const items = Array.isArray(cat.items) ? cat.items : [];
             const icon = cat.icon || null;        // optional Icon
             const bgcolor = cat.bgcolor || null;  // optional bgcolor
+            const color = cat.color || null;      // optional font color
             const isDynamic = false;
 
             if(debugMode) console.log(`Category ${name}: ${items.length ? items.join(", ") : "(empty)"}, icon: ${icon}, bgcolor: ${bgcolor}`);
@@ -1961,7 +2042,8 @@ class HaShoppingListImproved extends HTMLElement {
                 items,
                 icon,
                 isDynamic,
-                bgcolor
+                bgcolor,
+                color
             });
         }
         if(debugMode) console.debug(`Categories builded: `, categories);
@@ -1997,7 +2079,17 @@ class HaShoppingListImproved extends HTMLElement {
         style.textContent = `
             :host { font-family: var(--font-family, Roboto, Noto, sans-serif); display:block; }
             .card { background: var(--card-background-color, var(--ha-card-background, #1c1c1c)); color: var(--primary-text-color); padding: 12px; border-radius: 8px; box-shadow: var(--ha-card-box-shadow); }
-            .input-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+            /* .input-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; } */
+            .input-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; position:relative; }
+
+            /* Suggestions */
+            .suggestions-container { width:100%; max-height:200px; overflow-y:auto; background:var(--card-background-color, #fff); border:1px solid var(--divider-color, #e0e0e0); border-radius:0 0 8px 8px; box-shadow:0 4px 8px rgba(0,0,0,0.15); display:none; }
+            .suggestions-container.visible { display:block; }
+            .suggestion-item { padding:8px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid var(--divider-color, #f0f0f0); color:var(--primary-text-color, #333); }
+            .suggestion-item:last-child { border-bottom:none; }
+            .suggestion-item:hover, .suggestion-item.active { background:var(--primary-color, #03a9f4); color:#fff; }
+            .suggestion-item .suggestion-category { font-size:11px; opacity:0.7; margin-left:8px; }
+
             input[type="text"]{ flex:1; padding:8px; border-radius:4px; border:1px solid var(--divider-color);} 
             select { padding:6px; border-radius:4px; }
             .quantityselect { padding:8px; border-radius:4px; border:1px solid var(--divider-color); width:40px; }
@@ -2207,6 +2299,8 @@ class HaShoppingListImproved extends HTMLElement {
                 border-radius: 9px;
                 transition: background 0.3s;
             }
+
+            ${this._ownCss}
         `;
 
         this._shadow.innerHTML = `
@@ -2245,8 +2339,9 @@ class HaShoppingListImproved extends HTMLElement {
                             height: 24px;
                             vertical-align: middle;
                         "></ha-icon>
+                        <div id="suggestions" class="suggestions-container"></div>
                     </div>
-                    <div class="small">
+                    <div id="subText" class="small">
                         ${this._subText }
                     </div>
 
@@ -2257,7 +2352,7 @@ class HaShoppingListImproved extends HTMLElement {
                         <div class="history" id="history"></div>
                     </div>
 
-                    <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                    <div id="optionRow" style="display:flex; justify-content:flex-end; margin-top:8px;">
                         ${this._showMessageButton   ? `<button id="msgBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2709;&#xFE0F;</button> ` : ``}
                         ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
                         ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;`  : ``}
@@ -2271,13 +2366,56 @@ class HaShoppingListImproved extends HTMLElement {
         this._shadow.appendChild(style);
 
         this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
+
+/*
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
         this._shadow.getElementById('itemInput').addEventListener('input', (e) => { 
-            if (this._allowFilter) this._renderList(); // to apply the filter while typing
+            if (this._allowFilter) {
+                this._renderList(); // to apply the filter while typing
+            }
+            if (this._allowFilterChips) {
+                this._renderHistory(); // to search in chips as well
+            }
             if (this._capitalizeFirst && e.target.value.length > 0) {
                 e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
             }
         });
+*/
+
+        this._shadow.getElementById('itemInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const activeSuggestion = this._shadow.querySelector('.suggestion-item.active');
+                if (activeSuggestion) {
+                    e.preventDefault();
+                    activeSuggestion.click();
+                } else {
+                    this._hideSuggestions();
+                    this._onAdd();
+                }
+            } else if (e.key === 'Escape') {
+                this._hideSuggestions();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                this._navigateSuggestions(e.key === 'ArrowDown' ? 1 : -1);
+            }
+        });
+        this._shadow.getElementById('itemInput').addEventListener('input', (e) => {
+            if (this._allowFilter) {
+                this._renderList(); // to apply the filter while typing
+            }
+            if (this._allowFilterChips) {
+                this._renderHistory(); // to search in chips as well
+            }
+            if (this._capitalizeFirst && e.target.value.length > 0) {
+                e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
+            }
+            if(this._allowSuggestions) this._updateSuggestions(e.target.value);
+        });
+        this._shadow.getElementById('itemInput').addEventListener('blur', () => {
+            // Delay to allow click on suggestion to fire first
+            setTimeout(() => this._hideSuggestions(), 150);
+        });
+
         if (this._showClearButton)     this._shadow.getElementById('clearBtn').addEventListener('click', this._clearCompleted);
         if (this._showExportButton)    this._shadow.getElementById('downloadBtn').addEventListener('click', () => {this._exportOfflineList();});
         if (this._showExportButtonPdf) this._shadow.getElementById('pdfBtn').addEventListener('click', () => {this._exportPdfList();});
@@ -2291,6 +2429,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._historyEl          = this._shadow.getElementById('history');
         this._inputEl            = this._shadow.getElementById('itemInput');
         this._qtyEl              = this._shadow.getElementById('quantitySelect');
+        this._suggestionsEl      = this._shadow.getElementById('suggestions');
         this._titleAlert         = this._shadow.getElementById('titlealert');
         this._titleAlertDesc     = this._shadow.getElementById('titlealertdesc');
         this._titleAlertDescIcon = this._shadow.getElementById('titleicondesc');
@@ -2319,8 +2458,10 @@ class HaShoppingListImproved extends HTMLElement {
 
         // Input Row Positioning
         this._positionInputRow() ;
+        this._positionOptionRow();
         window.addEventListener('resize', () => {
             this._positionInputRow();
+            this._positionOptionRow();
         });
     }
 
@@ -2884,6 +3025,17 @@ async _adminOptions() {
         }
     }
 
+    // Option Row Positioning
+    _positionOptionRow() {
+        if (this._optionRowPosition === 'bottom') return;
+        const optionRow = this._shadow.getElementById("optionRow");
+        const subText = this._shadow.getElementById("subText");
+
+        optionRow.remove();
+
+        subText.insertAdjacentElement('beforebegin', optionRow);
+    }
+
 	// EAN
 	async _checkEAN(text) {
         // 1st localEAN check - EAN-8, UPC (12), EAN-13 er GS1-14
@@ -2962,7 +3114,7 @@ async _adminOptions() {
 			return;
 		}
 		
-		this._stopScan();
+		await this._stopScan();
 		
 		this._addingBusyQR = true;
 
@@ -2987,6 +3139,13 @@ async _adminOptions() {
 	}
 
 	async _startScan() {
+        if (this._scannerStarting || this._html5QrCodeScanner) {
+            if (debugMode) console.warn("Scanner already running or starting");
+            return;
+        }
+
+        this._scannerStarting = true;
+
 		const wrapperDivId = `qr-wrapper-${this._entity}`;
 		const scannerDivId = `qr-reader-${this._entity}`;
 
@@ -3055,7 +3214,12 @@ async _adminOptions() {
 			closeButton = document.createElement("button");
 			closeButton.textContent = translate("ui.common.close");
 			closeButton.className = "qr-close-btn";
-			closeButton.onclick = () => this._stopScan();
+            closeButton.onclick = () => {
+                this._stopScan().catch(err => {
+                    console.error("Error during scanner cleanup:", err);
+                });
+            };
+
 			wrapperDiv.appendChild(closeButton);
 		}
 
@@ -3075,6 +3239,16 @@ async _adminOptions() {
 			console.error("Html5QrcodeScanner class not found!");
 			return;
 		}
+
+        try {
+            await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            });
+        } catch (err) {
+            console.error("Camera permission error:", err);
+            this._scannerStarting = false;
+            return;
+        }
 
 		// start QR-Scanner
 		const html5QrCodeScanner = new window.Html5QrcodeScanner(scannerDivId, {fps: 10, qrbox: 250, showTorchButton: true }, false);
@@ -3111,7 +3285,7 @@ async _adminOptions() {
         }, 100);
 
         // Observer to monitor changes ion the DOM to detect changes in the buttons
-        const observer = new MutationObserver(() => {
+        this._observer = new MutationObserver(() => {
             const scanFileSpan = document.getElementById("html5-qrcode-anchor-scan-type-change");
             if (scanFileSpan) {
                 // if "display: none" dont change to avaoid didplaying an displayed element
@@ -3161,32 +3335,64 @@ async _adminOptions() {
         });
 
         // start observer for Scanner-Container
-        observer.observe(scannerDiv, { childList: true, subtree: true });
+        this._observer.observe(scannerDiv, {
+            childList: true,
+            subtree: true
+        });
 
 		this._html5QrCodeScanner = html5QrCodeScanner;
 		this._scannerDiv = scannerDiv;
 		this._wrapperDiv = wrapperDiv;
 	}
 
-	_stopScan() {
-		if (this._html5QrCodeScanner) {
-			this._html5QrCodeScanner.clear()
-				.then(() => {
-					if (debugMode) console.log("QR-Scanner stopped.");
-				})
-				.catch(err => {
-					console.error("Error while stopping Html5QrcodeScanner:", err);
-				})
-				.finally(() => {
-					if (this._wrapperDiv) {
-						this._wrapperDiv.remove();
-						this._wrapperDiv = null;
-					}
-					this._scannerDiv = null;
-					this._html5QrCodeScanner = null;
-				});
-		}
-	}
+    async _stopScan() {
+
+        if (this._stoppingScanner) {
+            return;
+        }
+
+        this._stoppingScanner = true;
+
+        if (this._observer) {
+            this._observer.disconnect();
+            this._observer = null;
+        }
+
+        if (!this._html5QrCodeScanner) {
+            this._scannerStarting = false;
+            this._stoppingScanner = false;
+            return;
+        }
+
+        try {
+
+            await this._html5QrCodeScanner.clear();
+
+            if (debugMode) {
+                console.log("QR-Scanner stopped.");
+            }
+
+        } catch (err) {
+
+            console.error(
+                "Error while stopping Html5QrcodeScanner:",
+                err
+            );
+
+        } finally {
+
+            if (this._wrapperDiv) {
+                this._wrapperDiv.remove();
+                this._wrapperDiv = null;
+            }
+
+            this._scannerDiv = null;
+            this._html5QrCodeScanner = null;
+
+            this._scannerStarting = false;
+            this._stoppingScanner = false;
+        }
+    }
 
     async _refresh() {
 		if (!this._hass) return;
@@ -3236,23 +3442,26 @@ async _adminOptions() {
             }));
 
 			// Sort function: A --> Z, ignore quantity and category
-			this._items.sort((a, b) => {
-				const nameA = this._getNameOnly(a.name);
-				const nameB = this._getNameOnly(b.name);
+            if (this._sortItems) {
+                this._items.sort((a, b) => {
+                    const nameA = this._getNameOnly(a.name);
+                    const nameB = this._getNameOnly(b.name);
 
-				return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
-			});
+                    return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: 'base' });
+                });                
+            }
 
             if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
             
-            // acknowledged-Logic
+            /*
             if (this._acknowledgedMode === "hide") {
                 this._items = this._items.filter(i => !i.complete);
             } else if (this._acknowledgedMode === "end") {
                 const done = this._items.filter(i => i.complete);
                 const notDone = this._items.filter(i => !i.complete);
                 this._items = [...notDone, ...done];
-            }     
+            }    
+            */ 
             
             // after we have the items, extract dynamic categories from items
             this._addDynamicCategories(this._items);
@@ -3292,21 +3501,26 @@ async _adminOptions() {
 
         // acknowledged-Filter
         let itemsToRender = [...this._items];
-        const ack = this._config?.acknowledged;
+        let ack = this._config?.acknowledged;
 
         // Filter list while typing
+        let showHidden = false;
         if(this._allowFilter && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
+            // show also done items when filtering (if enabled) in this._showDoneItemsInSearch
+            showHidden = this._showDoneItemsInSearch;
             itemsToRender = itemsToRender.filter(i => i.name && i.name.trim().toLowerCase().includes(this._inputEl.value.trim().toLowerCase()));
         }
 
-        if (ack === 'hide') {
-            itemsToRender = itemsToRender.filter(i => !i.complete);
-        } else if (ack === 'end') {
-            itemsToRender.sort((a, b) => {
-                if (a.complete && !b.complete) return 1;
-                if (!a.complete && b.complete) return -1;
-                return 0;
-            });
+        if (!showHidden) {
+            if (ack === 'hide') {
+                itemsToRender = itemsToRender.filter(i => !i.complete);
+            } else if (ack === 'end') {
+                itemsToRender.sort((a, b) => {
+                    if (a.complete && !b.complete) return 1;
+                    if (!a.complete && b.complete) return -1;
+                    return 0;
+                });
+            }
         }
 
         // Articles without category
@@ -3436,6 +3650,10 @@ async _adminOptions() {
             if (this._showCatCount) {
                 const doneDiv = document.createElement('div');
                 doneDiv.textContent = `(${done}/${total})`;
+                // Hide cat count if all done
+                if (this._hideCatCountAllDone && done === total) {
+                    doneDiv.textContent = '';
+                }
                 doneDiv.style.marginLeft = '8px';
                 doneDiv.style.whiteSpace = 'nowrap';
                 firstRow.appendChild(doneDiv);
@@ -3615,6 +3833,7 @@ async _adminOptions() {
                     iconEl.style.alignItems = 'center';
                     iconEl.style.justifyContent = 'center';
                     iconEl.style.flexShrink = '0';
+                    if (cat.color) iconEl.style.color = cat.color;
 
                     container.appendChild(iconEl);
                 }
@@ -3630,14 +3849,20 @@ async _adminOptions() {
 
                 const nameDiv = document.createElement('div');
                 nameDiv.textContent = cat.name;
+                if (cat.color) nameDiv.style.color = cat.color;
 
                 firstRow.appendChild(nameDiv);
 
                 if (this._showCatCount) {
                     const doneDiv = document.createElement('div');
                     doneDiv.textContent = `(${done}/${total})`;
+                    // Hide cat count if all done
+                    if (this._hideCatCountAllDone && done === total) {
+                        doneDiv.textContent = '';
+                    }
                     doneDiv.style.marginLeft = '8px';
                     doneDiv.style.whiteSpace = 'nowrap';
+                    if (cat.color) doneDiv.style.color = cat.color;
                     firstRow.appendChild(doneDiv);
                 }
 
@@ -3902,7 +4127,7 @@ async _adminOptions() {
             }
 
             // Input
-            const input = document.createElement('ha-textfield');
+            const input = document.createElement('ha-input');
             input.type = 'input';
             input.value = displayName;
             input.style.width = '100%';
@@ -3922,7 +4147,7 @@ async _adminOptions() {
 
             let selectedCategory = currentCategory;
 
-            function createStyledChip(label, isSelected, bgColor, icon, onClick) {
+            function createStyledChip(label, isSelected, bgColor, color, icon, onClick) {
                 // Wrapper for Chip + Underline
                 const chipWrapper = document.createElement('div');
                 chipWrapper.style.display = 'flex';
@@ -3940,7 +4165,7 @@ async _adminOptions() {
                 chip.style.fontSize = '13px';
                 chip.style.border = '1px solid var(--divider-color, #ccc)';
                 chip.style.background = bgColor || 'var(--secondary-background-color)';
-                chip.style.color = 'var(--primary-text-color)';
+                chip.style.color = color || 'var(--primary-text-color)';
                 chip.style.gap = '6px';
                 chip.style.lineHeight = '1.2';
                 chip.style.minHeight = '24px';
@@ -3968,7 +4193,7 @@ async _adminOptions() {
                 if (isSelected) {
                     chip.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.4)';
                     chip.style.transform = 'translateY(1px)';
-                    chip.style.color = 'white';
+                    chip.style.color = color || 'white';
                 }
 
                 // Unterlinie
@@ -3997,6 +4222,7 @@ async _adminOptions() {
                 translate("ui.common.no_cat"),
                 selectedCategory === "none",
                 'var(--secondary-background-color)',
+                null,
                 null,
                 (wrapperEl) => {
                     selectedCategory = "none";
@@ -4036,6 +4262,7 @@ async _adminOptions() {
                         cat.name,
                         cat.name === selectedCategory,
                         cat.bgcolor,
+                        cat.color,
                         cat.icon,
                         (wrapperEl) => {
                             // reset all chips
@@ -4063,7 +4290,7 @@ async _adminOptions() {
                 });
 
             // Own Categorie in Allow Dynamic Cat Mode
-            const dynamicCategory = document.createElement('ha-textfield');
+            const dynamicCategory = document.createElement('ha-input');
             dynamicCategory.type = 'input';
             dynamicCategory.value = '';
             dynamicCategory.style.width = '100%';
@@ -4171,8 +4398,8 @@ async _adminOptions() {
                 intervalRow.style.gap = '8px';
                 intervalRow.style.alignItems = 'center';
 
-                // ha-textfield
-                intervalInput = document.createElement('ha-textfield');
+                // ha-input
+                intervalInput = document.createElement('ha-input');
                 intervalInput.type = 'number';
                 intervalInput.min = '1';
                 intervalInput.value = '';
@@ -4881,6 +5108,97 @@ async _adminOptions() {
         }
     }
 
+    // ── Search Suggestions (based on category items) ──
+
+    _removeDiacritics(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    _getAllCategoryItems() {
+        const categories = Array.isArray(this._categories) ? this._categories : [];
+        const items = [];
+        for (const cat of categories) {
+            if (Array.isArray(cat.items)) {
+                for (const item of cat.items) {
+                    items.push({ name: item, category: cat.name });
+                }
+            }
+        }
+        return items;
+    }
+
+    _updateSuggestions(query) {
+        if (!this._suggestionsEl) return;
+        const trimmed = query.trim();
+        if (trimmed.length < 2) {
+            this._hideSuggestions();
+            return;
+        }
+
+        const allItems = this._getAllCategoryItems();
+        const searchWords = this._removeDiacritics(trimmed.toLowerCase()).split(/\s+/).filter(w => w.length > 0);
+        const matches = allItems.filter(item => {
+            const normalized = this._removeDiacritics(item.name.toLowerCase());
+            return searchWords.every(word => normalized.includes(word));
+        });
+
+        if (matches.length === 0) {
+            this._hideSuggestions();
+            return;
+        }
+
+        // Limit to 15 suggestions to keep it manageable
+        const limited = matches.slice(0, 15);
+        this._suggestionsEl.innerHTML = '';
+        for (const match of limited) {
+            const div = document.createElement('div');
+            div.classList.add('suggestion-item');
+            div.innerHTML = `${match.name}<span class="suggestion-category">${match.category}</span>`;
+
+            // avoid blur before click, which would hide the suggestions before the click event fires
+            div.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+            });
+
+            // click event on div to select suggestion
+            div.addEventListener('click', () => {
+                this._selectSuggestion(match.name);
+            });
+
+            this._suggestionsEl.appendChild(div);
+        }
+        this._suggestionsEl.classList.add('visible');
+    }
+
+    _selectSuggestion(name) {
+        this._inputEl.value = name;
+        this._hideSuggestions();
+        this._onAdd();
+    }
+
+    _hideSuggestions() {
+        if (this._suggestionsEl) {
+            this._suggestionsEl.classList.remove('visible');
+            this._suggestionsEl.innerHTML = '';
+        }
+    }
+
+    _navigateSuggestions(direction) {
+        if (!this._suggestionsEl || !this._suggestionsEl.classList.contains('visible')) return;
+        const items = this._suggestionsEl.querySelectorAll('.suggestion-item');
+        if (items.length === 0) return;
+
+        let activeIndex = -1;
+        items.forEach((item, i) => { if (item.classList.contains('active')) activeIndex = i; });
+
+        if (activeIndex >= 0) items[activeIndex].classList.remove('active');
+        let newIndex = activeIndex + direction;
+        if (newIndex < 0) newIndex = items.length - 1;
+        if (newIndex >= items.length) newIndex = 0;
+        items[newIndex].classList.add('active');
+        items[newIndex].scrollIntoView({ block: 'nearest' });
+    }
+
     // add new item
     async _onAdd() {
         if (this._addingBusy) {
@@ -5036,6 +5354,7 @@ async _adminOptions() {
 						service_data: {
 							item: existing.id,
 							rename: finalName,
+                            status: "needs_action",
 						},
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Updating existing item:", updateMsg);
@@ -5089,6 +5408,7 @@ async _adminOptions() {
 			this._addToHistory(inputName);
 			this._inputEl.value = '';
 			this._qtyEl.value = '';
+            this._hideSuggestions();
 			await this._refresh();
             await this._notifyOnChange(`${msgTask}: ${msgNameOnly} (${msgQty})`);
         } finally {
@@ -5301,7 +5621,12 @@ async _adminOptions() {
                         // parse date-only into local midnight
                         const [y, mm, dd] = currentDue.split('-').map(n => parseInt(n, 10));
                         const base = new Date(y, mm - 1, dd, 0, 0, 0);
-                        const next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+                        let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+
+                        while (next <= now) {
+                            next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
+                        }
+
                         // if (D or M) use due_date
                         if (effectiveInterval.unit === 'D' || effectiveInterval.unit === 'M') {
                             dueDate = formatDateOnly(next);
@@ -5313,7 +5638,12 @@ async _adminOptions() {
                         // currentDue has time (ISO)
                         // create Date from ISO (handles offsets)
                         const base = new Date(currentDue);
-                        const next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+                        let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+
+                        while (next <= now) {
+                            next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
+                        }
+
                         // set due_datetime
                         dueDateTime = formatDateTime(next);
                     }
@@ -5466,9 +5796,12 @@ async _adminOptions() {
         const itemQtyOnly  = this._getQuantity(item.name);
 		const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
     
-		if (!(await this.confirmPopup(msgRemove))) {
-            if(this._mode ===  "todo") await this._confirmToDoPopup(item);
-            return;
+        // show confirmation except when acknowledgeDeletion=false AND not todo
+        if (this._mode === "todo" || this._acknowledgeDeletion) {
+            if (!(await this.confirmPopup(msgRemove))) {
+                if (this._mode === "todo") await this._confirmToDoPopup(item);
+                return;
+            }
         }
 
         try {
@@ -5697,13 +6030,21 @@ async _adminOptions() {
             chip.className = 'chip';
             chip.textContent = chipText;
 
-            // check if chip is assigned to a category
+            // Filter Chips
+            if(this._allowFilterChips && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
+                if(!chipText.toLowerCase().includes(this._inputEl.value.trim().toLowerCase())) return;
+                //console.info("[ha-shopping-list-improved] chipText:", chipText);
+            }
+
+            // check if chip is assigned to a category with background color
             const catWithBg = this._categories?.find(
                 c => c.bgcolor && c.items?.some(item => item.toLowerCase() === chipText.toLowerCase())
             );
 
+
+
 			// Color Priority: Highlight > Category > Global > Standard > Local
-			 if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
+			if (this._highlightWords.some(word => word.toLowerCase() === chipText.toLowerCase())) {
 				chip.style.background = this._highlightColor;
 				chip.title = translate("editor.labels.chip_highlighted");
 			} else if (catWithBg && this._chipsWithCatColor) {
@@ -5718,6 +6059,15 @@ async _adminOptions() {
 			} else {
 				chip.style.background = this._chipColor;
 			}
+
+            // check if chip is assigned to a category with font color
+            const catWithFont = this._categories?.find(
+                c => c.color && c.items?.some(item => item.toLowerCase() === chipText.toLowerCase())
+            );
+
+            if (catWithFont && this._chipsWithCatColor) {
+                chip.style.color = catWithFont.color;
+            }
 
             // Click or Double-Click-Logic
             const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
@@ -5766,7 +6116,144 @@ async _adminOptions() {
             this._historyEl.appendChild(chip);
         });
 		
-		// Add dishes
+        // Add dishes with selectable items
+        const dishes = this._dishes || [];
+
+        dishes.forEach(dish => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.textContent = dish.name || "(no dish)";
+            chip.style.background = dish.bgcolor || this._chipColorDish; // fallback
+
+			// Click or Double-Click-Logic
+			const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
+			chip.addEventListener(clickEvent, async () => {
+				if (this._addingBusy) return;
+                if (!dish.items || !dish.items.length) return;
+
+                // Overlay
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.background = 'rgba(0,0,0,0.4)';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.zIndex = '9999';
+                overlay.style.pointerEvents = 'auto';
+
+                // Container
+                const popup = document.createElement('div');
+                popup.style.background = 'var(--card-background-color, white)';
+                popup.style.padding = '16px';
+                popup.style.borderRadius = '8px';
+                popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                popup.style.maxWidth = '400px';
+                popup.style.width = '90%';
+                popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+                popup.style.color = 'var(--primary-text-color, black)';
+                popup.style.pointerEvents = 'auto';
+
+                // Title
+                const title = document.createElement('h3');
+                title.textContent = dish.name || "(no dish)";
+                title.style.marginBottom = '12px';
+                title.style.textAlign = 'center';
+                popup.appendChild(title);
+
+                // Items-List
+                const form = document.createElement('div');
+                form.style.display = 'flex';
+                form.style.flexDirection = 'column';
+                form.style.gap = '6px';
+                form.style.marginBottom = '16px';
+
+                const checkboxes = [];
+
+                dish.items.forEach(item => {
+                    const label = document.createElement('label');
+                    label.style.display = 'flex';
+                    label.style.alignItems = 'center';
+                    label.style.gap = '6px';
+                    label.style.cursor = 'pointer';
+
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.checked = true;
+                    cb.value = this._getNameOnly(item);
+
+                    const span = document.createElement('span');
+
+                    if(this._getQuantity(item) > 1) {
+                        span.textContent = `${cb.value} (${this._getQuantity(item)})`;
+                    } else {
+                        span.textContent = cb.value;
+                    }
+
+                    label.appendChild(cb);
+                    label.appendChild(span);
+                    form.appendChild(label);
+
+                    checkboxes.push({ cb, item });
+                });
+
+                popup.appendChild(form);
+
+                // Buttons
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.justifyContent = 'center';
+                btnContainer.style.gap = '12px';
+
+                const btnAdd = document.createElement('button');
+                btnAdd.textContent = translate("ui.common.ok");
+                btnAdd.style.backgroundColor = 'var(--primary-color, #03A9F4)';
+                btnAdd.style.color = 'white';
+                btnAdd.style.border = 'none';
+                btnAdd.style.padding = '8px 16px';
+                btnAdd.style.borderRadius = '4px';
+                btnAdd.style.cursor = 'pointer';
+
+                btnAdd.addEventListener('click', async () => {
+                    if (this._addingBusy) return;
+                    for (const { cb, item } of checkboxes) {
+                        if (cb.checked) {
+                            this._inputEl.value = this._getNameOnly(item);
+                            this._qtyEl.value = this._getQuantity(item);
+                            await this._onAdd();
+                        }
+                    }
+                    document.body.removeChild(overlay);
+                });
+
+                const btnCancel = document.createElement('button');
+                btnCancel.textContent = translate("ui.common.cancel");
+                btnCancel.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+                btnCancel.style.border = 'none';
+                btnCancel.style.padding = '8px 16px';
+                btnCancel.style.borderRadius = '4px';
+                btnCancel.style.cursor = 'pointer';
+                btnCancel.addEventListener('click', () => document.body.removeChild(overlay));
+
+                btnContainer.appendChild(btnAdd);
+                btnContainer.appendChild(btnCancel);
+                popup.appendChild(btnContainer);
+
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) document.body.removeChild(overlay);
+                });
+
+                overlay.appendChild(popup);
+                document.body.appendChild(overlay);
+            });
+
+            this._historyEl.appendChild(chip);
+        });
+
+        /*
 		const dishes = this._dishes || [];
 
 		dishes.forEach(dish => {
@@ -5793,6 +6280,7 @@ async _adminOptions() {
 
 			this._historyEl.appendChild(chip);
 		});
+        */
 
         // Add Chips from Category
         const hideConfiguredChips = false;        // to hide category chips if already in history or dishes --> not used at the moment
@@ -5812,10 +6300,26 @@ async _adminOptions() {
                 if(category.isDynamic) return; // skip dynamic categories
                 if (category.items.length === 0) return;
 
+                // Filter Chips --> check if any item in category matches filter
+                let openCatIfClosed = false;
+                if(this._allowFilterChips && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
+                    const filter = this._inputEl.value.trim().toLowerCase();
+
+                    const hasMatch = category.items.some(item =>
+                        typeof item === "string" &&
+                        item.toLowerCase().includes(filter)
+                    );
+
+                    if (!hasMatch) return;
+
+                    openCatIfClosed = true;
+                }
+
                 const categoryChip = document.createElement('div');
                 categoryChip.className = 'category-chip';
                 categoryChip.textContent = category.name || "(no category)";
                 categoryChip.style.background = category.bgcolor || this._chipColor;
+                if(category.color && this._chipsWithCatColor) categoryChip.style.color = category.color;
 
                 const storageKey = this._entity + "_category_collapsed_" + (category.name || "default");
                 const storedValue = localStorage.getItem(storageKey);
@@ -5825,6 +6329,9 @@ async _adminOptions() {
                 const content = document.createElement('div');
                 content.className = 'category-items';
                 content.style.display = isCollapsed ? 'none' : 'flex';
+
+                // Open Category if filter matches
+                if (openCatIfClosed) content.style.display = 'flex';
 
                 // Click on Category-Chip to toggle
                 categoryChip.addEventListener('click', () => {
@@ -5863,11 +6370,20 @@ async _adminOptions() {
                     chip.className = 'chip';
                     chip.textContent = itemText;
 
+                    // Filter Chips
+                    if(this._allowFilterChips && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
+                        if(!itemText.toLowerCase().includes(this._inputEl.value.trim().toLowerCase())) return;
+                        //console.info("[ha-shopping-list-improved] chipText:", itemText);
+                    }
+
                     if (category.bgcolor && this._chipsWithCatColor) {
                         chip.style.background = category.bgcolor;
-                        chip.title = `${translate("editor.labels.category")}: ${category.name}`;
                     } else {
                         chip.style.background = this._chipColor;
+                    }
+
+                    if (category.color && this._chipsWithCatColor) {
+                        chip.style.color = category.color;
                     }
 
                     const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
@@ -6479,28 +6995,63 @@ async _adminOptions() {
         }
     }
 
+    _chipExistsInCategory(categories, name) {
+        if (this._showCategoryChips !== true) return false; // echeck only if category chips are enabled
+        if (!name || typeof name !== "string") return false;
+
+        const search = name.trim().toLowerCase();
+
+        return categories.some(category => {
+            if (!Array.isArray(category.items)) return false;
+
+            return category.items.some(item =>
+                typeof item === "string" &&
+                item.toLowerCase() === search
+            );
+        });
+    }
+
     _addToHistory(name){
         name = (name || '').trim();
         if(!name) return;
 
+        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] _addToHistory called for:", name);
+
         const nameLower = name.toLowerCase();
+        let dontAdd = false;
 
         if (this._defaultChips?.some(chip => chip.toLowerCase() === nameLower) || !this._allowLocalChips) {
             if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Name is already in DefaultChips (case-insensitive):", name);
-            return;
+            dontAdd = true;
+        }
+
+        const exists = this._chipExistsInCategory(this._categories, name);
+
+        if (exists) {
+            if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Chip already exists in a category:", name);
+            dontAdd = true;
         }
 
         const idx = this._previous.findIndex(x => x.toLowerCase() === nameLower);
 
-        if(idx !== -1){
-            const original = this._previous[idx];
-            this._previous.splice(idx,1);
-            this._previous.unshift(original);
-        } else {
-            this._previous.unshift(name);
+        if (!dontAdd) {
+            if(idx !== -1){
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] _addToHistory - option if:", name);
+                const original = this._previous[idx];
+                this._previous.splice(idx,1);
+                this._previous.unshift(original);
+            } else {
+                if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] _addToHistory - option else:", name);
+                this._previous.unshift(name);
+            }
+
+            this._previous = this._previous.slice(0,2000);
         }
 
-        this._previous = this._previous.slice(0,2000);
+        // We have to run this again
+		this._inputEl.value = '';
+		this._qtyEl.value = '';
+
         this._saveHistory();
         this._renderHistory();
     }
