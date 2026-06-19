@@ -61,7 +61,7 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 ### 🧩 Layout & Display  
 - Display as a **standard card** or in **panel mode** (full-width page view).  
 - Optional **Bubble Card workaround mode** for special popup/layout use cases.
-- **Alphabetical sorting** of items and categories can be enabled or disabled.  
+- Configurable sorting: alphabetical, manual drag-and-drop, or no additional sorting. 
 - Choose how **completed items** appear: shown, hidden, or moved to the end.  
 - **Color highlighting** for completed or custom keywords (e.g., *Butter*, *Bananas*).  
 - Adjustable **font sizes** for title, list items, category headers, and chips.  
@@ -100,6 +100,18 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 - Optional suggestions/autocomplete while typing.
 - Remove individual or completed items with confirmation dialogs.
 - The delete confirmation popup can be disabled.
+
+### Item Descriptions
+- Optional support for item descriptions on compatible Home Assistant To-do entities.
+- Description fields are available in the add and edit dialogs when the selected entity supports descriptions.
+- Descriptions can be shown below the item name with `show_descriptions: true`.
+- The default Home Assistant shopping list entity does not support descriptions.
+
+### Sorting Modes
+- Alphabetical sorting with `sort_mode: alpha`.
+- Manual drag-and-drop sorting within categories with `sort_mode: manual`.
+- Unsorted/default entity order with `sort_mode: none`.
+- Existing `sort_items` configurations are still supported as a legacy fallback.
 
 ### 🔎 Suggestions / Autocomplete
 - Optional suggestions while typing in the input field.
@@ -497,7 +509,9 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `option_row_position` | `string` | `"bottom"` | Position of the option/export/action row: `"top"` or `"bottom"`. |
 | `quantity` | `string` | `"end"` | Position of the quantity: `"beginning"` or `"end"`. |
 | `acknowledged` | `string` | `"show"` | Show/hide completed items: `"show"`, `"hide"`, or `"end"`. |
-| `sort_items` | `boolean` | `true` | Enables alphabetical sorting of list items. |
+| `sort_items` | `boolean` | `true` | Legacy option. Use `sort_mode` instead. `true` equals `sort_mode: alpha`, `false` equals `sort_mode: none`. |
+| `sort_mode` | `string` | `"alpha"` | Defines how items are sorted: `alpha` sorts alphabetically, `manual` enables drag-and-drop sorting within a category, and `none` keeps the list order without additional sorting. |
+| `show_descriptions` | `boolean` | `false` | Shows item descriptions below the item name if the selected To-do entity supports descriptions. The default Home Assistant shopping list does not support descriptions. |
 | `acknowledge_deletion` | `boolean` | `true` | Shows a confirmation popup before deleting items. |
 | `show_quantity_box` | `boolean` | `true` | Shows the quantity input field. |
 | `show_submit_button` | `boolean` | `true` | Shows the submit/add button. |
@@ -562,7 +576,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `todo_yellow_h` | `number` | `10` | To-do Mode: warning threshold in minutes for hourly intervals. |
 | `todo_yellow_s` | `number` | `120` | To-do Mode: warning threshold in minutes for due dates without time. |
 | `list_reload_time` | `number` | `10` | To-do Mode refresh interval in seconds for updating due-time displays. Minimum `1`, maximum `3600`. |
-| `debug_mode` | `boolean` | `false` | Enables debug logging in the browser console. |
+| `debug_mode` | `boolean` | `false` | Enables additional debug output in the browser console. Should normally stay disabled. |
 
 
 
