@@ -537,6 +537,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `chips` | `string` / `array` | `""` | Default chips, either as array or comma-/semicolon-separated string. |
 | `highlight_words` | `string` / `array` | `""` | List of keywords to highlight in chips, either as array or comma-/semicolon-separated string. |
 | `show_category_chips` | `boolean` | `false` | Generates chips from category items. |
+| `show_category_add_all` | `boolean` | `false` | Shows an `All` chip inside expanded category chips. When clicked, it opens a selection dialog where all category items are preselected and individual items can be unchecked before adding. |
 | `chips_with_cat_color` | `boolean` | `true` | Uses category colors for category-related chips where available. |
 | `allow_filter_chips` | `boolean` | `false` | Filters chips while typing in the input field. |
 | `chip_file` | `string` | `""` | File path for an external/global chip definitions file. |
