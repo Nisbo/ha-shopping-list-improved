@@ -1,50 +1,42 @@
 # 🛒 Improved Shopping List Card
 `ha-shopping-list-improved`
 
-> ⚠️  ### Screenshots and Features are still from 2.1.0
+> ⚠️ Some screenshots may still be from older versions of the card.
 
-### The card is now also available in HACS, search for `Improved Shopping List Card` or use the link below to add it as a custom repository. 
+### The card is now also available in HACS, search for `Improved Shopping List Card` or use the link below to add it as a custom repository.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
 
-# 📖 🇬🇧 Foreword
+# 📖 Foreword
 
 How did this add-on come about? Simple: I was looking for a way to manage my shopping list directly through **Home Assistant**. The built-in list is unfortunately very basic. Then I tried **Tandoor** – quite nice, but it didn’t offer what I wanted. There was another shopping list add-on, but maintaining it was cumbersome, and you had to create a separate card for every item.
 
 In the end, I had no choice but to develop something myself.  
 The biggest challenge was: **keeping the WAF intact 😄**
 
-Now with version 2.0.0 its much more than a simple shopping list.
+Now with version 2.x it is much more than a simple shopping list.
 
 ---
 
-# 💡 🇬🇧 What is the *Improved Shopping List Card*?
+# 💡 What is the *Improved Shopping List Card*?
 
 The **Improved Shopping List Card** is a card for Home Assistant,  
-which significantly improves the original ToDo lists and makes it much easier to use.
-You have an Shopping List and a ToDo mode for different usecases.
+which significantly improves the original ToDo lists and makes them much easier to use.
+
+You have a **Shopping List** mode and a **ToDo** mode for different use cases.
 
 > ⚠️ **Note:**  
 > This card is based on the **original Home Assistant ToDo lists** and uses its data structure.  
-> All items you add in this card will also appear in the related ToDo list – and vice versa.
+> All items you add in this card will also appear in the related ToDo list – and vice versa.  
 > If you change anything outside the card, this can lead to problems within the card.
-
-
----
-
-![36BEAE63-5A5B-4642-8118-FBF62A201483_1_201_a](https://github.com/user-attachments/assets/9f98127a-df6b-44e2-8444-6d429d04a505)
-
-
-| Shopping List | Inventary Freezer | ToDo Mode |
-| ---- | ----- | ----- |
-|   ![2E0EACF1-6EEF-4C61-A3CC-5676A5C2CC3C_1_102_o](https://github.com/user-attachments/assets/3393b1b0-080d-4ae8-b314-e01df944cbee) |   ![2B4BB96F-5A97-4C13-BE6D-890148E3B3D5_1_102_o](https://github.com/user-attachments/assets/10a7f29c-de68-4e18-9ece-52aee948a00b)   |  ![8ADA2EC3-1224-4808-A196-1CD7C969D82B_1_102_o](https://github.com/user-attachments/assets/ecb45659-e31e-4b4b-832f-5348fe494863) |
-| <img width="511" height="868" alt="grafik" src="https://github.com/user-attachments/assets/6b101d82-13e2-4c2b-946d-cd19277698ab" /> | <img width="359" height="445" alt="grafik" src="https://github.com/user-attachments/assets/7f26a41b-eef1-41da-b61c-c2dc6a001bf1" /> <img width="232" height="272" alt="grafik" src="https://github.com/user-attachments/assets/01a1a797-3839-4ee2-ac26-f3f54d381fff" /> | <img width="507" height="910" alt="grafik" src="https://github.com/user-attachments/assets/5a3f93a6-342f-4ec2-a9c8-d3e366691213" />  |
-
+>
+> Some advanced information, such as categories or recurring intervals, is stored inside the item name.  
+> The card hides this formatting in its own UI, but other cards or Home Assistant views may show the raw item name.
 
 ---
 
-# ⚙️ 🇬🇧 Features
+# ⚙️ Features
 
 Since I prefer spending my time coding rather than writing documentation, I asked ChatGPT to create this feature overview based on the translation variables. It turned out quite well — even if some parts sound a bit funny. 😄
 
@@ -52,55 +44,89 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 - Switch between **Shopping List** and **To-Do List** mode.  
 - In **To-Do Mode**, you can set and manage **due dates**, recurring intervals, and automatic next-due calculations.  
 - In **Shopping Mode**, you get quantity controls, export buttons, and advanced chip handling.
+- The card uses Home Assistant's original ToDo entities as backend.
 
 ### 🧩 Layout & Display  
 - Display as a **standard card** or in **panel mode** (full-width page view).  
-- **Alphabetical sorting** of items and categories.  
+- Optional **Bubble Card workaround mode** for special popup/layout use cases.
+- **Alphabetical sorting** of items and categories can be enabled or disabled.  
 - Choose how **completed items** appear: shown, hidden, or moved to the end.  
 - **Color highlighting** for completed or custom keywords (e.g., *Butter*, *Bananas*).  
-- Adjustable **font sizes** for list items and category headers.  
+- Adjustable **font sizes** for title, list items, category headers, and chips.  
 - Optional **category counters** showing number of items per category.
+- Optionally hide category counters when all items in a category are completed.
+- Optional title icon and title information for ToDo due dates.
+- Optional custom CSS code for advanced styling.
 
 ### 🏷️ Categories & Dishes  
 - Automatically group items using **categories** from editor configuration (in YAML) or external text file.  
-- Categories can have a **name**, **icon**, and **background color**.  
-- Supports **merge modes** between local and global categories (local only, global only, mixed).  
+- Categories can have a **name**, **icon**, and **background color**.
+- Categories can also define a custom **text color**.
+- Supports **merge modes** between local, global, and dynamic categories.
+- Dynamic categories can be created from manually assigned items.
+- In ToDo Mode, categories can show the next due date and warning indicators.
 - Add entire **dishes** (sets of items) with one click — e.g., “Pizza Night” adds all required ingredients at once.
+- When adding a dish, you can select or deselect individual ingredients before adding them.
 
 ### 💡 Chips (Quick Add Buttons)  
 - Add frequently used items with **one click** using chips.  
 - Combine **standard (editor)**, **local (browser)**, and **global (text-file)** chips.  
 - Define how chips are merged (combined, prioritized, or global only).  
-- Choose **chip placement** (auto, right, bottom, multi-column).  
+- Choose **chip placement** (auto, right, bottom, multi-column, or hidden).  
 - Optional **color customization** for each chip type (default, local, global, dishes, important).  
 - Supports **click** or **double-click** behavior for adding items.
+- Optional **category chips** generated from configured category items.
+- Optional filtering of chips while typing in the input field.
+- Local browser chips are not duplicated when a matching category chip already exists.
 
 ### ➕ Item Management  
 - Quickly **increase or decrease quantities** via + and − buttons (shopping mode only).  
 - Show quantity **before** or **after** the item name (“10× Butter” / “Butter (10)”).  
 - Optionally show or hide the **quantity input field** and **Add button**.  
+- Optionally show quantity `1` for single items.
+- Optional input filter for list items.
+- Optional suggestions/autocomplete while typing.
 - Remove individual or completed items with confirmation dialogs.
+- The delete confirmation popup can be disabled.
+
+### 🔎 Suggestions / Autocomplete
+- Optional suggestions while typing in the input field.
+- Suggestions are based on configured category items.
+- Search is diacritic-insensitive, e.g. `cafe` can match `Café`.
+- Multi-word search is supported.
+- Suggestions support keyboard navigation and mouse selection.
+- Completed hidden items can optionally be included while searching.
 
 ### 🗓️ To-Do Due Dates & Recurrence  
 - Add **due dates** and **due times** for To-Do entries.  
 - Configure **recurring intervals** (e.g., every 3 days, every 2 months).  
 - **Automatically calculate** remaining time until the next due date.  
 - Visual **color warnings** for upcoming or overdue tasks (configurable thresholds).  
-- Optional “Set next due date from now” or “Remove due date” options.
+- Optional “Set next due date”, “Set next due date from now”, or “Remove due date” actions.
+- Optional warning indicators in category headers and in the card title.
+- Copy and paste due date/time, interval, and category data inside the ToDo popup.
 
 ### 📦 Import, Export & Sync (Shopping List Mode only)
-- This feature is designed to use the Shopping list in places without network, its not the best but better than nothing.
+- This feature is designed to use the shopping list in places without network. It is not perfect, but better than nothing.
 - **HTML Export** and **PDF Export** buttons for offline use.  
 - Sync changes directly (only HTML) with **Home Assistant** (only to HA) or use **offline lists**.  
 - Requires **long-lived access token** and optional **external https URL** for full export functionality.  
-- Manually update (by pressing the sync button) the associated Home Assistant entity when you have network again. (only HTML) 
+- Manually update, by pressing the sync button, the associated Home Assistant entity when you have network again. (only HTML)
+
+> ⚠️ **Security note:**  
+> Treat the token confidentially as it grants access to your Home Assistant system.  
+> If HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.
 
 ### 📱 Advanced Features  
 - Built-in **QR / EAN-13 Scanner** to quickly add multiple items via QR code (HTTPS required for camera access).  
-- Optional **Bubble Card Mode** for pop-up display integration.  
+- Supports QR codes with one or multiple items, one item per line.
+- Quantities can be specified in parentheses, e.g. `Bananas (6)`.
+- EAN lookup can use **Open Food Facts** for food products.
+- Optional local EAN file for custom product names and overrides.
+- Local EAN file supports **EAN-8, UPC (12), EAN-13, and GS1-14**.
 - Works with **global text files** for chips and categories (`/local/chips.txt`, `/local/categories.txt`).   
 - Fully localized in **English** 🇬🇧 and **German** 🇩🇪.
-
+- Debug logging can be enabled explicitly with `debug_mode: true`.
 
 > 💡 **Tip:**  
 > Check the screenshots below to see what’s possible!
@@ -111,7 +137,7 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Nisbo&repository=ha-shopping-list-improved&category=plugin)
 
 
-# Advaced Configuration / Information
+# Advanced Configuration / Information
 
 # Categories (via config editor)
 
@@ -450,7 +476,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 |-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
 | `title`        | `string`      | `""`                        | Title of the card. Leave empty to hide the title.                         |
 | `chips_position`        | `string`      | `"auto"`                        | Position of the chips: `auto`, `right`, `bottom`, `full`, `auto_panel`.                         |
-| `chips_width`           | `number`      | `250`                          | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
+| `chips_width`           | `number`      | `300`                          | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
 | `quantity`              | `string`      | `"end"`                        | Position of the quantity: `beginning` or `end`.                                                |
 | `acknowledged`          | `string`      | `"show"`                       | Show/hide completed items: `show`, `hide`, or `end`.                                           |
 | `chip_click`            | `string`      | `"single"`                     | Click behavior: `"single"` for single click, `"dblclick"` for double click.                    |
@@ -485,7 +511,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `chip_file`             | `string`      | `""`                           | File path for an external chip definitions file.                                             |
 | `ean_file`              | `string`      | `""`                           | File path for a local EAN list.                                             |
 | `category_file`         | `string`      | `""`                           | File path for an external category definitions file.                                         |
-| `category_merge_mode`   | `string`      | `"standard_only"`              | Category merging mode: `standard_only`, `global_only`, `local_first`, `global_first`, `global_combined`. |
+| `category_merge_mode`   | `string`      | `"local_only"`                 | Category merging mode for local, global, and dynamic categories. Examples: `local_only`, `global_only`, `dynamic_only`, `local_global`, `global_local`, `local_global_dynamic`. Add `_sorted` to sort each source or `_sorted_total` to sort the complete merged result. |
 | `show_qrscan_button`    | `boolean`     | `false`                        | Shows a button for QR code scanning.                                                         |
 | `mode`                  | `string`      | `"shopping"`                   | Mode of the list: `"shopping"` or `"todo"`.                                                  |
 | `todo_yellow_m`         | `number`      | `1440`                         | TODO mode: time in minutes for yellow highlight (months).                                    |
