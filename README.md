@@ -36,6 +36,18 @@ You have a **Shopping List** mode and a **ToDo** mode for different use cases.
 
 ---
 
+![36BEAE63-5A5B-4642-8118-FBF62A201483_1_201_a](https://github.com/user-attachments/assets/9f98127a-df6b-44e2-8444-6d429d04a505)
+
+
+| Shopping List | Inventary Freezer | ToDo Mode |
+| ---- | ----- | ----- |
+|   ![2E0EACF1-6EEF-4C61-A3CC-5676A5C2CC3C_1_102_o](https://github.com/user-attachments/assets/3393b1b0-080d-4ae8-b314-e01df944cbee) |   ![2B4BB96F-5A97-4C13-BE6D-890148E3B3D5_1_102_o](https://github.com/user-attachments/assets/10a7f29c-de68-4e18-9ece-52aee948a00b)   |  ![8ADA2EC3-1224-4808-A196-1CD7C969D82B_1_102_o](https://github.com/user-attachments/assets/ecb45659-e31e-4b4b-832f-5348fe494863) |
+| <img width="511" height="868" alt="grafik" src="https://github.com/user-attachments/assets/6b101d82-13e2-4c2b-946d-cd19277698ab" /> | <img width="359" height="445" alt="grafik" src="https://github.com/user-attachments/assets/7f26a41b-eef1-41da-b61c-c2dc6a001bf1" /> <img width="232" height="272" alt="grafik" src="https://github.com/user-attachments/assets/01a1a797-3839-4ee2-ac26-f3f54d381fff" /> | <img width="507" height="910" alt="grafik" src="https://github.com/user-attachments/assets/5a3f93a6-342f-4ec2-a9c8-d3e366691213" />  |
+
+
+
+---
+
 # ⚙️ Features
 
 Since I prefer spending my time coding rather than writing documentation, I asked ChatGPT to create this feature overview based on the translation variables. It turned out quite well — even if some parts sound a bit funny. 😄
