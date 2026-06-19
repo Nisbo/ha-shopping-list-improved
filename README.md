@@ -484,54 +484,85 @@ todo_yellow_s: 60    # 1 hour for dates without time
 
 # Parameters
 
-| Parameter               | Type          | Default                          | Description                                                                                     |
-|-------------------------|---------------|---------------------------------|-------------------------------------------------------------------------------------------------|
-| `title`        | `string`      | `""`                        | Title of the card. Leave empty to hide the title.                         |
-| `chips_position`        | `string`      | `"auto"`                        | Position of the chips: `auto`, `right`, `bottom`, `full`, `auto_panel`.                         |
-| `chips_width`           | `number`      | `300`                          | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
-| `quantity`              | `string`      | `"end"`                        | Position of the quantity: `beginning` or `end`.                                                |
-| `acknowledged`          | `string`      | `"show"`                       | Show/hide completed items: `show`, `hide`, or `end`.                                           |
-| `chip_click`            | `string`      | `"single"`                     | Click behavior: `"single"` for single click, `"dblclick"` for double click.                    |
-| `sub_text`              | `string`      | `"Tip: Use chips to quickly re-add items."` | Helper text displayed below the input field.                                |
-| `chip_merge`            | `string`      | `"combined"`                   | Order of chips: `combined`, `standard_first`, `browser_first`, `global_combined`, `global_only`. |
-| `chip_font_size`        | `number`      | `12`                           | Font size of the chips in pixels.                                                              |
-| `list_font_size`        | `number`      | `14`                           | Font size of the list items in pixels.                                                         |
-| `cat_font_size`         | `number`      | `16`                           | Font size of the category headers in pixels.                                                   |
-| `title_font_size`         | `number`      | `16`                           | Font size of title in pixels.                                                   |
-| `chip_color`            | `string`      | `"rgba(100,100,100,0.3)"`     | Color for local (browser) chips. Supports rgba and HEX formats.                                |
-| `chip_color_default`    | `string`      | `"rgba(100,100,255,0.3)"`     | Color for standard chips. Supports rgba and HEX formats.                                      |
-| `chip_color_global`     | `string`      | `"rgba(100,100,100,0.3)"`     | Color for global chips.                                                                        |
-| `chip_color_dish`       | `string`      | `"#745E3D"`                   | Color for chips related to dishes.                                                            |
-| `highlight_words`       | `string`      | `""`                           | List of keywords to highlight in chips, comma- or semicolon-separated.                        |
-| `highlight_color`       | `string`      | `"#D9534F"`                   | Color used for highlighted keywords. Supports rgba and HEX formats.                           |
-| `local_chips`           | `boolean`     | `true`                         | Enables or disables local (browser) chips.                                                    |
-| `chips`                 | `string`      | `""`                           | Default chips, comma- or semicolon-separated list.                                            |
-| `show_quantity_box`     | `boolean`     | `true`                         | Shows the quantity selection box.                                                             |
-| `show_submit_button`    | `boolean`     | `true`                         | Shows the submit ("Add") button.                                                              |
-| `show_plus_minus`       | `boolean`     | `true`                         | Shows plus and minus buttons for quantity adjustment.                                         |
-| `show_input_mask`       | `boolean`     | `true`                         | Shows the input mask (input field).                                                           |
-| `show_quantity_one`     | `boolean`     | `false`                        | Shows quantity "1" by default.                                                                |
-| `show_cat_popup`        | `boolean`     | `true`                         | Shows popup for category selection.                                                           |
-| `show_cat_count`        | `boolean`     | `true`                         | Shows the count of done/total items per category.                                             |
-| `show_cat_exclamation_mark` | `boolean` | `true`                         | Shows an exclamation mark in the category and title if there is a due item (ToDo Mode only).   |
-| `show_export_button`    | `boolean`     | `false`                        | Shows the export button.                                                                       |
-| `show_export_button_pdf`| `boolean`     | `false`                        | Shows the export as PDF button.                                                               |
-| `show_clear_button`     | `boolean`     | `true`                         | Shows the button to clear the list.                                                           |
-| `longlived_token`       | `string`      | `""`                           | Long-lived access token for API access.                                                      |
-| `external_url`          | `string`      | `""`                           | External URL, e.g. for QR scanner integration.                                                |
-| `bubble_card`           | `boolean`     | `false`                        | Enables bubble card mode.                                                                     |
-| `chip_file`             | `string`      | `""`                           | File path for an external chip definitions file.                                             |
-| `ean_file`              | `string`      | `""`                           | File path for a local EAN list.                                             |
-| `category_file`         | `string`      | `""`                           | File path for an external category definitions file.                                         |
-| `category_merge_mode`   | `string`      | `"local_only"`                 | Category merging mode for local, global, and dynamic categories. Examples: `local_only`, `global_only`, `dynamic_only`, `local_global`, `global_local`, `local_global_dynamic`. Add `_sorted` to sort each source or `_sorted_total` to sort the complete merged result. |
-| `show_qrscan_button`    | `boolean`     | `false`                        | Shows a button for QR code scanning.                                                         |
-| `mode`                  | `string`      | `"shopping"`                   | Mode of the list: `"shopping"` or `"todo"`.                                                  |
-| `todo_yellow_m`         | `number`      | `1440`                         | TODO mode: time in minutes for yellow highlight (months).                                    |
-| `todo_yellow_d`         | `number`      | `120`                          | TODO mode: time in minutes for yellow highlight (days).                                      |
-| `todo_yellow_h`         | `number`      | `10`                           | TODO mode: time in minutes for yellow highlight (hours).                                     |
-| `todo_yellow_s`         | `number`      | `120`                          | TODO mode: time in minutes for yellow highlight (seconds).                                   |
-
-
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `entity` | `string` | auto-detected To-do entity | Home Assistant To-do entity used by the card. If omitted, the card tries to auto-detect a suitable `todo.*` entity. |
+| `mode` | `string` | `"shopping"` | Mode of the card: `"shopping"` or `"todo"`. |
+| `title` | `string` | `""` | Title of the card. Leave empty to hide the title. |
+| `title_icon` | `string` | `""` | Optional icon shown before the title, e.g. `mdi:cart`. |
+| `show_title_info` | `boolean` | `true` | Shows next due date information below the title in To-do Mode. |
+| `show_title_info_icon` | `boolean` | `true` | Shows an icon before the title due-date information. |
+| `show_title_exclamation_mark` | `boolean` | `true` | Shows an exclamation mark in the title when due To-do entries exist. |
+| `input_row_position` | `string` | `"top"` | Position of the input row: `"top"` or `"bottom"`. |
+| `option_row_position` | `string` | `"bottom"` | Position of the option/export/action row: `"top"` or `"bottom"`. |
+| `quantity` | `string` | `"end"` | Position of the quantity: `"beginning"` or `"end"`. |
+| `acknowledged` | `string` | `"show"` | Show/hide completed items: `"show"`, `"hide"`, or `"end"`. |
+| `sort_items` | `boolean` | `true` | Enables alphabetical sorting of list items. |
+| `acknowledge_deletion` | `boolean` | `true` | Shows a confirmation popup before deleting items. |
+| `show_quantity_box` | `boolean` | `true` | Shows the quantity input field. |
+| `show_submit_button` | `boolean` | `true` | Shows the submit/add button. |
+| `show_plus_minus` | `boolean` | `true` | Shows plus and minus buttons for quantity adjustment in Shopping Mode. |
+| `show_input_mask` | `boolean` | `true` | Shows the input row. |
+| `show_quantity_one` | `boolean` | `false` | Shows quantity `1` by default. |
+| `show_clear_button` | `boolean` | `true` | Shows the button to clear completed items. |
+| `show_admin_button` | `boolean` | `true` | Shows the admin options button. |
+| `show_message_button` | `boolean` | `false` | Shows the notification/message button in Shopping Mode. |
+| `show_qrscan_button` | `boolean` | `false` | Shows the QR scanner button. Requires HTTPS for camera access. |
+| `sub_text` | `string` | `"Tip: Use chips to quickly re-add items."` | Helper text displayed below the input field. |
+| `bubble_card` | `boolean` | `false` | Enables the Bubble Card workaround mode. |
+| `allow_filter` | `boolean` | `false` | Enables filtering list items while typing in the input field. |
+| `allow_suggestions` | `boolean` | `false` | Enables suggestions/autocomplete while typing. |
+| `show_done_hidden_items_in_search` | `boolean` | `true` | Also shows completed/hidden items while searching. |
+| `capitalize_first_letter` | `boolean` | `false` | Automatically capitalizes the first letter of newly added items. |
+| `ean_file` | `string` | `""` | File path for a local EAN list. |
+| `chips_position` | `string` | `"auto"` | Position of the chips: `"auto"`, `"auto_panel"`, `"right"`, `"bottom"`, `"full"`, or `"none"`. |
+| `chips_width` | `number` | `300` | Width of the chips area in pixels, only relevant when `chips_position` is `"full"` or `"auto_panel"`. |
+| `chip_click` | `string` | `"single"` | Chip click behavior: `"single"` for single click, `"dblclick"` for double click. |
+| `chip_merge` | `string` | `"combined"` | Order of chips: `"combined"`, `"standard_first"`, `"browser_first"`, `"global_combined"`, or `"global_only"`. |
+| `local_chips` | `boolean` | `true` | Enables or disables local browser chips. |
+| `chips` | `string` / `array` | `""` | Default chips, either as array or comma-/semicolon-separated string. |
+| `highlight_words` | `string` / `array` | `""` | List of keywords to highlight in chips, either as array or comma-/semicolon-separated string. |
+| `show_category_chips` | `boolean` | `false` | Generates chips from category items. |
+| `chips_with_cat_color` | `boolean` | `true` | Uses category colors for category-related chips where available. |
+| `allow_filter_chips` | `boolean` | `false` | Filters chips while typing in the input field. |
+| `chip_file` | `string` | `""` | File path for an external/global chip definitions file. |
+| `categories` | `object` / YAML | unset | Category configuration. Categories can define `name`, `items`, `icon`, `bgcolor`, and optional `color`. |
+| `show_cat_popup` | `boolean` | `true` | Shows popup for category selection when adding uncategorized items. |
+| `show_cat_count` | `boolean` | `true` | Shows the count of done/total items per category. |
+| `hide_cat_count_all_done` | `boolean` | `false` | Hides the category count when all items in the category are completed. |
+| `show_cat_next_due` | `boolean` | `true` | Shows the next due date in category headers in To-do Mode. |
+| `cat_double_sized_icon` | `boolean` | `true` | Shows larger category icons in To-do Mode when next-due information is displayed. |
+| `show_cat_exclamation_mark` | `boolean` | `true` | Shows an exclamation mark in category headers when due To-do entries exist. |
+| `allow_dynamic_categories` | `boolean` | `false` | Allows dynamically created categories from manually assigned items. |
+| `category_file` | `string` | `""` | File path for an external/global category definitions file. |
+| `category_merge_mode` | `string` | `"local_only"` | Category merging mode for local, global, and dynamic categories. Examples: `local_only`, `global_only`, `dynamic_only`, `local_global`, `global_local`, `local_global_dynamic`. Add `_sorted` to sort each source or `_sorted_total` to sort the complete merged result. |
+| `dishes` | `object` / YAML | unset | Dish configuration. Each dish can define `name`, `items`, and optional `bgcolor`. |
+| `title_font_size` | `number` | `16` | Font size of the title in pixels. |
+| `cat_font_size` | `number` | `16` | Font size of category headers in pixels. |
+| `list_font_size` | `number` | `14` | Font size of list items in pixels. |
+| `chip_font_size` | `number` | `12` | Font size of chips in pixels. |
+| `chip_color` | `string` | `"rgba(100,100,100,0.3)"` | Color for local browser chips. Supports CSS color values. |
+| `chip_color_default` | `string` | `"rgba(100,100,255,0.3)"` | Color for standard/default chips. Supports CSS color values. |
+| `chip_color_global` | `string` | `"rgba(100,100,100,0.3)"` | Color for global chips. Supports CSS color values. |
+| `chip_color_dish` | `string` | `"#745E3D"` | Color for dish chips. Supports CSS color values. |
+| `highlight_color` | `string` | `"#D9534F"` | Color used for highlighted keywords. Supports CSS color values. |
+| `own_css` | `string` | `""` | Custom CSS code injected into the card. Invalid CSS may break the card layout. |
+| `show_export_button` | `boolean` | `false` | Shows the HTML export button in Shopping Mode. |
+| `show_export_button_pdf` | `boolean` | `false` | Shows the PDF export button in Shopping Mode. |
+| `longlived_token` | `string` | `""` | Long-lived access token used by the exported HTML file for sync back to Home Assistant. |
+| `external_url` | `string` | `""` | External Home Assistant URL used by the exported HTML file for sync. |
+| `notify_entity` | `string` | `""` | Home Assistant notify entity used for sending list notifications. |
+| `notify_entity_smtp` | `string` | `""` | SMTP notify service name for HTML email notifications. |
+| `notify_on_change` | `boolean` | `false` | Sends notifications when items are added, edited, or removed. |
+| `notify_on_change_all` | `boolean` | `false` | Sends the full list with change notifications. |
+| `notify_on_done` | `boolean` | `false` | Sends notifications when items are marked as done. |
+| `notify_on_change_time` | `number` | `0` | Delay in seconds before sending change notifications. Useful to group multiple changes. |
+| `todo_yellow_m` | `number` | `1440` | To-do Mode: warning threshold in minutes for monthly intervals. |
+| `todo_yellow_d` | `number` | `120` | To-do Mode: warning threshold in minutes for daily intervals. |
+| `todo_yellow_h` | `number` | `10` | To-do Mode: warning threshold in minutes for hourly intervals. |
+| `todo_yellow_s` | `number` | `120` | To-do Mode: warning threshold in minutes for due dates without time. |
+| `list_reload_time` | `number` | `10` | To-do Mode refresh interval in seconds for updating due-time displays. Minimum `1`, maximum `3600`. |
+| `debug_mode` | `boolean` | `false` | Enables debug logging in the browser console. |
 
 
 
