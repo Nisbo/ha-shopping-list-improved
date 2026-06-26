@@ -61,7 +61,7 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 ### 🧩 Layout & Display  
 - Display as a **standard card** or in **panel mode** (full-width page view).  
 - Optional **Bubble Card workaround mode** for special popup/layout use cases.
-- Configurable sorting: alphabetical, manual drag-and-drop, or no additional sorting. 
+- Configurable sorting: alphabetical, due-date based, manual drag-and-drop, or no additional sorting. 
 - Choose how **completed items** appear: shown, hidden, or moved to the end.  
 - **Color highlighting** for completed or custom keywords (e.g., *Butter*, *Bananas*).  
 - Adjustable **font sizes** for title, list items, category headers, and chips.  
@@ -79,6 +79,7 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 - In ToDo Mode, categories can show the next due date and warning indicators.
 - Add entire **dishes** (sets of items) with one click — e.g., “Pizza Night” adds all required ingredients at once.
 - When adding a dish, you can select or deselect individual ingredients before adding them.
+- Optional direct dish adding without the selection dialog.
 
 ### 💡 Chips (Quick Add Buttons)  
 - Add frequently used items with **one click** using chips.  
@@ -109,6 +110,7 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 
 ### Sorting Modes
 - Alphabetical sorting with `sort_mode: alpha`.
+- Due-date based sorting with `sort_mode: due`.
 - Manual drag-and-drop sorting within categories with `sort_mode: manual`.
 - Unsorted/default entity order with `sort_mode: none`.
 - Existing `sort_items` configurations are still supported as a legacy fallback.
@@ -128,7 +130,8 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 - Visual **color warnings** for upcoming or overdue tasks (configurable thresholds).  
 - Optional “Set next due date”, “Set next due date from now”, or “Remove due date” actions.
 - Optional warning indicators in category headers and in the card title.
-- Copy and paste due date/time, interval, and category data inside the ToDo popup.
+- Optional To-do filtering by due date, including today, overdue, upcoming, dated, and undated items.
+- Optional in-card To-do filter menu with per-list browser persistence.
 
 ### 📦 Import, Export & Sync (Shopping List Mode only)
 - This feature is designed to use the shopping list in places without network. It is not perfect, but better than nothing.
@@ -257,7 +260,9 @@ homeassistant:
 
 <img width="604" height="509" alt="grafik" src="https://github.com/user-attachments/assets/37b4255b-3b0c-4386-856f-e89a4904282c" />
 
-With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). Dishes will be always added at the end of the other chips.
+With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under `items`. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (`bgcolor`, e.g. `#247645`). Dishes will always be added at the end of the other chips.
+
+By default, clicking a dish opens a selection dialog where individual items can be unchecked before adding. If you always want to add all items of a dish immediately, set `dishes_confirm_add: false`.
 
 ```
 - name: McDonalds
@@ -510,7 +515,9 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `quantity` | `string` | `"end"` | Position of the quantity: `"beginning"` or `"end"`. |
 | `acknowledged` | `string` | `"show"` | Show/hide completed items: `"show"`, `"hide"`, or `"end"`. |
 | `sort_items` | `boolean` | `true` | Legacy option. Use `sort_mode` instead. `true` equals `sort_mode: alpha`, `false` equals `sort_mode: none`. |
-| `sort_mode` | `string` | `"alpha"` | Defines how items are sorted: `alpha` sorts alphabetically, `manual` enables drag-and-drop sorting within a category, and `none` keeps the list order without additional sorting. |
+| `sort_mode` | `string` | `"alpha"` | Defines how items are sorted: `alpha` sorts alphabetically, `due` sorts To-do items by due date, `manual` enables drag-and-drop sorting within a category, and `none` keeps the list order without additional sorting. |
+| `todo_filter` | `string` | `"all"` | Default To-do filter: `all`, `today`, `overdue`, `overdue_include_today`, `upcoming`, `dated`, or `undated`. Only applies in To-do Mode. |
+| `show_todo_filter_menu` | `boolean` | `false` | Shows an in-card To-do filter button. Users can temporarily change the active filter or remember it per To-do list in the browser. |
 | `show_descriptions` | `boolean` | `false` | Shows item descriptions below the item name if the selected To-do entity supports descriptions. The default Home Assistant shopping list does not support descriptions. |
 | `acknowledge_deletion` | `boolean` | `true` | Shows a confirmation popup before deleting items. |
 | `show_quantity_box` | `boolean` | `true` | Shows the quantity input field. |
@@ -552,6 +559,7 @@ todo_yellow_s: 60    # 1 hour for dates without time
 | `category_file` | `string` | `""` | File path for an external/global category definitions file. |
 | `category_merge_mode` | `string` | `"local_only"` | Category merging mode for local, global, and dynamic categories. Examples: `local_only`, `global_only`, `dynamic_only`, `local_global`, `global_local`, `local_global_dynamic`. Add `_sorted` to sort each source or `_sorted_total` to sort the complete merged result. |
 | `dishes` | `object` / YAML | unset | Dish configuration. Each dish can define `name`, `items`, and optional `bgcolor`. |
+| `dishes_confirm_add` | `boolean` | `true` | Opens a selection dialog before adding dish items. Set to `false` to add all items of a dish immediately when clicking the dish chip. |
 | `title_font_size` | `number` | `16` | Font size of the title in pixels. |
 | `cat_font_size` | `number` | `16` | Font size of category headers in pixels. |
 | `list_font_size` | `number` | `14` | Font size of list items in pixels. |
