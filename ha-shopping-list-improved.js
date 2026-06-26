@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.0.0";
+const version = "3.1.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -78,6 +78,16 @@ const TRANSLATIONS = {
         "ui.todo.list.minutes"                          : "Minuten",
         "ui.todo.set.completed.true"                    : "Als erledigt markieren",
         "ui.todo.set.completed.false"                   : "Erledigt entfernen",
+        "ui.todo.filter"                                : "Filter",
+        "ui.todo.filter.all"                            : "Alle",
+        "ui.todo.filter.today"                          : "Heute",
+        "ui.todo.filter.overdue"                        : "Überfällig",
+        "ui.todo.filter.overdue_include_today"          : "Überfällig inkl. heute",
+        "ui.todo.filter.upcoming"                       : "Zukünftig",
+        "ui.todo.filter.dated"                          : "Mit Fälligkeit",
+        "ui.todo.filter.undated"                        : "Ohne Fälligkeit",
+        "ui.todo.filter.remember"                       : "Für diese Liste merken",
+        "ui.todo.filter.reset"                          : "Gespeicherten Filter zurücksetzen",
         "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.", 
 		
         "editor.placeholders.quantity"                  : "Anzahl",
@@ -109,6 +119,7 @@ const TRANSLATIONS = {
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
 		"editor.labels.dishes" 							: "Gerichte",
+        "editor.labels.dishes_confirm_add"              : "Gerichte vor dem Hinzufügen bestätigen",
         "editor.labels.mode"                            : "Modus",
         "editor.labels.font.sizes"                      : "Schriftgrößen",
         "editor.labels.colors"                          : "Farbeinstellungen",
@@ -135,6 +146,8 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
         "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         "editor.labels.show_descriptions"               : "Beschreibungen anzeigen",
+        "editor.labels.todo_filter"                     : "To-Do-Filter",
+        "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
@@ -209,6 +222,15 @@ const TRANSLATIONS = {
         "editor.options.sort_mode.alpha"                : "Alphabetisch (A → Z)",
         "editor.options.sort_mode.manual"               : "Manuell per Drag-and-drop",
         "editor.options.sort_mode.none"                 : "Keine zusätzliche Sortierung",
+        "editor.options.sort_mode.due"                  : "Nach Fälligkeit (ToDo)",
+
+        "editor.options.todo_filter.all"                : "Alle",
+        "editor.options.todo_filter.today"              : "Heute",
+        "editor.options.todo_filter.overdue"            : "Überfällig",
+        "editor.options.todo_filter.overdue_include_today": "Überfällig inkl. heute",
+        "editor.options.todo_filter.upcoming"           : "Zukünftig",
+        "editor.options.todo_filter.dated"              : "Mit Fälligkeit",
+        "editor.options.todo_filter.undated"            : "Ohne Fälligkeit",
 
         "editor.options.mode.shopping"                  : "Einkaufsliste",
         "editor.options.mode.todo"                      : "To-Do-Liste",
@@ -268,7 +290,9 @@ const TRANSLATIONS = {
 
         "editor.helpers.show_title_info"                : "Zeigt im ToDo-Modus, sofern ein Titel angegeben wurde, die nächste Fälligkeit aller Einträge aller Kategorien unter dem Titel an. Abgelaufene Einträge werden hier nicht angezeigt, diese werden durch ein Ausrufezeichen rechts vom Namen angezeigt.",
         "editor.helpers.show_title_info_icon"           : "Zeigt vor dem Fälligkeitsdatum als optische Hervorhebung ein Kalender-Icon an.",
-        "editor.helpers.sort_mode"                      : "Legt fest, wie Artikel sortiert werden: alphabetisch, manuell per Drag-and-drop oder ohne zusätzliche Sortierung.",
+        "editor.helpers.sort_mode"                      : "Legt fest, wie Artikel sortiert werden: alphabetisch, manuell per Drag-and-drop, nach Fälligkeit oder ohne zusätzliche Sortierung.",
+        "editor.helpers.todo_filter"                    : "Legt den Standardfilter für To-Do-Einträge fest. Der Filter wirkt nur im To-Do-Modus.",
+        "editor.helpers.show_todo_filter_menu"          : "Zeigt im To-Do-Modus einen Filterbutton in der Buttonleiste an. Nutzer können den Filter dort temporär ändern oder pro Liste im Browser speichern.",
         "editor.helpers.todo_warning_thresholds"        : "Konfiguration der Warnschwellen im ToDo-Modus. Die Werte sind in Minuten anzugeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
         "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
         "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
@@ -352,7 +376,8 @@ const TRANSLATIONS = {
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
 		"editor.helpers.categories"                     : "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Optional kann jede Kategorie ein icon (z.B. mdi:apple) und eine Hintergrundfarbe bgcolor (z.B. #247645) haben. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann.",
-		"editor.helpers.dishes"							: "Mit Gerichte kannst du mehrere Artikel auf einmal hinzufügen. Jedes Gericht beginnt mit - name: <Gericht> und enthält darunter eine Liste von Artikeln unter items. Beispiel: - name: McDonalds items: - Cheeseburger - BigMac (2) - Pommes - Hamburger (4). Optional kann jedes Gericht eine Hintergrundfarbe (bgcolor, z. B. #247645) haben. Für mehr Informationen über den Aufbau, bitte in die Dokumentation schauen."
+		"editor.helpers.dishes"							: "Mit Gerichte kannst du mehrere Artikel auf einmal hinzufügen. Jedes Gericht beginnt mit - name: <Gericht> und enthält darunter eine Liste von Artikeln unter items. Beispiel: - name: McDonalds items: - Cheeseburger - BigMac (2) - Pommes - Hamburger (4). Optional kann jedes Gericht eine Hintergrundfarbe (bgcolor, z. B. #247645) haben. Für mehr Informationen über den Aufbau, bitte in die Dokumentation schauen.",
+        "editor.helpers.dishes_confirm_add"             : "Wenn aktiviert, öffnet ein Klick auf ein Gericht ein Auswahlfenster. Wenn deaktiviert, werden alle Artikel des Gerichts sofort hinzugefügt."
     },
 
     en: {
@@ -425,6 +450,16 @@ const TRANSLATIONS = {
         "ui.todo.list.minutes"                          : "Minutes",
         "ui.todo.set.completed.true"                    : "Mark as completed",
         "ui.todo.set.completed.false"                   : "Unmark completed",
+        "ui.todo.filter"                                : "Filter",
+        "ui.todo.filter.all"                            : "All",
+        "ui.todo.filter.today"                          : "Today",
+        "ui.todo.filter.overdue"                        : "Overdue",
+        "ui.todo.filter.overdue_include_today"          : "Overdue incl. today",
+        "ui.todo.filter.upcoming"                       : "Upcoming",
+        "ui.todo.filter.dated"                          : "Dated",
+        "ui.todo.filter.undated"                        : "Undated",
+        "ui.todo.filter.remember"                       : "Remember for this list",
+        "ui.todo.filter.reset"                          : "Reset saved filter",
         "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.", 
 
         "editor.placeholders.quantity"                  : "Quantity",
@@ -456,6 +491,7 @@ const TRANSLATIONS = {
         "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
 		"editor.labels.dishes" 							: "Dishes",
+        "editor.labels.dishes_confirm_add"              : "Confirm dishes before adding",
         "editor.labels.mode"                            : "Mode",
         "editor.labels.font.sizes"                      : "Font sizes",
         "editor.labels.colors"                          : "Color settings",
@@ -482,6 +518,8 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
         "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
         "editor.labels.show_descriptions"               : "Show descriptions",
+        "editor.labels.todo_filter"                     : "To-do filter",
+        "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
 		"editor.options.chips_position.auto_panel"      : "Automatic Panel / Bottom (depends on screen size)",
@@ -556,6 +594,15 @@ const TRANSLATIONS = {
         "editor.options.sort_mode.alpha"                : "Alphabetical (A → Z)",
         "editor.options.sort_mode.manual"               : "Manual drag-and-drop",
         "editor.options.sort_mode.none"                 : "No additional sorting",
+        "editor.options.sort_mode.due"                  : "Sort by due date (ToDo)",
+
+        "editor.options.todo_filter.all"                : "All",
+        "editor.options.todo_filter.today"              : "Today",
+        "editor.options.todo_filter.overdue"            : "Overdue",
+        "editor.options.todo_filter.overdue_include_today": "Overdue incl. today",
+        "editor.options.todo_filter.upcoming"           : "Upcoming",
+        "editor.options.todo_filter.dated"              : "Dated",
+        "editor.options.todo_filter.undated"            : "Undated",
 
         "editor.options.mode.shopping"                  : "Shopping list",
         "editor.options.mode.todo"                      : "To-do list",
@@ -614,7 +661,9 @@ const TRANSLATIONS = {
 
         "editor.helpers.show_title_info"                : "Displays the next due date of all items from all categories under the title when in ToDo mode, provided a title is set. Expired items are not shown here; they are indicated by an exclamation mark to the right of the name.",
         "editor.helpers.show_title_info_icon"           : "Displays a calendar icon before the due date as a visual highlight.",
-        "editor.helpers.sort_mode"                      : "Controls how items are sorted: alphabetically, manually via drag-and-drop, or without additional sorting.",
+        "editor.helpers.sort_mode"                      : "Controls how items are sorted: alphabetically, manually via drag-and-drop, by due date, or without additional sorting.",
+        "editor.helpers.todo_filter"                    : "Sets the default filter for To-do items. This filter only applies in To-do mode.",
+        "editor.helpers.show_todo_filter_menu"          : "Shows a filter button in the button row while in To-do mode. Users can temporarily change the filter there or remember it per list in the browser.",
         "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
         "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
         "editor.helpers.todo_yellow_d"                  : "Warning threshold for intervals in days, defined in minutes (Default: 120 = 2 hours)",
@@ -699,7 +748,8 @@ const TRANSLATIONS = {
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
 		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference.",
-		"editor.helpers.dishes"							: "With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). For more information about the structure, please check the documentation."
+		"editor.helpers.dishes"							: "With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). For more information about the structure, please check the documentation.",
+        "editor.helpers.dishes_confirm_add"             : "When enabled, clicking a dish opens a selection dialog. When disabled, all dish items are added immediately."
     }
 };
 
@@ -899,15 +949,21 @@ class HaShoppingListImproved extends HTMLElement {
         this._notifyEntitySMTP      = config.notify_entity_smtp || "";
         this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
         this._showCategoryAddAll    = (config.show_category_add_all === true) ? true : false;
+        this._dishesConfirmAdd      = (config.dishes_confirm_add === false) ? false : true;
         this._allowFilter           = (config.allow_filter === true) ? true : false;
         this._allowFilterChips      = (config.allow_filter_chips === true) ? true : false;
         this._allowSuggestions      = (config.allow_suggestions === true) ? true : false;
         this._capitalizeFirst       = (config.capitalize_first_letter === true) ? true : false;
-        const validSortModes        = ["alpha", "manual", "none"];
+        const validSortModes        = ["alpha", "manual", "none", "due"];
         const configuredSortMode    = validSortModes.includes(config.sort_mode) ? config.sort_mode : null;
         this._sortMode              = configuredSortMode || (config.sort_items === false ? "none" : "alpha"); // sort_mode is the new option.
         this._sortItems             = this._sortMode === "alpha";                                             // sort_items is kept only for backwards compatibility with older configurations and will be removed later.
-        this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true) ? true : false;
+        const validTodoFilters      = ["all", "today", "overdue", "overdue_include_today", "upcoming", "dated", "undated"];
+        this._validTodoFilters      = validTodoFilters;
+        this._todoFilterDefault     = validTodoFilters.includes(config.todo_filter) ? config.todo_filter : "all";
+        this._showTodoFilterMenu    = (config.show_todo_filter_menu === true) ? true : false;
+        const savedTodoFilter       = localStorage.getItem(this._getTodoFilterStorageKey());
+        this._activeTodoFilter      = validTodoFilters.includes(savedTodoFilter) ? savedTodoFilter : this._todoFilterDefault;
         this._showDoneItemsInSearch = (config.show_done_hidden_items_in_search === false) ? false : true;
         this._acknowledgeDeletion   = (config.acknowledge_deletion === false) ? false : true;
         this._showDescriptions      = (config.show_descriptions === true) ? true : false;
@@ -1265,12 +1321,31 @@ class HaShoppingListImproved extends HTMLElement {
                                 options: [
                                     { value: "alpha",  label: translate("editor.options.sort_mode.alpha") },
                                     { value: "manual", label: translate("editor.options.sort_mode.manual") },
+                                    { value: "due",    label: translate("editor.options.sort_mode.due") },
                                     { value: "none",   label: translate("editor.options.sort_mode.none") }
                                 ]
                             }
                         },
                         default: "alpha"
                     },
+                    {
+                        name: "todo_filter",
+                        selector: {
+                            select: {
+                                options: [
+                                    { value: "all",                   label: translate("editor.options.todo_filter.all") },
+                                    { value: "today",                 label: translate("editor.options.todo_filter.today") },
+                                    { value: "overdue",               label: translate("editor.options.todo_filter.overdue") },
+                                    { value: "overdue_include_today", label: translate("editor.options.todo_filter.overdue_include_today") },
+                                    { value: "upcoming",              label: translate("editor.options.todo_filter.upcoming") },
+                                    { value: "dated",                 label: translate("editor.options.todo_filter.dated") },
+                                    { value: "undated",               label: translate("editor.options.todo_filter.undated") }
+                                ]
+                            }
+                        },
+                        default: "all"
+                    },
+                    { name: "show_todo_filter_menu", selector: { boolean: {} }, default: false },
                     {
                         name: "quantity",
                         selector: {
@@ -1506,6 +1581,7 @@ class HaShoppingListImproved extends HTMLElement {
                 label: 'dishes.options',
                 icon: 'mdi:food-fork-drink',
                 schema: [
+                    { name: "dishes_confirm_add", selector: { boolean: {} }, default: true },
                     {
                         name: "dishes",
                         required: false,
@@ -2246,12 +2322,24 @@ class HaShoppingListImproved extends HTMLElement {
                         <div class="history" id="history"></div>
                     </div>
 
-                    <div id="optionRow" style="display:flex; justify-content:flex-end; margin-top:8px;">
-                        ${this._showMessageButton   ? `<button id="msgBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2709;&#xFE0F;</button> ` : ``}
-                        ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
-                        ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button> &#160;`  : ``}
-                        ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button> &#160;` : ``}
-                        ${this._showClearButton     ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
+                    <div id="optionRow" style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px;">
+                        <div id="optionRowLeft" style="display:flex; align-items:center; gap:6px;">
+                            ${this._mode === "todo" && this._showTodoFilterMenu ? `
+                                <button id="todoFilterBtn" style="display:flex; align-items:center; gap:8px; font-size:13px; background:none; border:none; cursor:pointer; color:var(--primary-text-color); padding:4px 6px;">
+                                    <ha-icon icon="mdi:filter-variant" style="width:18px; height:18px;"></ha-icon>
+                                    <span id="todoFilterLabel">${this._getTodoFilterLabel(this._activeTodoFilter || this._todoFilterDefault || "all")}</span>
+                                    <span style="font-size:10px;">▾</span>
+                                </button>
+                            ` : ``}
+                        </div>
+
+                        <div id="optionRowRight" style="display:flex; justify-content:flex-end; align-items:center; gap:6px;">
+                            ${this._showMessageButton   ? `<button id="msgBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2709;&#xFE0F;</button> ` : ``}
+                            ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
+                            ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button>`  : ``}
+                            ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button>` : ``}
+                            ${this._showClearButton     ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2318,6 +2406,10 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
         if (this._showAdminButton)     this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
         if (this._showMessageButton)   this._shadow.getElementById('msgBtn').addEventListener('click', () => this._notifyButtonPressed());
+        if (this._mode === "todo" && this._showTodoFilterMenu) {
+            this._shadow.getElementById('todoFilterBtn')?.addEventListener('click', () => this._openTodoFilterPopup());
+            this._updateTodoFilterButton();
+        }
 
         this._listEl             = this._shadow.getElementById('list');
         this._historyEl          = this._shadow.getElementById('history');
@@ -3308,7 +3400,7 @@ class HaShoppingListImproved extends HTMLElement {
                 description: item.description || ""
             }));
 
-			// Sort function: A --> Z, ignore quantity and category
+            // Sort function
             if (this._sortMode === "alpha") {
                 this._items.sort((a, b) => {
                     const nameA = this._getNameOnly(a.name);
@@ -3326,6 +3418,8 @@ class HaShoppingListImproved extends HTMLElement {
 
                     return sortA - sortB;
                 });
+            } else if (this._sortMode === "due" && this._mode === "todo") {
+                this._sortTodoItemsByDue(this._items);
             }
 
             if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
@@ -3377,7 +3471,7 @@ class HaShoppingListImproved extends HTMLElement {
         let nearestDueDateGlobalObj = null;
 
         // acknowledged-Filter
-        let itemsToRender = [...this._items];
+        let itemsToRender = this._filterTodoItemsByDue([...this._items]);
         let ack = this._config?.acknowledged;
 
         // Filter list while typing
@@ -3898,6 +3992,303 @@ class HaShoppingListImproved extends HTMLElement {
 
     _canManualSort() {
         return this._sortMode === "manual" && !this._isListFilterActive();
+    }
+
+    _getTodoFilterStorageKey() {
+        return `ha-shopping-list-improved_${this._entity || "default"}_todo_filter`;
+    }
+
+    _getTodoFilterLabel(filter) {
+        return translate(`ui.todo.filter.${filter}`);
+    }
+
+    _setActiveTodoFilter(filter, remember = false) {
+        if (!this._validTodoFilters?.includes(filter)) return;
+
+        this._activeTodoFilter = filter;
+
+        if (remember) {
+            localStorage.setItem(this._getTodoFilterStorageKey(), filter);
+        }
+
+        this._updateTodoFilterButton();
+        this._renderList();
+    }
+
+    _resetSavedTodoFilter() {
+        localStorage.removeItem(this._getTodoFilterStorageKey());
+        this._activeTodoFilter = this._todoFilterDefault || "all";
+        this._updateTodoFilterButton();
+        this._renderList();
+    }
+
+    _updateTodoFilterButton() {
+        const btn = this._shadow?.getElementById("todoFilterBtn");
+        const label = this._shadow?.getElementById("todoFilterLabel");
+        if (!btn || !label) return;
+
+        const activeFilter = this._activeTodoFilter || this._todoFilterDefault || "all";
+        label.textContent = this._getTodoFilterLabel(activeFilter);
+        btn.title = `${translate("ui.todo.filter")}: ${this._getTodoFilterLabel(activeFilter)}`;
+    }
+
+    _openTodoFilterPopup() {
+        if (this._mode !== "todo") return;
+
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.background = 'rgba(0,0,0,0.4)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+        overlay.style.pointerEvents = 'auto';
+
+        const popup = document.createElement('div');
+        popup.style.background = 'var(--card-background-color, white)';
+        popup.style.padding = '16px';
+        popup.style.borderRadius = '8px';
+        popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        popup.style.maxWidth = '360px';
+        popup.style.width = '90%';
+        popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+        popup.style.color = 'var(--primary-text-color, black)';
+        popup.style.pointerEvents = 'auto';
+
+        const title = document.createElement('h3');
+        title.textContent = translate("ui.todo.filter");
+        title.style.margin = '0 0 12px 0';
+        title.style.textAlign = 'center';
+        popup.appendChild(title);
+
+        const rememberRow = document.createElement('label');
+        rememberRow.style.display = 'flex';
+        rememberRow.style.alignItems = 'center';
+        rememberRow.style.gap = '8px';
+        rememberRow.style.margin = '10px 0 14px 0';
+        rememberRow.style.cursor = 'pointer';
+
+        const rememberCheckbox = document.createElement('input');
+        rememberCheckbox.type = 'checkbox';
+        rememberCheckbox.checked = localStorage.getItem(this._getTodoFilterStorageKey()) !== null;
+
+        const rememberText = document.createElement('span');
+        rememberText.textContent = translate("ui.todo.filter.remember");
+
+        rememberRow.appendChild(rememberCheckbox);
+        rememberRow.appendChild(rememberText);
+
+        const list = document.createElement('div');
+        list.style.display = 'flex';
+        list.style.flexDirection = 'column';
+        list.style.gap = '4px';
+
+        const filters = ["all", "today", "overdue", "overdue_include_today", "upcoming", "dated", "undated"];
+        const activeFilter = this._activeTodoFilter || this._todoFilterDefault || "all";
+
+        filters.forEach(filter => {
+            const row = document.createElement('button');
+            row.type = 'button';
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.justifyContent = 'space-between';
+            row.style.width = '100%';
+            row.style.padding = '8px 10px';
+            row.style.border = 'none';
+            row.style.borderRadius = '6px';
+            row.style.cursor = 'pointer';
+            row.style.textAlign = 'left';
+            row.style.background = filter === activeFilter
+                ? 'var(--secondary-background-color)'
+                : 'transparent';
+            row.style.color = 'var(--primary-text-color)';
+
+            const rowLabel = document.createElement('span');
+            rowLabel.textContent = this._getTodoFilterLabel(filter);
+
+            const marker = document.createElement('span');
+            marker.textContent = filter === activeFilter ? '✓' : '';
+            marker.style.color = 'var(--primary-color)';
+            marker.style.fontWeight = '600';
+
+            row.appendChild(rowLabel);
+            row.appendChild(marker);
+
+            row.addEventListener('click', () => {
+                this._setActiveTodoFilter(filter, rememberCheckbox.checked);
+                overlay.remove();
+            });
+
+            list.appendChild(row);
+        });
+
+        popup.appendChild(list);
+        popup.appendChild(rememberRow);
+
+        const footer = document.createElement('div');
+        footer.style.display = 'flex';
+        footer.style.justifyContent = 'space-between';
+        footer.style.gap = '8px';
+
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = translate("ui.todo.filter.reset");
+        resetBtn.style.background = 'transparent';
+        resetBtn.style.border = 'none';
+        resetBtn.style.color = 'var(--primary-color)';
+        resetBtn.style.cursor = 'pointer';
+        resetBtn.style.padding = '8px';
+
+        resetBtn.addEventListener('click', () => {
+            this._resetSavedTodoFilter();
+            overlay.remove();
+        });
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = translate("ui.common.cancel");
+        cancelBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
+        cancelBtn.style.border = 'none';
+        cancelBtn.style.padding = '8px 12px';
+        cancelBtn.style.borderRadius = '4px';
+        cancelBtn.style.cursor = 'pointer';
+
+        cancelBtn.addEventListener('click', () => overlay.remove());
+
+        footer.appendChild(resetBtn);
+        footer.appendChild(cancelBtn);
+        popup.appendChild(footer);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.remove();
+        });
+
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }   
+
+    _parseTodoDueDate(due) {
+        if (!due) return null;
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(due)) {
+            const [year, month, day] = due.split("-").map(Number);
+            return new Date(year, month - 1, day, 0, 0, 0, 0);
+        }
+
+        const normalized = String(due).includes("T")
+            ? String(due)
+            : String(due).replace(" ", "T");
+
+        const parsed = new Date(normalized);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    _getTodoDueTimestamp(item) {
+        const dueDate = this._parseTodoDueDate(item?.due);
+        return dueDate ? dueDate.getTime() : null;
+    }
+
+    _getLocalDayStart(date = new Date()) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    }
+
+    _getLocalNextDayStart(date = new Date()) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).getTime();
+    }
+
+    _isTodoItemOverdue(item, now = new Date(), includeTodayDateOnly = false) {
+        if (!item?.due) return false;
+
+        const dueTimestamp = this._getTodoDueTimestamp(item);
+        if (dueTimestamp === null) return false;
+
+        // Date-only tasks are treated as whole-day tasks.
+        // Without includeTodayDateOnly, today's date-only tasks are not overdue yet.
+        // With includeTodayDateOnly, today's date-only tasks are included on purpose.
+        if (/^\d{4}-\d{2}-\d{2}$/.test(item.due)) {
+            return includeTodayDateOnly
+                ? dueTimestamp < this._getLocalNextDayStart(now)
+                : dueTimestamp < this._getLocalDayStart(now);
+        }
+
+        // Date-time tasks are overdue only when the exact time is in the past.
+        return dueTimestamp < now.getTime();
+    }
+
+    _isTodoItemDueToday(item, now = new Date()) {
+        if (!item?.due) return false;
+
+        const dueTimestamp = this._getTodoDueTimestamp(item);
+        if (dueTimestamp === null) return false;
+
+        return dueTimestamp >= this._getLocalDayStart(now)
+            && dueTimestamp < this._getLocalNextDayStart(now);
+    }
+
+    _filterTodoItemsByDue(items) {
+        const activeFilter = this._activeTodoFilter || this._todoFilterDefault || "all";
+
+        if (this._mode !== "todo" || activeFilter === "all") {
+            return items;
+        }
+
+        const now = new Date();
+
+        switch (activeFilter) {
+            case "today":
+                return items.filter(item => this._isTodoItemDueToday(item, now));
+
+            case "overdue":
+                return items.filter(item => this._isTodoItemOverdue(item, now, false));
+
+            case "overdue_include_today":
+                return items.filter(item => this._isTodoItemOverdue(item, now, true));
+
+            case "upcoming":
+                return items.filter(item => {
+                    const dueTimestamp = this._getTodoDueTimestamp(item);
+                    if (dueTimestamp === null) return false;
+
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(item.due)) {
+                        return dueTimestamp >= this._getLocalNextDayStart(now);
+                    }
+
+                    return dueTimestamp > now.getTime();
+                });
+
+            case "dated":
+                return items.filter(item => !!item.due);
+
+            case "undated":
+                return items.filter(item => !item.due);
+
+            default:
+                return items;
+        }
+    }
+
+    _sortTodoItemsByDue(items) {
+        return items.sort((a, b) => {
+            const dueA = this._getTodoDueTimestamp(a);
+            const dueB = this._getTodoDueTimestamp(b);
+
+            if (dueA === null && dueB === null) {
+                const nameA = this._getNameOnly(a.name);
+                const nameB = this._getNameOnly(b.name);
+                return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: "base" });
+            }
+
+            if (dueA === null) return 1;
+            if (dueB === null) return -1;
+
+            if (dueA !== dueB) return dueA - dueB;
+
+            const nameA = this._getNameOnly(a.name);
+            const nameB = this._getNameOnly(b.name);
+            return nameA.toLowerCase().localeCompare(nameB.toLowerCase(), undefined, { sensitivity: "base" });
+        });
     }
 
     // local date-time format
@@ -6406,9 +6797,18 @@ class HaShoppingListImproved extends HTMLElement {
 
 			// Click or Double-Click-Logic
 			const clickEvent = this._chipClick === 'click' ? 'click' : 'dblclick';
-			chip.addEventListener(clickEvent, async () => {
-				if (this._addingBusy) return;
+            chip.addEventListener(clickEvent, async () => {
+                if (this._addingBusy) return;
                 if (!dish.items || !dish.items.length) return;
+
+                if (!this._dishesConfirmAdd) {
+                    for (const item of dish.items) {
+                        this._inputEl.value = this._getNameOnly(item);
+                        this._qtyEl.value = this._getQuantity(item);
+                        await this._onAdd();
+                    }
+                    return;
+                }
 
                 // Overlay
                 const overlay = document.createElement('div');
