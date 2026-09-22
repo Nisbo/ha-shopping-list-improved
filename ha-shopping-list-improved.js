@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.1.0";
+const version = "3.2.0-BETA-1.6";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -52,6 +52,10 @@ const TRANSLATIONS = {
         "ui.admin.options.manual_assigned"              : "Manuell zugewiesene Artikel",
         "ui.admin.options.manual_assigned_copy"         : "Kopieren",
         "ui.admin.options.manual_assigned_include"      : "Inklusive bereits konfigurierte Artikel",
+        "ui.admin.options.process_ean_scans"             : "EAN-Scans auf diesem Gerät verarbeiten",
+        "ui.admin.options.process_ean_scans_help"        : "Wenn aktiviert, verarbeitet diese Karte auf diesem Gerät passende EAN-Scans. Während des Scannens muss die Karte sichtbar sein und darf nicht gleichzeitig in einem weiteren Tab oder Fenster geöffnet sein.",
+        "ui.admin.options.ean_scanner_mac"               : "Scanner-MAC:",
+        "ui.admin.options.ean_scanner_mac_missing"       : "Keine Scanner-MAC konfiguriert. Diese Karte ist für EAN-Scans aktiviert, kann aber keine Scans verarbeiten. Lege ean_scanner_mac in der YAML-Konfiguration der Karte fest.",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -129,6 +133,7 @@ const TRANSLATIONS = {
         "editor.labels.dishes.options"                  : "Gerichte",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Artikel",
+        "editor.labels.ean_scanner.options"             : "EAN Scanner",
         "editor.labels.general.options"                 : "Allgemeine Einstellungen",
         "editor.labels.input_row_position"              : "Position der Eingabemaske",
         "editor.labels.option_row_position"             : "Position der Buttonleiste",
@@ -146,6 +151,9 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
         "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         "editor.labels.show_descriptions"               : "Beschreibungen anzeigen",
+        "editor.labels.show_ean_brand"                  : "Marke aus EAN-Daten anzeigen",
+        "editor.labels.show_ean_quantity"               : "Produktmenge aus EAN-Daten anzeigen",
+        "editor.labels.ean_scanner_mac"                 : "Bluetooth-MAC-Adresse des EAN-Scanners",
         "editor.labels.todo_filter"                     : "To-Do-Filter",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
         
@@ -318,6 +326,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_done_hidden_items_in_search": "Wenn die Filterfunktion aktiviert ist, werden auch erledigte (verborgene) Artikel in den Suchergebnissen angezeigt.",
         "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
         "editor.helpers.show_descriptions"              : "Zeigt die Beschreibung eines Artikels unterhalb des Artikelnamens an, sofern die ausgewählte To-Do-Liste Beschreibungen unterstützt.",
+        "editor.helpers.show_ean_brand"                 : "Fügt die Marke aus den EAN-Produktdaten hinzu, sofern sie nicht bereits im Produktnamen enthalten ist.",
+        "editor.helpers.show_ean_quantity"              : "Fügt die Verpackungsmenge aus den EAN-Produktdaten hinzu.",
+        "editor.helpers.ean_scanner_mac"                : "MAC-Adresse des Bluetooth-Scanners, dessen Ereignisse diese Karte verarbeitet. Beispiel: AA:FC:87:59:04:38.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
@@ -327,6 +338,7 @@ const TRANSLATIONS = {
         "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
         "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
         "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
+        "editor.helpers.ean_scanner.options"            : "Hier kannst du die EAN-Erkennung und den Bluetooth-Scanner konfigurieren. Damit Scanner-Ereignisse verarbeitet werden, musst du die Funktion zusätzlich in den Admin-Optionen der Karte auf dem jeweiligen Gerät aktivieren.",
         "editor.helpers.general.options"                : "Hier kannst du allgemeine Einstellungen für die Karte konfigurieren.",
         "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet. Diese hat allerdings keine Fälligkeits-Funktion und sollte somit nur im Modus 'Einkaufsliste' und nicht im Modus 'To-Do-Liste' verwendet werden.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
@@ -424,6 +436,10 @@ const TRANSLATIONS = {
         "ui.admin.options.manual_assigned"              : "Manually Assigned Items",
         "ui.admin.options.manual_assigned_copy"         : "Copy",
         "ui.admin.options.manual_assigned_include"      : "Include already configured items",
+        "ui.admin.options.process_ean_scans"             : "Process EAN scans on this device",
+        "ui.admin.options.process_ean_scans_help"        : "When enabled, this card processes matching EAN scans on this device. The card must be visible while scanning and must not be open in another tab or window at the same time.",
+        "ui.admin.options.ean_scanner_mac"               : "Scanner MAC:",
+        "ui.admin.options.ean_scanner_mac_missing"       : "No scanner MAC is configured. This card is enabled for EAN scans but cannot process them. Set ean_scanner_mac in the card's YAML configuration.",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -501,6 +517,7 @@ const TRANSLATIONS = {
         "editor.labels.dishes.options"                  : "Dishes",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Items",
+        "editor.labels.ean_scanner.options"             : "EAN Scanner",
         "editor.labels.general.options"                 : "General settings",
         "editor.labels.input_row_position"              : "Input row position",
         "editor.labels.option_row_position"             : "Button row position",
@@ -518,6 +535,9 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
         "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
         "editor.labels.show_descriptions"               : "Show descriptions",
+        "editor.labels.show_ean_brand"                  : "Show brand from EAN data",
+        "editor.labels.show_ean_quantity"               : "Show product quantity from EAN data",
+        "editor.labels.ean_scanner_mac"                 : "Bluetooth MAC address of the EAN scanner",
         "editor.labels.todo_filter"                     : "To-do filter",
         "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
@@ -689,6 +709,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_done_hidden_items_in_search": "When filtering items in the list, this option ensures that completed (and hidden) items are also included in the search results.",
         "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
         "editor.helpers.show_descriptions"              : "Shows the item description below the item name, if the selected To-do list supports descriptions.",
+        "editor.helpers.show_ean_brand"                 : "Appends the brand from the EAN product data unless it is already part of the product name.",
+        "editor.helpers.show_ean_quantity"              : "Appends the package quantity from the EAN product data.",
+        "editor.helpers.ean_scanner_mac"                : "MAC address of the Bluetooth scanner whose events this card processes. Example: AA:FC:87:59:04:38.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
@@ -698,6 +721,7 @@ const TRANSLATIONS = {
         "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
         "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
         "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
+        "editor.helpers.ean_scanner.options"            : "Here you can configure EAN recognition and the Bluetooth scanner. To process scanner events, you must also enable the function in the card's admin options on the respective device.",
         "editor.helpers.general.options"                : "Here you can configure general settings for the card.",
         "editor.helpers.entity"                         : "If no Entity is selected, Home Assistant's default shopping list will be used automatically. However, this list does not have a due date function and should therefore only be used in 'Shopping List' mode, not in 'To-Do List' mode.",
         "editor.helpers.mode"                           : "Defines how the list is used. In 'Shopping List' mode, extended functions for the original shopping list are available, but without due dates. In 'To-Do List' mode, due dates can additionally be set and managed, with slightly different handling. Note: The original Home Assistant shopping list entity 'Shopping List' does not support due dates. In To-Do mode, there is also no quantity input, no plus or minus buttons, no export buttons, and no button to delete completed entries.",
@@ -1120,6 +1144,7 @@ const TRANSLATIONS = {
 let debugMode = false;
 
 const TODO_FEATURE_SET_DESCRIPTION = 64;
+const EAN_SCAN_DEVICE_STORAGE_KEY = "ha-shopping-list-improved-process-ean-scans";
 
 // Detect HA-Language via home-assistant element
 function detectLanguage() {
@@ -1392,6 +1417,11 @@ class HaShoppingListImproved extends HTMLElement {
         this._categoryMergeMode     = allowedModes.includes(config.category_merge_mode) ? config.category_merge_mode : "local_only";
         this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
 		this._mode                  = (config.mode === "todo") ? "todo" : "shopping";
+
+        this._eanScannerMac         = String(config.ean_scanner_mac || "").trim();
+        this._showEanBrand          = (config.show_ean_brand === true);
+        this._showEanQuantity       = (config.show_ean_quantity === true);
+
         this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
         this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
         this._todoYellowH           = config.todo_yellow_h || 10;   // Hours   10 Minutes
@@ -1744,11 +1774,6 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
                     { name: "show_descriptions", selector: { boolean: {} }, default: false },
                     {
-                        name: "ean_file",
-                        selector: { text: {} },
-                        default: ""
-                    },
-                    {
                         type: 'expandable',
                         label: 'todo_warning_thresholds',
                         icon: 'mdi:alarm-light',
@@ -1774,6 +1799,27 @@ class HaShoppingListImproved extends HTMLElement {
                                 default: 120
                             }
                         ]
+                    }
+                ]
+            },
+
+            // EAN Scanner
+            {
+                type: 'expandable',
+                label: 'ean_scanner.options',
+                icon: 'mdi:barcode-scan',
+                schema: [
+                    {
+                        name: "ean_file",
+                        selector: { text: {} },
+                        default: ""
+                    },
+                    { name: "show_ean_brand", selector: { boolean: {} }, default: false },
+                    { name: "show_ean_quantity", selector: { boolean: {} }, default: false },
+                    {
+                        name: "ean_scanner_mac",
+                        selector: { text: {} },
+                        default: ""
                     }
                 ]
             },
@@ -2207,6 +2253,12 @@ class HaShoppingListImproved extends HTMLElement {
                     this._scheduleRefresh(300, "call_service", eventEntity);
                 }
             });
+
+            subscribe("eyoyo_barcode_scanned", (event) => {
+                this._handleEanScanEvent(event).catch((error) => {
+                    console.error("[ha-shopping-list-improved] Unable to process EAN scan event:", error);
+                });
+            });
         }
 
         // Timer for ToDo Time till next due updates
@@ -2270,6 +2322,106 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._unsubEvents = null;
         this._firstStartDone = false;
+    }
+
+    _getEanScanCardId() {
+        return `${this._mode || "shopping"}::${this._entity || ""}`;
+    }
+
+    _loadEanScanDeviceSettings() {
+        try {
+            const stored = localStorage.getItem(EAN_SCAN_DEVICE_STORAGE_KEY);
+            if (!stored) return {};
+
+            const settings = JSON.parse(stored);
+            if (settings && typeof settings === "object" && !Array.isArray(settings)) {
+                return settings;
+            }
+
+            localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, "{}");
+            return {};
+        } catch (error) {
+            try {
+                localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, "{}");
+            } catch (_storageError) {
+                // The caller will keep EAN processing disabled if local storage is unavailable.
+            }
+            return {};
+        }
+    }
+
+    _isEanScanEnabledOnThisDevice() {
+        const settings = this._loadEanScanDeviceSettings();
+        return settings[this._getEanScanCardId()] === true;
+    }
+
+    _setEanScanEnabledOnThisDevice(enabled) {
+        const settings = this._loadEanScanDeviceSettings();
+        const cardId = this._getEanScanCardId();
+
+        if (enabled) {
+            settings[cardId] = true;
+        } else {
+            delete settings[cardId];
+        }
+
+        localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, JSON.stringify(settings));
+    }
+
+    _normalizeBluetoothAddress(address) {
+        return String(address || "").trim().replace(/[^0-9a-f]/gi, "").toUpperCase();
+    }
+
+    _isVisibleForEanScan() {
+        if (!this.isConnected || document.visibilityState === "hidden") return false;
+
+        const rect = this.getBoundingClientRect();
+        return rect.width > 0
+            && rect.height > 0
+            && rect.bottom > 0
+            && rect.right > 0
+            && rect.top < window.innerHeight
+            && rect.left < window.innerWidth;
+    }
+
+    async _handleEanScanEvent(event) {
+        if (this._mode !== "shopping") return;
+        if (!this._isEanScanEnabledOnThisDevice()) return;
+        if (!this._isVisibleForEanScan()) return;
+
+        const configuredAddress = this._normalizeBluetoothAddress(this._eanScannerMac);
+        const eventAddress = this._normalizeBluetoothAddress(event?.data?.address);
+        if (configuredAddress.length !== 12 || configuredAddress !== eventAddress) return;
+
+        const rawCode = event?.data?.code;
+        const code = rawCode === undefined || rawCode === null
+            ? ""
+            : String(rawCode).trim();
+
+        if (!/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(code)) {
+            if (debugMode) {
+                console.warn("[ha-shopping-list-improved][DEBUG] Ignored invalid EAN scan event:", event);
+            }
+            return;
+        }
+
+        if (!this._inputEl || !this._qtyEl) {
+            console.warn("[ha-shopping-list-improved] EAN scan ignored because the input elements are unavailable.");
+            return;
+        }
+
+        if (debugMode) {
+            console.info("[ha-shopping-list-improved][DEBUG] Processing EAN scan event:", {
+                code,
+                source: event?.data?.source || null,
+                address: event?.data?.address || null,
+                entity: this._entity
+            });
+        }
+
+        this._inputEl.value = code;
+        this._qtyEl.value = "1";
+        await this._onAdd();
     }
 
     _updateTimes() {
@@ -2831,6 +2983,8 @@ class HaShoppingListImproved extends HTMLElement {
             popup.style.display = 'flex';
             popup.style.flexDirection = 'column';
             popup.style.gap = '20px';
+            popup.style.maxHeight = '90vh';
+            popup.style.overflowY = 'auto';
 
             // Title
             const title = document.createElement('h2');
@@ -3108,6 +3262,72 @@ class HaShoppingListImproved extends HTMLElement {
             popup.appendChild(block2Container);
             popup.appendChild(block3Container);
 
+            // Process EAN scans on this browser/device
+            const eanScanContainer = document.createElement('div');
+            eanScanContainer.style.textAlign = 'left';
+
+            const eanScanControl = document.createElement('label');
+            eanScanControl.style.display = 'flex';
+            eanScanControl.style.alignItems = 'center';
+            eanScanControl.style.gap = '8px';
+            eanScanControl.style.fontWeight = '600';
+            eanScanControl.style.cursor = 'pointer';
+
+            const eanScanCheckbox = document.createElement('input');
+            eanScanCheckbox.type = 'checkbox';
+
+            eanScanCheckbox.checked = this._isEanScanEnabledOnThisDevice();
+
+            const eanScanLabel = document.createElement('span');
+            eanScanLabel.textContent = translate("ui.admin.options.process_ean_scans");
+
+            const eanScanHelp = document.createElement('div');
+            eanScanHelp.textContent = translate("ui.admin.options.process_ean_scans_help");
+            eanScanHelp.style.marginTop = '6px';
+            eanScanHelp.style.fontSize = '12px';
+            eanScanHelp.style.lineHeight = '1.4';
+            eanScanHelp.style.color = 'var(--secondary-text-color, #666)';
+
+            const eanScannerMac = document.createElement('div');
+            eanScannerMac.textContent = `${translate("ui.admin.options.ean_scanner_mac")} ${this._eanScannerMac || '—'}`;
+            eanScannerMac.style.marginTop = '6px';
+            eanScannerMac.style.fontSize = '12px';
+            eanScannerMac.style.lineHeight = '1.4';
+            eanScannerMac.style.color = 'var(--secondary-text-color, #666)';
+
+            const eanScannerMacWarning = document.createElement('div');
+            eanScannerMacWarning.textContent = translate("ui.admin.options.ean_scanner_mac_missing");
+            eanScannerMacWarning.style.marginTop = '6px';
+            eanScannerMacWarning.style.fontSize = '12px';
+            eanScannerMacWarning.style.fontWeight = '600';
+            eanScannerMacWarning.style.lineHeight = '1.4';
+            eanScannerMacWarning.style.color = 'var(--error-color, #db4437)';
+
+            const updateEanScannerMacWarning = () => {
+                eanScannerMacWarning.style.display = eanScanCheckbox.checked && !this._eanScannerMac
+                    ? 'block'
+                    : 'none';
+            };
+            updateEanScannerMacWarning();
+
+            eanScanCheckbox.addEventListener('change', () => {
+                try {
+                    this._setEanScanEnabledOnThisDevice(eanScanCheckbox.checked);
+                    updateEanScannerMacWarning();
+                } catch (error) {
+                    eanScanCheckbox.checked = !eanScanCheckbox.checked;
+                    console.warn('[ha-shopping-list-improved] Unable to save EAN scan device setting:', error);
+                }
+            });
+
+            eanScanControl.appendChild(eanScanCheckbox);
+            eanScanControl.appendChild(eanScanLabel);
+            eanScanContainer.appendChild(eanScanControl);
+            eanScanContainer.appendChild(eanScanHelp);
+            eanScanContainer.appendChild(eanScannerMac);
+            eanScanContainer.appendChild(eanScannerMacWarning);
+            popup.appendChild(eanScanContainer);
+
             // --- Fill Browser Chips ---
             const browserChips = this._loadHistory();
             if (Array.isArray(browserChips)) {
@@ -3369,7 +3589,245 @@ class HaShoppingListImproved extends HTMLElement {
         subText.insertAdjacentElement('beforebegin', optionRow);
     }
 
+
+
+// EAN
+async _checkEAN(text) {
+
+    // EAN-8, UPC-12, EAN-13 or GS1-14
+    const eanRegexLocal = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
+
+    if (!eanRegexLocal.test(text)) {
+        return {
+            name: text,
+            brand: null,
+            quantity: null,
+            imageUrl: null
+        };
+    }
+
+    // ---------------------------------------------------------
+    // 1. Check local EAN database
+    // ---------------------------------------------------------
+
+    if (this._localEAN && Array.isArray(this._localEAN)) {
+        const localEntry = this._localEAN.find(entry => entry.ean === text);
+
+        if (localEntry) {
+            if (debugMode) {
+                console.log("[EAN] Local entry found:", localEntry);
+            }
+
+            return {
+                name: localEntry.name,
+                brand: null,
+                quantity: null,
+                imageUrl: null
+            };
+        }
+    }
+
+    // ---------------------------------------------------------
+    // 2. Open Food Facts
+    // Internet lookup currently only for EAN-13
+    // ---------------------------------------------------------
+
+    const eanRegexOnline = /^\d{13}$/;
+
+    if (!eanRegexOnline.test(text)) {
+        return {
+            name: text,
+            brand: null,
+            quantity: null,
+            imageUrl: null
+        };
+    }
+
+    const fields = [
+        "product_name",
+        "product_name_en",
+        "brands",
+        "quantity",
+        "product_quantity",
+        "product_quantity_unit",
+        "image_front_thumb_url"
+    ];
+
+    const lang = detectLanguage();
+
+    if (lang && lang !== "en") {
+        fields.push(`product_name_${lang}`);
+    }
+
+    const url =
+        `https://world.openfoodfacts.org/api/v2/product/${text}.json` +
+        `?fields=${encodeURIComponent(fields.join(","))}`;
+
+    try {
+
+        const response = await fetch(url, {
+            headers: {
+                "Accept": "application/json",
+                "User-Agent": "ha-shopping-list-improved/3.1.0"
+            }
+        });
+
+        if (!response.ok) {
+            console.error(`[EAN] Open Food Facts HTTP error: ${response.status}`);
+            return null;
+        }
+
+        const data = await response.json();
+
+        if (data.status !== 1 || !data.product) {
+            return null;
+        }
+
+        const p = data.product;
+
+        // -----------------------------------------------------
+        // Product name
+        // Local language -> English -> default product name
+        // -----------------------------------------------------
+
+        const name =
+            p[`product_name_${lang}`]?.trim() ||
+            p.product_name_en?.trim() ||
+            p.product_name?.trim() ||
+            false;
+
+        if (!name) {
+            return null;
+        }
+
+        // Decode simple HTML entities sometimes contained in OFF
+        const decodeHtml = (value) => {
+            if (!value) return value;
+
+            const textarea = document.createElement("textarea");
+            textarea.innerHTML = value;
+
+            return textarea.value;
+        };
+
+        const cleanName = decodeHtml(name);
+
+        // -----------------------------------------------------
+        // Brand
+        // OFF may contain several/doubled brands.
+        // Use the first usable brand.
+        // -----------------------------------------------------
+
+        let brand = null;
+
+        if (p.brands && typeof p.brands === "string") {
+            brand = p.brands
+                .split(",")
+                .map(value => value.trim())
+                .filter(Boolean)[0] || null;
+        }
+
+        brand = decodeHtml(brand);
+
+        // Do not add brand if it is already part of product name
+        if (
+            brand &&
+            cleanName.toLocaleLowerCase().includes(
+                brand.toLocaleLowerCase()
+            )
+        ) {
+            brand = null;
+        }
+
+        // -----------------------------------------------------
+        // Quantity
+        // Prefer OFF's quantity string.
+        // Fall back to numeric quantity + unit.
+        // -----------------------------------------------------
+
+        let quantity = null;
+
+        if (p.quantity && typeof p.quantity === "string") {
+            quantity = p.quantity.trim();
+        } else if (
+            p.product_quantity !== undefined &&
+            p.product_quantity !== null &&
+            p.product_quantity_unit
+        ) {
+            quantity =
+                `${p.product_quantity} ${p.product_quantity_unit}`;
+        }
+
+        // -----------------------------------------------------
+        // Format quantity
+        // Examples:
+        // 1.25l  -> 1,25 l
+        // 500ml  -> 500 ml
+        // 425g   -> 425 g
+        // -----------------------------------------------------
+
+        if (quantity) {
+
+            quantity = quantity
+                .trim()
+
+                // Add space between number and unit
+                .replace(
+                    /(\d)\s*(ml|cl|dl|l|mg|g|kg)\b/gi,
+                    "$1 $2"
+                )
+
+                // German decimal separator
+                .replace(
+                    /(\d)\.(\d)/g,
+                    "$1,$2"
+                )
+
+                // Normalize units
+                .replace(/\bML\b/gi, "ml")
+                .replace(/\bCL\b/gi, "cl")
+                .replace(/\bDL\b/gi, "dl")
+                .replace(/\bL\b/g, "l")
+                .replace(/\bMG\b/gi, "mg")
+                .replace(/\bG\b/g, "g")
+                .replace(/\bKG\b/gi, "kg");
+        }
+
+        const imageUrl =
+            p.image_front_thumb_url || null;
+
+        if (debugMode) {
+            console.log("[EAN] Open Food Facts product:", {
+                ean: text,
+                name: cleanName,
+                brand,
+                quantity,
+                imageUrl
+            });
+        }
+
+        return {
+            name: cleanName,
+            brand,
+            quantity,
+            imageUrl
+        };
+
+    } catch (error) {
+
+        console.error(
+            "[EAN] Error while requesting Open Food Facts:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+
 	// EAN
+	/*
 	async _checkEAN(text) {
         // 1st localEAN check - EAN-8, UPC (12), EAN-13 er GS1-14
         const eanRegexL = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
@@ -3439,6 +3897,7 @@ class HaShoppingListImproved extends HTMLElement {
             return null;
         }
 	}
+	*/
 
 	// QR-Scanner
 	async _onScanSuccess(decodedText, decodedResult) {
@@ -6111,6 +6570,7 @@ class HaShoppingListImproved extends HTMLElement {
 				this._addingBusy = false;
 				return;
 			} else {
+			    /*
 				if (eanCheck.brands) {
 					inputName = eanCheck.brands + " - " + eanCheck.name;
 				} else {
@@ -6118,6 +6578,43 @@ class HaShoppingListImproved extends HTMLElement {
 				}
 				
 				imageUrl = eanCheck.imageUrl;
+				*/
+				
+				
+				
+const productParts = [eanCheck.name];
+
+// Optional brand
+if (this._showEanBrand && eanCheck.brand) {
+    productParts.push(eanCheck.brand);
+}
+
+// Optional quantity
+if (this._showEanQuantity && eanCheck.quantity) {
+    productParts.push(eanCheck.quantity);
+}
+
+inputName = productParts.join(" – ");
+
+imageUrl = eanCheck.imageUrl;
+
+if (debugMode) {
+    console.debug(
+        "[ha-shopping-list-improved][DEBUG] EAN product:",
+        {
+            name: eanCheck.name,
+            brand: eanCheck.brand,
+            quantity: eanCheck.quantity,
+            finalName: inputName,
+            imageUrl
+        }
+    );
+}				
+				
+				
+				
+				
+				
 
 				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Product name:", inputName);
 				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Brand:", eanCheck.brands);
