@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-1.6";
+const version = "3.2.0-BETA-2.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -2199,6 +2199,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._unsubEvents = [];
 
         if (this._hass?.connection?.subscribeEvents) {
+            const canSubscribeProtectedEvents = this._hass?.user?.is_admin === true;
+
             const subscribe = async (eventType, handler) => {
                 try {
                     const unsub = await this._hass.connection.subscribeEvents(handler, eventType);
@@ -2222,43 +2224,51 @@ class HaShoppingListImproved extends HTMLElement {
                 if (eventEntity === this._entity) {
                     this._scheduleRefresh(150, "state_changed", eventEntity);
                 }
-            });
 
-            subscribe("call_service", (event) => {
-                const data = event?.data || {};
-                const serviceData = data.service_data || {};
-                const eventEntity = serviceData.entity_id || data.target?.entity_id || null;
-
-                const watchedServices = ["add_item", "update_item", "remove_item", "remove_completed_items"];
-                if (data.domain !== "todo" || !watchedServices.includes(data.service)) {
-                    return;
-                }
-
-                const matchesEntity = Array.isArray(eventEntity)
-                    ? eventEntity.includes(this._entity)
-                    : eventEntity === this._entity;
-
-                if(debugMode) {
-                    console.info("[ha-shopping-list-improved] call_service event", {
-                        domain: data.domain,
-                        service: data.service,
-                        cardEntity: this._entity,
-                        eventEntity,
-                        matchesEntity,
-                        raw: data
+                if (!canSubscribeProtectedEvents) {
+                    this._handleEanScanStateChanged(event).catch((error) => {
+                        console.error("[ha-shopping-list-improved] Unable to process EAN scanner state:", error);
                     });
                 }
-
-                if (matchesEntity) {
-                    this._scheduleRefresh(300, "call_service", eventEntity);
-                }
             });
 
-            subscribe("eyoyo_barcode_scanned", (event) => {
-                this._handleEanScanEvent(event).catch((error) => {
-                    console.error("[ha-shopping-list-improved] Unable to process EAN scan event:", error);
+            if (canSubscribeProtectedEvents) {
+                subscribe("call_service", (event) => {
+                    const data = event?.data || {};
+                    const serviceData = data.service_data || {};
+                    const eventEntity = serviceData.entity_id || data.target?.entity_id || null;
+
+                    const watchedServices = ["add_item", "update_item", "remove_item", "remove_completed_items"];
+                    if (data.domain !== "todo" || !watchedServices.includes(data.service)) {
+                        return;
+                    }
+
+                    const matchesEntity = Array.isArray(eventEntity)
+                        ? eventEntity.includes(this._entity)
+                        : eventEntity === this._entity;
+
+                    if(debugMode) {
+                        console.info("[ha-shopping-list-improved] call_service event", {
+                            domain: data.domain,
+                            service: data.service,
+                            cardEntity: this._entity,
+                            eventEntity,
+                            matchesEntity,
+                            raw: data
+                        });
+                    }
+
+                    if (matchesEntity) {
+                        this._scheduleRefresh(300, "call_service", eventEntity);
+                    }
                 });
-            });
+
+                subscribe("eyoyo_barcode_scanned", (event) => {
+                    this._handleEanScanEvent(event).catch((error) => {
+                        console.error("[ha-shopping-list-improved] Unable to process EAN scan event:", error);
+                    });
+                });
+            }
         }
 
         // Timer for ToDo Time till next due updates
@@ -2382,6 +2392,26 @@ class HaShoppingListImproved extends HTMLElement {
             && rect.right > 0
             && rect.top < window.innerHeight
             && rect.left < window.innerWidth;
+    }
+
+    async _handleEanScanStateChanged(event) {
+        const eventEntity = event?.data?.entity_id || "";
+        const oldState = event?.data?.old_state;
+        const newState = event?.data?.new_state;
+        const oldAttributes = oldState?.attributes || {};
+        const newAttributes = newState?.attributes || {};
+
+        if (!eventEntity.startsWith("sensor.") || !oldState || !newState) return;
+        if (!newAttributes.address || !newAttributes.last_scanned_at) return;
+        if (newAttributes.last_scanned_at === oldAttributes.last_scanned_at) return;
+
+        await this._handleEanScanEvent({
+            data: {
+                code: newState.state,
+                source: "sensor_state",
+                address: newAttributes.address
+            }
+        });
     }
 
     async _handleEanScanEvent(event) {
