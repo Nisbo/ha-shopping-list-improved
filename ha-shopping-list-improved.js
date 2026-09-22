@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-2.0";
+const version = "3.2.0-BETA-3.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -56,6 +56,29 @@ const TRANSLATIONS = {
         "ui.admin.options.process_ean_scans_help"        : "Wenn aktiviert, verarbeitet diese Karte auf diesem Gerät passende EAN-Scans. Während des Scannens muss die Karte sichtbar sein und darf nicht gleichzeitig in einem weiteren Tab oder Fenster geöffnet sein.",
         "ui.admin.options.ean_scanner_mac"               : "Scanner-MAC:",
         "ui.admin.options.ean_scanner_mac_missing"       : "Keine Scanner-MAC konfiguriert. Diese Karte ist für EAN-Scans aktiviert, kann aber keine Scans verarbeiten. Lege ean_scanner_mac in der YAML-Konfiguration der Karte fest.",
+        "ui.admin.options.ean_queue"                     : "EAN-Warteschlange",
+        "ui.admin.options.ean_queue_pending"             : "Offene Scans: {count}",
+        "ui.admin.options.ean_queue_process"             : "Abarbeiten",
+        "ui.admin.options.ean_queue_clear"               : "Leeren",
+        "ui.admin.options.ean_database_status"           : "EAN-Datenbank: {count} Produkte",
+        "ui.ean.queue_status"                            : "{quantity}× gescannt · danach noch {count} Artikel",
+        "ui.ean.database_invalid"                        : "Die konfigurierte EAN-To-do-Liste enthält {count} ungültige Einträge. Diese Einträge werden ignoriert.",
+        "ui.ean.database_unavailable"                    : "Die konfigurierte EAN-To-do-Liste kann nicht verwendet werden: {reason}",
+        "ui.ean.database_reason_entity"                  : "Wähle eine andere To-do-Liste als die Einkaufsliste aus.",
+        "ui.ean.database_reason_description"             : "Die To-do-Liste unterstützt keine Beschreibungen.",
+        "ui.ean.database_reason_load"                    : "Die Einträge konnten nicht geladen werden.",
+        "ui.ean.database_reason_save"                    : "Der Produktdatensatz konnte nicht gespeichert werden.",
+        "ui.ean.lookup_failed_title"                     : "Produkt nicht gefunden",
+        "ui.ean.lookup_failed_text"                      : "Für die EAN {ean} konnten keine Produktdaten geladen werden.",
+        "ui.ean.lookup_retry"                            : "Erneut versuchen",
+        "ui.ean.lookup_manual"                           : "Manuell eintragen",
+        "ui.ean.lookup_later"                            : "Später",
+        "ui.ean.lookup_discard"                          : "Verwerfen",
+        "ui.ean.queue_summary"                           : "{count} EAN-Scans warten noch auf Bearbeitung.",
+        "ui.ean.queue_summary_one"                       : "1 EAN-Scan wartet noch auf Bearbeitung.",
+        "ui.ean.queue_process_now"                       : "Jetzt bearbeiten",
+        "ui.ean.queue_keep_later"                        : "Später",
+        "ui.ean.queue_admin_hint"                        : "Du kannst die Warteschlange später über die Admin-Optionen weiterbearbeiten.",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -154,6 +177,7 @@ const TRANSLATIONS = {
         "editor.labels.show_ean_brand"                  : "Marke aus EAN-Daten anzeigen",
         "editor.labels.show_ean_quantity"               : "Produktmenge aus EAN-Daten anzeigen",
         "editor.labels.ean_scanner_mac"                 : "Bluetooth-MAC-Adresse des EAN-Scanners",
+        "editor.labels.ean_database_entity"             : "To-do-Liste als EAN-Datenbank",
         "editor.labels.todo_filter"                     : "To-Do-Filter",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
         
@@ -329,6 +353,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_ean_brand"                 : "Fügt die Marke aus den EAN-Produktdaten hinzu, sofern sie nicht bereits im Produktnamen enthalten ist.",
         "editor.helpers.show_ean_quantity"              : "Fügt die Verpackungsmenge aus den EAN-Produktdaten hinzu.",
         "editor.helpers.ean_scanner_mac"                : "MAC-Adresse des Bluetooth-Scanners, dessen Ereignisse diese Karte verarbeitet. Beispiel: AA:FC:87:59:04:38.",
+        "editor.helpers.ean_database_entity"            : "Optionale, ausschließlich für diese Funktion vorgesehene To-do-Liste. Sie speichert gelernte EAN-Produkte und Kategorien dauerhaft und geräteübergreifend. Verwende diese Liste nicht für andere Einträge. Die Standard-Einkaufsliste ist ungeeignet, da sie keine Beschreibungen unterstützt. Um die Funktion zu deaktivieren, entferne die ausgewählte Liste wieder aus der Konfiguration.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
@@ -440,6 +465,29 @@ const TRANSLATIONS = {
         "ui.admin.options.process_ean_scans_help"        : "When enabled, this card processes matching EAN scans on this device. The card must be visible while scanning and must not be open in another tab or window at the same time.",
         "ui.admin.options.ean_scanner_mac"               : "Scanner MAC:",
         "ui.admin.options.ean_scanner_mac_missing"       : "No scanner MAC is configured. This card is enabled for EAN scans but cannot process them. Set ean_scanner_mac in the card's YAML configuration.",
+        "ui.admin.options.ean_queue"                     : "EAN scan queue",
+        "ui.admin.options.ean_queue_pending"             : "Pending scans: {count}",
+        "ui.admin.options.ean_queue_process"             : "Process",
+        "ui.admin.options.ean_queue_clear"               : "Clear",
+        "ui.admin.options.ean_database_status"           : "EAN database: {count} products",
+        "ui.ean.queue_status"                            : "Scanned {quantity}× · {count} more items waiting",
+        "ui.ean.database_invalid"                        : "The configured EAN to-do list contains {count} invalid entries. These entries are ignored.",
+        "ui.ean.database_unavailable"                    : "The configured EAN to-do list cannot be used: {reason}",
+        "ui.ean.database_reason_entity"                  : "Select a different to-do list than the shopping list.",
+        "ui.ean.database_reason_description"             : "The to-do list does not support descriptions.",
+        "ui.ean.database_reason_load"                    : "The entries could not be loaded.",
+        "ui.ean.database_reason_save"                    : "The product record could not be saved.",
+        "ui.ean.lookup_failed_title"                     : "Product not found",
+        "ui.ean.lookup_failed_text"                      : "No product data could be loaded for EAN {ean}.",
+        "ui.ean.lookup_retry"                            : "Try again",
+        "ui.ean.lookup_manual"                           : "Enter manually",
+        "ui.ean.lookup_later"                            : "Later",
+        "ui.ean.lookup_discard"                          : "Discard",
+        "ui.ean.queue_summary"                           : "{count} EAN scans are still waiting to be processed.",
+        "ui.ean.queue_summary_one"                       : "1 EAN scan is still waiting to be processed.",
+        "ui.ean.queue_process_now"                       : "Process now",
+        "ui.ean.queue_keep_later"                        : "Later",
+        "ui.ean.queue_admin_hint"                        : "You can continue processing the queue later from the Admin Options.",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -538,6 +586,7 @@ const TRANSLATIONS = {
         "editor.labels.show_ean_brand"                  : "Show brand from EAN data",
         "editor.labels.show_ean_quantity"               : "Show product quantity from EAN data",
         "editor.labels.ean_scanner_mac"                 : "Bluetooth MAC address of the EAN scanner",
+        "editor.labels.ean_database_entity"             : "To-do list used as EAN database",
         "editor.labels.todo_filter"                     : "To-do filter",
         "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
@@ -712,6 +761,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_ean_brand"                 : "Appends the brand from the EAN product data unless it is already part of the product name.",
         "editor.helpers.show_ean_quantity"              : "Appends the package quantity from the EAN product data.",
         "editor.helpers.ean_scanner_mac"                : "MAC address of the Bluetooth scanner whose events this card processes. Example: AA:FC:87:59:04:38.",
+        "editor.helpers.ean_database_entity"            : "Optional to-do list reserved exclusively for this feature. It stores learned EAN products and categories permanently across devices. Do not use this list for other entries. The standard Shopping List is unsuitable because it does not support descriptions. To disable the feature, remove the selected list from the configuration.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
@@ -1145,6 +1195,8 @@ let debugMode = false;
 
 const TODO_FEATURE_SET_DESCRIPTION = 64;
 const EAN_SCAN_DEVICE_STORAGE_KEY = "ha-shopping-list-improved-process-ean-scans";
+const EAN_SCAN_QUEUE_STORAGE_KEY = "ha-shopping-list-improved-ean-scan-queue";
+const EAN_DATABASE_SCHEMA = 1;
 
 // Detect HA-Language via home-assistant element
 function detectLanguage() {
@@ -1219,6 +1271,16 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._messageCache = "";
 
+        this._eanDatabase = new Map();
+        this._eanDatabaseInvalidCount = 0;
+        this._eanDatabaseError = null;
+        this._eanDatabaseWarningShown = false;
+        this._eanScanQueue = [];
+        this._eanQueueProcessing = false;
+        this._eanQueuePaused = false;
+        this._activeEanScanQueueItem = null;
+        this._eanQueuePopupStatusEl = null;
+
         this._refreshDebounceTimer = null;
         this._dragSortActive = false;
         this._pendingRefreshAfterDrag = false;
@@ -1271,6 +1333,11 @@ class HaShoppingListImproved extends HTMLElement {
         if(!this._firstStartDone){
             this._firstStartDone = true;
 		    this._refresh();
+            this._eanDatabaseLoadPromise = this._loadEanDatabase();
+            this._eanDatabaseLoadPromise.finally(() => {
+                this._eanDatabaseLoadPromise = null;
+                this._loadEanScanQueue();
+            });
         }
     }
     
@@ -1419,6 +1486,7 @@ class HaShoppingListImproved extends HTMLElement {
 		this._mode                  = (config.mode === "todo") ? "todo" : "shopping";
 
         this._eanScannerMac         = String(config.ean_scanner_mac || "").trim();
+        this._eanDatabaseEntity     = String(config.ean_database_entity || "").trim();
         this._showEanBrand          = (config.show_ean_brand === true);
         this._showEanQuantity       = (config.show_ean_quantity === true);
 
@@ -1820,6 +1888,15 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "ean_scanner_mac",
                         selector: { text: {} },
                         default: ""
+                    },
+                    {
+                        name: "ean_database_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["todo"]
+                            }
+                        }
                     }
                 ]
             },
@@ -2162,14 +2239,14 @@ class HaShoppingListImproved extends HTMLElement {
         return 3;
     }
 
-    _supportsTodoDescription() {
-        const stateObj = this._hass?.states?.[this._entity];
+    _supportsTodoDescription(entityId = this._entity) {
+        const stateObj = this._hass?.states?.[entityId];
         const features = Number(stateObj?.attributes?.supported_features || 0);
         const supported = (features & TODO_FEATURE_SET_DESCRIPTION) !== 0;
 
         if (debugMode) {
             console.debug("[ha-shopping-list-improved][DEBUG] Description support:", {
-                entity: this._entity,
+                entity: entityId,
                 supported_features: features,
                 supports_description: supported,
                 friendly_name: stateObj?.attributes?.friendly_name
@@ -2269,6 +2346,32 @@ class HaShoppingListImproved extends HTMLElement {
                     });
                 });
             }
+        }
+
+        if (
+            this._eanDatabaseEntity &&
+            this._eanDatabaseEntity !== this._entity &&
+            this._supportsTodoDescription(this._eanDatabaseEntity) &&
+            this._hass?.connection?.subscribeMessage
+        ) {
+            this._hass.connection.subscribeMessage(
+                (message) => {
+                    if (Array.isArray(message?.items)) {
+                        this._eanDatabaseError = null;
+                        this._setEanDatabaseItems(message.items);
+                    }
+                },
+                {
+                    type: "todo/item/subscribe",
+                    entity_id: this._eanDatabaseEntity
+                }
+            ).then((unsub) => {
+                if (typeof unsub === "function" && Array.isArray(this._unsubEvents)) {
+                    this._unsubEvents.push(unsub);
+                }
+            }).catch((error) => {
+                console.warn("[ha-shopping-list-improved] EAN database subscription failed:", error);
+            });
         }
 
         // Timer for ToDo Time till next due updates
@@ -2378,6 +2481,475 @@ class HaShoppingListImproved extends HTMLElement {
         localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, JSON.stringify(settings));
     }
 
+    _getEanScanQueueStorageKey() {
+        return `${EAN_SCAN_QUEUE_STORAGE_KEY}::${this._getEanScanCardId()}`;
+    }
+
+    _loadEanScanQueue() {
+        const cardId = this._getEanScanCardId();
+        try {
+            const stored = JSON.parse(localStorage.getItem(this._getEanScanQueueStorageKey()) || "[]");
+            this._eanScanQueue = Array.isArray(stored)
+                ? stored.filter(item =>
+                    item &&
+                    /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(item.code || "")) &&
+                    Number(item.quantity) > 0
+                ).map(item => ({
+                    code: String(item.code),
+                    quantity: Math.max(1, Math.floor(Number(item.quantity))),
+                    source: item.source || null,
+                    address: item.address || null,
+                    createdAt: item.createdAt || new Date().toISOString(),
+                    // Queues written before BETA-2.5 have no deferred flag and
+                    // must not open automatically after an update or reload.
+                    deferred: item.deferred !== false
+                }))
+                : [];
+        } catch (error) {
+            this._eanScanQueue = [];
+        }
+
+        this._eanScanQueueCardId = cardId;
+        this._saveEanScanQueue();
+    }
+
+    _saveEanScanQueue() {
+        try {
+            localStorage.setItem(this._getEanScanQueueStorageKey(), JSON.stringify(this._eanScanQueue || []));
+        } catch (error) {
+            console.warn("[ha-shopping-list-improved] Unable to save EAN scan queue:", error);
+        }
+        this._updateEanQueuePopupStatus();
+    }
+
+    _clearEanScanQueue() {
+        this._eanScanQueue = [];
+        this._eanQueuePaused = false;
+        this._saveEanScanQueue();
+    }
+
+    _enqueueEanScan(code, eventData = {}) {
+        if (
+            !Array.isArray(this._eanScanQueue) ||
+            this._eanScanQueueCardId !== this._getEanScanCardId()
+        ) {
+            this._loadEanScanQueue();
+        }
+
+        let queued = this._eanScanQueue.find(item => item.code === code);
+        if (queued) {
+            queued.quantity += 1;
+            queued.deferred = false;
+        } else {
+            queued = {
+                code,
+                quantity: 1,
+                source: eventData.source || null,
+                address: eventData.address || null,
+                createdAt: new Date().toISOString(),
+                deferred: false
+            };
+            this._eanScanQueue.push(queued);
+        }
+
+        this._saveEanScanQueue();
+        return queued;
+    }
+
+    _updateEanQueuePopupStatus() {
+        if (!this._eanQueuePopupStatusEl || !this._activeEanScanQueueItem) return;
+
+        const remaining = Math.max(0, (this._eanScanQueue || [])
+            .filter(item => item !== this._activeEanScanQueueItem && item.deferred !== true)
+            .reduce((sum, item) => sum + Math.max(1, Number(item.quantity || 1)), 0));
+        this._eanQueuePopupStatusEl.textContent = translate("ui.ean.queue_status")
+            .replace("{quantity}", String(this._activeEanScanQueueItem.quantity || 1))
+            .replace("{count}", String(remaining));
+    }
+
+    async _getTodoItems(entityId) {
+        const response = await this._hass.connection.sendMessagePromise({
+            type: "call_service",
+            domain: "todo",
+            service: "get_items",
+            target: { entity_id: entityId },
+            id: Date.now(),
+            return_response: true
+        });
+
+        const entityData = response?.response?.[entityId];
+        if (!entityData || !Array.isArray(entityData.items)) {
+            throw new Error("No valid todo items returned");
+        }
+        return entityData.items;
+    }
+
+    _setEanDatabaseItems(items) {
+        const database = new Map();
+        let invalidCount = 0;
+
+        for (const item of items || []) {
+            try {
+                const record = JSON.parse(item.description || "");
+                if (
+                    !record ||
+                    record.schema !== EAN_DATABASE_SCHEMA ||
+                    !/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(record.ean || "")) ||
+                    typeof record.name !== "string" ||
+                    !record.name.trim() ||
+                    (record.category !== null && record.category !== undefined && typeof record.category !== "string") ||
+                    database.has(String(record.ean))
+                ) {
+                    throw new Error("Invalid EAN database record");
+                }
+
+                database.set(String(record.ean), {
+                    ...record,
+                    uid: item.uid,
+                    name: record.name.trim(),
+                    brand: typeof record.brand === "string" ? record.brand : null,
+                    quantity: typeof record.quantity === "string" ? record.quantity : null,
+                    imageUrl: typeof record.imageUrl === "string" ? record.imageUrl : null,
+                    category: typeof record.category === "string" ? record.category : null
+                });
+            } catch (error) {
+                invalidCount += 1;
+            }
+        }
+
+        this._eanDatabase = database;
+        this._eanDatabaseInvalidCount = invalidCount;
+    }
+
+    async _loadEanDatabase() {
+        this._eanDatabase = new Map();
+        this._eanDatabaseInvalidCount = 0;
+        this._eanDatabaseError = null;
+
+        if (!this._eanDatabaseEntity || !this._hass) return;
+
+        if (
+            !this._eanDatabaseEntity.startsWith("todo.") ||
+            this._eanDatabaseEntity === this._entity ||
+            !this._hass.states?.[this._eanDatabaseEntity]
+        ) {
+            this._eanDatabaseError = "entity";
+            return;
+        }
+
+        if (!this._supportsTodoDescription(this._eanDatabaseEntity)) {
+            this._eanDatabaseError = "description";
+            return;
+        }
+
+        try {
+            const items = await this._getTodoItems(this._eanDatabaseEntity);
+            this._setEanDatabaseItems(items);
+        } catch (error) {
+            this._eanDatabaseError = "load";
+            console.warn("[ha-shopping-list-improved] Unable to load EAN database:", error);
+        }
+    }
+
+    async _saveEanDatabaseProduct(product) {
+        if (!this._eanDatabaseEntity) return true;
+        if (this._eanDatabaseError) return false;
+
+        const previous = this._eanDatabase.get(product.ean);
+        const normalizedCategory = product.category || null;
+        if (
+            previous &&
+            previous.name === product.name &&
+            (previous.brand || null) === (product.brand || null) &&
+            (previous.quantity || null) === (product.quantity || null) &&
+            (previous.imageUrl || null) === (product.imageUrl || null) &&
+            (previous.category || null) === normalizedCategory
+        ) {
+            return true;
+        }
+
+        const record = {
+            schema: EAN_DATABASE_SCHEMA,
+            ean: product.ean,
+            name: product.name,
+            brand: product.brand || null,
+            quantity: product.quantity || null,
+            imageUrl: product.imageUrl || null,
+            category: normalizedCategory,
+            sourceCardId: this._getEanScanCardId(),
+            sourceEntity: this._entity,
+            updatedAt: new Date().toISOString()
+        };
+        const summary = `${record.ean} · ${record.name}`;
+
+        try {
+            if (previous?.uid) {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._eanDatabaseEntity },
+                    service_data: {
+                        item: previous.uid,
+                        rename: summary,
+                        description: JSON.stringify(record)
+                    }
+                });
+                this._eanDatabase.set(record.ean, { ...record, uid: previous.uid });
+            } else {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "add_item",
+                    target: { entity_id: this._eanDatabaseEntity },
+                    service_data: {
+                        item: summary,
+                        description: JSON.stringify(record)
+                    }
+                });
+                await this._loadEanDatabase();
+            }
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to save EAN database product:", error);
+            return false;
+        }
+    }
+
+    _eanDatabaseErrorMessage(reason = this._eanDatabaseError) {
+        const reasonKey = reason === "description"
+            ? "ui.ean.database_reason_description"
+            : reason === "entity"
+                ? "ui.ean.database_reason_entity"
+                : reason === "save"
+                    ? "ui.ean.database_reason_save"
+                    : "ui.ean.database_reason_load";
+        return translate("ui.ean.database_unavailable").replace("{reason}", translate(reasonKey));
+    }
+
+    _showEanLookupFailedPopup(code) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '10000';
+
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.padding = '16px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.maxWidth = '380px';
+            popup.style.width = '90%';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+
+            const title = document.createElement('h3');
+            title.textContent = translate("ui.ean.lookup_failed_title");
+            title.style.margin = '0 0 8px 0';
+
+            const message = document.createElement('div');
+            message.textContent = translate("ui.ean.lookup_failed_text").replace("{ean}", code);
+            message.style.marginBottom = '16px';
+            message.style.lineHeight = '1.4';
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.flexWrap = 'wrap';
+            buttons.style.gap = '8px';
+
+            const addButton = (translationKey, action, primary = false) => {
+                const button = document.createElement('button');
+                button.textContent = translate(translationKey);
+                button.style.padding = '7px 12px';
+                button.style.cursor = 'pointer';
+                if (primary) {
+                    button.style.background = 'var(--primary-color, #03A9F4)';
+                    button.style.color = 'white';
+                }
+                button.addEventListener('click', () => {
+                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                    resolve(action);
+                });
+                buttons.appendChild(button);
+            };
+
+            addButton("ui.ean.lookup_retry", "retry", true);
+            addButton("ui.ean.lookup_manual", "manual");
+            addButton("ui.ean.lookup_later", "later");
+            addButton("ui.ean.lookup_discard", "discard");
+
+            popup.appendChild(title);
+            popup.appendChild(message);
+            popup.appendChild(buttons);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    _showEanQueueSummaryPopup(count) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '10000';
+
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.padding = '16px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.maxWidth = '380px';
+            popup.style.width = '90%';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+
+            const message = document.createElement('div');
+            message.textContent = count === 1
+                ? translate("ui.ean.queue_summary_one")
+                : translate("ui.ean.queue_summary").replace("{count}", String(count));
+            message.style.fontWeight = '600';
+            message.style.marginBottom = '8px';
+
+            const hint = document.createElement('div');
+            hint.textContent = translate("ui.ean.queue_admin_hint");
+            hint.style.fontSize = '12px';
+            hint.style.lineHeight = '1.4';
+            hint.style.color = 'var(--secondary-text-color, #666)';
+            hint.style.marginBottom = '16px';
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.gap = '8px';
+
+            const processNow = document.createElement('button');
+            processNow.textContent = translate("ui.ean.queue_process_now");
+            processNow.style.padding = '7px 12px';
+            processNow.style.cursor = 'pointer';
+            processNow.style.background = 'var(--primary-color, #03A9F4)';
+            processNow.style.color = 'white';
+            processNow.addEventListener('click', () => {
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve("now");
+            });
+
+            const later = document.createElement('button');
+            later.textContent = translate("ui.ean.queue_keep_later");
+            later.style.padding = '7px 12px';
+            later.style.cursor = 'pointer';
+            later.addEventListener('click', () => {
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve("later");
+            });
+
+            buttons.appendChild(processNow);
+            buttons.appendChild(later);
+            popup.appendChild(message);
+            popup.appendChild(hint);
+            popup.appendChild(buttons);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    async _processEanScanQueue(force = false) {
+        if (this._eanQueueProcessing || this._eanQueuePaused) return;
+        if (!Array.isArray(this._eanScanQueue) || this._eanScanQueue.length === 0) return;
+        if (!this._inputEl || !this._qtyEl) return;
+        if (!force && (!this._isEanScanEnabledOnThisDevice() || !this._isVisibleForEanScan())) return;
+
+        this._eanQueueProcessing = true;
+        try {
+            if (this._eanDatabaseLoadPromise) {
+                await this._eanDatabaseLoadPromise;
+            }
+
+            if (this._eanDatabaseEntity && this._eanDatabaseError) {
+                await this.confirmPopup(this._eanDatabaseErrorMessage(), true);
+                this._eanQueuePaused = true;
+                return;
+            }
+
+            if (this._eanDatabaseInvalidCount > 0 && !this._eanDatabaseWarningShown) {
+                this._eanDatabaseWarningShown = true;
+                await this.confirmPopup(
+                    translate("ui.ean.database_invalid").replace("{count}", String(this._eanDatabaseInvalidCount)),
+                    true
+                );
+            }
+
+            let processAnotherPass = true;
+            while (processAnotherPass && !this._eanQueuePaused) {
+                processAnotherPass = false;
+                let deferredThisPass = 0;
+
+                while (!this._eanQueuePaused) {
+                    const itemIndex = this._eanScanQueue.findIndex(item => item.deferred !== true);
+                    if (itemIndex < 0) break;
+
+                    const item = this._eanScanQueue[itemIndex];
+                    this._activeEanScanQueueItem = item;
+                    this._inputEl.value = item.code;
+                    this._qtyEl.value = String(item.quantity);
+                    this._eanQueueAction = null;
+
+                    const added = await this._onAdd();
+                    if (!added) {
+                        if (this._eanQueueAction === "discard") {
+                            this._eanScanQueue.splice(itemIndex, 1);
+                            this._saveEanScanQueue();
+                            this._inputEl.value = '';
+                            this._qtyEl.value = '';
+                            continue;
+                        }
+
+                        item.deferred = true;
+                        deferredThisPass += Math.max(1, Number(item.quantity) || 1);
+                        this._saveEanScanQueue();
+                        this._inputEl.value = '';
+                        this._qtyEl.value = '';
+                        continue;
+                    }
+
+                    const processedQuantity = Math.max(1, Number(this._activeEanScanProcessedQuantity || item.quantity));
+                    item.quantity -= processedQuantity;
+                    if (item.quantity <= 0) {
+                        this._eanScanQueue.splice(itemIndex, 1);
+                    }
+                    this._saveEanScanQueue();
+                }
+
+                if (deferredThisPass > 0 && !this._eanQueuePaused) {
+                    const deferredCount = this._eanScanQueue
+                        .filter(item => item.deferred === true)
+                        .reduce((sum, item) => sum + Math.max(1, Number(item.quantity) || 1), 0);
+                    const action = await this._showEanQueueSummaryPopup(deferredCount);
+
+                    if (action === "now") {
+                        this._eanScanQueue.forEach(item => {
+                            item.deferred = false;
+                        });
+                        this._saveEanScanQueue();
+                        processAnotherPass = true;
+                    }
+                }
+            }
+        } finally {
+            this._activeEanScanQueueItem = null;
+            this._activeEanScanProcessedQuantity = null;
+            this._eanQueuePopupStatusEl = null;
+            this._eanQueueProcessing = false;
+        }
+    }
+
     _normalizeBluetoothAddress(address) {
         return String(address || "").trim().replace(/[^0-9a-f]/gi, "").toUpperCase();
     }
@@ -2449,9 +3021,9 @@ class HaShoppingListImproved extends HTMLElement {
             });
         }
 
-        this._inputEl.value = code;
-        this._qtyEl.value = "1";
-        await this._onAdd();
+        this._enqueueEanScan(code, event?.data || {});
+        this._eanQueuePaused = false;
+        await this._processEanScanQueue();
     }
 
     _updateTimes() {
@@ -2983,6 +3555,10 @@ class HaShoppingListImproved extends HTMLElement {
 
     // Admin Options Popup
     async _adminOptions() {
+        if (!this._eanQueueProcessing) {
+            this._loadEanScanQueue();
+        }
+
         return new Promise((resolve) => {
             // Overlay
             const overlay = document.createElement('div');
@@ -3356,6 +3932,80 @@ class HaShoppingListImproved extends HTMLElement {
             eanScanContainer.appendChild(eanScanHelp);
             eanScanContainer.appendChild(eanScannerMac);
             eanScanContainer.appendChild(eanScannerMacWarning);
+
+            if (this._eanDatabaseEntity) {
+                const databaseStatus = document.createElement('div');
+                databaseStatus.style.marginTop = '8px';
+                databaseStatus.style.fontSize = '12px';
+                databaseStatus.style.lineHeight = '1.4';
+
+                if (this._eanDatabaseError) {
+                    databaseStatus.textContent = this._eanDatabaseErrorMessage();
+                    databaseStatus.style.color = 'var(--error-color, #db4437)';
+                    databaseStatus.style.fontWeight = '600';
+                } else if (this._eanDatabaseInvalidCount > 0) {
+                    databaseStatus.textContent = translate("ui.ean.database_invalid")
+                        .replace("{count}", String(this._eanDatabaseInvalidCount));
+                    databaseStatus.style.color = 'var(--error-color, #db4437)';
+                    databaseStatus.style.fontWeight = '600';
+                } else {
+                    databaseStatus.textContent = translate("ui.admin.options.ean_database_status")
+                        .replace("{count}", String(this._eanDatabase?.size || 0));
+                    databaseStatus.style.color = 'var(--secondary-text-color, #666)';
+                }
+                eanScanContainer.appendChild(databaseStatus);
+            }
+
+            const queueLabel = document.createElement('div');
+            queueLabel.textContent = translate("ui.admin.options.ean_queue");
+            queueLabel.style.marginTop = '12px';
+            queueLabel.style.fontWeight = '600';
+            eanScanContainer.appendChild(queueLabel);
+
+            const queueStatus = document.createElement('div');
+            queueStatus.textContent = translate("ui.admin.options.ean_queue_pending")
+                .replace("{count}", String((this._eanScanQueue || [])
+                    .reduce((sum, item) => sum + Math.max(1, Number(item.quantity || 1)), 0)));
+            queueStatus.style.marginTop = '4px';
+            queueStatus.style.fontSize = '12px';
+            queueStatus.style.color = 'var(--secondary-text-color, #666)';
+            eanScanContainer.appendChild(queueStatus);
+
+            const queueButtons = document.createElement('div');
+            queueButtons.style.display = 'flex';
+            queueButtons.style.gap = '8px';
+            queueButtons.style.marginTop = '6px';
+
+            const processQueueBtn = document.createElement('button');
+            processQueueBtn.textContent = translate("ui.admin.options.ean_queue_process");
+            processQueueBtn.disabled = !this._eanScanQueue?.length;
+            processQueueBtn.style.padding = '6px 12px';
+            processQueueBtn.style.cursor = 'pointer';
+            processQueueBtn.addEventListener('click', () => {
+                this._eanQueuePaused = false;
+                (this._eanScanQueue || []).forEach(item => {
+                    item.deferred = false;
+                });
+                this._saveEanScanQueue();
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                this._processEanScanQueue(true);
+            });
+
+            const clearQueueBtn = document.createElement('button');
+            clearQueueBtn.textContent = translate("ui.admin.options.ean_queue_clear");
+            clearQueueBtn.disabled = !this._eanScanQueue?.length;
+            clearQueueBtn.style.padding = '6px 12px';
+            clearQueueBtn.style.cursor = 'pointer';
+            clearQueueBtn.addEventListener('click', () => {
+                this._clearEanScanQueue();
+                queueStatus.textContent = translate("ui.admin.options.ean_queue_pending").replace("{count}", "0");
+                processQueueBtn.disabled = true;
+                clearQueueBtn.disabled = true;
+            });
+
+            queueButtons.appendChild(processQueueBtn);
+            queueButtons.appendChild(clearQueueBtn);
+            eanScanContainer.appendChild(queueButtons);
             popup.appendChild(eanScanContainer);
 
             // --- Fill Browser Chips ---
@@ -3632,12 +4282,28 @@ async _checkEAN(text) {
             name: text,
             brand: null,
             quantity: null,
-            imageUrl: null
+            imageUrl: null,
+            category: null
         };
     }
 
     // ---------------------------------------------------------
-    // 1. Check local EAN database
+    // 1. Check the configured Home Assistant EAN database
+    // ---------------------------------------------------------
+
+    const databaseEntry = this._eanDatabase?.get(text);
+    if (databaseEntry) {
+        return {
+            name: databaseEntry.name,
+            brand: databaseEntry.brand || null,
+            quantity: databaseEntry.quantity || null,
+            imageUrl: databaseEntry.imageUrl || null,
+            category: databaseEntry.category || null
+        };
+    }
+
+    // ---------------------------------------------------------
+    // 2. Check local EAN file
     // ---------------------------------------------------------
 
     if (this._localEAN && Array.isArray(this._localEAN)) {
@@ -3652,13 +4318,14 @@ async _checkEAN(text) {
                 name: localEntry.name,
                 brand: null,
                 quantity: null,
-                imageUrl: null
+                imageUrl: null,
+                category: null
             };
         }
     }
 
     // ---------------------------------------------------------
-    // 2. Open Food Facts
+    // 3. Open Food Facts
     // Internet lookup currently only for EAN-13
     // ---------------------------------------------------------
 
@@ -3669,7 +4336,8 @@ async _checkEAN(text) {
             name: text,
             brand: null,
             quantity: null,
-            imageUrl: null
+            imageUrl: null,
+            category: null
         };
     }
 
@@ -3759,16 +4427,6 @@ async _checkEAN(text) {
 
         brand = decodeHtml(brand);
 
-        // Do not add brand if it is already part of product name
-        if (
-            brand &&
-            cleanName.toLocaleLowerCase().includes(
-                brand.toLocaleLowerCase()
-            )
-        ) {
-            brand = null;
-        }
-
         // -----------------------------------------------------
         // Quantity
         // Prefer OFF's quantity string.
@@ -3840,7 +4498,8 @@ async _checkEAN(text) {
             name: cleanName,
             brand,
             quantity,
-            imageUrl
+            imageUrl,
+            category: null
         };
 
     } catch (error) {
@@ -5352,6 +6011,16 @@ async _checkEAN(text) {
                 : translate("ui.common.edit_item");
             label.style.marginBottom = '8px';
 
+            let eanQueueStatus = null;
+            if (mode === "add" && this._activeEanScanQueueItem) {
+                eanQueueStatus = document.createElement('div');
+                eanQueueStatus.style.marginBottom = '12px';
+                eanQueueStatus.style.fontSize = '12px';
+                eanQueueStatus.style.color = 'var(--secondary-text-color, #666)';
+                this._eanQueuePopupStatusEl = eanQueueStatus;
+                this._updateEanQueuePopupStatus();
+            }
+
             // Generate DisplayName with Quantity
             const qty = this._getQuantity(currentName);
 
@@ -5620,6 +6289,7 @@ async _checkEAN(text) {
 
             // Combine all
             popup.appendChild(label);
+            if (eanQueueStatus) popup.appendChild(eanQueueStatus);
             popup.appendChild(input);
             if (descriptionContainer) popup.appendChild(descriptionContainer);
             popup.appendChild(catContainer);
@@ -5888,13 +6558,16 @@ async _checkEAN(text) {
             // Click outside = cancel
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
+                    if (this._activeEanScanQueueItem) return;
                     document.body.removeChild(overlay);
+                    if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                     resolve(null);
                 }
             });
 
             cancelBtn.addEventListener('click', () => {
                 document.body.removeChild(overlay);
+                if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                 resolve(null);
             });
 
@@ -5942,6 +6615,7 @@ async _checkEAN(text) {
 
                 if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] finalName", result.name);
                 document.body.removeChild(overlay);
+                if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                 resolve(result);
             });
 
@@ -6582,74 +7256,79 @@ async _checkEAN(text) {
     async _onAdd() {
         if (this._addingBusy) {
             console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
-            return;
+            return false;
         }
         this._addingBusy = true;
 
         try {
 			let inputName = this._inputEl.value.trim();
-			if (!inputName) return;
+			if (!inputName) return false;
 
-			// EAN check (13 digits)
+            const eanCode = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(inputName)
+                ? inputName
+                : null;
+
 			let imageUrl = false;
 			let eanCheck = await this._checkEAN(inputName);
+			let eanInitialDisplayName = inputName;
 
 			if (!eanCheck) {
-				await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
-			  
-				this._addingBusy = false;
-				return;
-			} else {
-			    /*
-				if (eanCheck.brands) {
-					inputName = eanCheck.brands + " - " + eanCheck.name;
-				} else {
-					inputName = eanCheck.name;
+				if (!this._activeEanScanQueueItem) {
+					await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
+					return false;
 				}
-				
+
+                while (!eanCheck) {
+                    const action = await this._showEanLookupFailedPopup(eanCode || inputName);
+
+                    if (action === "retry") {
+                        eanCheck = await this._checkEAN(inputName);
+                        continue;
+                    }
+
+                    if (action === "manual") {
+                        eanCheck = {
+                            name: eanCode || inputName,
+                            brand: null,
+                            quantity: null,
+                            imageUrl: null,
+                            category: null
+                        };
+                        break;
+                    }
+
+                    this._eanQueueAction = action;
+                    return false;
+                }
+            }
+
+			if (eanCheck) {
+				const productParts = [eanCheck.name];
+                if (
+                    this._showEanBrand &&
+                    eanCheck.brand &&
+                    !String(eanCheck.name || "").toLocaleLowerCase().includes(
+                        String(eanCheck.brand).toLocaleLowerCase()
+                    )
+                ) {
+                    productParts.push(eanCheck.brand);
+                }
+                if (this._showEanQuantity && eanCheck.quantity) productParts.push(eanCheck.quantity);
+
+                inputName = productParts.join(" – ");
+                eanInitialDisplayName = inputName;
 				imageUrl = eanCheck.imageUrl;
-				*/
-				
-				
-				
-const productParts = [eanCheck.name];
 
-// Optional brand
-if (this._showEanBrand && eanCheck.brand) {
-    productParts.push(eanCheck.brand);
-}
-
-// Optional quantity
-if (this._showEanQuantity && eanCheck.quantity) {
-    productParts.push(eanCheck.quantity);
-}
-
-inputName = productParts.join(" – ");
-
-imageUrl = eanCheck.imageUrl;
-
-if (debugMode) {
-    console.debug(
-        "[ha-shopping-list-improved][DEBUG] EAN product:",
-        {
-            name: eanCheck.name,
-            brand: eanCheck.brand,
-            quantity: eanCheck.quantity,
-            finalName: inputName,
-            imageUrl
-        }
-    );
-}				
-				
-				
-				
-				
-				
-
-				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Product name:", inputName);
-				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Brand:", eanCheck.brands);
-				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Thumbnail URL:", imageUrl);
-			}
+                if (debugMode) {
+                    console.debug("[ha-shopping-list-improved][DEBUG] EAN product:", {
+                        name: eanCheck.name,
+                        brand: eanCheck.brand,
+                        quantity: eanCheck.quantity,
+                        finalName: inputName,
+                        imageUrl
+                    });
+                }
+				}
 
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
             const quantityPosition = this._quantityPosition; // "beginning" or "end"
@@ -6679,7 +7358,12 @@ if (debugMode) {
                 assignedCategory = explicitCategory;
             }
 
-            // 3. Only if no category is set yet, take the config category
+            // 3. Use a category learned by the EAN database.
+            if (!assignedCategory && eanCheck.category) {
+                assignedCategory = eanCheck.category;
+            }
+
+            // 4. Only if no category is set yet, take the config category
             if (!assignedCategory) { // <-- only check for null, 'none' remains
                 for (const cat of this._categories) {
                     if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
@@ -6689,7 +7373,7 @@ if (debugMode) {
                 }
             }
 
-            // 4. If still no category and popup enabled, ask the user
+            // 5. If still no category and popup enabled, ask the user
             let dueDate = null;
             let dueDateTime = null;
             let description = undefined;
@@ -6697,8 +7381,7 @@ if (debugMode) {
             if (!existing && !assignedCategory && this._showCatPopUp) {
                 const updatedItem = await this.editItemPopup(inputName, "add", imageUrl);
                 if (!updatedItem) {
-                    this._addingBusy = false;
-                    return;
+					return false;
                 }
 
                 let newName = '';
@@ -6729,6 +7412,28 @@ if (debugMode) {
                 assignedCategory = this._getCategory(newName);
             }
 
+            if (this._activeEanScanQueueItem) {
+                inputQty = Math.max(1, Number(this._activeEanScanQueueItem.quantity || inputQty));
+                this._activeEanScanProcessedQuantity = inputQty;
+            }
+
+            if (eanCode && this._eanDatabaseEntity) {
+                const displayNameWasEdited = inputName !== eanInitialDisplayName;
+                const saved = await this._saveEanDatabaseProduct({
+                    ean: eanCode,
+                    name: displayNameWasEdited ? inputName : eanCheck.name,
+                    brand: displayNameWasEdited ? null : eanCheck.brand,
+                    quantity: displayNameWasEdited ? null : eanCheck.quantity,
+                    imageUrl: eanCheck.imageUrl,
+                    category: assignedCategory
+                });
+
+                if (!saved) {
+                    await this.confirmPopup(this._eanDatabaseErrorMessage("save"), true);
+                    return false;
+                }
+            }
+
 			let finalName = inputName;
             let msgNameOnly = "";
             let msgTask = "";
@@ -6740,9 +7445,7 @@ if (debugMode) {
                 // in todo mode --> return
                 if (this._mode === "todo") {
                     await this.confirmPopup(translate("ui.labels.alert_item_exists_todo").replace("{item}", nameOnly), true);
-                    
-                    this._addingBusy = false;
-                    return;
+					return false;
                 }
 
 				let currentQty = this._getQuantity(existing.name) || 1;
@@ -6783,9 +7486,10 @@ if (debugMode) {
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Updating existing item:", updateMsg);
 					await this._hass.connection.sendMessagePromise(updateMsg);
-				} catch (err) {
-					console.error("[ha-shopping-list-improved] Error while updating item:", err);
-				}
+					} catch (err) {
+						console.error("[ha-shopping-list-improved] Error while updating item:", err);
+						return false;
+					}
 			} else {
 				// New Item
 				if (inputQty > 1 || this._showQuantityOne) {
@@ -6828,17 +7532,19 @@ if (debugMode) {
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
 					await this._hass.connection.sendMessagePromise(addMsg);
-				} catch (err) {
-					console.error("[ha-shopping-list-improved] Unable to add:", err);
-				}
+					} catch (err) {
+						console.error("[ha-shopping-list-improved] Unable to add:", err);
+						return false;
+					}
 			}
 
 			this._addToHistory(inputName);
 			this._inputEl.value = '';
 			this._qtyEl.value = '';
             this._hideSuggestions();
-			await this._refresh();
+				await this._refresh();
             await this._notifyOnChange(`${msgTask}: ${msgNameOnly} (${msgQty})`);
+            return true;
         } finally {
             this._addingBusy = false;
         }
