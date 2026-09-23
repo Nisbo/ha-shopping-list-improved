@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-5.0";
+const version = "3.2.0-BETA-5.1";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -76,7 +76,8 @@ const TRANSLATIONS = {
         "ui.ean.database_invalid_title"                  : "Ungültige Einträge",
         "ui.ean.database_invalid_entry"                  : "Ungültiger Eintrag",
         "ui.ean.database_edit_title"                     : "Produkt bearbeiten",
-        "ui.ean.database_name"                           : "Produktname",
+        "ui.ean.database_name"                           : "Gespeicherter Produktname",
+        "ui.ean.database_original_name"                  : "Originaler Produktname",
         "ui.ean.database_ean"                            : "EAN",
         "ui.ean.database_brand"                          : "Marke",
         "ui.ean.database_quantity"                       : "Produktmenge",
@@ -543,7 +544,8 @@ const TRANSLATIONS = {
         "ui.ean.database_invalid_title"                  : "Invalid entries",
         "ui.ean.database_invalid_entry"                  : "Invalid entry",
         "ui.ean.database_edit_title"                     : "Edit product",
-        "ui.ean.database_name"                           : "Product name",
+        "ui.ean.database_name"                           : "Saved product name",
+        "ui.ean.database_original_name"                  : "Original product name",
         "ui.ean.database_ean"                            : "EAN",
         "ui.ean.database_brand"                          : "Brand",
         "ui.ean.database_quantity"                       : "Package quantity",
@@ -2827,6 +2829,7 @@ class HaShoppingListImproved extends HTMLElement {
                     !/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(record.ean || "")) ||
                     typeof record.name !== "string" ||
                     !record.name.trim() ||
+                    (record.originalName !== null && record.originalName !== undefined && typeof record.originalName !== "string") ||
                     (record.category !== null && record.category !== undefined && typeof record.category !== "string") ||
                     database.has(String(record.ean))
                 ) {
@@ -2837,6 +2840,7 @@ class HaShoppingListImproved extends HTMLElement {
                     ...record,
                     uid: item.uid,
                     name: record.name.trim(),
+                    originalName: typeof record.originalName === "string" ? record.originalName.trim() || null : null,
                     brand: typeof record.brand === "string" ? record.brand : null,
                     quantity: typeof record.quantity === "string" ? record.quantity : null,
                     imageUrl: typeof record.imageUrl === "string" ? record.imageUrl : null,
@@ -2895,12 +2899,17 @@ class HaShoppingListImproved extends HTMLElement {
 
         const previous = this._eanDatabase.get(product.ean);
         const normalizedCategory = product.category || null;
+        const normalizedOriginalName = product.originalName || previous?.originalName || null;
+        const normalizedBrand = product.brand || previous?.brand || null;
+        const normalizedQuantity = product.quantity || previous?.quantity || null;
+        const normalizedImageUrl = product.imageUrl || previous?.imageUrl || null;
         if (
             previous &&
             previous.name === product.name &&
-            (previous.brand || null) === (product.brand || null) &&
-            (previous.quantity || null) === (product.quantity || null) &&
-            (previous.imageUrl || null) === (product.imageUrl || null) &&
+            (previous.originalName || null) === normalizedOriginalName &&
+            (previous.brand || null) === normalizedBrand &&
+            (previous.quantity || null) === normalizedQuantity &&
+            (previous.imageUrl || null) === normalizedImageUrl &&
             (previous.category || null) === normalizedCategory
         ) {
             return true;
@@ -2910,9 +2919,10 @@ class HaShoppingListImproved extends HTMLElement {
             schema: EAN_DATABASE_SCHEMA,
             ean: product.ean,
             name: product.name,
-            brand: product.brand || null,
-            quantity: product.quantity || null,
-            imageUrl: product.imageUrl || null,
+            originalName: normalizedOriginalName,
+            brand: normalizedBrand,
+            quantity: normalizedQuantity,
+            imageUrl: normalizedImageUrl,
             category: normalizedCategory,
             sourceCardId: this._getEanScanCardId(),
             sourceEntity: this._entity,
@@ -3150,6 +3160,10 @@ class HaShoppingListImproved extends HTMLElement {
                 fields.style.gap = '12px';
 
                 const nameField = createInput(translate("ui.ean.database_name"), record.name);
+                const originalNameField = createInfo(
+                    translate("ui.ean.database_original_name"),
+                    record.originalName || ''
+                );
                 const eanField = createInfo(translate("ui.ean.database_ean"), record.ean);
                 const brandField = createInfo(translate("ui.ean.database_brand"), record.brand || '');
                 const quantityField = createInfo(translate("ui.ean.database_quantity"), record.quantity || '');
@@ -3196,6 +3210,7 @@ class HaShoppingListImproved extends HTMLElement {
                 categoryWrapper.appendChild(categorySelect);
 
                 fields.appendChild(nameField.wrapper);
+                fields.appendChild(originalNameField);
                 fields.appendChild(eanField);
                 fields.appendChild(brandField);
                 fields.appendChild(quantityField);
@@ -3269,7 +3284,7 @@ class HaShoppingListImproved extends HTMLElement {
                     previewValues.style.gap = '5px';
                     previewValues.style.marginTop = '8px';
                     [
-                        [translate("ui.ean.database_name"), offProduct.name],
+                        [translate("ui.ean.database_original_name"), offProduct.name],
                         [translate("ui.ean.database_brand"), offProduct.brand],
                         [translate("ui.ean.database_quantity"), offProduct.quantity]
                     ].forEach(([label, value]) => {
@@ -3312,6 +3327,7 @@ class HaShoppingListImproved extends HTMLElement {
                         renderProduct({
                             ...record,
                             name: String(nameField.input.value || '').trim() || record.name,
+                            originalName: offProduct.originalName || offProduct.name || null,
                             brand: offProduct.brand || null,
                             quantity: offProduct.quantity || null,
                             imageUrl: offProduct.imageUrl || null,
@@ -5313,6 +5329,7 @@ async _checkEAN(text, options = {}) {
     if (!eanRegexLocal.test(text)) {
         return {
             name: text,
+            originalName: null,
             brand: null,
             quantity: null,
             imageUrl: null,
@@ -5331,6 +5348,7 @@ async _checkEAN(text, options = {}) {
         if (databaseEntry) {
             return {
                 name: databaseEntry.name,
+                originalName: databaseEntry.originalName || null,
                 brand: databaseEntry.brand || null,
                 quantity: databaseEntry.quantity || null,
                 imageUrl: databaseEntry.imageUrl || null,
@@ -5353,6 +5371,7 @@ async _checkEAN(text, options = {}) {
 
                 return {
                     name: localEntry.name,
+                    originalName: null,
                     brand: null,
                     quantity: null,
                     imageUrl: null,
@@ -5373,6 +5392,7 @@ async _checkEAN(text, options = {}) {
         if (openFoodFactsOnly) return null;
         return {
             name: text,
+            originalName: null,
             brand: null,
             quantity: null,
             imageUrl: null,
@@ -5518,6 +5538,8 @@ async _checkEAN(text, options = {}) {
                 .replace(/\bMG\b/gi, "mg")
                 .replace(/\bG\b/g, "g")
                 .replace(/\bKG\b/gi, "kg");
+
+            if (/unknown/i.test(quantity)) quantity = null;
         }
 
         const imageUrl =
@@ -5535,6 +5557,7 @@ async _checkEAN(text, options = {}) {
 
         return {
             name: cleanName,
+            originalName: cleanName,
             brand,
             quantity,
             imageUrl,
@@ -7956,6 +7979,7 @@ async _checkEAN(text, options = {}) {
 
         const labels = {
             name: translate("ui.ean.database_name"),
+            originalName: translate("ui.ean.database_original_name"),
             ean: translate("ui.ean.database_ean"),
             brand: translate("ui.ean.database_brand"),
             quantity: translate("ui.ean.database_quantity"),
@@ -7970,13 +7994,14 @@ async _checkEAN(text, options = {}) {
             card.style.marginBottom = index === products.length - 1 ? '0' : '10px';
 
             const heading = document.createElement('div');
-            heading.textContent = product.brand || product.name;
+            heading.textContent = product.brand || product.originalName || `EAN ${product.ean}`;
             heading.style.fontWeight = '600';
             heading.style.marginBottom = '8px';
             card.appendChild(heading);
 
             [
                 [labels.name, product.name],
+                [labels.originalName, product.originalName],
                 [labels.ean, product.ean],
                 [labels.brand, product.brand],
                 [labels.quantity, product.quantity],
@@ -8814,6 +8839,7 @@ async _checkEAN(text, options = {}) {
                     if (action === "manual") {
                         eanCheck = {
                             name: eanCode || inputName,
+                            originalName: null,
                             brand: null,
                             quantity: null,
                             imageUrl: null,
@@ -8911,6 +8937,7 @@ async _checkEAN(text, options = {}) {
                 const saved = await this._saveEanDatabaseProduct({
                     ean: eanCode,
                     name: productName,
+                    originalName: eanCheck.originalName,
                     brand: eanCheck.brand,
                     quantity: eanCheck.quantity,
                     imageUrl: eanCheck.imageUrl,
@@ -9077,6 +9104,7 @@ async _checkEAN(text, options = {}) {
                 const saved = await this._saveEanDatabaseProduct({
                     ean: eanCode,
                     name: eanProductNameForDatabase,
+                    originalName: eanCheck.originalName,
                     brand: eanCheck.brand,
                     quantity: eanCheck.quantity,
                     imageUrl: eanCheck.imageUrl,
