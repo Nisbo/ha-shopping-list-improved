@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-4.6";
+const version = "3.2.0-BETA-5.0";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -123,6 +123,8 @@ const TRANSLATIONS = {
         "ui.ean.name_brand"                             : "Marke",
         "ui.ean.name_quantity"                          : "Menge",
         "ui.ean.brand_in_name"                         : "Die Marke „{brand}“ ist bereits im Artikelnamen enthalten und wird nicht zusätzlich angehängt.",
+        "ui.ean.database_entries_title"                : "EAN-Einträge für {name}",
+        "ui.ean.database_entries_badge"                : "{count} EAN-Einträge anzeigen",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -226,6 +228,8 @@ const TRANSLATIONS = {
         "editor.labels.ean_script_enabled"              : "EAN-Skript ausführen",
         "editor.labels.ean_script_entity"               : "EAN-Skript",
         "editor.labels.ean_remove_mode"                 : "Entnahmemodus durch langes Drücken aktivieren",
+        "editor.labels.ean_database_suggestions"        : "EAN-Datenbank in Suchvorschlägen verwenden",
+        "editor.labels.show_ean_database_badge"         : "EAN-Symbol bei zugeordneten Artikeln anzeigen",
         "editor.labels.todo_filter"                     : "To-Do-Filter",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
         
@@ -405,6 +409,8 @@ const TRANSLATIONS = {
         "editor.helpers.ean_create_chip"                : "Erstellt nach dem Hinzufügen eines gescannten Artikels einen lokalen Chip, sofern die lokale Chip-Erstellung allgemein aktiviert ist.",
         "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf.",
         "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
+        "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um eindeutige Produktnamen aus der EAN-Datenbank. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
+        "editor.helpers.show_ean_database_badge"         : "Zeigt neben Artikeln mit exakt passendem Produktnamen ein dezentes Barcode-Symbol. Ein Klick zeigt alle zugeordneten EAN-Datensätze an, ohne sie zu bearbeiten.",
         "editor.helpers.ean_script_entity"              : "Das Skript kann beispielsweise Sprachausgaben, Sounds, Benachrichtigungen oder weitere Aktionen ausführen. Die Auswahl bleibt gespeichert, wenn die Skriptausgabe deaktiviert wird.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
@@ -584,6 +590,8 @@ const TRANSLATIONS = {
         "ui.ean.name_brand"                             : "Brand",
         "ui.ean.name_quantity"                          : "Quantity",
         "ui.ean.brand_in_name"                         : "The brand “{brand}” is already included in the product name and will not be appended again.",
+        "ui.ean.database_entries_title"                : "EAN entries for {name}",
+        "ui.ean.database_entries_badge"                : "Show {count} EAN entries",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -687,6 +695,8 @@ const TRANSLATIONS = {
         "editor.labels.ean_script_enabled"              : "Run EAN script",
         "editor.labels.ean_script_entity"               : "EAN script",
         "editor.labels.ean_remove_mode"                 : "Enable removal mode by long press",
+        "editor.labels.ean_database_suggestions"        : "Use EAN database in search suggestions",
+        "editor.labels.show_ean_database_badge"         : "Show EAN icon for assigned items",
         "editor.labels.todo_filter"                     : "To-do filter",
         "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
@@ -865,6 +875,8 @@ const TRANSLATIONS = {
         "editor.helpers.ean_create_chip"                : "Creates a local chip after adding a scanned product, provided that local chip creation is enabled globally.",
         "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with the status and product data when an EAN event occurs.",
         "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
+        "editor.helpers.ean_database_suggestions"        : "Adds unique product names from the EAN database to the normal search suggestions. Multiple EANs with the same product name are suggested only once.",
+        "editor.helpers.show_ean_database_badge"         : "Shows a discreet barcode icon next to items with an exact matching product name. Select it to view all assigned EAN records without editing them.",
         "editor.helpers.ean_script_entity"              : "The script can provide speech output, play sounds, send notifications, or run additional actions. The selection is retained when script output is disabled.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
@@ -1376,6 +1388,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._messageCache = "";
 
         this._eanDatabase = new Map();
+        this._eanDatabaseByName = new Map();
         this._eanDatabaseInvalidCount = 0;
         this._eanDatabaseInvalidItems = [];
         this._eanDatabaseError = null;
@@ -1388,6 +1401,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanScanMode = "shopping";
         this._eanLongPressTriggered = false;
         this._eanLongPressTimer = null;
+        this._pendingSuggestionCategory = null;
 
         this._refreshDebounceTimer = null;
         this._dragSortActive = false;
@@ -1445,6 +1459,7 @@ class HaShoppingListImproved extends HTMLElement {
             this._eanDatabaseLoadPromise.finally(() => {
                 this._eanDatabaseLoadPromise = null;
                 this._loadEanScanQueue();
+                if (this._showEanDatabaseBadge) this._renderList();
             });
         }
     }
@@ -1601,6 +1616,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanScriptEnabled      = (config.ean_script_enabled === true);
         this._eanScriptEntity       = String(config.ean_script_entity || "").trim();
         this._eanRemoveModeEnabled  = (config.ean_remove_mode === true);
+        this._eanDatabaseSuggestions = (config.ean_database_suggestions === true);
+        this._showEanDatabaseBadge = (config.show_ean_database_badge === true);
 
         if (
             this._mode !== "shopping" ||
@@ -2006,6 +2023,8 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_ean_quantity", selector: { boolean: {} }, default: false },
                     { name: "ean_create_chip", selector: { boolean: {} }, default: false },
                     { name: "ean_remove_mode", selector: { boolean: {} }, default: false },
+                    { name: "ean_database_suggestions", selector: { boolean: {} }, default: false },
+                    { name: "show_ean_database_badge", selector: { boolean: {} }, default: false },
                     { name: "ean_script_enabled", selector: { boolean: {} }, default: false },
                     {
                         name: "ean_script_entity",
@@ -2510,7 +2529,7 @@ class HaShoppingListImproved extends HTMLElement {
         if(this._mode === "todo"){
             this._timeInterval = setInterval(() => {
                 this._updateTimes();
-            }, this._listReloadTime); // every xx seconds, standard --> 10 seconds            
+            }, this._listReloadTime); // every xx seconds, standard --> 10 seconds
         } else {
             // Check after 5 seconds once if not in ToDo mode
             this._updateTimesTimeout = setTimeout(() => {
@@ -2766,6 +2785,35 @@ class HaShoppingListImproved extends HTMLElement {
         return entityData.items;
     }
 
+    _normalizeEanDatabaseProductName(name) {
+        return String(name || '').normalize('NFKC').trim().toLocaleLowerCase();
+    }
+
+    _rebuildEanDatabaseNameIndex() {
+        const index = new Map();
+        for (const product of this._eanDatabase?.values() || []) {
+            const key = this._normalizeEanDatabaseProductName(product.name);
+            if (!key) continue;
+            if (!index.has(key)) index.set(key, []);
+            index.get(key).push(product);
+        }
+
+        for (const products of index.values()) {
+            products.sort((a, b) => {
+                const labelA = String(a.brand || a.name || '');
+                const labelB = String(b.brand || b.name || '');
+                return labelA.localeCompare(labelB, detectLanguage(), { sensitivity: 'base' }) ||
+                    String(a.ean || '').localeCompare(String(b.ean || ''));
+            });
+        }
+        this._eanDatabaseByName = index;
+    }
+
+    _getEanDatabaseEntriesByName(name) {
+        const key = this._normalizeEanDatabaseProductName(name);
+        return key ? [...(this._eanDatabaseByName?.get(key) || [])] : [];
+    }
+
     _setEanDatabaseItems(items) {
         const database = new Map();
         const invalidItems = [];
@@ -2804,12 +2852,14 @@ class HaShoppingListImproved extends HTMLElement {
         }
 
         this._eanDatabase = database;
+        this._rebuildEanDatabaseNameIndex();
         this._eanDatabaseInvalidItems = invalidItems;
         this._eanDatabaseInvalidCount = invalidItems.length;
     }
 
     async _loadEanDatabase() {
         this._eanDatabase = new Map();
+        this._eanDatabaseByName = new Map();
         this._eanDatabaseInvalidCount = 0;
         this._eanDatabaseInvalidItems = [];
         this._eanDatabaseError = null;
@@ -2884,6 +2934,7 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 });
                 this._eanDatabase.set(record.ean, { ...record, uid: previous.uid });
+                this._rebuildEanDatabaseNameIndex();
             } else {
                 await this._hass.connection.sendMessagePromise({
                     type: "call_service",
@@ -4024,6 +4075,8 @@ class HaShoppingListImproved extends HTMLElement {
             .suggestion-item:last-child { border-bottom:none; }
             .suggestion-item:hover, .suggestion-item.active { background:var(--primary-color, #03a9f4); color:#fff; }
             .suggestion-item .suggestion-category { font-size:11px; opacity:0.7; margin-left:8px; }
+            .suggestion-item .suggestion-ean { display:inline-flex; align-items:center; gap:2px; margin-left:8px; font-size:10px; opacity:0.75; vertical-align:middle; }
+            .suggestion-item .suggestion-ean ha-icon { width:15px; height:15px; --mdc-icon-size:15px; }
 
             input[type="text"]{ flex:1; padding:8px; border-radius:4px; border:1px solid var(--divider-color);} 
             select { padding:6px; border-radius:4px; }
@@ -7834,6 +7887,183 @@ async _checkEAN(text, options = {}) {
         }
     }
 
+    _showEanDatabaseEntriesPopup(productName) {
+        const products = this._getEanDatabaseEntriesByName(productName);
+        if (!products.length) return;
+
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.4)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+        overlay.style.pointerEvents = 'auto';
+
+        const popup = document.createElement('div');
+        popup.style.width = 'min(560px, 92vw)';
+        popup.style.maxHeight = '88vh';
+        popup.style.display = 'flex';
+        popup.style.flexDirection = 'column';
+        popup.style.overflow = 'hidden';
+        popup.style.padding = '0';
+        popup.style.borderRadius = '8px';
+        popup.style.background = 'var(--card-background-color, white)';
+        popup.style.color = 'var(--primary-text-color, black)';
+        popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+        const header = document.createElement('div');
+        header.style.display = 'flex';
+        header.style.alignItems = 'center';
+        header.style.justifyContent = 'space-between';
+        header.style.gap = '12px';
+        header.style.padding = '16px';
+        header.style.borderBottom = '1px solid var(--divider-color, #ddd)';
+
+        const title = document.createElement('h2');
+        title.textContent = translate("ui.ean.database_entries_title")
+            .replace("{name}", productName);
+        title.style.margin = '0';
+        title.style.fontSize = '20px';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.textContent = '×';
+        closeBtn.setAttribute('aria-label', translate("ui.common.close"));
+        closeBtn.style.padding = '0';
+        closeBtn.style.border = 'none';
+        closeBtn.style.background = 'transparent';
+        closeBtn.style.color = 'var(--primary-text-color, black)';
+        closeBtn.style.fontSize = '28px';
+        closeBtn.style.lineHeight = '1';
+        closeBtn.style.cursor = 'pointer';
+
+        const content = document.createElement('div');
+        content.style.padding = '16px';
+        content.style.overflowY = 'auto';
+
+        const close = () => {
+            window.removeEventListener('keydown', onKeyDown, true);
+            if (document.body.contains(overlay)) document.body.removeChild(overlay);
+        };
+        const onKeyDown = event => {
+            if (event.key === 'Escape') {
+                event.stopImmediatePropagation();
+                close();
+            }
+        };
+
+        const labels = {
+            name: translate("ui.ean.database_name"),
+            ean: translate("ui.ean.database_ean"),
+            brand: translate("ui.ean.database_brand"),
+            quantity: translate("ui.ean.database_quantity"),
+            category: translate("ui.ean.database_category")
+        };
+
+        products.forEach((product, index) => {
+            const card = document.createElement('div');
+            card.style.padding = '12px';
+            card.style.border = '1px solid var(--divider-color, #ddd)';
+            card.style.borderRadius = '6px';
+            card.style.marginBottom = index === products.length - 1 ? '0' : '10px';
+
+            const heading = document.createElement('div');
+            heading.textContent = product.brand || product.name;
+            heading.style.fontWeight = '600';
+            heading.style.marginBottom = '8px';
+            card.appendChild(heading);
+
+            [
+                [labels.name, product.name],
+                [labels.ean, product.ean],
+                [labels.brand, product.brand],
+                [labels.quantity, product.quantity],
+                [labels.category, product.category]
+            ].forEach(([label, value]) => {
+                if (!value) return;
+                const row = document.createElement('div');
+                row.style.display = 'grid';
+                row.style.gridTemplateColumns = 'minmax(105px, auto) minmax(0, 1fr)';
+                row.style.gap = '10px';
+                row.style.marginTop = '4px';
+                row.style.fontSize = '13px';
+
+                const labelEl = document.createElement('span');
+                labelEl.textContent = `${label}:`;
+                labelEl.style.color = 'var(--secondary-text-color, #666)';
+
+                const valueEl = document.createElement('span');
+                valueEl.textContent = String(value);
+                valueEl.style.wordBreak = 'break-word';
+
+                row.appendChild(labelEl);
+                row.appendChild(valueEl);
+                card.appendChild(row);
+            });
+
+            content.appendChild(card);
+        });
+
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) close();
+        });
+        window.addEventListener('keydown', onKeyDown, true);
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        popup.appendChild(header);
+        popup.appendChild(content);
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }
+
+    _appendEanDatabaseBadge(container, productName) {
+        if (!this._showEanDatabaseBadge || this._mode !== 'shopping') return;
+
+        const entries = this._getEanDatabaseEntriesByName(productName);
+        if (!entries.length) return;
+
+        const badge = document.createElement('button');
+        badge.type = 'button';
+        badge.title = translate("ui.ean.database_entries_badge")
+            .replace("{count}", String(entries.length));
+        badge.setAttribute('aria-label', badge.title);
+        badge.style.display = 'inline-flex';
+        badge.style.alignItems = 'center';
+        badge.style.gap = '2px';
+        badge.style.flexShrink = '0';
+        badge.style.padding = '1px 3px';
+        badge.style.border = 'none';
+        badge.style.background = 'transparent';
+        badge.style.color = 'var(--secondary-text-color, #666)';
+        badge.style.opacity = '0.72';
+        badge.style.cursor = 'pointer';
+
+        const icon = document.createElement('ha-icon');
+        icon.setAttribute('icon', 'mdi:barcode');
+        icon.style.width = '16px';
+        icon.style.height = '16px';
+        icon.style.setProperty('--mdc-icon-size', '16px');
+        badge.appendChild(icon);
+
+        if (entries.length > 1) {
+            const count = document.createElement('span');
+            count.textContent = String(entries.length);
+            count.style.fontSize = '10px';
+            badge.appendChild(count);
+        }
+
+        badge.addEventListener('click', event => {
+            event.stopPropagation();
+            this._showEanDatabaseEntriesPopup(productName);
+        });
+        badge.addEventListener('dblclick', event => event.stopPropagation());
+        container.appendChild(badge);
+    }
+
     _renderItem(item, parentEl) {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderItem() called");
 
@@ -8065,9 +8295,17 @@ async _checkEAN(text, options = {}) {
             nameSpan.appendChild(dueDiv);
         } else {
             // Shopping Mode
+            const nameRow = document.createElement('div');
+            nameRow.style.display = 'flex';
+            nameRow.style.alignItems = 'center';
+            nameRow.style.gap = '5px';
+
             const nameDiv = document.createElement('div');
             nameDiv.textContent = displayName;
-            nameSpan.appendChild(nameDiv);
+            nameDiv.style.minWidth = '0';
+            nameRow.appendChild(nameDiv);
+            this._appendEanDatabaseBadge(nameRow, nameOnly);
+            nameSpan.appendChild(nameRow);
 
             if (descriptionText) {
                 const descriptionDiv = document.createElement('div');
@@ -8340,7 +8578,34 @@ async _checkEAN(text, options = {}) {
                 }
             }
         }
-        return items;
+
+        if (!this._eanDatabaseSuggestions || !this._eanDatabaseByName?.size) return items;
+
+        const uniqueItems = new Map();
+        items.forEach(item => {
+            const key = this._normalizeEanDatabaseProductName(item.name);
+            if (key && !uniqueItems.has(key)) uniqueItems.set(key, item);
+        });
+
+        for (const [key, products] of this._eanDatabaseByName.entries()) {
+            if (!products.length) continue;
+            const existing = uniqueItems.get(key);
+            if (existing) {
+                existing.fromEanDatabase = true;
+                existing.eanCount = products.length;
+                continue;
+            }
+
+            const product = products[0];
+            uniqueItems.set(key, {
+                name: product.name,
+                category: product.category || '',
+                fromEanDatabase: true,
+                eanCount: products.length
+            });
+        }
+
+        return [...uniqueItems.values()];
     }
 
     _updateSuggestions(query) {
@@ -8369,7 +8634,32 @@ async _checkEAN(text, options = {}) {
         for (const match of limited) {
             const div = document.createElement('div');
             div.classList.add('suggestion-item');
-            div.innerHTML = `${match.name}<span class="suggestion-category">${match.category}</span>`;
+
+            const name = document.createElement('span');
+            name.textContent = match.name;
+            div.appendChild(name);
+
+            if (match.category) {
+                const category = document.createElement('span');
+                category.className = 'suggestion-category';
+                category.textContent = match.category;
+                div.appendChild(category);
+            }
+
+            if (match.fromEanDatabase) {
+                const databaseMarker = document.createElement('span');
+                databaseMarker.className = 'suggestion-ean';
+                databaseMarker.title = translate("ui.ean.database_entries_badge")
+                    .replace("{count}", String(match.eanCount || 1));
+
+                const icon = document.createElement('ha-icon');
+                icon.setAttribute('icon', 'mdi:barcode');
+                databaseMarker.appendChild(icon);
+                if (match.eanCount > 1) {
+                    databaseMarker.appendChild(document.createTextNode(String(match.eanCount)));
+                }
+                div.appendChild(databaseMarker);
+            }
 
             // avoid blur before click, which would hide the suggestions before the click event fires
             div.addEventListener('mousedown', (e) => {
@@ -8378,7 +8668,10 @@ async _checkEAN(text, options = {}) {
 
             // click event on div to select suggestion
             div.addEventListener('click', () => {
-                this._selectSuggestion(match.name);
+                this._selectSuggestion(
+                    match.name,
+                    match.fromEanDatabase ? match.category : null
+                );
             });
 
             this._suggestionsEl.appendChild(div);
@@ -8386,8 +8679,9 @@ async _checkEAN(text, options = {}) {
         this._suggestionsEl.classList.add('visible');
     }
 
-    _selectSuggestion(name) {
+    _selectSuggestion(name, category = null) {
         this._inputEl.value = name;
+        this._pendingSuggestionCategory = category || null;
         this._hideSuggestions();
         this._onAdd();
     }
@@ -8485,6 +8779,8 @@ async _checkEAN(text, options = {}) {
 
 		try {
 			let inputName = this._inputEl.value.trim();
+			const suggestionCategory = this._pendingSuggestionCategory;
+			this._pendingSuggestionCategory = null;
 			if (!inputName) return false;
             const eanScanMode = this._getCurrentEanScanMode();
 
@@ -8708,7 +9004,7 @@ async _checkEAN(text, options = {}) {
             }
 
             // 2. If there is an explicit category in the input, use it
-            const explicitCategory = this._getCategory(inputName);
+            const explicitCategory = this._getCategory(inputName) || suggestionCategory;
             if (explicitCategory) {
                 assignedCategory = explicitCategory;
             }
