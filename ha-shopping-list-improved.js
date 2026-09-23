@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-3.0";
+const version = "3.2.0-BETA-4.6";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -58,9 +58,49 @@ const TRANSLATIONS = {
         "ui.admin.options.ean_scanner_mac_missing"       : "Keine Scanner-MAC konfiguriert. Diese Karte ist für EAN-Scans aktiviert, kann aber keine Scans verarbeiten. Lege ean_scanner_mac in der YAML-Konfiguration der Karte fest.",
         "ui.admin.options.ean_queue"                     : "EAN-Warteschlange",
         "ui.admin.options.ean_queue_pending"             : "Offene Scans: {count}",
+        "ui.admin.options.ean_queue_shopping"            : "Einkaufsliste: {count}",
+        "ui.admin.options.ean_queue_database"            : "EAN-Datenbank: {count}",
+        "ui.admin.options.ean_queue_remove"              : "Entnahmen: {count}",
         "ui.admin.options.ean_queue_process"             : "Abarbeiten",
         "ui.admin.options.ean_queue_clear"               : "Leeren",
-        "ui.admin.options.ean_database_status"           : "EAN-Datenbank: {count} Produkte",
+        "ui.admin.options.ean_database_status"           : "EAN-Datenbank:",
+        "ui.admin.options.ean_database_products"         : "{count} Produkte",
+        "ui.admin.options.ean_database_invalid"          : "{count} ungültig",
+        "ui.ean.database_manager_title"                  : "EAN-Datenbank",
+        "ui.ean.database_search"                         : "Produkte durchsuchen...",
+        "ui.ean.database_sort"                           : "Sortierung",
+        "ui.ean.database_sort_name"                      : "Name",
+        "ui.ean.database_sort_category"                  : "Kategorie / Name",
+        "ui.ean.database_no_products"                    : "Keine passenden Produkte gefunden.",
+        "ui.ean.database_no_category"                    : "Ohne Kategorie",
+        "ui.ean.database_invalid_title"                  : "Ungültige Einträge",
+        "ui.ean.database_invalid_entry"                  : "Ungültiger Eintrag",
+        "ui.ean.database_edit_title"                     : "Produkt bearbeiten",
+        "ui.ean.database_name"                           : "Produktname",
+        "ui.ean.database_ean"                            : "EAN",
+        "ui.ean.database_brand"                          : "Marke",
+        "ui.ean.database_quantity"                       : "Produktmenge",
+        "ui.ean.database_category"                       : "Kategorie",
+        "ui.ean.database_save"                           : "Speichern",
+        "ui.ean.database_reload_off"                     : "Neu von OFF abfragen",
+        "ui.ean.database_loading_off"                    : "Open Food Facts wird abgefragt...",
+        "ui.ean.database_apply_off"                      : "OFF-Daten übernehmen",
+        "ui.ean.database_off_preview"                    : "Neue Daten von Open Food Facts",
+        "ui.ean.database_off_name_preserved"             : "Beim Speichern bleibt dein Produktname erhalten. Übernommen werden nur Marke, Produktmenge und Bild.",
+        "ui.ean.database_off_not_found"                  : "Open Food Facts hat für diese EAN keine Produktdaten geliefert.",
+        "ui.ean.database_delete_confirm"                 : "Diesen EAN-Datenbankeintrag wirklich löschen?",
+        "ui.ean.database_delete_failed"                  : "Der EAN-Datenbankeintrag konnte nicht gelöscht werden.",
+        "ui.ean.database_name_required"                  : "Bitte gib einen Produktnamen ein.",
+        "ui.ean.database_back"                           : "Zurück",
+        "ui.ean.database_fill_start"                     : "Befüllmodus starten",
+        "ui.ean.database_fill_active"                    : "EAN-Datenbank-Befüllmodus aktiv",
+        "ui.ean.database_fill_help"                      : "EANs werden ausschließlich in der EAN-Datenbank gespeichert und nicht zur Einkaufsliste hinzugefügt.",
+        "ui.ean.database_fill_end"                       : "Befüllmodus beenden",
+        "ui.ean.database_fill_existing"                  : "Diese EAN ist bereits in der EAN-Datenbank vorhanden. Beim Speichern wird der vorhandene Eintrag aktualisiert.",
+        "ui.ean.database_fill_new"                       : "Dieser Scan wird ausschließlich in der EAN-Datenbank gespeichert.",
+        "ui.ean.database_fill_save"                      : "In Datenbank speichern",
+        "ui.ean.remove_mode_active"                      : "Entnahme aktiv",
+        "ui.ean.remove_not_found"                        : "{name} ist nicht in der Einkaufsliste.",
         "ui.ean.queue_status"                            : "{quantity}× gescannt · danach noch {count} Artikel",
         "ui.ean.database_invalid"                        : "Die konfigurierte EAN-To-do-Liste enthält {count} ungültige Einträge. Diese Einträge werden ignoriert.",
         "ui.ean.database_unavailable"                    : "Die konfigurierte EAN-To-do-Liste kann nicht verwendet werden: {reason}",
@@ -79,6 +119,10 @@ const TRANSLATIONS = {
         "ui.ean.queue_process_now"                       : "Jetzt bearbeiten",
         "ui.ean.queue_keep_later"                        : "Später",
         "ui.ean.queue_admin_hint"                        : "Du kannst die Warteschlange später über die Admin-Optionen weiterbearbeiten.",
+        "ui.ean.add"                                    : "Hinzufügen",
+        "ui.ean.name_brand"                             : "Marke",
+        "ui.ean.name_quantity"                          : "Menge",
+        "ui.ean.brand_in_name"                         : "Die Marke „{brand}“ ist bereits im Artikelnamen enthalten und wird nicht zusätzlich angehängt.",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -178,6 +222,10 @@ const TRANSLATIONS = {
         "editor.labels.show_ean_quantity"               : "Produktmenge aus EAN-Daten anzeigen",
         "editor.labels.ean_scanner_mac"                 : "Bluetooth-MAC-Adresse des EAN-Scanners",
         "editor.labels.ean_database_entity"             : "To-do-Liste als EAN-Datenbank",
+        "editor.labels.ean_create_chip"                 : "Chips für gescannte Artikel erstellen",
+        "editor.labels.ean_script_enabled"              : "EAN-Skript ausführen",
+        "editor.labels.ean_script_entity"               : "EAN-Skript",
+        "editor.labels.ean_remove_mode"                 : "Entnahmemodus durch langes Drücken aktivieren",
         "editor.labels.todo_filter"                     : "To-Do-Filter",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
         
@@ -354,6 +402,10 @@ const TRANSLATIONS = {
         "editor.helpers.show_ean_quantity"              : "Fügt die Verpackungsmenge aus den EAN-Produktdaten hinzu.",
         "editor.helpers.ean_scanner_mac"                : "MAC-Adresse des Bluetooth-Scanners, dessen Ereignisse diese Karte verarbeitet. Beispiel: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"            : "Optionale, ausschließlich für diese Funktion vorgesehene To-do-Liste. Sie speichert gelernte EAN-Produkte und Kategorien dauerhaft und geräteübergreifend. Verwende diese Liste nicht für andere Einträge. Die Standard-Einkaufsliste ist ungeeignet, da sie keine Beschreibungen unterstützt. Um die Funktion zu deaktivieren, entferne die ausgewählte Liste wieder aus der Konfiguration.",
+        "editor.helpers.ean_create_chip"                : "Erstellt nach dem Hinzufügen eines gescannten Artikels einen lokalen Chip, sofern die lokale Chip-Erstellung allgemein aktiviert ist.",
+        "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf.",
+        "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
+        "editor.helpers.ean_script_entity"              : "Das Skript kann beispielsweise Sprachausgaben, Sounds, Benachrichtigungen oder weitere Aktionen ausführen. Die Auswahl bleibt gespeichert, wenn die Skriptausgabe deaktiviert wird.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
@@ -467,9 +519,49 @@ const TRANSLATIONS = {
         "ui.admin.options.ean_scanner_mac_missing"       : "No scanner MAC is configured. This card is enabled for EAN scans but cannot process them. Set ean_scanner_mac in the card's YAML configuration.",
         "ui.admin.options.ean_queue"                     : "EAN scan queue",
         "ui.admin.options.ean_queue_pending"             : "Pending scans: {count}",
+        "ui.admin.options.ean_queue_shopping"            : "Shopping list: {count}",
+        "ui.admin.options.ean_queue_database"            : "EAN database: {count}",
+        "ui.admin.options.ean_queue_remove"              : "Removals: {count}",
         "ui.admin.options.ean_queue_process"             : "Process",
         "ui.admin.options.ean_queue_clear"               : "Clear",
-        "ui.admin.options.ean_database_status"           : "EAN database: {count} products",
+        "ui.admin.options.ean_database_status"           : "EAN database:",
+        "ui.admin.options.ean_database_products"         : "{count} products",
+        "ui.admin.options.ean_database_invalid"          : "{count} invalid",
+        "ui.ean.database_manager_title"                  : "EAN database",
+        "ui.ean.database_search"                         : "Search products...",
+        "ui.ean.database_sort"                           : "Sort by",
+        "ui.ean.database_sort_name"                      : "Name",
+        "ui.ean.database_sort_category"                  : "Category / name",
+        "ui.ean.database_no_products"                    : "No matching products found.",
+        "ui.ean.database_no_category"                    : "No category",
+        "ui.ean.database_invalid_title"                  : "Invalid entries",
+        "ui.ean.database_invalid_entry"                  : "Invalid entry",
+        "ui.ean.database_edit_title"                     : "Edit product",
+        "ui.ean.database_name"                           : "Product name",
+        "ui.ean.database_ean"                            : "EAN",
+        "ui.ean.database_brand"                          : "Brand",
+        "ui.ean.database_quantity"                       : "Package quantity",
+        "ui.ean.database_category"                       : "Category",
+        "ui.ean.database_save"                           : "Save",
+        "ui.ean.database_reload_off"                     : "Reload from OFF",
+        "ui.ean.database_loading_off"                    : "Loading data from Open Food Facts...",
+        "ui.ean.database_apply_off"                      : "Apply OFF data",
+        "ui.ean.database_off_preview"                    : "New data from Open Food Facts",
+        "ui.ean.database_off_name_preserved"             : "Your product name is preserved when saving. Only brand, package quantity, and image are applied.",
+        "ui.ean.database_off_not_found"                  : "Open Food Facts did not return product data for this EAN.",
+        "ui.ean.database_delete_confirm"                 : "Delete this EAN database entry?",
+        "ui.ean.database_delete_failed"                  : "The EAN database entry could not be deleted.",
+        "ui.ean.database_name_required"                  : "Please enter a product name.",
+        "ui.ean.database_back"                           : "Back",
+        "ui.ean.database_fill_start"                     : "Start fill mode",
+        "ui.ean.database_fill_active"                    : "EAN database fill mode active",
+        "ui.ean.database_fill_help"                      : "EANs are saved only to the EAN database and are not added to the shopping list.",
+        "ui.ean.database_fill_end"                       : "End fill mode",
+        "ui.ean.database_fill_existing"                  : "This EAN already exists in the EAN database. Saving updates the existing entry.",
+        "ui.ean.database_fill_new"                       : "This scan is saved only to the EAN database.",
+        "ui.ean.database_fill_save"                      : "Save to database",
+        "ui.ean.remove_mode_active"                      : "Removal active",
+        "ui.ean.remove_not_found"                        : "{name} is not on the shopping list.",
         "ui.ean.queue_status"                            : "Scanned {quantity}× · {count} more items waiting",
         "ui.ean.database_invalid"                        : "The configured EAN to-do list contains {count} invalid entries. These entries are ignored.",
         "ui.ean.database_unavailable"                    : "The configured EAN to-do list cannot be used: {reason}",
@@ -488,6 +580,10 @@ const TRANSLATIONS = {
         "ui.ean.queue_process_now"                       : "Process now",
         "ui.ean.queue_keep_later"                        : "Later",
         "ui.ean.queue_admin_hint"                        : "You can continue processing the queue later from the Admin Options.",
+        "ui.ean.add"                                    : "Add",
+        "ui.ean.name_brand"                             : "Brand",
+        "ui.ean.name_quantity"                          : "Quantity",
+        "ui.ean.brand_in_name"                         : "The brand “{brand}” is already included in the product name and will not be appended again.",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -587,6 +683,10 @@ const TRANSLATIONS = {
         "editor.labels.show_ean_quantity"               : "Show product quantity from EAN data",
         "editor.labels.ean_scanner_mac"                 : "Bluetooth MAC address of the EAN scanner",
         "editor.labels.ean_database_entity"             : "To-do list used as EAN database",
+        "editor.labels.ean_create_chip"                 : "Create chips for scanned products",
+        "editor.labels.ean_script_enabled"              : "Run EAN script",
+        "editor.labels.ean_script_entity"               : "EAN script",
+        "editor.labels.ean_remove_mode"                 : "Enable removal mode by long press",
         "editor.labels.todo_filter"                     : "To-do filter",
         "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
@@ -762,6 +862,10 @@ const TRANSLATIONS = {
         "editor.helpers.show_ean_quantity"              : "Appends the package quantity from the EAN product data.",
         "editor.helpers.ean_scanner_mac"                : "MAC address of the Bluetooth scanner whose events this card processes. Example: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"            : "Optional to-do list reserved exclusively for this feature. It stores learned EAN products and categories permanently across devices. Do not use this list for other entries. The standard Shopping List is unsuitable because it does not support descriptions. To disable the feature, remove the selected list from the configuration.",
+        "editor.helpers.ean_create_chip"                : "Creates a local chip after adding a scanned product, provided that local chip creation is enabled globally.",
+        "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with the status and product data when an EAN event occurs.",
+        "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
+        "editor.helpers.ean_script_entity"              : "The script can provide speech output, play sounds, send notifications, or run additional actions. The selection is retained when script output is disabled.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
@@ -1273,6 +1377,7 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._eanDatabase = new Map();
         this._eanDatabaseInvalidCount = 0;
+        this._eanDatabaseInvalidItems = [];
         this._eanDatabaseError = null;
         this._eanDatabaseWarningShown = false;
         this._eanScanQueue = [];
@@ -1280,6 +1385,9 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanQueuePaused = false;
         this._activeEanScanQueueItem = null;
         this._eanQueuePopupStatusEl = null;
+        this._eanScanMode = "shopping";
+        this._eanLongPressTriggered = false;
+        this._eanLongPressTimer = null;
 
         this._refreshDebounceTimer = null;
         this._dragSortActive = false;
@@ -1489,6 +1597,18 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanDatabaseEntity     = String(config.ean_database_entity || "").trim();
         this._showEanBrand          = (config.show_ean_brand === true);
         this._showEanQuantity       = (config.show_ean_quantity === true);
+        this._eanCreateChip         = (config.ean_create_chip === true);
+        this._eanScriptEnabled      = (config.ean_script_enabled === true);
+        this._eanScriptEntity       = String(config.ean_script_entity || "").trim();
+        this._eanRemoveModeEnabled  = (config.ean_remove_mode === true);
+
+        if (
+            this._mode !== "shopping" ||
+            (this._eanScanMode === "database" && !this._eanDatabaseEntity) ||
+            (this._eanScanMode === "shopping_remove" && !this._eanRemoveModeEnabled)
+        ) {
+            this._eanScanMode = "shopping";
+        }
 
         this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
         this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
@@ -1884,6 +2004,18 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "show_ean_brand", selector: { boolean: {} }, default: false },
                     { name: "show_ean_quantity", selector: { boolean: {} }, default: false },
+                    { name: "ean_create_chip", selector: { boolean: {} }, default: false },
+                    { name: "ean_remove_mode", selector: { boolean: {} }, default: false },
+                    { name: "ean_script_enabled", selector: { boolean: {} }, default: false },
+                    {
+                        name: "ean_script_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["script"]
+                            }
+                        }
+                    },
                     {
                         name: "ean_scanner_mac",
                         selector: { text: {} },
@@ -2485,6 +2617,51 @@ class HaShoppingListImproved extends HTMLElement {
         return `${EAN_SCAN_QUEUE_STORAGE_KEY}::${this._getEanScanCardId()}`;
     }
 
+    _normalizeEanScanMode(mode) {
+        return ["shopping", "database", "shopping_remove"].includes(mode)
+            ? mode
+            : "shopping";
+    }
+
+    _getCurrentEanScanMode() {
+        return this._normalizeEanScanMode(
+            this._activeEanScanQueueItem?.scan_mode || this._eanScanMode
+        );
+    }
+
+    _setEanScanMode(mode) {
+        let nextMode = this._normalizeEanScanMode(mode);
+        if (nextMode === "database" && !this._eanDatabaseEntity) nextMode = "shopping";
+        if (nextMode === "shopping_remove" && !this._eanRemoveModeEnabled) nextMode = "shopping";
+        this._eanScanMode = nextMode;
+        this._updateEanScanModeUi();
+    }
+
+    _updateEanScanModeUi() {
+        const addBtn = this._shadow?.getElementById('addBtn');
+        const notice = this._shadow?.getElementById('eanDatabaseFillNotice');
+
+        if (addBtn) {
+            if (this._eanScanMode === "shopping_remove") {
+                addBtn.textContent = translate("ui.ean.remove_mode_active");
+                addBtn.style.background = 'var(--warning-color, #f39c12)';
+                addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "database") {
+                addBtn.textContent = translate("ui.ean.database_fill_save");
+                addBtn.style.background = 'var(--primary-color, #03A9F4)';
+                addBtn.style.color = 'white';
+            } else {
+                addBtn.textContent = translate("editor.labels.add_button");
+                addBtn.style.background = '';
+                addBtn.style.color = '';
+            }
+        }
+
+        if (notice) {
+            notice.style.display = this._eanScanMode === "database" ? 'flex' : 'none';
+        }
+    }
+
     _loadEanScanQueue() {
         const cardId = this._getEanScanCardId();
         try {
@@ -2500,6 +2677,7 @@ class HaShoppingListImproved extends HTMLElement {
                     source: item.source || null,
                     address: item.address || null,
                     createdAt: item.createdAt || new Date().toISOString(),
+                    scan_mode: this._normalizeEanScanMode(item.scan_mode),
                     // Queues written before BETA-2.5 have no deferred flag and
                     // must not open automatically after an update or reload.
                     deferred: item.deferred !== false
@@ -2536,7 +2714,10 @@ class HaShoppingListImproved extends HTMLElement {
             this._loadEanScanQueue();
         }
 
-        let queued = this._eanScanQueue.find(item => item.code === code);
+        const scanMode = this._normalizeEanScanMode(eventData.scan_mode || this._eanScanMode);
+        let queued = this._eanScanQueue.find(item =>
+            item.code === code && this._normalizeEanScanMode(item.scan_mode) === scanMode
+        );
         if (queued) {
             queued.quantity += 1;
             queued.deferred = false;
@@ -2547,6 +2728,7 @@ class HaShoppingListImproved extends HTMLElement {
                 source: eventData.source || null,
                 address: eventData.address || null,
                 createdAt: new Date().toISOString(),
+                scan_mode: scanMode,
                 deferred: false
             };
             this._eanScanQueue.push(queued);
@@ -2586,7 +2768,7 @@ class HaShoppingListImproved extends HTMLElement {
 
     _setEanDatabaseItems(items) {
         const database = new Map();
-        let invalidCount = 0;
+        const invalidItems = [];
 
         for (const item of items || []) {
             try {
@@ -2613,17 +2795,23 @@ class HaShoppingListImproved extends HTMLElement {
                     category: typeof record.category === "string" ? record.category : null
                 });
             } catch (error) {
-                invalidCount += 1;
+                invalidItems.push({
+                    uid: item?.uid || null,
+                    summary: String(item?.summary || item?.name || "").trim(),
+                    description: String(item?.description || "")
+                });
             }
         }
 
         this._eanDatabase = database;
-        this._eanDatabaseInvalidCount = invalidCount;
+        this._eanDatabaseInvalidItems = invalidItems;
+        this._eanDatabaseInvalidCount = invalidItems.length;
     }
 
     async _loadEanDatabase() {
         this._eanDatabase = new Map();
         this._eanDatabaseInvalidCount = 0;
+        this._eanDatabaseInvalidItems = [];
         this._eanDatabaseError = null;
 
         if (!this._eanDatabaseEntity || !this._hass) return;
@@ -2714,6 +2902,613 @@ class HaShoppingListImproved extends HTMLElement {
             console.error("[ha-shopping-list-improved] Unable to save EAN database product:", error);
             return false;
         }
+    }
+
+    async _deleteEanDatabaseItem(uid) {
+        if (!uid || !this._eanDatabaseEntity || this._eanDatabaseError) return false;
+
+        try {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "todo",
+                service: "remove_item",
+                target: { entity_id: this._eanDatabaseEntity },
+                service_data: { item: uid }
+            });
+            await this._loadEanDatabase();
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to delete EAN database item:", error);
+            return false;
+        }
+    }
+
+    async _showEanDatabaseManager() {
+        if (!this._eanDatabaseEntity || this._eanDatabaseError) return;
+
+        await this._loadEanDatabase();
+        if (this._eanDatabaseError) {
+            await this.confirmPopup(this._eanDatabaseErrorMessage(), true);
+            return;
+        }
+
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'auto';
+
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.width = 'min(680px, 92vw)';
+            popup.style.maxHeight = '90vh';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+            popup.style.display = 'flex';
+            popup.style.flexDirection = 'column';
+            popup.style.overflow = 'hidden';
+
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.alignItems = 'center';
+            header.style.justifyContent = 'space-between';
+            header.style.gap = '12px';
+            header.style.padding = '16px';
+            header.style.borderBottom = '1px solid var(--divider-color, #ddd)';
+
+            const title = document.createElement('h2');
+            title.textContent = translate("ui.ean.database_manager_title");
+            title.style.margin = '0';
+            title.style.fontSize = '20px';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.textContent = '×';
+            closeBtn.setAttribute('aria-label', translate("ui.common.close"));
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = 'var(--primary-text-color, black)';
+            closeBtn.style.fontSize = '28px';
+            closeBtn.style.lineHeight = '1';
+            closeBtn.style.cursor = 'pointer';
+
+            const content = document.createElement('div');
+            content.style.padding = '16px';
+            content.style.overflowY = 'auto';
+            content.style.boxSizing = 'border-box';
+
+            const close = (result = true) => {
+                window.removeEventListener('keydown', escapeHandler, true);
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve(result);
+            };
+            const escapeHandler = (event) => {
+                if (event.key === 'Escape') {
+                    event.stopImmediatePropagation();
+                    close();
+                }
+            };
+
+            const styleButton = (button, primary = false, danger = false) => {
+                button.type = 'button';
+                button.style.border = 'none';
+                button.style.padding = '7px 12px';
+                button.style.borderRadius = '4px';
+                button.style.cursor = 'pointer';
+                button.style.background = danger
+                    ? 'var(--error-color, #c62828)'
+                    : primary
+                        ? 'var(--primary-color, #03A9F4)'
+                        : 'var(--secondary-background-color, #eee)';
+                button.style.color = primary || danger
+                    ? 'white'
+                    : 'var(--primary-text-color, black)';
+            };
+
+            const createInput = (labelText, value = '') => {
+                const wrapper = document.createElement('label');
+                wrapper.style.display = 'block';
+                wrapper.style.textAlign = 'left';
+                wrapper.style.fontSize = '12px';
+                wrapper.style.color = 'var(--secondary-text-color, #666)';
+
+                const label = document.createElement('span');
+                label.textContent = labelText;
+                label.style.display = 'block';
+                label.style.marginBottom = '4px';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = value || '';
+                input.style.width = '100%';
+                input.style.boxSizing = 'border-box';
+                input.style.padding = '9px 10px';
+                input.style.border = '1px solid var(--divider-color, #ccc)';
+                input.style.borderRadius = '4px';
+                input.style.background = 'var(--card-background-color, white)';
+                input.style.color = 'var(--primary-text-color, black)';
+
+                wrapper.appendChild(label);
+                wrapper.appendChild(input);
+                return { wrapper, input };
+            };
+
+            const createInfo = (labelText, value = '') => {
+                const wrapper = document.createElement('div');
+                wrapper.style.textAlign = 'left';
+
+                const label = document.createElement('div');
+                label.textContent = labelText;
+                label.style.marginBottom = '4px';
+                label.style.fontSize = '12px';
+                label.style.color = 'var(--secondary-text-color, #666)';
+
+                const text = document.createElement('div');
+                text.textContent = value || '—';
+                text.style.minHeight = '20px';
+                text.style.padding = '9px 0';
+                text.style.borderBottom = '1px solid var(--divider-color, #ccc)';
+                text.style.color = 'var(--primary-text-color, black)';
+                text.style.wordBreak = 'break-word';
+
+                wrapper.appendChild(label);
+                wrapper.appendChild(text);
+                return wrapper;
+            };
+
+            const renderProduct = (sourceRecord) => {
+                const record = { ...sourceRecord };
+                content.innerHTML = '';
+
+                const backBtn = document.createElement('button');
+                backBtn.textContent = `← ${translate("ui.ean.database_back")}`;
+                styleButton(backBtn);
+                backBtn.style.marginBottom = '14px';
+                backBtn.addEventListener('click', renderList);
+                content.appendChild(backBtn);
+
+                const editTitle = document.createElement('h3');
+                editTitle.textContent = translate("ui.ean.database_edit_title");
+                editTitle.style.margin = '0 0 14px';
+                content.appendChild(editTitle);
+
+                if (record.imageUrl) {
+                    const image = document.createElement('img');
+                    image.src = record.imageUrl;
+                    image.alt = record.name || '';
+                    image.loading = 'lazy';
+                    image.style.display = 'block';
+                    image.style.maxWidth = '180px';
+                    image.style.maxHeight = '180px';
+                    image.style.objectFit = 'contain';
+                    image.style.margin = '0 auto 16px';
+                    image.style.borderRadius = '4px';
+                    content.appendChild(image);
+                }
+
+                const fields = document.createElement('div');
+                fields.style.display = 'grid';
+                fields.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+                fields.style.gap = '12px';
+
+                const nameField = createInput(translate("ui.ean.database_name"), record.name);
+                const eanField = createInfo(translate("ui.ean.database_ean"), record.ean);
+                const brandField = createInfo(translate("ui.ean.database_brand"), record.brand || '');
+                const quantityField = createInfo(translate("ui.ean.database_quantity"), record.quantity || '');
+
+                const categoryWrapper = document.createElement('label');
+                categoryWrapper.style.display = 'block';
+                categoryWrapper.style.textAlign = 'left';
+                categoryWrapper.style.fontSize = '12px';
+                categoryWrapper.style.color = 'var(--secondary-text-color, #666)';
+                const categoryLabel = document.createElement('span');
+                categoryLabel.textContent = translate("ui.ean.database_category");
+                categoryLabel.style.display = 'block';
+                categoryLabel.style.marginBottom = '4px';
+                const categorySelect = document.createElement('select');
+                categorySelect.style.width = '100%';
+                categorySelect.style.boxSizing = 'border-box';
+                categorySelect.style.padding = '9px 10px';
+                categorySelect.style.border = '1px solid var(--divider-color, #ccc)';
+                categorySelect.style.borderRadius = '4px';
+                categorySelect.style.background = 'var(--card-background-color, white)';
+                categorySelect.style.color = 'var(--primary-text-color, black)';
+
+                const categoryNames = [...new Set((this._categories || [])
+                    .map(category => String(category?.name || '').trim())
+                    .filter(Boolean))];
+                const currentCategory = String(record.category || '').trim();
+                if (currentCategory && !categoryNames.includes(currentCategory)) {
+                    categoryNames.push(currentCategory);
+                }
+                categoryNames.sort((a, b) => a.localeCompare(b, detectLanguage(), { sensitivity: 'base' }));
+
+                const noCategoryOption = document.createElement('option');
+                noCategoryOption.value = '';
+                noCategoryOption.textContent = translate("ui.common.no_cat");
+                categorySelect.appendChild(noCategoryOption);
+                categoryNames.forEach(categoryName => {
+                    const option = document.createElement('option');
+                    option.value = categoryName;
+                    option.textContent = categoryName;
+                    categorySelect.appendChild(option);
+                });
+                categorySelect.value = currentCategory;
+                categoryWrapper.appendChild(categoryLabel);
+                categoryWrapper.appendChild(categorySelect);
+
+                fields.appendChild(nameField.wrapper);
+                fields.appendChild(eanField);
+                fields.appendChild(brandField);
+                fields.appendChild(quantityField);
+                fields.appendChild(categoryWrapper);
+                content.appendChild(fields);
+
+                const status = document.createElement('div');
+                status.style.minHeight = '20px';
+                status.style.marginTop = '12px';
+                status.style.fontSize = '13px';
+                content.appendChild(status);
+
+                const actions = document.createElement('div');
+                actions.style.display = 'flex';
+                actions.style.flexWrap = 'wrap';
+                actions.style.gap = '8px';
+                actions.style.marginTop = '8px';
+
+                const saveBtn = document.createElement('button');
+                saveBtn.textContent = translate("ui.ean.database_save");
+                styleButton(saveBtn, true);
+                saveBtn.addEventListener('click', async () => {
+                    const name = String(nameField.input.value || '').trim();
+                    if (!name) {
+                        status.textContent = translate("ui.ean.database_name_required");
+                        status.style.color = 'var(--error-color, #db4437)';
+                        return;
+                    }
+                    saveBtn.disabled = true;
+                    const saved = await this._saveEanDatabaseProduct({
+                        ...record,
+                        name,
+                        category: categorySelect.value || null
+                    });
+                    saveBtn.disabled = false;
+                    if (saved) renderList();
+                    else {
+                        status.textContent = this._eanDatabaseErrorMessage("save");
+                        status.style.color = 'var(--error-color, #db4437)';
+                    }
+                });
+
+                const reloadBtn = document.createElement('button');
+                reloadBtn.textContent = translate("ui.ean.database_reload_off");
+                styleButton(reloadBtn);
+                reloadBtn.addEventListener('click', async () => {
+                    reloadBtn.disabled = true;
+                    status.textContent = translate("ui.ean.database_loading_off");
+                    status.style.color = 'var(--secondary-text-color, #666)';
+                    const offProduct = await this._checkEAN(record.ean, { openFoodFactsOnly: true });
+                    reloadBtn.disabled = false;
+
+                    if (!offProduct) {
+                        status.textContent = translate("ui.ean.database_off_not_found");
+                        status.style.color = 'var(--error-color, #db4437)';
+                        return;
+                    }
+
+                    status.innerHTML = '';
+                    const preview = document.createElement('div');
+                    preview.style.padding = '10px';
+                    preview.style.border = '1px solid var(--divider-color, #ccc)';
+                    preview.style.borderRadius = '4px';
+
+                    const previewTitle = document.createElement('strong');
+                    previewTitle.textContent = translate("ui.ean.database_off_preview");
+                    preview.appendChild(previewTitle);
+
+                    const previewValues = document.createElement('div');
+                    previewValues.style.display = 'grid';
+                    previewValues.style.gap = '5px';
+                    previewValues.style.marginTop = '8px';
+                    [
+                        [translate("ui.ean.database_name"), offProduct.name],
+                        [translate("ui.ean.database_brand"), offProduct.brand],
+                        [translate("ui.ean.database_quantity"), offProduct.quantity]
+                    ].forEach(([label, value]) => {
+                        const row = document.createElement('div');
+                        const labelEl = document.createElement('strong');
+                        labelEl.textContent = `${label}: `;
+                        const valueEl = document.createElement('span');
+                        valueEl.textContent = value || '—';
+                        row.appendChild(labelEl);
+                        row.appendChild(valueEl);
+                        previewValues.appendChild(row);
+                    });
+                    preview.appendChild(previewValues);
+
+                    const nameNote = document.createElement('div');
+                    nameNote.textContent = translate("ui.ean.database_off_name_preserved");
+                    nameNote.style.marginTop = '8px';
+                    nameNote.style.fontSize = '12px';
+                    nameNote.style.color = 'var(--secondary-text-color, #666)';
+                    preview.appendChild(nameNote);
+
+                    if (offProduct.imageUrl) {
+                        const previewImage = document.createElement('img');
+                        previewImage.src = offProduct.imageUrl;
+                        previewImage.alt = offProduct.name || '';
+                        previewImage.loading = 'lazy';
+                        previewImage.style.display = 'block';
+                        previewImage.style.maxWidth = '120px';
+                        previewImage.style.maxHeight = '120px';
+                        previewImage.style.objectFit = 'contain';
+                        previewImage.style.margin = '10px auto';
+                        preview.appendChild(previewImage);
+                    }
+
+                    const applyBtn = document.createElement('button');
+                    applyBtn.textContent = translate("ui.ean.database_apply_off");
+                    styleButton(applyBtn, true);
+                    applyBtn.style.marginTop = '8px';
+                    applyBtn.addEventListener('click', () => {
+                        renderProduct({
+                            ...record,
+                            name: String(nameField.input.value || '').trim() || record.name,
+                            brand: offProduct.brand || null,
+                            quantity: offProduct.quantity || null,
+                            imageUrl: offProduct.imageUrl || null,
+                            category: categorySelect.value || null
+                        });
+                    });
+                    preview.appendChild(applyBtn);
+                    status.appendChild(preview);
+                });
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = translate("ui.common.delete");
+                styleButton(deleteBtn, false, true);
+                deleteBtn.addEventListener('click', async () => {
+                    if (!(await this.confirmPopup(translate("ui.ean.database_delete_confirm")))) return;
+                    deleteBtn.disabled = true;
+                    const deleted = await this._deleteEanDatabaseItem(record.uid);
+                    if (deleted) renderList();
+                    else {
+                        deleteBtn.disabled = false;
+                        status.textContent = translate("ui.ean.database_delete_failed");
+                        status.style.color = 'var(--error-color, #db4437)';
+                    }
+                });
+
+                actions.appendChild(saveBtn);
+                actions.appendChild(reloadBtn);
+                actions.appendChild(deleteBtn);
+                content.appendChild(actions);
+            };
+
+            const renderList = () => {
+                content.innerHTML = '';
+
+                const fillModeBtn = document.createElement('button');
+                fillModeBtn.textContent = translate("ui.ean.database_fill_start");
+                styleButton(fillModeBtn, true);
+                fillModeBtn.style.marginBottom = '14px';
+                fillModeBtn.addEventListener('click', () => close("database"));
+                content.appendChild(fillModeBtn);
+
+                const controls = document.createElement('div');
+                controls.style.display = 'grid';
+                controls.style.gridTemplateColumns = 'minmax(0, 1fr) minmax(130px, auto)';
+                controls.style.gap = '10px';
+                controls.style.marginBottom = '14px';
+
+                const search = document.createElement('input');
+                search.type = 'search';
+                search.placeholder = translate("ui.ean.database_search");
+                search.style.minWidth = '0';
+                search.style.padding = '9px 10px';
+                search.style.border = '1px solid var(--divider-color, #ccc)';
+                search.style.borderRadius = '4px';
+                search.style.background = 'var(--card-background-color, white)';
+                search.style.color = 'var(--primary-text-color, black)';
+
+                const sort = document.createElement('select');
+                sort.setAttribute('aria-label', translate("ui.ean.database_sort"));
+                sort.style.padding = '9px 10px';
+                sort.style.border = '1px solid var(--divider-color, #ccc)';
+                sort.style.borderRadius = '4px';
+                sort.style.background = 'var(--card-background-color, white)';
+                sort.style.color = 'var(--primary-text-color, black)';
+                [
+                    ['name', translate("ui.ean.database_sort_name")],
+                    ['category', translate("ui.ean.database_sort_category")]
+                ].forEach(([value, label]) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = `${translate("ui.ean.database_sort")}: ${label}`;
+                    sort.appendChild(option);
+                });
+
+                controls.appendChild(search);
+                controls.appendChild(sort);
+                content.appendChild(controls);
+
+                const productList = document.createElement('div');
+                productList.style.display = 'flex';
+                productList.style.flexDirection = 'column';
+                productList.style.gap = '6px';
+                content.appendChild(productList);
+
+                const updateProducts = () => {
+                    const query = String(search.value || '').trim().toLocaleLowerCase();
+                    const products = [...(this._eanDatabase?.values() || [])]
+                        .filter(product => {
+                            if (!query) return true;
+                            return [product.name, product.brand, product.category]
+                                .filter(Boolean)
+                                .some(value => String(value).toLocaleLowerCase().includes(query));
+                        })
+                        .sort((a, b) => {
+                            if (sort.value === 'category') {
+                                const categoryA = String(a.category || '').trim();
+                                const categoryB = String(b.category || '').trim();
+                                if (!categoryA && categoryB) return 1;
+                                if (categoryA && !categoryB) return -1;
+                                const categoryCompare = categoryA.localeCompare(
+                                    categoryB,
+                                    detectLanguage(),
+                                    { sensitivity: 'base' }
+                                );
+                                if (categoryCompare) return categoryCompare;
+                            }
+                            return String(a.name || '').localeCompare(
+                                String(b.name || ''),
+                                detectLanguage(),
+                                { sensitivity: 'base' }
+                            );
+                        });
+
+                    productList.innerHTML = '';
+                    if (!products.length) {
+                        const empty = document.createElement('div');
+                        empty.textContent = translate("ui.ean.database_no_products");
+                        empty.style.padding = '14px 4px';
+                        empty.style.color = 'var(--secondary-text-color, #666)';
+                        productList.appendChild(empty);
+                        return;
+                    }
+
+                    const appendProduct = (product) => {
+                        const row = document.createElement('button');
+                        row.type = 'button';
+                        row.style.width = '100%';
+                        row.style.padding = '10px';
+                        row.style.border = '1px solid var(--divider-color, #ddd)';
+                        row.style.borderRadius = '4px';
+                        row.style.background = 'var(--card-background-color, white)';
+                        row.style.color = 'var(--primary-text-color, black)';
+                        row.style.textAlign = 'left';
+                        row.style.cursor = 'pointer';
+
+                        const name = document.createElement('div');
+                        name.textContent = product.name;
+                        name.style.fontWeight = '600';
+
+                        const details = document.createElement('div');
+                        details.textContent = [
+                            product.category || translate("ui.ean.database_no_category"),
+                            product.brand,
+                            product.ean
+                        ]
+                            .filter(Boolean)
+                            .join(' · ');
+                        details.style.marginTop = '3px';
+                        details.style.fontSize = '12px';
+                        details.style.color = 'var(--secondary-text-color, #666)';
+
+                        row.appendChild(name);
+                        row.appendChild(details);
+                        row.addEventListener('click', () => renderProduct(product));
+                        productList.appendChild(row);
+                    };
+
+                    if (sort.value === 'category') {
+                        let previousCategory = null;
+                        products.forEach(product => {
+                            const category = String(product.category || '').trim();
+                            if (category !== previousCategory) {
+                                const categoryHeading = document.createElement('div');
+                                categoryHeading.textContent = category || translate("ui.ean.database_no_category");
+                                categoryHeading.style.margin = previousCategory === null ? '2px 0 2px' : '12px 0 2px';
+                                categoryHeading.style.padding = '6px 8px';
+                                categoryHeading.style.borderRadius = '4px';
+                                categoryHeading.style.background = 'var(--secondary-background-color, #eee)';
+                                categoryHeading.style.fontWeight = '600';
+                                productList.appendChild(categoryHeading);
+                                previousCategory = category;
+                            }
+                            appendProduct(product);
+                        });
+                    } else {
+                        products.forEach(appendProduct);
+                    }
+                };
+
+                search.addEventListener('input', updateProducts);
+                sort.addEventListener('change', updateProducts);
+                updateProducts();
+
+                const invalidItems = this._eanDatabaseInvalidItems || [];
+                if (invalidItems.length) {
+                    const invalidTitle = document.createElement('h3');
+                    invalidTitle.textContent = `${translate("ui.ean.database_invalid_title")} (${invalidItems.length})`;
+                    invalidTitle.style.margin = '20px 0 8px';
+                    invalidTitle.style.color = 'var(--error-color, #db4437)';
+                    content.appendChild(invalidTitle);
+
+                    invalidItems.forEach((item, index) => {
+                        const row = document.createElement('div');
+                        row.style.display = 'flex';
+                        row.style.alignItems = 'center';
+                        row.style.justifyContent = 'space-between';
+                        row.style.gap = '10px';
+                        row.style.padding = '9px 10px';
+                        row.style.marginBottom = '6px';
+                        row.style.border = '1px solid var(--error-color, #db4437)';
+                        row.style.borderRadius = '4px';
+
+                        const text = document.createElement('div');
+                        text.style.minWidth = '0';
+                        const summary = document.createElement('div');
+                        summary.textContent = item.summary || `${translate("ui.ean.database_invalid_entry")} ${index + 1}`;
+                        summary.style.fontWeight = '600';
+                        summary.style.overflow = 'hidden';
+                        summary.style.textOverflow = 'ellipsis';
+                        summary.style.whiteSpace = 'nowrap';
+                        text.appendChild(summary);
+
+                        const deleteInvalidBtn = document.createElement('button');
+                        deleteInvalidBtn.textContent = translate("ui.common.delete");
+                        deleteInvalidBtn.disabled = !item.uid;
+                        styleButton(deleteInvalidBtn, false, true);
+                        deleteInvalidBtn.addEventListener('click', async () => {
+                            if (!(await this.confirmPopup(translate("ui.ean.database_delete_confirm")))) return;
+                            deleteInvalidBtn.disabled = true;
+                            const deleted = await this._deleteEanDatabaseItem(item.uid);
+                            if (deleted) renderList();
+                            else {
+                                deleteInvalidBtn.disabled = false;
+                                await this.confirmPopup(translate("ui.ean.database_delete_failed"), true);
+                            }
+                        });
+
+                        row.appendChild(text);
+                        row.appendChild(deleteInvalidBtn);
+                        content.appendChild(row);
+                    });
+                }
+            };
+
+            header.appendChild(title);
+            header.appendChild(closeBtn);
+            popup.appendChild(header);
+            popup.appendChild(content);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+
+            closeBtn.addEventListener('click', () => close());
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close();
+            });
+            window.addEventListener('keydown', escapeHandler, true);
+            renderList();
+        });
     }
 
     _eanDatabaseErrorMessage(reason = this._eanDatabaseError) {
@@ -2873,6 +3668,9 @@ class HaShoppingListImproved extends HTMLElement {
             }
 
             if (this._eanDatabaseEntity && this._eanDatabaseError) {
+                await this._runEanScript("error", {
+                    error: this._eanDatabaseErrorMessage()
+                });
                 await this.confirmPopup(this._eanDatabaseErrorMessage(), true);
                 this._eanQueuePaused = true;
                 return;
@@ -2892,7 +3690,12 @@ class HaShoppingListImproved extends HTMLElement {
                 let deferredThisPass = 0;
 
                 while (!this._eanQueuePaused) {
-                    const itemIndex = this._eanScanQueue.findIndex(item => item.deferred !== true);
+                    let itemIndex = this._eanScanQueue.findIndex(item =>
+                        item.deferred !== true && this._normalizeEanScanMode(item.scan_mode) === "database"
+                    );
+                    if (itemIndex < 0) {
+                        itemIndex = this._eanScanQueue.findIndex(item => item.deferred !== true);
+                    }
                     if (itemIndex < 0) break;
 
                     const item = this._eanScanQueue[itemIndex];
@@ -2904,6 +3707,11 @@ class HaShoppingListImproved extends HTMLElement {
                     const added = await this._onAdd();
                     if (!added) {
                         if (this._eanQueueAction === "discard") {
+                            await this._runEanScript("product_discarded", {
+                                queueItem: item,
+                                ean: item.code,
+                                scanQuantity: item.quantity
+                            });
                             this._eanScanQueue.splice(itemIndex, 1);
                             this._saveEanScanQueue();
                             this._inputEl.value = '';
@@ -2912,6 +3720,11 @@ class HaShoppingListImproved extends HTMLElement {
                         }
 
                         item.deferred = true;
+                        await this._runEanScript("product_deferred", {
+                            queueItem: item,
+                            ean: item.code,
+                            scanQuantity: item.quantity
+                        });
                         deferredThisPass += Math.max(1, Number(item.quantity) || 1);
                         this._saveEanScanQueue();
                         this._inputEl.value = '';
@@ -2952,6 +3765,47 @@ class HaShoppingListImproved extends HTMLElement {
 
     _normalizeBluetoothAddress(address) {
         return String(address || "").trim().replace(/[^0-9a-f]/gi, "").toUpperCase();
+    }
+
+    async _runEanScript(status, data = {}) {
+        if (!this._eanScriptEnabled) return;
+        if (!this._eanScriptEntity?.startsWith("script.")) return;
+        if (!this._hass?.connection) return;
+
+        const queueItem = data.queueItem || this._activeEanScanQueueItem || null;
+        const variables = {
+            status: String(status || ""),
+            ean: String(data.ean ?? queueItem?.code ?? ""),
+            name: String(data.name ?? ""),
+            brand: String(data.brand ?? ""),
+            product_quantity: String(data.productQuantity ?? ""),
+            scan_quantity: Math.max(1, Number(data.scanQuantity ?? queueItem?.quantity ?? 1) || 1),
+            category: String(data.category ?? ""),
+            image_url: String(data.imageUrl ?? ""),
+            list_entity: String(this._entity || ""),
+            scanner_address: String(data.scannerAddress ?? queueItem?.address ?? ""),
+            scanner_source: String(data.scannerSource ?? queueItem?.source ?? ""),
+            scan_mode: this._normalizeEanScanMode(
+                data.scanMode ?? queueItem?.scan_mode ?? this._eanScanMode
+            ),
+            card_id: this._getEanScanCardId(),
+            error: String(data.error ?? "")
+        };
+
+        try {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "script",
+                service: "turn_on",
+                target: { entity_id: this._eanScriptEntity },
+                service_data: { variables }
+            });
+        } catch (error) {
+            console.warn(
+                `[ha-shopping-list-improved] Unable to run EAN script for status ${status}:`,
+                error
+            );
+        }
     }
 
     _isVisibleForEanScan() {
@@ -3021,7 +3875,19 @@ class HaShoppingListImproved extends HTMLElement {
             });
         }
 
-        this._enqueueEanScan(code, event?.data || {});
+        const scanMode = this._normalizeEanScanMode(this._eanScanMode);
+        const queuedItem = this._enqueueEanScan(code, {
+            ...(event?.data || {}),
+            scan_mode: scanMode
+        });
+        await this._runEanScript("scan_received", {
+            queueItem: queuedItem,
+            ean: code,
+            scanQuantity: 1,
+            scanMode,
+            scannerAddress: event?.data?.address,
+            scannerSource: event?.data?.source
+        });
         this._eanQueuePaused = false;
         await this._processEanScanQueue();
     }
@@ -3429,6 +4295,13 @@ class HaShoppingListImproved extends HTMLElement {
                         "></ha-icon>
                         <div id="suggestions" class="suggestions-container"></div>
                     </div>
+                    <div id="eanDatabaseFillNotice" style="display:none; align-items:flex-start; justify-content:space-between; gap:12px; margin:8px 0; padding:10px 12px; border-radius:6px; background:var(--secondary-background-color, #eee); border-left:4px solid var(--primary-color, #03A9F4);">
+                        <div>
+                            <div style="font-weight:600;">${translate("ui.ean.database_fill_active")}</div>
+                            <div style="font-size:12px; line-height:1.4; margin-top:3px;">${translate("ui.ean.database_fill_help")}</div>
+                        </div>
+                        <button id="eanDatabaseFillEndBtn" type="button" style="flex-shrink:0; padding:6px 10px; cursor:pointer;">${translate("ui.ean.database_fill_end")}</button>
+                    </div>
                     <div id="subText" class="small">
                         ${this._subText }
                     </div>
@@ -3465,7 +4338,46 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._shadow.appendChild(style);
 
-        this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
+        const addBtn = this._shadow.getElementById('addBtn');
+        const clearEanLongPress = () => {
+            if (this._eanLongPressTimer) clearTimeout(this._eanLongPressTimer);
+            this._eanLongPressTimer = null;
+            addBtn.style.filter = '';
+        };
+
+        addBtn.addEventListener('click', () => {
+            if (this._eanLongPressTriggered) {
+                this._eanLongPressTriggered = false;
+                return;
+            }
+            if (this._eanScanMode === "shopping_remove") {
+                this._setEanScanMode("shopping");
+                return;
+            }
+            this._onAdd();
+        });
+
+        if (this._eanRemoveModeEnabled && this._mode === "shopping") {
+            addBtn.addEventListener('pointerdown', () => {
+                clearEanLongPress();
+                addBtn.style.filter = 'brightness(0.8)';
+                this._eanLongPressTimer = setTimeout(() => {
+                    this._eanLongPressTimer = null;
+                    this._eanLongPressTriggered = true;
+                    addBtn.style.filter = '';
+                    this._setEanScanMode("shopping_remove");
+                    navigator.vibrate?.(40);
+                }, 1000);
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(eventName => {
+                addBtn.addEventListener(eventName, clearEanLongPress);
+            });
+            addBtn.addEventListener('contextmenu', event => event.preventDefault());
+        }
+
+        this._shadow.getElementById('eanDatabaseFillEndBtn')?.addEventListener('click', () => {
+            this._setEanScanMode("shopping");
+        });
 
 /*
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
@@ -3537,6 +4449,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._titleAlert         = this._shadow.getElementById('titlealert');
         this._titleAlertDesc     = this._shadow.getElementById('titlealertdesc');
         this._titleAlertDescIcon = this._shadow.getElementById('titleicondesc');
+
+        this._updateEanScanModeUi();
 
         this._renderHistory();
 		
@@ -3943,15 +4857,61 @@ class HaShoppingListImproved extends HTMLElement {
                     databaseStatus.textContent = this._eanDatabaseErrorMessage();
                     databaseStatus.style.color = 'var(--error-color, #db4437)';
                     databaseStatus.style.fontWeight = '600';
-                } else if (this._eanDatabaseInvalidCount > 0) {
-                    databaseStatus.textContent = translate("ui.ean.database_invalid")
-                        .replace("{count}", String(this._eanDatabaseInvalidCount));
-                    databaseStatus.style.color = 'var(--error-color, #db4437)';
-                    databaseStatus.style.fontWeight = '600';
                 } else {
-                    databaseStatus.textContent = translate("ui.admin.options.ean_database_status")
-                        .replace("{count}", String(this._eanDatabase?.size || 0));
-                    databaseStatus.style.color = 'var(--secondary-text-color, #666)';
+                    databaseStatus.style.display = 'flex';
+                    databaseStatus.style.alignItems = 'center';
+                    databaseStatus.style.flexWrap = 'wrap';
+                    databaseStatus.style.gap = '6px';
+
+                    const databaseLabel = document.createElement('span');
+                    databaseLabel.textContent = translate("ui.admin.options.ean_database_status");
+                    databaseLabel.style.color = 'var(--secondary-text-color, #666)';
+
+                    const databaseProductsBtn = document.createElement('button');
+                    databaseProductsBtn.type = 'button';
+                    databaseProductsBtn.style.padding = '4px 9px';
+                    databaseProductsBtn.style.border = '1px solid var(--primary-color, #03A9F4)';
+                    databaseProductsBtn.style.borderRadius = '4px';
+                    databaseProductsBtn.style.background = 'transparent';
+                    databaseProductsBtn.style.color = 'var(--primary-color, #03A9F4)';
+                    databaseProductsBtn.style.cursor = 'pointer';
+
+                    const databaseInvalidBtn = document.createElement('button');
+                    databaseInvalidBtn.type = 'button';
+                    databaseInvalidBtn.style.padding = '4px 9px';
+                    databaseInvalidBtn.style.border = '1px solid var(--error-color, #db4437)';
+                    databaseInvalidBtn.style.borderRadius = '4px';
+                    databaseInvalidBtn.style.background = 'transparent';
+                    databaseInvalidBtn.style.color = 'var(--error-color, #db4437)';
+                    databaseInvalidBtn.style.cursor = 'pointer';
+
+                    const updateDatabaseButtons = () => {
+                        databaseProductsBtn.textContent = translate("ui.admin.options.ean_database_products")
+                            .replace("{count}", String(this._eanDatabase?.size || 0));
+                        databaseInvalidBtn.textContent = translate("ui.admin.options.ean_database_invalid")
+                            .replace("{count}", String(this._eanDatabaseInvalidCount || 0));
+                        databaseInvalidBtn.style.display = this._eanDatabaseInvalidCount > 0
+                            ? 'inline-block'
+                            : 'none';
+                    };
+
+                    const openDatabaseManager = async () => {
+                        const action = await this._showEanDatabaseManager();
+                        updateDatabaseButtons();
+                        if (action === "database") {
+                            if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                            this._setEanScanMode("database");
+                            resolve(true);
+                        }
+                    };
+
+                    databaseProductsBtn.addEventListener('click', openDatabaseManager);
+                    databaseInvalidBtn.addEventListener('click', openDatabaseManager);
+                    updateDatabaseButtons();
+
+                    databaseStatus.appendChild(databaseLabel);
+                    databaseStatus.appendChild(databaseProductsBtn);
+                    databaseStatus.appendChild(databaseInvalidBtn);
                 }
                 eanScanContainer.appendChild(databaseStatus);
             }
@@ -3963,13 +4923,33 @@ class HaShoppingListImproved extends HTMLElement {
             eanScanContainer.appendChild(queueLabel);
 
             const queueStatus = document.createElement('div');
-            queueStatus.textContent = translate("ui.admin.options.ean_queue_pending")
-                .replace("{count}", String((this._eanScanQueue || [])
-                    .reduce((sum, item) => sum + Math.max(1, Number(item.quantity || 1)), 0)));
             queueStatus.style.marginTop = '4px';
             queueStatus.style.fontSize = '12px';
             queueStatus.style.color = 'var(--secondary-text-color, #666)';
             eanScanContainer.appendChild(queueStatus);
+
+            const queueModeStatus = document.createElement('div');
+            queueModeStatus.style.marginTop = '2px';
+            queueModeStatus.style.fontSize = '12px';
+            queueModeStatus.style.color = 'var(--secondary-text-color, #666)';
+            eanScanContainer.appendChild(queueModeStatus);
+
+            const updateQueueStatus = () => {
+                const counts = { shopping: 0, database: 0, shopping_remove: 0 };
+                (this._eanScanQueue || []).forEach(item => {
+                    const mode = this._normalizeEanScanMode(item.scan_mode);
+                    counts[mode] += Math.max(1, Number(item.quantity || 1));
+                });
+                const total = counts.shopping + counts.database + counts.shopping_remove;
+                queueStatus.textContent = translate("ui.admin.options.ean_queue_pending")
+                    .replace("{count}", String(total));
+                queueModeStatus.textContent = [
+                    translate("ui.admin.options.ean_queue_shopping").replace("{count}", String(counts.shopping)),
+                    translate("ui.admin.options.ean_queue_database").replace("{count}", String(counts.database)),
+                    translate("ui.admin.options.ean_queue_remove").replace("{count}", String(counts.shopping_remove))
+                ].join(' · ');
+            };
+            updateQueueStatus();
 
             const queueButtons = document.createElement('div');
             queueButtons.style.display = 'flex';
@@ -3998,7 +4978,7 @@ class HaShoppingListImproved extends HTMLElement {
             clearQueueBtn.style.cursor = 'pointer';
             clearQueueBtn.addEventListener('click', () => {
                 this._clearEanScanQueue();
-                queueStatus.textContent = translate("ui.admin.options.ean_queue_pending").replace("{count}", "0");
+                updateQueueStatus();
                 processQueueBtn.disabled = true;
                 clearQueueBtn.disabled = true;
             });
@@ -4272,7 +5252,7 @@ class HaShoppingListImproved extends HTMLElement {
 
 
 // EAN
-async _checkEAN(text) {
+async _checkEAN(text, options = {}) {
 
     // EAN-8, UPC-12, EAN-13 or GS1-14
     const eanRegexLocal = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
@@ -4287,40 +5267,45 @@ async _checkEAN(text) {
         };
     }
 
-    // ---------------------------------------------------------
-    // 1. Check the configured Home Assistant EAN database
-    // ---------------------------------------------------------
+    const openFoodFactsOnly = options?.openFoodFactsOnly === true;
 
-    const databaseEntry = this._eanDatabase?.get(text);
-    if (databaseEntry) {
-        return {
-            name: databaseEntry.name,
-            brand: databaseEntry.brand || null,
-            quantity: databaseEntry.quantity || null,
-            imageUrl: databaseEntry.imageUrl || null,
-            category: databaseEntry.category || null
-        };
-    }
+    if (!openFoodFactsOnly) {
+        // ---------------------------------------------------------
+        // 1. Check the configured Home Assistant EAN database
+        // ---------------------------------------------------------
 
-    // ---------------------------------------------------------
-    // 2. Check local EAN file
-    // ---------------------------------------------------------
-
-    if (this._localEAN && Array.isArray(this._localEAN)) {
-        const localEntry = this._localEAN.find(entry => entry.ean === text);
-
-        if (localEntry) {
-            if (debugMode) {
-                console.log("[EAN] Local entry found:", localEntry);
-            }
-
+        const databaseEntry = this._eanDatabase?.get(text);
+        if (databaseEntry) {
             return {
-                name: localEntry.name,
-                brand: null,
-                quantity: null,
-                imageUrl: null,
-                category: null
+                name: databaseEntry.name,
+                brand: databaseEntry.brand || null,
+                quantity: databaseEntry.quantity || null,
+                imageUrl: databaseEntry.imageUrl || null,
+                category: databaseEntry.category || null,
+                nameIsFinal: true
             };
+        }
+
+        // ---------------------------------------------------------
+        // 2. Check local EAN file
+        // ---------------------------------------------------------
+
+        if (this._localEAN && Array.isArray(this._localEAN)) {
+            const localEntry = this._localEAN.find(entry => entry.ean === text);
+
+            if (localEntry) {
+                if (debugMode) {
+                    console.log("[EAN] Local entry found:", localEntry);
+                }
+
+                return {
+                    name: localEntry.name,
+                    brand: null,
+                    quantity: null,
+                    imageUrl: null,
+                    category: null
+                };
+            }
         }
     }
 
@@ -4332,6 +5317,7 @@ async _checkEAN(text) {
     const eanRegexOnline = /^\d{13}$/;
 
     if (!eanRegexOnline.test(text)) {
+        if (openFoodFactsOnly) return null;
         return {
             name: text,
             brand: null,
@@ -5918,10 +6904,13 @@ async _checkEAN(text) {
     }
 
     // Edit PopUp for adding/editing items with category selection
-    async editItemPopup(item, mode = "edit", imageUrl = false) {
+    async editItemPopup(item, mode = "edit", imageUrl = false, eanProduct = null, options = {}) {
         let currentName;
         let due;
         let currentDescription = "";
+        const isEanQueuePopup = mode === "add" && Boolean(this._activeEanScanQueueItem);
+        const eanScanMode = this._getCurrentEanScanMode();
+        const isDatabaseEanPopup = mode === "add" && eanScanMode === "database";
 
         // check if item is object or string
         if (item && typeof item === 'object' && !Array.isArray(item)) {
@@ -5945,7 +6934,12 @@ async _checkEAN(text) {
                 nameOnly = this._getNameOnly(currentName);
             }
 
-            // 2. If no explicit category, check if the item is assigned to a config category
+            // 2. Use the category stored with an EAN product.
+            if (!currentCategory && eanProduct?.category) {
+                currentCategory = eanProduct.category;
+            }
+
+            // 3. If no explicit or stored category exists, check the config categories.
             if (!currentCategory) {
                 const normalizedName = this._getNameOnly(nameOnly).toLowerCase();
 
@@ -5962,7 +6956,7 @@ async _checkEAN(text) {
                 }
             }
 
-            // 3. If still no category, set to "none"
+            // 4. If still no category, set to "none"
             if (!currentCategory) {
                 currentCategory = "none";
             }
@@ -5993,6 +6987,9 @@ async _checkEAN(text) {
             popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
             popup.style.color = 'var(--primary-text-color, black)';
             popup.style.pointerEvents = 'auto';
+            popup.style.maxHeight = 'calc(100vh - 32px)';
+            popup.style.overflowY = 'auto';
+            popup.style.boxSizing = 'border-box';
 
             // EAN Image
             if (imageUrl) {
@@ -6006,10 +7003,27 @@ async _checkEAN(text) {
 
             // Label
             const label = document.createElement('p');
-            label.textContent = mode === "add"
-                ? translate("ui.common.add_item")
-                : translate("ui.common.edit_item");
+            label.textContent = isDatabaseEanPopup
+                ? translate("ui.ean.database_manager_title")
+                : mode === "add"
+                    ? translate("ui.common.add_item")
+                    : translate("ui.common.edit_item");
             label.style.marginBottom = '8px';
+
+            let databaseModeNotice = null;
+            if (isDatabaseEanPopup) {
+                databaseModeNotice = document.createElement('div');
+                databaseModeNotice.textContent = options.eanDatabaseExisting
+                    ? translate("ui.ean.database_fill_existing")
+                    : translate("ui.ean.database_fill_new");
+                databaseModeNotice.style.marginBottom = '12px';
+                databaseModeNotice.style.padding = '8px 10px';
+                databaseModeNotice.style.borderRadius = '4px';
+                databaseModeNotice.style.background = 'var(--secondary-background-color, #eee)';
+                databaseModeNotice.style.fontSize = '12px';
+                databaseModeNotice.style.lineHeight = '1.4';
+                databaseModeNotice.style.textAlign = 'left';
+            }
 
             let eanQueueStatus = null;
             if (mode === "add" && this._activeEanScanQueueItem) {
@@ -6042,6 +7056,113 @@ async _checkEAN(text) {
             input.style.borderRadius = '4px';
             input.style.fontSize = '14px';
             input.style.boxSizing = 'border-box';
+
+            let eanNameControls = null;
+            let getEanBaseNameFromInput = null;
+
+            if ((isEanQueuePopup || isDatabaseEanPopup) && eanProduct) {
+                const brand = String(eanProduct.brand || '').trim();
+                const productQuantity = String(eanProduct.quantity || '').trim();
+                let baseName = String(eanProduct.name || displayName).trim();
+                const brandIncludedInName = Boolean(
+                    brand &&
+                    baseName.toLocaleLowerCase().includes(brand.toLocaleLowerCase())
+                );
+                const brandAvailable = Boolean(brand && !brandIncludedInName);
+                const nameIsFinal = eanProduct.nameIsFinal === true;
+                let includeBrand = !nameIsFinal && this._showEanBrand && brandAvailable;
+                let includeQuantity = !nameIsFinal && this._showEanQuantity && Boolean(productQuantity);
+                let brandWasAppended = false;
+
+                const composeName = () => {
+                    const parts = [baseName];
+                    brandWasAppended = Boolean(
+                        includeBrand &&
+                        brand &&
+                        !baseName.toLocaleLowerCase().includes(brand.toLocaleLowerCase())
+                    );
+                    if (brandWasAppended) parts.push(brand);
+                    if (includeQuantity && productQuantity) parts.push(productQuantity);
+                    return parts.filter(Boolean).join(' – ');
+                };
+
+                getEanBaseNameFromInput = () => {
+                    let value = String(input.value || '').trim();
+                    const quantitySuffix = ` – ${productQuantity}`;
+                    const brandSuffix = ` – ${brand}`;
+
+                    if (includeQuantity && productQuantity && value.endsWith(quantitySuffix)) {
+                        value = value.slice(0, -quantitySuffix.length).trim();
+                    }
+                    if (brandWasAppended && brand && value.endsWith(brandSuffix)) {
+                        value = value.slice(0, -brandSuffix.length).trim();
+                    }
+                    return value || baseName;
+                };
+
+                eanNameControls = document.createElement('div');
+                eanNameControls.style.display = 'flex';
+                eanNameControls.style.flexWrap = 'wrap';
+                eanNameControls.style.gap = '8px';
+                eanNameControls.style.margin = '-4px 0 12px';
+
+                const createToggle = (label, available, isActive, onToggle) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = label;
+                    button.disabled = !available;
+                    button.style.padding = '5px 10px';
+                    button.style.borderRadius = '16px';
+                    button.style.border = '1px solid var(--divider-color, #ccc)';
+                    button.style.cursor = available ? 'pointer' : 'default';
+
+                    const renderState = active => {
+                        button.dataset.active = active ? 'true' : 'false';
+                        button.style.background = active
+                            ? 'var(--primary-color, #03A9F4)'
+                            : 'var(--secondary-background-color, #eee)';
+                        button.style.color = active ? 'white' : 'var(--primary-text-color, black)';
+                        button.style.opacity = available || active ? '1' : '0.5';
+                    };
+
+                    renderState(isActive);
+                    button.addEventListener('click', () => {
+                        if (!available) return;
+                        baseName = getEanBaseNameFromInput();
+                        const active = onToggle();
+                        renderState(active);
+                        input.value = composeName();
+                    });
+                    eanNameControls.appendChild(button);
+                };
+
+                createToggle(
+                    translate("ui.ean.name_brand"),
+                    brandAvailable,
+                    brandIncludedInName || includeBrand,
+                    () => (includeBrand = !includeBrand)
+                );
+                createToggle(
+                    translate("ui.ean.name_quantity"),
+                    Boolean(productQuantity),
+                    includeQuantity,
+                    () => (includeQuantity = !includeQuantity)
+                );
+
+                if (brandIncludedInName) {
+                    const brandNote = document.createElement('div');
+                    brandNote.textContent = translate("ui.ean.brand_in_name")
+                        .replace("{brand}", brand);
+                    brandNote.style.flexBasis = '100%';
+                    brandNote.style.fontSize = '12px';
+                    brandNote.style.lineHeight = '1.4';
+                    brandNote.style.textAlign = 'left';
+                    brandNote.style.color = 'var(--secondary-text-color, #666)';
+                    eanNameControls.appendChild(brandNote);
+                }
+
+                input.value = composeName();
+            }
 
             // Description Input, only if supported by the selected todo entity
             const supportsDescription = this._supportsTodoDescription();
@@ -6234,6 +7355,7 @@ async _checkEAN(text) {
 
             const leftButtons = document.createElement('div');
             leftButtons.style.display = 'flex';
+            leftButtons.style.flexWrap = 'wrap';
             leftButtons.style.gap = '12px';
             leftButtons.style.alignItems = 'center';
 
@@ -6243,7 +7365,11 @@ async _checkEAN(text) {
 
             // OK and Cancel Buttons
             const okBtn = document.createElement('button');
-            okBtn.textContent = translate("ui.common.ok");
+            okBtn.textContent = isDatabaseEanPopup
+                ? translate("ui.ean.database_fill_save")
+                : isEanQueuePopup
+                    ? translate("ui.ean.add")
+                    : translate("ui.common.ok");
             okBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
             okBtn.style.color = 'white';
             okBtn.style.border = 'none';
@@ -6252,7 +7378,9 @@ async _checkEAN(text) {
             okBtn.style.cursor = 'pointer';
 
             const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = translate("ui.common.cancel");
+            cancelBtn.textContent = isEanQueuePopup
+                ? translate("ui.ean.lookup_later")
+                : translate("ui.common.cancel");
             cancelBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
             cancelBtn.style.border = 'none';
             cancelBtn.style.padding = '6px 12px';
@@ -6261,6 +7389,19 @@ async _checkEAN(text) {
 
             leftButtons.appendChild(okBtn);
             leftButtons.appendChild(cancelBtn);
+
+            let discardBtn = null;
+            if (isEanQueuePopup) {
+                discardBtn = document.createElement('button');
+                discardBtn.textContent = translate("ui.ean.lookup_discard");
+                discardBtn.style.backgroundColor = '#c62828';
+                discardBtn.style.color = 'white';
+                discardBtn.style.border = 'none';
+                discardBtn.style.padding = '6px 12px';
+                discardBtn.style.borderRadius = '4px';
+                discardBtn.style.cursor = 'pointer';
+                leftButtons.appendChild(discardBtn);
+            }
 
             // Delete Button only in edit mode
             if (mode === "edit") {
@@ -6289,8 +7430,10 @@ async _checkEAN(text) {
 
             // Combine all
             popup.appendChild(label);
+            if (databaseModeNotice) popup.appendChild(databaseModeNotice);
             if (eanQueueStatus) popup.appendChild(eanQueueStatus);
             popup.appendChild(input);
+            if (eanNameControls) popup.appendChild(eanNameControls);
             if (descriptionContainer) popup.appendChild(descriptionContainer);
             popup.appendChild(catContainer);
             if(this._allowDynamicCats) popup.appendChild(dynamicCategory);
@@ -6546,6 +7689,11 @@ async _checkEAN(text) {
             }
 
             popup.appendChild(btnContainer);
+            btnContainer.style.position = 'sticky';
+            btnContainer.style.bottom = '0';
+            btnContainer.style.padding = '8px 0';
+            btnContainer.style.background = 'var(--card-background-color, white)';
+            btnContainer.style.zIndex = '1';
             overlay.appendChild(popup);
             document.body.appendChild(overlay);
 
@@ -6566,6 +7714,14 @@ async _checkEAN(text) {
             });
 
             cancelBtn.addEventListener('click', () => {
+                if (isEanQueuePopup) this._eanQueueAction = "later";
+                document.body.removeChild(overlay);
+                if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
+                resolve(null);
+            });
+
+            discardBtn?.addEventListener('click', () => {
+                this._eanQueueAction = "discard";
                 document.body.removeChild(overlay);
                 if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                 resolve(null);
@@ -6573,6 +7729,9 @@ async _checkEAN(text) {
 
             okBtn.addEventListener('click', () => {
                 let finalName = input.value.trim();
+                const eanProductName = getEanBaseNameFromInput
+                    ? getEanBaseNameFromInput()
+                    : null;
 
                 if (this._allowDynamicCats && dynamicCategory.value.trim() && finalName && finalName.trim()) {
                     selectedCategory = dynamicCategory.value.trim();
@@ -6583,6 +7742,10 @@ async _checkEAN(text) {
                 }
 
                 let result = { name: finalName };
+
+                if (eanProductName) {
+                    result.eanProductName = eanProductName;
+                }
 
                 if (supportsDescription) {
                     const descriptionValue = descriptionInput?.value?.trim() || "";
@@ -7252,6 +8415,66 @@ async _checkEAN(text) {
         items[newIndex].scrollIntoView({ block: 'nearest' });
     }
 
+    async _removeShoppingQuantityByName(productName, amount = 1) {
+        const normalizedName = String(productName || '').trim().toLocaleLowerCase();
+        const item = (this._items || []).find(entry =>
+            this._getNameOnly(entry.name).trim().toLocaleLowerCase() === normalizedName
+        );
+
+        if (!item) return { status: "not_found", name: productName, quantity: 0 };
+
+        const currentQty = Math.max(1, Number(this._getQuantity(item.name) || 1));
+        const removeQty = Math.max(1, Math.floor(Number(amount) || 1));
+        const newQty = currentQty - removeQty;
+
+        try {
+            if (newQty > 0) {
+                const category = this._getCategory(item.name);
+                const nameOnly = this._getNameOnly(item.name);
+                const showQty = newQty > 1 || this._showQuantityOne;
+                let formattedName = showQty
+                    ? (this._quantityPosition === 'beginning'
+                        ? `${newQty}× ${nameOnly}`
+                        : `${nameOnly} (${newQty})`)
+                    : nameOnly;
+
+                if (category) formattedName = `@${category}@ ${formattedName}`;
+                formattedName = this._preserveSortIndex(item.name, formattedName);
+
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: {
+                        item: item.id,
+                        rename: formattedName,
+                        status: "needs_action"
+                    }
+                });
+                await this._refresh();
+                await this._notifyOnChange(
+                    `${translate("ui.message.quantity_decreased")}: ${nameOnly} (${newQty})`
+                );
+                return { status: "decreased", name: nameOnly, quantity: newQty };
+            }
+
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "todo",
+                service: "remove_item",
+                target: { entity_id: this._entity },
+                service_data: { item: item.id }
+            });
+            await this._refresh();
+            await this._notifyOnChange(`${translate("ui.message.item_removed")}: ${this._getNameOnly(item.name)}`);
+            return { status: "removed", name: this._getNameOnly(item.name), quantity: 0 };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] EAN removal failed:", error);
+            return { status: "error", name: productName, quantity: currentQty, error };
+        }
+    }
+
     // add new item
     async _onAdd() {
         if (this._addingBusy) {
@@ -7260,9 +8483,10 @@ async _checkEAN(text) {
         }
         this._addingBusy = true;
 
-        try {
+		try {
 			let inputName = this._inputEl.value.trim();
 			if (!inputName) return false;
+            const eanScanMode = this._getCurrentEanScanMode();
 
             const eanCode = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(inputName)
                 ? inputName
@@ -7270,19 +8494,24 @@ async _checkEAN(text) {
 
 			let imageUrl = false;
 			let eanCheck = await this._checkEAN(inputName);
-			let eanInitialDisplayName = inputName;
+			let productFoundByLookup = Boolean(eanCheck);
 
 			if (!eanCheck) {
-				if (!this._activeEanScanQueueItem) {
+				if (!this._activeEanScanQueueItem && eanScanMode !== "database") {
 					await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
 					return false;
 				}
+
+                await this._runEanScript("product_not_found", {
+                    ean: eanCode || inputName
+                });
 
                 while (!eanCheck) {
                     const action = await this._showEanLookupFailedPopup(eanCode || inputName);
 
                     if (action === "retry") {
                         eanCheck = await this._checkEAN(inputName);
+                        productFoundByLookup = Boolean(eanCheck);
                         continue;
                     }
 
@@ -7303,20 +8532,32 @@ async _checkEAN(text) {
             }
 
 			if (eanCheck) {
+				if (this._activeEanScanQueueItem && productFoundByLookup) {
+					await this._runEanScript("product_found", {
+						ean: eanCode || inputName,
+						name: eanCheck.name,
+						brand: eanCheck.brand,
+						productQuantity: eanCheck.quantity,
+						category: eanCheck.category,
+						imageUrl: eanCheck.imageUrl
+					});
+				}
+
 				const productParts = [eanCheck.name];
-                if (
-                    this._showEanBrand &&
-                    eanCheck.brand &&
-                    !String(eanCheck.name || "").toLocaleLowerCase().includes(
-                        String(eanCheck.brand).toLocaleLowerCase()
-                    )
-                ) {
-                    productParts.push(eanCheck.brand);
+                if (eanCheck.nameIsFinal !== true) {
+                    if (
+                        this._showEanBrand &&
+                        eanCheck.brand &&
+                        !String(eanCheck.name || "").toLocaleLowerCase().includes(
+                            String(eanCheck.brand).toLocaleLowerCase()
+                        )
+                    ) {
+                        productParts.push(eanCheck.brand);
+                    }
+                    if (this._showEanQuantity && eanCheck.quantity) productParts.push(eanCheck.quantity);
                 }
-                if (this._showEanQuantity && eanCheck.quantity) productParts.push(eanCheck.quantity);
 
                 inputName = productParts.join(" – ");
-                eanInitialDisplayName = inputName;
 				imageUrl = eanCheck.imageUrl;
 
                 if (debugMode) {
@@ -7333,6 +8574,118 @@ async _checkEAN(text) {
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
             const quantityPosition = this._quantityPosition; // "beginning" or "end"
 
+            if (this._activeEanScanQueueItem) {
+                inputQty = Math.max(1, Number(this._activeEanScanQueueItem.quantity || inputQty));
+                this._activeEanScanProcessedQuantity = inputQty;
+            }
+
+            if (eanScanMode === "database") {
+                if (!eanCode || !this._eanDatabaseEntity) {
+                    await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
+                    return false;
+                }
+
+                const databaseEntryExists = this._eanDatabase?.has(eanCode) === true;
+                if (this._activeEanScanQueueItem) {
+                    await this._runEanScript("product_review_required", {
+                        ean: eanCode,
+                        name: eanCheck.name,
+                        brand: eanCheck.brand,
+                        productQuantity: eanCheck.quantity,
+                        category: eanCheck.category,
+                        imageUrl: eanCheck.imageUrl
+                    });
+                }
+
+                const updatedItem = await this.editItemPopup(
+                    inputName,
+                    "add",
+                    imageUrl,
+                    eanCheck,
+                    { eanDatabaseExisting: databaseEntryExists }
+                );
+                if (!updatedItem) return false;
+
+                const productName = String(
+                    this._getNameOnly(updatedItem.name) || eanCheck.name
+                ).trim();
+                let category = this._getCategory(updatedItem.name);
+                if (!category || category === "none") category = null;
+
+                const saved = await this._saveEanDatabaseProduct({
+                    ean: eanCode,
+                    name: productName,
+                    brand: eanCheck.brand,
+                    quantity: eanCheck.quantity,
+                    imageUrl: eanCheck.imageUrl,
+                    category
+                });
+
+                if (!saved) {
+                    await this._runEanScript("error", {
+                        ean: eanCode,
+                        name: productName,
+                        error: this._eanDatabaseErrorMessage("save")
+                    });
+                    await this.confirmPopup(this._eanDatabaseErrorMessage("save"), true);
+                    return false;
+                }
+
+                await this._runEanScript("database_product_saved", {
+                    ean: eanCode,
+                    name: productName,
+                    brand: eanCheck.brand,
+                    productQuantity: eanCheck.quantity,
+                    scanQuantity: inputQty,
+                    category,
+                    imageUrl: eanCheck.imageUrl
+                });
+                this._inputEl.value = '';
+                this._qtyEl.value = '';
+                this._hideSuggestions();
+                return true;
+            }
+
+            if (eanScanMode === "shopping_remove") {
+                const removal = await this._removeShoppingQuantityByName(eanCheck.name, inputQty);
+                if (removal.status === "error") {
+                    await this._runEanScript("error", {
+                        ean: eanCode,
+                        name: eanCheck.name,
+                        error: removal.error?.message || String(removal.error || "")
+                    });
+                    return false;
+                }
+
+                if (removal.status === "not_found") {
+                    await this._runEanScript("product_not_in_list", {
+                        ean: eanCode,
+                        name: eanCheck.name,
+                        scanQuantity: inputQty
+                    });
+                    await this.confirmPopup(
+                        translate("ui.ean.remove_not_found").replace("{name}", eanCheck.name),
+                        true
+                    );
+                } else {
+                    await this._runEanScript(
+                        removal.status === "removed" ? "product_removed" : "product_quantity_decreased",
+                        {
+                            ean: eanCode,
+                            name: removal.name,
+                            scanQuantity: inputQty
+                        }
+                    );
+                }
+
+                this._inputEl.value = '';
+                this._qtyEl.value = '';
+                this._hideSuggestions();
+                if (this._allowFilter) this._renderList();
+                if (this._allowFilterChips) this._renderHistory();
+                return true;
+            }
+
             if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
 
             if (!Array.isArray(this._items)) this._items = [];
@@ -7340,7 +8693,9 @@ async _checkEAN(text) {
             const nameOnly = this._getNameOnly(inputName);
 
             // Check if the item already exists
-            const existing = this._items.find(i => this._getNameOnly(i.name).toLowerCase() === nameOnly.toLowerCase());
+            const existing = this._items.find(i =>
+                this._getNameOnly(i.name).trim().toLocaleLowerCase() === nameOnly.toLocaleLowerCase()
+            );
 
             let assignedCategory = null;
 
@@ -7378,8 +8733,18 @@ async _checkEAN(text) {
             let dueDateTime = null;
             let description = undefined;
             let interval = null;
+            let eanProductNameForDatabase = inputName;
             if (!existing && !assignedCategory && this._showCatPopUp) {
-                const updatedItem = await this.editItemPopup(inputName, "add", imageUrl);
+                if (this._activeEanScanQueueItem) {
+                    await this._runEanScript("product_review_required", {
+                        ean: eanCode || inputName,
+                        name: eanCheck.name,
+                        brand: eanCheck.brand,
+                        productQuantity: eanCheck.quantity,
+                        imageUrl: eanCheck.imageUrl
+                    });
+                }
+                const updatedItem = await this.editItemPopup(inputName, "add", imageUrl, eanCheck);
                 if (!updatedItem) {
 					return false;
                 }
@@ -7397,7 +8762,6 @@ async _checkEAN(text) {
                     if (Object.prototype.hasOwnProperty.call(updatedItem, "description")) {
                         description = updatedItem.description;
                     }
-
                     // intervall
                     interval = this._getInterval(updatedItem.name);
                     if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Create new --> interval:", interval);
@@ -7410,25 +8774,25 @@ async _checkEAN(text) {
 
                 inputName = this._getNameOnly(newName);
                 assignedCategory = this._getCategory(newName);
-            }
-
-            if (this._activeEanScanQueueItem) {
-                inputQty = Math.max(1, Number(this._activeEanScanQueueItem.quantity || inputQty));
-                this._activeEanScanProcessedQuantity = inputQty;
+                eanProductNameForDatabase = inputName;
             }
 
             if (eanCode && this._eanDatabaseEntity) {
-                const displayNameWasEdited = inputName !== eanInitialDisplayName;
                 const saved = await this._saveEanDatabaseProduct({
                     ean: eanCode,
-                    name: displayNameWasEdited ? inputName : eanCheck.name,
-                    brand: displayNameWasEdited ? null : eanCheck.brand,
-                    quantity: displayNameWasEdited ? null : eanCheck.quantity,
+                    name: eanProductNameForDatabase,
+                    brand: eanCheck.brand,
+                    quantity: eanCheck.quantity,
                     imageUrl: eanCheck.imageUrl,
                     category: assignedCategory
                 });
 
                 if (!saved) {
+                    await this._runEanScript("error", {
+                        ean: eanCode,
+                        name: eanProductNameForDatabase,
+                        error: this._eanDatabaseErrorMessage("save")
+                    });
                     await this.confirmPopup(this._eanDatabaseErrorMessage("save"), true);
                     return false;
                 }
@@ -7488,6 +8852,11 @@ async _checkEAN(text) {
 					await this._hass.connection.sendMessagePromise(updateMsg);
 					} catch (err) {
 						console.error("[ha-shopping-list-improved] Error while updating item:", err);
+						await this._runEanScript("error", {
+							ean: eanCode,
+							name: inputName,
+							error: err?.message || String(err)
+						});
 						return false;
 					}
 			} else {
@@ -7534,11 +8903,33 @@ async _checkEAN(text) {
 					await this._hass.connection.sendMessagePromise(addMsg);
 					} catch (err) {
 						console.error("[ha-shopping-list-improved] Unable to add:", err);
+						await this._runEanScript("error", {
+							ean: eanCode,
+							name: inputName,
+							error: err?.message || String(err)
+						});
 						return false;
 					}
 			}
 
-			this._addToHistory(inputName);
+            if (this._activeEanScanQueueItem) {
+                await this._runEanScript(
+                    existing ? "product_quantity_increased" : "product_added",
+                    {
+                        ean: eanCode,
+                        name: inputName,
+                        brand: eanCheck.brand,
+                        productQuantity: eanCheck.quantity,
+                        scanQuantity: inputQty,
+                        category: assignedCategory || (existing ? this._getCategory(existing.name) : ""),
+                        imageUrl: eanCheck.imageUrl
+                    }
+                );
+            }
+
+			if (!this._activeEanScanQueueItem || this._eanCreateChip) {
+				this._addToHistory(inputName);
+			}
 			this._inputEl.value = '';
 			this._qtyEl.value = '';
             this._hideSuggestions();
