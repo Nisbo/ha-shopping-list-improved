@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-7.16";
+const version = "3.2.0-BETA-7.29";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -205,8 +205,34 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.remove"               : "Entnehmen",
         "ui.inventory.queue_mode.register"             : "Erfassen",
         "ui.inventory.queue_mode.none"                 : "Ohne Modus",
+        "ui.inventory.group_variants"                  : "EAN-Varianten gruppieren",
+        "ui.inventory.grouped_total"                   : "Gesamtbestand",
+        "ui.inventory.manage_variants"                 : "Teilbestände bearbeiten",
+        "ui.inventory.variants_title"                  : "Teilbestände für {name}",
+        "ui.inventory.without_ean"                     : "Ohne EAN",
+        "ui.inventory.variant_stock"                   : "Bestand: {stock}",
+        "ui.inventory.variant_minimum"                 : "Mindestbestand: {minimum}",
+        "ui.inventory.manual_minimum"                  : "Mindestbestand (optional)",
+        "ui.inventory.manual_minimum_default"          : "Leer = Kartenstandard: {minimum}",
+        "ui.inventory.manual_minimum_none"             : "Leer = kein Mindestbestand",
+        "ui.inventory.manual_minimum_save"             : "Mindestbestand speichern",
+        "ui.inventory.ean_minimum_edit"                : "EAN-Mindestbestand bearbeiten",
+        "ui.inventory.ean_minimum_database_source"     : "In der gemeinsamen EAN-Datenbank gespeichert",
+        "ui.inventory.ean_minimum_card_default"        : "Kartenstandard",
+        "ui.inventory.ean_minimum_not_set"             : "Kein Mindestbestand festgelegt",
+        "ui.inventory.ean_product_edit"                : "EAN-Artikel bearbeiten",
+        "ui.inventory.edit_ean_item"                   : "EAN-Artikel bearbeiten",
+        "ui.inventory.grouped_badge"                   : "[GRUPPIERT]",
+        "ui.inventory.group_member_badge"              : "[GRUPPENMITGLIED]",
+        "ui.inventory.choose_variant_add"              : "Welche Variante von „{name}“ soll eingelagert werden?",
+        "ui.inventory.choose_variant_remove"           : "Welche Variante von „{name}“ soll entnommen werden?",
+        "ui.inventory.group_category_confirm"          : "„{name}“ enthält {count} getrennte Varianten. Die Kategorie wird für alle Varianten und zugehörigen EAN-Einträge geändert. Möchtest Du fortfahren?",
+        "ui.inventory.group_delete_confirm"            : "„{name}“ enthält {count} getrennte Varianten. Sollen wirklich alle Varianten gelöscht werden?",
+        "ui.inventory.ean_category_confirm"            : "Diese EAN gehört zum gruppierten Artikel „{name}“. Die Kategorie wird für alle EAN-Varianten mit diesem Namen geändert. Die zentrale EAN-Datenbank kann auch von anderen Karten verwendet werden. Möchtest Du fortfahren?",
+        "ui.inventory.category_conflict"               : "Für „{name}“ sind unterschiedliche Kategorien gespeichert. Der Artikel kann erst gruppiert werden, nachdem eine gemeinsame Kategorie festgelegt wurde.",
         "editor.labels.inventory_default_action"        : "Startmodus nach dem Laden",
         "editor.labels.inventory_highlight_zero"        : "Artikel mit Bestand 0 rot markieren",
+        "editor.labels.inventory_group_variants"        : "EAN-Varianten gruppieren",
         "editor.options.mode.inventory"                : "Inventar",
         "editor.options.inventory_default_action.none"  : "Keine Buchung aktiv (Standard)",
         "editor.options.inventory_default_action.add"   : "Einlagern",
@@ -214,6 +240,7 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.register": "Erfassen",
         "editor.helpers.inventory_default_action"       : "Nur im Inventarmodus: Legt fest, welcher Buchungsmodus beim Laden der Karte aktiv ist.",
         "editor.helpers.inventory_highlight_zero"       : "Nur im Inventarmodus: Markiert Artikel mit Bestand 0 rot und zeigt einen schmalen roten Rand.",
+        "editor.helpers.inventory_group_variants"       : "Nur im Inventarmodus: Fasst getrennt gespeicherte EAN- und manuelle Bestände mit demselben Namen und derselben Kategorie optisch zusammen. Der Umschalter in der Karte kann die Ansicht vorübergehend ändern.",
         "ui.ean.transfer_remove"                       : "Entnehmen",
         "ui.ean.transfer_invalid_config"               : "Die ISL-Transfer-Konfiguration ist ungültig. Verwende eine separate To-do-Liste mit Beschreibungsunterstützung und wähle beim Senden eine andere Ziel-Einkaufsliste aus.",
         "ui.ean.transfer_send_failed"                  : "Der Scan konnte nicht in der ISL-Transfer-Liste gespeichert werden.",
@@ -285,6 +312,7 @@ const TRANSLATIONS = {
         "editor.labels.show_title_exclamation_mark"     : "Ausrufezeichen für fällige Einträge",
         "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
+        "editor.labels.category_display"              : "Kategorieanzeige",
 		"editor.labels.dishes" 							: "Gerichte",
         "editor.labels.dishes_confirm_add"              : "Gerichte vor dem Hinzufügen bestätigen",
         "editor.labels.mode"                            : "Modus",
@@ -319,6 +347,8 @@ const TRANSLATIONS = {
         "editor.labels.ean_scanner_mac"                 : "Bluetooth-MAC-Adresse des EAN-Scanners",
         "editor.labels.ean_database_entity"             : "To-do-Liste als EAN-Datenbank",
         "editor.labels.ean_create_chip"                 : "Chips für gescannte Artikel erstellen",
+        "editor.labels.list_script_enabled"             : "Listenänderungen an Skript senden",
+        "editor.labels.list_script_entity"              : "Skript für Listenänderungen",
         "editor.labels.ean_script_enabled"              : "EAN-Skript ausführen",
         "editor.labels.ean_script_entity"               : "EAN-Skript",
         "editor.labels.ean_remove_mode"                 : "Entnahmemodus durch langes Drücken aktivieren",
@@ -405,6 +435,10 @@ const TRANSLATIONS = {
         "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamisch + Lokal + Global (komplett sortiert)",
         "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamisch + Global + Lokal (komplett sortiert)",
 
+        "editor.options.category_display.grouped"                           : "Gruppiert mit Überschriften (Standard)",
+        "editor.options.category_display.hidden_category_order"             : "Überschriften ausblenden – Kategorie-Reihenfolge beibehalten",
+        "editor.options.category_display.hidden_global_order"               : "Überschriften ausblenden – gesamte Liste sortieren",
+
         "editor.options.sort_mode.alpha"                : "Alphabetisch (A → Z)",
         "editor.options.sort_mode.manual"               : "Manuell per Drag-and-drop",
         "editor.options.sort_mode.none"                 : "Keine zusätzliche Sortierung",
@@ -433,6 +467,7 @@ const TRANSLATIONS = {
         "editor.options.ean_transfer_remove_behavior.minimum": "Mindestbestand",
         "editor.options.ean_transfer_remove_behavior.off": "Keine automatische Übertragung",
         "editor.options.ean_transfer_non_ean.one_to_one": "1:1 übertragen",
+        "editor.options.ean_transfer_non_ean.minimum"  : "Mindestbestand verwenden",
         "editor.options.ean_transfer_non_ean.ask"       : "Immer nachfragen",
         "editor.options.ean_transfer_non_ean.off"       : "Nicht übertragen (Standard)",
 		
@@ -522,6 +557,8 @@ const TRANSLATIONS = {
         "editor.helpers.ean_scanner_mac"                : "MAC-Adresse des Bluetooth-Scanners, dessen Ereignisse diese Karte verarbeitet. Beispiel: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"            : "Optionale, ausschließlich für diese Funktion vorgesehene To-do-Liste. Sie speichert gelernte EAN-Produkte und Kategorien dauerhaft und geräteübergreifend. Verwende diese Liste nicht für andere Einträge. Die Standard-Einkaufsliste ist ungeeignet, da sie keine Beschreibungen unterstützt. Um die Funktion zu deaktivieren, entferne die ausgewählte Liste wieder aus der Konfiguration.",
         "editor.helpers.ean_create_chip"                : "Erstellt nach dem Hinzufügen eines per EAN erkannten Artikels einen lokalen Chip, sofern die lokale Chip-Erstellung allgemein aktiviert ist. Dies gilt für Bluetooth-Scanner, Kamera und manuell eingegebene EANs.",
+        "editor.helpers.list_script_enabled"            : "Meldet erfolgreiche Änderungen durch diese Karte: Artikel hinzugefügt, entfernt, Anzahl geändert oder umbenannt. Standard: Aus.",
+        "editor.helpers.list_script_entity"             : "Empfängt den Namen ohne Kategorie- und Mengenmarkierungen, Kategorie, Anzahl, Listenentität und Modus. Änderungen außerhalb dieser Karte werden nicht gemeldet. Das EAN-Skript kann parallel verwendet werden.",
         "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf.",
         "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
         "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um eindeutige Produktnamen aus der EAN-Datenbank. Die Produkte können auch über ihre EAN gefunden werden. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
@@ -533,7 +570,7 @@ const TRANSLATIONS = {
         "editor.helpers.sync_transfer.options"           : "Hier legst du die gemeinsame Transferliste, das Ziel und das Verhalten bei Entnahmen fest. Einstellungen, die für den gewählten Modus nicht benötigt werden, werden ignoriert.",
         "editor.helpers.ean_transfer_remove_behavior"    : "1:1 überträgt jede tatsächlich entnommene Menge. Mindestbestand überträgt nur, wenn der Restbestand den Grenzwert erreicht oder unterschreitet. Produktwerte in der EAN-Datenbank überschreiben diesen Standard. Standard: 1:1.",
         "editor.helpers.ean_transfer_default_minimum_stock": "Optionaler Kartenstandard für den Modus Mindestbestand. Ohne Wert erfolgt für Produkte ohne eigenen Mindestbestand keine automatische Übertragung.",
-        "editor.helpers.ean_transfer_non_ean"            : "Verhalten des Minus-Buttons, wenn zum exakten Artikelnamen kein EAN-Datensatz existiert. Diese Einstellung wirkt nur bei aktivem Senden von Entnahmen. Standard: Nicht übertragen.",
+        "editor.helpers.ean_transfer_non_ean"            : "Verhalten bei Entnahmen von Inventarvarianten ohne EAN. „Mindestbestand verwenden“ nutzt den Wert der manuellen Variante oder ersatzweise den Kartenstandard. Diese Einstellung wirkt nur bei aktivem Senden von Entnahmen. Standard: Nicht übertragen.",
         "editor.helpers.ean_script_entity"              : "Das Skript kann beispielsweise Sprachausgaben, Sounds, Benachrichtigungen oder weitere Aktionen ausführen. Die Auswahl bleibt gespeichert, wenn die Skriptausgabe deaktiviert wird.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
@@ -582,6 +619,7 @@ const TRANSLATIONS = {
         "editor.helpers.chip_file"                      : "Beispiel: /local/chips.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Chip eingetragen werden.",
         "editor.helpers.category_file"                  : "Beispiel: /local/categories.txt, wenn die Datei im www-Ordner liegt. Für den Aufbau der Datei, bitte in die Dokumentation gucken.",
 		"editor.helpers.category_merge_mode"            : "Wähle, wie lokale, globale und dynamische Kategorien zusammengeführt werden sollen. 'local_only' zeigt nur die lokal definierten Kategorien, 'global_only' nur die globalen Kategorien und 'dynamic_only' nur die dynamischen Kategorien. Die anderen Optionen kombinieren zwei oder alle drei Varianten auf unterschiedliche Weise. Die Priorität, in der Kategorien zusammengeführt werden, entspricht der Reihenfolge der Begriffe von links nach rechts.",
+        "editor.helpers.category_display"               : "Legt fest, ob Kategorieüberschriften angezeigt werden. Kategorien bleiben auch bei verborgenen Überschriften für Zuordnung, Sortierung, Vorschläge und Chips aktiv. Ohne Überschriften sind deren Kategorie-Farben in der Liste nicht sichtbar.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
         "editor.helpers.debug_mode"                     : "Schreibt zusätzliche Diagnosemeldungen in die Browser-Konsole. Sollte im normalen Betrieb deaktiviert bleiben.",
         "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
@@ -795,8 +833,34 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.remove"               : "Stock out",
         "ui.inventory.queue_mode.register"             : "Register",
         "ui.inventory.queue_mode.none"                 : "No mode",
+        "ui.inventory.group_variants"                  : "Group EAN variants",
+        "ui.inventory.grouped_total"                   : "Total stock",
+        "ui.inventory.manage_variants"                 : "Manage variant stock",
+        "ui.inventory.variants_title"                  : "Stock variants for {name}",
+        "ui.inventory.without_ean"                     : "Without EAN",
+        "ui.inventory.variant_stock"                   : "Stock: {stock}",
+        "ui.inventory.variant_minimum"                 : "Minimum stock: {minimum}",
+        "ui.inventory.manual_minimum"                  : "Minimum stock (optional)",
+        "ui.inventory.manual_minimum_default"          : "Empty = card default: {minimum}",
+        "ui.inventory.manual_minimum_none"             : "Empty = no minimum stock",
+        "ui.inventory.manual_minimum_save"             : "Save minimum stock",
+        "ui.inventory.ean_minimum_edit"                : "Edit EAN minimum stock",
+        "ui.inventory.ean_minimum_database_source"     : "Stored in the shared EAN database",
+        "ui.inventory.ean_minimum_card_default"        : "Card default",
+        "ui.inventory.ean_minimum_not_set"             : "No minimum stock configured",
+        "ui.inventory.ean_product_edit"                : "Edit EAN product",
+        "ui.inventory.edit_ean_item"                   : "Edit EAN item",
+        "ui.inventory.grouped_badge"                   : "[GROUPED]",
+        "ui.inventory.group_member_badge"              : "[GROUP MEMBER]",
+        "ui.inventory.choose_variant_add"              : "Which variant of “{name}” should be stocked?",
+        "ui.inventory.choose_variant_remove"           : "Which variant of “{name}” should be removed?",
+        "ui.inventory.group_category_confirm"          : "“{name}” contains {count} separate variants. The category will be changed for all variants and related EAN records. Do you want to continue?",
+        "ui.inventory.group_delete_confirm"            : "“{name}” contains {count} separate variants. Delete all variants?",
+        "ui.inventory.ean_category_confirm"            : "This EAN belongs to the grouped item “{name}”. The category will be changed for every EAN variant using this name. The central EAN database may also be used by other cards. Do you want to continue?",
+        "ui.inventory.category_conflict"               : "Different categories are stored for “{name}”. The item cannot be grouped until one common category is selected.",
         "editor.labels.inventory_default_action"        : "Mode after loading",
         "editor.labels.inventory_highlight_zero"        : "Mark zero stock in red",
+        "editor.labels.inventory_group_variants"        : "Group EAN variants",
         "editor.options.mode.inventory"                : "Inventory",
         "editor.options.inventory_default_action.none"  : "No booking active (default)",
         "editor.options.inventory_default_action.add"   : "Stock in",
@@ -804,6 +868,7 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.register": "Register",
         "editor.helpers.inventory_default_action"       : "Inventory mode only: Sets the booking mode used whenever the card loads.",
         "editor.helpers.inventory_highlight_zero"       : "Inventory mode only: Marks zero-stock items in red and adds a narrow red border.",
+        "editor.helpers.inventory_group_variants"       : "Inventory mode only: Visually combines separately stored EAN and manual stock variants with the same name and category. The card switch can temporarily change the view.",
         "ui.ean.transfer_remove"                       : "Remove",
         "ui.ean.transfer_invalid_config"               : "The ISL transfer configuration is invalid. Use a separate to-do list with description support and select a different target shopping list when sending.",
         "ui.ean.transfer_send_failed"                  : "The scan could not be saved to the ISL transfer list.",
@@ -875,6 +940,7 @@ const TRANSLATIONS = {
         "editor.labels.show_title_exclamation_mark"     : "Show an exclamation mark for due items",
         "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
+        "editor.labels.category_display"              : "Category display",
 		"editor.labels.dishes" 							: "Dishes",
         "editor.labels.dishes_confirm_add"              : "Confirm dishes before adding",
         "editor.labels.mode"                            : "Mode",
@@ -909,6 +975,8 @@ const TRANSLATIONS = {
         "editor.labels.ean_scanner_mac"                 : "Bluetooth MAC address of the EAN scanner",
         "editor.labels.ean_database_entity"             : "To-do list used as EAN database",
         "editor.labels.ean_create_chip"                 : "Create chips for scanned products",
+        "editor.labels.list_script_enabled"             : "Send list changes to a script",
+        "editor.labels.list_script_entity"              : "List changes script",
         "editor.labels.ean_script_enabled"              : "Run EAN script",
         "editor.labels.ean_script_entity"               : "EAN script",
         "editor.labels.ean_remove_mode"                 : "Enable removal mode by long press",
@@ -995,6 +1063,10 @@ const TRANSLATIONS = {
         "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamic + Local + Global (fully sorted)",
         "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamic + Global + Local (fully sorted)",
 
+        "editor.options.category_display.grouped"                           : "Grouped with headers (default)",
+        "editor.options.category_display.hidden_category_order"             : "Hide headers – preserve category order",
+        "editor.options.category_display.hidden_global_order"               : "Hide headers – sort the complete list",
+
         "editor.options.sort_mode.alpha"                : "Alphabetical (A → Z)",
         "editor.options.sort_mode.manual"               : "Manual drag-and-drop",
         "editor.options.sort_mode.none"                 : "No additional sorting",
@@ -1023,6 +1095,7 @@ const TRANSLATIONS = {
         "editor.options.ean_transfer_remove_behavior.minimum": "Minimum stock",
         "editor.options.ean_transfer_remove_behavior.off": "No automatic transfer",
         "editor.options.ean_transfer_non_ean.one_to_one": "Transfer 1:1",
+        "editor.options.ean_transfer_non_ean.minimum"  : "Use minimum stock",
         "editor.options.ean_transfer_non_ean.ask"       : "Always ask",
         "editor.options.ean_transfer_non_ean.off"       : "Do not transfer (default)",
 
@@ -1111,6 +1184,8 @@ const TRANSLATIONS = {
         "editor.helpers.ean_scanner_mac"                : "MAC address of the Bluetooth scanner whose events this card processes. Example: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"            : "Optional to-do list reserved exclusively for this feature. It stores learned EAN products and categories permanently across devices. Do not use this list for other entries. The standard Shopping List is unsuitable because it does not support descriptions. To disable the feature, remove the selected list from the configuration.",
         "editor.helpers.ean_create_chip"                : "Creates a local chip after adding a product recognized by EAN, provided that local chip creation is enabled globally. This applies to Bluetooth scanners, the camera, and manually entered EANs.",
+        "editor.helpers.list_script_enabled"            : "Reports successful changes made by this card: item added, removed, quantity changed, or renamed. Default: Off.",
+        "editor.helpers.list_script_entity"             : "Receives the name without category or quantity markers, category, quantity, list entity, and mode. Changes outside this card are not reported. The EAN script can be used in parallel.",
         "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with the status and product data when an EAN event occurs.",
         "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
         "editor.helpers.ean_database_suggestions"        : "Adds unique product names from the EAN database to the normal search suggestions. Products can also be found by their EAN. Multiple EANs with the same product name are suggested only once.",
@@ -1122,7 +1197,7 @@ const TRANSLATIONS = {
         "editor.helpers.sync_transfer.options"           : "Configure the shared transfer list, target, and removal behavior here. Settings that are not required by the selected mode are ignored.",
         "editor.helpers.ean_transfer_remove_behavior"    : "1:1 transfers every quantity actually removed. Minimum stock transfers only when the remaining stock reaches or falls below the threshold. Product values in the EAN database override this default. Default: 1:1.",
         "editor.helpers.ean_transfer_default_minimum_stock": "Optional card default for Minimum stock mode. Without a value, products without their own minimum do not transfer automatically.",
-        "editor.helpers.ean_transfer_non_ean"            : "Controls the minus button when no EAN record exactly matches the item name. This applies only while removal transfers are enabled. Default: Do not transfer.",
+        "editor.helpers.ean_transfer_non_ean"            : "Controls removals for inventory variants without an EAN. Use minimum stock takes the manual variant value or falls back to the card default. This applies only while removal transfers are enabled. Default: Do not transfer.",
         "editor.helpers.ean_script_entity"              : "The script can provide speech output, play sounds, send notifications, or run additional actions. The selection is retained when script output is disabled.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
@@ -1172,6 +1247,7 @@ const TRANSLATIONS = {
         "editor.helpers.ean_file"                       : "Example: /local/ean.txt, if the file is located in the www folder. Each line must contain an entry in the format 'EAN Name', e.g. '1234567890123 Test Item'. Supports EAN formats EAN-8, UPC (12), EAN-13, and GS1-14.",
         "editor.helpers.category_file"                  : "Example: /local/categories.txt if the file is located in the www folder. For file format, refer to the documentation.",
         "editor.helpers.category_merge_mode"            : "Choose how local, global and dynamic categories should be merged. 'local_only' shows only the locally defined categories, 'global_only' shows only the global categories, and 'dynamic_only' shows only the dynamic categories. All other options combine two or all three types in different ways. The priority in which categories are merged follows the order in which they appear from left to right.",
+        "editor.helpers.category_display"               : "Controls whether category headers are shown. Categories remain active for assignment, sorting, suggestions and chips when headers are hidden. Their category colors are not visible in the list without the headers.",
 		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
         "editor.helpers.debug_mode"                     : "Writes additional diagnostic messages to the browser console. Should stay disabled during normal use.",
         "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the category while in To-Do mode if there are due items in that category.",
@@ -1299,6 +1375,7 @@ const TRANSLATIONS = {
         "editor.labels.show_title_exclamation_mark"     : "Point d'exclamation pour les articles à échéance",
         "editor.labels.show_cat_popup"                  : "Afficher la pop-up des catégories ?",
         "editor.labels.category_merge_mode"             : "Mode de fusion des catégories",
+        "editor.labels.category_display"               : "Affichage des catégories",
         "editor.labels.dishes"                          : "Plats",
         "editor.labels.dishes_confirm_add"              : "Confirmer les plats avant l'ajout",
         "editor.labels.mode"                            : "Mode",
@@ -1404,6 +1481,10 @@ const TRANSLATIONS = {
         "editor.options.category_merge.global_dynamic_local_sorted_total"   : "[3] Globales + Dynamiques + Locales (entièrement triées)",
         "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamiques + Locales + Globales (entièrement triées)",
         "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamiques + Globales + Locales (entièrement triées)",
+
+        "editor.options.category_display.grouped"                           : "Groupées avec en-têtes (par défaut)",
+        "editor.options.category_display.hidden_category_order"             : "Masquer les en-têtes – conserver l’ordre des catégories",
+        "editor.options.category_display.hidden_global_order"               : "Masquer les en-têtes – trier toute la liste",
 
         "editor.options.mode.shopping"                  : "Liste de courses",
         "editor.options.mode.todo"                      : "Liste de choses à faire",
@@ -1538,6 +1619,7 @@ const TRANSLATIONS = {
         "editor.helpers.ean_file"                       : "Exemple : /local/ean.txt si le fichier se trouve dans le dossier www. Chaque ligne doit contenir une entrée au format « EAN Nom ».",
         "editor.helpers.category_file"                  : "Exemple : /local/categories.txt si le fichier se trouve dans le dossier www. Pour le format du fichier, référez-vous à la documentation.",
         "editor.helpers.category_merge_mode"            : "Choisissez comment les catégories locales, globales et dynamiques doivent être fusionnées. « local_only » n'affiche que les locales, « global_only » que les globales, et « dynamic_only » que les dynamiques. Les autres options combinent deux ou trois types de différentes manières.",
+        "editor.helpers.category_display"               : "Définit si les en-têtes de catégorie sont affichés. Les catégories restent actives pour l’attribution, le tri, les suggestions et les chips lorsque les en-têtes sont masqués. Sans en-têtes, leurs couleurs ne sont plus visibles dans la liste.",
         "editor.helpers.bubble_card"                    : "Activez cette option si vous utilisez la carte dans la Bubble PopUp Card. Dans la Bubble Card, « background_update: true » et « close_by_clicking_outside: false » doivent être activés pour que la carte fonctionne correctement.",
         "editor.helpers.show_cat_exclamation_mark"      : "Affiche un point d'exclamation dans la catégorie en mode liste de choses à faire s'il y a des articles à échéance dans celle-ci.",
         "editor.helpers.show_title_exclamation_mark"    : "Affiche un point d'exclamation dans le titre en mode liste de choses à faire s'il y a des articles à échéance dans l'une des catégories.",
@@ -1560,6 +1642,8 @@ const EAN_SCAN_DEVICE_STORAGE_KEY = "ha-shopping-list-improved-process-ean-scans
 const EAN_SCAN_QUEUE_STORAGE_KEY = "ha-shopping-list-improved-ean-scan-queue";
 const EAN_DATABASE_SCHEMA = 1;
 const EAN_TRANSFER_SCHEMA = 1;
+const INVENTORY_VARIANT_SCHEMA = 1;
+const INVENTORY_VARIANT_TYPE = "isl_inventory_variant";
 const EAN_TRANSFER_PROCESSED_STORAGE_KEY = "ha-shopping-list-improved-ean-transfer-processed";
 
 // Detect HA-Language via home-assistant element
@@ -1868,11 +1952,15 @@ class HaShoppingListImproved extends HTMLElement {
         ];
 
         this._categoryMergeMode     = allowedModes.includes(config.category_merge_mode) ? config.category_merge_mode : "local_only";
+        this._categoryDisplay       = ["grouped", "hidden_category_order", "hidden_global_order"].includes(config.category_display)
+            ? config.category_display
+            : "grouped";
         this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
 		this._mode                  = ["shopping", "todo", "inventory"].includes(config.mode) ? config.mode : "shopping";
         this._inventoryDefaultAction = ["none", "add", "remove", "register"].includes(config.inventory_default_action)
             ? config.inventory_default_action : "none";
         this._inventoryHighlightZero = config.inventory_highlight_zero !== false;
+        this._inventoryGroupVariants = config.inventory_group_variants !== false;
         this._inventoryShowHidden = false;
         this._inventoryFilter = "all";
         this._inventoryFeedbackTimer = null;
@@ -1884,6 +1972,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._showEanBrand          = (config.show_ean_brand === true);
         this._showEanQuantity       = (config.show_ean_quantity === true);
         this._eanCreateChip         = (config.ean_create_chip === true);
+        this._listScriptEnabled     = (config.list_script_enabled === true);
+        this._listScriptEntity      = String(config.list_script_entity || "").trim();
         this._eanScriptEnabled      = (config.ean_script_enabled === true);
         this._eanScriptEntity       = String(config.ean_script_entity || "").trim();
         this._eanRemoveModeEnabled  = (config.ean_remove_mode === true);
@@ -1907,7 +1997,7 @@ class HaShoppingListImproved extends HTMLElement {
             Number.isInteger(Number(config.ean_transfer_default_minimum_stock)) &&
             Number(config.ean_transfer_default_minimum_stock) >= 0
         ) ? Number(config.ean_transfer_default_minimum_stock) : null;
-        this._eanTransferNonEan = ["one_to_one", "ask", "off"].includes(config.ean_transfer_non_ean)
+        this._eanTransferNonEan = ["one_to_one", "minimum", "ask", "off"].includes(config.ean_transfer_non_ean)
             ? config.ean_transfer_non_ean
             : "off";
 
@@ -2289,6 +2379,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_done_hidden_items_in_search", selector: { boolean: {} }, default: true },
                     { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
                     { name: "show_descriptions", selector: { boolean: {} }, default: false },
+                    { name: "inventory_group_variants", selector: { boolean: {} }, default: true },
                     {
                         type: 'expandable',
                         label: 'todo_warning_thresholds',
@@ -2369,6 +2460,12 @@ class HaShoppingListImproved extends HTMLElement {
                 label: 'sync_transfer.options',
                 icon: 'mdi:swap-horizontal',
                 schema: [
+                    { name: "list_script_enabled", selector: { boolean: {} }, default: false },
+                    {
+                        name: "list_script_entity",
+                        required: false,
+                        selector: { entity: { domain: ["script"] } }
+                    },
                     {
                         name: "ean_transfer_mode",
                         selector: {
@@ -2438,6 +2535,7 @@ class HaShoppingListImproved extends HTMLElement {
                             select: {
                                 options: [
                                     { value: "one_to_one", label: translate("editor.options.ean_transfer_non_ean.one_to_one") },
+                                    { value: "minimum", label: translate("editor.options.ean_transfer_non_ean.minimum") },
                                     { value: "ask", label: translate("editor.options.ean_transfer_non_ean.ask") },
                                     { value: "off", label: translate("editor.options.ean_transfer_non_ean.off") }
                                 ]
@@ -2538,6 +2636,21 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
                     { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
                     { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },    
+                    {
+                        name: "category_display",
+                        label: translate("editor.labels.category_display"),
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "grouped", label: translate("editor.options.category_display.grouped") },
+                                    { value: "hidden_category_order", label: translate("editor.options.category_display.hidden_category_order") },
+                                    { value: "hidden_global_order", label: translate("editor.options.category_display.hidden_global_order") }
+                                ]
+                            }
+                        },
+                        default: "grouped"
+                    },
                     {
                         name: "category_merge_mode",
                         label: translate("editor.labels.category_merge_mode"),
@@ -3307,10 +3420,15 @@ class HaShoppingListImproved extends HTMLElement {
             }
             try {
                 const items = await this._getTodoItems(entityId);
-                const activeItem = this._findTodoItemByName(items, productName, false);
+                const activeItem = targetUid
+                    ? items.find(item => item.uid === targetUid && item.status !== "completed") || null
+                    : this._findTodoItemByName(items, productName, false);
                 const matchingItem = activeItem || (this._mode === "inventory"
-                    ? this._findTodoItemByName(items, productName, true) : null);
-                if (targetUid && matchingItem?.uid !== targetUid) continue;
+                    ? (targetUid
+                        ? items.find(item => item.uid === targetUid) || null
+                        : this._findTodoItemByName(items, productName, true))
+                    : null);
+                if (targetUid && !matchingItem) continue;
                 const quantity = matchingItem
                     ? Math.max(0, Number(this._getQuantity(matchingItem.summary || matchingItem.name)))
                     : 0;
@@ -3363,14 +3481,150 @@ class HaShoppingListImproved extends HTMLElement {
         return false;
     }
 
-    _getShoppingStockByName(productName) {
-        const normalizedName = String(productName || '').trim().toLocaleLowerCase();
-        const item = (this._items || []).find(entry =>
-            this._getNameOnly(entry.name).trim().toLocaleLowerCase() === normalizedName
-        );
-        return item ? (this._mode === "inventory"
-            ? this._getQuantity(item.name)
-            : Math.max(1, Number(this._getQuantity(item.name) || 1))) : 0;
+    _parseInventoryVariant(item) {
+        if (!item) return { ean: null, minimumStock: null, legacy: true };
+        try {
+            const record = JSON.parse(String(item.description || ""));
+            if (
+                record?.schema === INVENTORY_VARIANT_SCHEMA &&
+                record?.type === INVENTORY_VARIANT_TYPE &&
+                (record.ean === null || /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(record.ean || "")))
+            ) {
+                const minimumStock = (
+                    record.ean === null &&
+                    record.minimumStock !== null &&
+                    record.minimumStock !== undefined &&
+                    record.minimumStock !== "" &&
+                    Number.isInteger(Number(record.minimumStock)) &&
+                    Number(record.minimumStock) >= 0
+                ) ? Number(record.minimumStock) : null;
+                return {
+                    ean: record.ean === null ? null : String(record.ean),
+                    minimumStock,
+                    legacy: false
+                };
+            }
+        } catch (_error) {
+            // Existing inventory descriptions are treated as the manual variant.
+        }
+        return { ean: null, minimumStock: null, legacy: true };
+    }
+
+    _serializeInventoryVariant(ean = null, minimumStock = null) {
+        const record = {
+            schema: INVENTORY_VARIANT_SCHEMA,
+            type: INVENTORY_VARIANT_TYPE,
+            ean: ean ? String(ean) : null
+        };
+        if (
+            !ean &&
+            minimumStock !== null &&
+            minimumStock !== "" &&
+            Number.isInteger(Number(minimumStock)) &&
+            Number(minimumStock) >= 0
+        ) {
+            record.minimumStock = Number(minimumStock);
+        }
+        return JSON.stringify(record);
+    }
+
+    _canTrackInventoryVariants() {
+        return this._mode === "inventory" && this._supportsTodoDescription();
+    }
+
+    _inventoryItemMatchesName(item, productName) {
+        return this._normalizeEanDatabaseProductName(this._getNameOnly(item?.name)) ===
+            this._normalizeEanDatabaseProductName(productName);
+    }
+
+    _getInventoryVariantItems(productName, category = undefined, items = this._items) {
+        const normalizedCategory = category === undefined
+            ? undefined
+            : String(category || "none").trim().toLocaleLowerCase();
+        return (items || []).filter(item => {
+            if (!this._inventoryItemMatchesName(item, productName)) return false;
+            if (normalizedCategory === undefined) return true;
+            return String(this._getCategory(item.name) || "none").trim().toLocaleLowerCase() === normalizedCategory;
+        });
+    }
+
+    _findInventoryVariantItem(items, productName, ean = null, completed = null) {
+        const wantedEan = ean ? String(ean) : null;
+        return (items || []).find(item => {
+            const itemCompleted = item.complete === true || item.status === "completed";
+            const itemName = item.name || item.summary || "";
+            if (completed !== null && itemCompleted !== completed) return false;
+            if (!this._inventoryItemMatchesName({ name: itemName }, productName)) return false;
+            return this._parseInventoryVariant({ ...item, description: item.description || "" }).ean === wantedEan;
+        }) || null;
+    }
+
+    _inventoryVariantProduct(ean) {
+        return ean ? (this._eanDatabase?.get(String(ean)) || null) : null;
+    }
+
+    _inventoryVariantLabel(ean, showFullEan = false) {
+        if (!ean) return translate("ui.inventory.without_ean");
+        const product = this._inventoryVariantProduct(ean);
+        const details = [product?.originalName, product?.brand, product?.quantity]
+            .map(value => String(value || "").trim())
+            .filter((value, index, values) => value && values.indexOf(value) === index);
+        const eanLabel = showFullEan ? String(ean) : `…${String(ean).slice(-4)}`;
+        return details.length
+            ? `${details.join(" · ")} · EAN ${eanLabel}`
+            : `EAN ${eanLabel}`;
+    }
+
+    _buildInventoryDisplayItems(items) {
+        if (this._mode !== "inventory" || !this._inventoryGroupVariants || !this._canTrackInventoryVariants()) {
+            return (items || []).map(item => ({
+                ...item,
+                inventoryVariantEan: this._parseInventoryVariant(item).ean
+            }));
+        }
+
+        const groups = new Map();
+        for (const item of items || []) {
+            const name = this._getNameOnly(item.name);
+            const category = this._getCategory(item.name) || null;
+            const key = `${this._normalizeEanDatabaseProductName(name)}::${String(category || "none").trim().toLocaleLowerCase()}`;
+            if (!groups.has(key)) groups.set(key, { name, category, variants: [] });
+            groups.get(key).variants.push({
+                ...item,
+                inventoryVariantEan: this._parseInventoryVariant(item).ean
+            });
+        }
+
+        return [...groups.values()].map(group => {
+            if (group.variants.length === 1) return group.variants[0];
+            const quantity = group.variants.reduce((sum, item) => sum + this._getQuantity(item.name), 0);
+            let name = this._quantityPosition === "beginning"
+                ? `${quantity}× ${group.name}`
+                : `${group.name} (${quantity})`;
+            if (group.category) name = `@${group.category}@ ${name}`;
+            return {
+                name,
+                complete: group.variants.every(item => item.complete),
+                id: `inventory-group:${group.variants.map(item => item.id).join(":")}`,
+                due: null,
+                description: "",
+                inventoryGroup: true,
+                inventoryVariants: group.variants,
+                inventoryVariantEan: undefined
+            };
+        });
+    }
+
+    _getShoppingStockByName(productName, ean = undefined) {
+        const matchingItems = (this._items || []).filter(entry => this._inventoryItemMatchesName(entry, productName));
+        if (this._mode === "inventory") {
+            const selected = ean === undefined
+                ? matchingItems
+                : matchingItems.filter(item => this._parseInventoryVariant(item).ean === (ean ? String(ean) : null));
+            return selected.reduce((sum, item) => sum + Math.max(0, Number(this._getQuantity(item.name) || 0)), 0);
+        }
+        const item = matchingItems[0];
+        return item ? Math.max(1, Number(this._getQuantity(item.name) || 1)) : 0;
     }
 
     async _selectEanProductForRemoval(productName, products, allowWithoutEan = false, confirmLabel = null) {
@@ -3894,8 +4148,13 @@ class HaShoppingListImproved extends HTMLElement {
             const product = await this._resolveEanTransferProduct(first);
             const totalQuantity = claimed.reduce((sum, record) => sum + record.quantity, 0);
             const result = first.operation === "shopping_remove"
-                ? await this._removeShoppingQuantityByName(product.name, totalQuantity)
-                : await this._addShoppingQuantityByName(product.name, product.category, totalQuantity);
+                ? await this._removeShoppingQuantityByName(
+                    product.name, totalQuantity, this._canTrackInventoryVariants() ? (first.ean || null) : undefined
+                )
+                : await this._addShoppingQuantityByName(
+                    product.name, product.category, totalQuantity,
+                    this._canTrackInventoryVariants() ? (first.ean || null) : undefined
+                );
             if (result?.status === "error") {
                 throw result.error || new Error("Target list update failed");
             }
@@ -4125,7 +4384,12 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._eanDatabaseError) return false;
 
         const previous = this._eanDatabase.get(product.ean);
-        const normalizedCategory = product.category || null;
+        let normalizedCategory = product.category || null;
+        if (product._allowGroupCategoryChange !== true) {
+            const peer = this._getEanDatabaseEntriesByName(product.name)
+                .find(entry => String(entry.ean) !== String(product.ean));
+            if (peer) normalizedCategory = peer.category || null;
+        }
         const normalizedOriginalName = product.originalName || previous?.originalName || null;
         const normalizedBrand = product.brand || previous?.brand || null;
         const normalizedQuantity = product.quantity || previous?.quantity || null;
@@ -4228,8 +4492,12 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 
-    async _showEanDatabaseManager(initialEan = null) {
+    async _showEanDatabaseManager(initialEan = null, navigation = {}) {
         if (!this._eanDatabaseEntity || this._eanDatabaseError) return;
+
+        const onBack = typeof navigation === "function"
+            ? navigation
+            : navigation?.onBack;
 
         await this._loadEanDatabase();
         if (this._eanDatabaseError) {
@@ -4376,13 +4644,29 @@ class HaShoppingListImproved extends HTMLElement {
                 backBtn.textContent = `← ${translate("ui.ean.database_back")}`;
                 styleButton(backBtn);
                 backBtn.style.marginBottom = '14px';
-                backBtn.addEventListener('click', renderList);
+                backBtn.addEventListener('click', () => {
+                    if (typeof onBack !== "function") {
+                        renderList();
+                        return;
+                    }
+                    close(null);
+                    setTimeout(() => onBack(), 0);
+                });
                 content.appendChild(backBtn);
 
                 const editTitle = document.createElement('h3');
                 editTitle.textContent = translate("ui.ean.database_edit_title");
                 editTitle.style.margin = '0 0 14px';
                 content.appendChild(editTitle);
+
+                const groupCategories = [...new Set(this._getEanDatabaseEntriesByName(record.name)
+                    .map(product => String(product.category || "none").trim().toLocaleLowerCase()))];
+                if (groupCategories.length > 1) {
+                    const conflict = document.createElement('div');
+                    conflict.textContent = translate("ui.inventory.category_conflict").replace("{name}", record.name);
+                    conflict.style.cssText = 'margin:0 0 12px;padding:9px 10px;border-left:4px solid var(--warning-color,#e0a526);background:var(--secondary-background-color,#eee);font-size:13px;line-height:1.4;';
+                    content.appendChild(conflict);
+                }
 
                 const reloadBtn = document.createElement('button');
                 styleButton(reloadBtn);
@@ -4495,7 +4779,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                 const currentStockField = createInput(
                     translate("ui.ean.database_current_stock"),
-                    this._getShoppingStockByName(record.name)
+                    this._getShoppingStockByName(record.name, this._canTrackInventoryVariants() ? record.ean : undefined)
                 );
                 currentStockField.input.type = 'number';
                 currentStockField.input.min = '0';
@@ -4625,17 +4909,45 @@ class HaShoppingListImproved extends HTMLElement {
                         messageTarget.style.color = 'var(--error-color, #db4437)';
                         return false;
                     }
+                    const nextCategory = categorySelect.value || null;
+                    const groupPeers = this._getEanDatabaseEntriesByName(record.name)
+                        .filter(product => product.ean !== record.ean);
+                    const categoryChanged = String(record.category || "").trim().toLocaleLowerCase() !==
+                        String(nextCategory || "").trim().toLocaleLowerCase();
+                    const sameGroupName = this._normalizeEanDatabaseProductName(name) ===
+                        this._normalizeEanDatabaseProductName(record.name);
+                    const categoryNeedsGroupSync = sameGroupName && groupPeers.some(peer =>
+                        String(peer.category || "").trim().toLocaleLowerCase() !==
+                        String(nextCategory || "").trim().toLocaleLowerCase()
+                    );
+                    if ((categoryChanged || categoryNeedsGroupSync) && sameGroupName && groupPeers.length) {
+                        const question = translate("ui.inventory.ean_category_confirm")
+                            .replace("{name}", record.name);
+                        if (!(await this.confirmPopup(question))) return false;
+                    }
                     const saved = await this._saveEanDatabaseProduct({
                         ...record,
                         ...overrides,
+                        _allowGroupCategoryChange: (categoryChanged || categoryNeedsGroupSync) && sameGroupName,
                         name,
-                        category: categorySelect.value || null,
+                        category: nextCategory,
                         minimumStock,
                         automaticTransferDisabled: transferDisabledInput.checked
                     });
                     if (!saved) {
                         messageTarget.textContent = this._eanDatabaseErrorMessage("save");
                         messageTarget.style.color = 'var(--error-color, #db4437)';
+                    }
+                    if (saved && (categoryChanged || categoryNeedsGroupSync) && sameGroupName) {
+                        for (const peer of groupPeers) {
+                            const peerSaved = await this._saveEanDatabaseProduct({
+                                ...peer,
+                                _allowGroupCategoryChange: true,
+                                category: nextCategory
+                            });
+                            if (!peerSaved) return false;
+                        }
+                        await this._updateCurrentInventoryGroupCategory(record.name, nextCategory || "none");
                     }
                     return saved;
                 };
@@ -4664,14 +4976,19 @@ class HaShoppingListImproved extends HTMLElement {
                         stockStatus.style.display = 'block';
                         return;
                     }
-                    if (value > 0 && this._getShoppingStockByName(record.name) === 0) {
+                    if (value > 0 && this._getShoppingStockByName(
+                        record.name, this._canTrackInventoryVariants() ? record.ean : undefined
+                    ) === 0) {
                         const message = translate("ui.ean.database_create_stock_confirm")
                             .replace("{name}", record.name)
                             .replace("{quantity}", String(value));
                         if (!(await this.confirmPopup(message))) return;
                     }
                     correctStockBtn.disabled = true;
-                    const result = await this._setShoppingQuantityByName(record.name, record.category, value);
+                    const result = await this._setShoppingQuantityByName(
+                        record.name, record.category, value,
+                        this._canTrackInventoryVariants() ? record.ean : undefined
+                    );
                     correctStockBtn.disabled = false;
                     if (result.status === "error") {
                         stockStatus.textContent = result.error?.message || String(result.error || "");
@@ -5340,20 +5657,104 @@ class HaShoppingListImproved extends HTMLElement {
             error: String(data.error ?? "")
         };
 
+        await this._callConfiguredScript(this._eanScriptEntity, variables, "EAN");
+    }
+
+    async _callConfiguredScript(entity, variables, label) {
+        if (!entity?.startsWith("script.") || !this._hass?.connection) return;
         try {
             await this._hass.connection.sendMessagePromise({
                 type: "call_service",
                 domain: "script",
                 service: "turn_on",
-                target: { entity_id: this._eanScriptEntity },
+                target: { entity_id: entity },
                 service_data: { variables }
             });
         } catch (error) {
-            console.warn(
-                `[ha-shopping-list-improved] Unable to run EAN script for status ${status}:`,
-                error
-            );
+            console.warn(`[ha-shopping-list-improved] Unable to run ${label} script for status ${variables.status}:`, error);
         }
+    }
+
+    async _runListScript(status, item, previousItem = null) {
+        const rawName = String(item?.summary ?? item?.name ?? "");
+        const name = this._getNameOnly(rawName);
+        const variant = this._mode === "inventory" ? this._parseInventoryVariant(item) : null;
+        const products = this._mode === "todo" ? [] : this._getEanDatabaseEntriesByName(name);
+        // An explicit manual inventory variant must not inherit another variant's EAN.
+        const ean = item?.ean || (variant && !variant.legacy
+            ? variant.ean
+            : products.length === 1 ? products[0].ean : null);
+        const variables = {
+            status,
+            name,
+            category: String(this._getCategory(rawName) || ""),
+            quantity: status === "item_removed" ? 0 : this._mode === "todo" ? 1 : this._getQuantity(rawName),
+            list_entity: this._entity,
+            mode: this._mode,
+            ean: ean || "",
+            is_ean: Boolean(ean) || (variant && !variant.legacy ? Boolean(variant.ean) : products.length > 0)
+        };
+        if (previousItem) {
+            const previousName = String(previousItem.summary ?? previousItem.name ?? "");
+            variables.previous_quantity = this._mode === "todo" ? 1 : this._getQuantity(previousName);
+            if (status === "item_renamed") variables.previous_name = this._getNameOnly(previousName);
+        }
+        await this._callConfiguredScript(this._listScriptEntity, variables, "list changes");
+    }
+
+    async _callListService(message, options = {}) {
+        const data = message.service_data || {};
+        const enabled = this._listScriptEnabled && this._listScriptEntity?.startsWith("script.");
+        const watched = enabled && message.type === "call_service" && message.domain === "todo" &&
+            message.target?.entity_id === this._entity && (
+                ["add_item", "remove_item", "remove_completed_items"].includes(message.service) ||
+                (message.service === "update_item" && typeof data.rename === "string")
+            );
+        let previousItems = [];
+        let canReport = watched;
+        if (watched && message.service !== "add_item") {
+            try {
+                // Read the actual list, including hidden/completed variants, rather than stale rendered rows.
+                previousItems = await this._getTodoItems(this._entity);
+            } catch (error) {
+                canReport = false;
+                console.warn("[ha-shopping-list-improved] Unable to read previous list state for script output:", error);
+            }
+        }
+
+        const result = await this._hass.connection.sendMessagePromise(message);
+        if (!canReport) return result;
+        try {
+            if (message.service === "add_item") {
+                await this._runListScript("item_added", { summary: data.item, description: data.description, ean: options.ean });
+            } else if (message.service === "remove_completed_items") {
+                for (const item of previousItems.filter(entry => entry.status === "completed")) {
+                    await this._runListScript("item_removed", item, item);
+                }
+            } else {
+                const previous = previousItems.find(entry => entry.uid === data.item || entry.summary === data.item);
+                if (!previous) return result;
+                if (message.service === "remove_item") {
+                    await this._runListScript("item_removed", previous, previous);
+                } else {
+                    const next = { ...previous, summary: data.rename, description: data.description ?? previous.description, ean: options.ean };
+                    const oldName = this._getNameOnly(previous.summary);
+                    const newName = this._getNameOnly(next.summary);
+                    if (previous.status === "completed" && data.status === "needs_action" && this._mode !== "inventory") {
+                        await this._runListScript("item_added", next);
+                    } else {
+                        if (oldName !== newName) await this._runListScript("item_renamed", next, previous);
+                        if (this._mode !== "todo" && this._getQuantity(previous.summary) !== this._getQuantity(next.summary)) {
+                            await this._runListScript("quantity_changed", next, previous);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            // Script output must never turn a successful list update into a failed booking.
+            console.warn("[ha-shopping-list-improved] Unable to report list change:", error);
+        }
+        return result;
     }
 
     _isVisibleForEanScan() {
@@ -5926,6 +6327,7 @@ class HaShoppingListImproved extends HTMLElement {
                         <div class="inventory-filter-bar">
                             <button type="button" id="inventoryFilterBtn" aria-label="${translate("ui.inventory.filter.all")}"><ha-icon icon="mdi:filter-variant"></ha-icon><span id="inventoryFilterLabel">${translate("ui.inventory.filter.all")}</span> ▾</button>
                             <button type="button" id="inventoryHiddenBtn" title="${translate("ui.inventory.hidden")}" aria-label="${translate("ui.inventory.hidden")}"><ha-icon icon="mdi:eye-off-outline"></ha-icon></button>
+                            <button type="button" id="inventoryGroupBtn" title="${translate("ui.inventory.group_variants")}" aria-label="${translate("ui.inventory.group_variants")}" aria-pressed="${String(this._inventoryGroupVariants)}"><ha-icon icon="mdi:layers-triple-outline"></ha-icon></button>
                             <button type="button" class="inventory-filter-secondary" id="inventoryDatabaseBtn" title="${translate("ui.inventory.database")}" aria-label="${translate("ui.inventory.database")}"><ha-icon icon="mdi:database"></ha-icon><span>${translate("ui.inventory.database_short")}</span></button>
                             <button type="button" class="inventory-filter-secondary" id="inventoryQueueBtn" title="${translate("ui.inventory.queue")}" aria-label="${translate("ui.inventory.queue")}"><ha-icon icon="mdi:format-list-checks"></ha-icon><span>${translate("ui.inventory.queue")}</span></button>
                         </div>
@@ -6077,6 +6479,11 @@ class HaShoppingListImproved extends HTMLElement {
             this._shadow.getElementById('inventoryHiddenBtn')?.addEventListener('click', event => {
                 this._inventoryShowHidden = !this._inventoryShowHidden;
                 event.currentTarget.setAttribute('aria-pressed', String(this._inventoryShowHidden));
+                this._renderList();
+            });
+            this._shadow.getElementById('inventoryGroupBtn')?.addEventListener('click', event => {
+                this._inventoryGroupVariants = !this._inventoryGroupVariants;
+                event.currentTarget.setAttribute('aria-pressed', String(this._inventoryGroupVariants));
                 this._renderList();
             });
             this._shadow.getElementById('inventoryDatabaseBtn')?.addEventListener('click', () => {
@@ -7487,8 +7894,8 @@ async _checkEAN(text, options = {}) {
                     cameraStart.style.padding = "0 16px";
                     cameraStart.className = "qr-close-btn";
                 }
-            }	
-            
+            }
+
             const btn = scannerDiv.querySelector("button");
             if (btn) {
                 // html5-qrcode-anchor-scan-type-change
@@ -7496,7 +7903,7 @@ async _checkEAN(text, options = {}) {
                 btn.style.padding = "10px 20px";
                 btn.style.borderRadius = "8px";
                 btn.className = "qr-close-btn";
-                
+
                 //btn.style.display = "inline-flex";
                 btn.style.alignItems = "center";
                 btn.style.justifyContent = "center";
@@ -7789,15 +8196,435 @@ async _checkEAN(text, options = {}) {
         document.body.appendChild(overlay);
     }
 
-    _getInventoryMinimumStock(name) {
-        const values = this._getEanDatabaseEntriesByName(this._getNameOnly(name))
-            .map(product => product.minimumStock)
-            .filter(value => value !== null && value !== undefined && Number.isInteger(Number(value)) && Number(value) >= 0)
-            .map(Number);
-        return values.length ? Math.max(...values) : this._eanTransferDefaultMinimumStock;
+    _getInventoryVariantOptions(itemOrName, category = undefined) {
+        const name = typeof itemOrName === "string" ? itemOrName : this._getNameOnly(itemOrName?.name);
+        const effectiveCategory = category === undefined
+            ? (typeof itemOrName === "string" ? null : this._getCategory(itemOrName?.name))
+            : category;
+        const normalizedCategory = String(effectiveCategory || "none").toLocaleLowerCase();
+        const physicalItems = this._getInventoryVariantItems(name, effectiveCategory);
+        const options = new Map();
+
+        for (const product of this._getEanDatabaseEntriesByName(name)) {
+            const productCategory = String(product.category || "none").toLocaleLowerCase();
+            if (productCategory !== normalizedCategory) continue;
+            options.set(String(product.ean), {
+                ean: String(product.ean),
+                product,
+                item: null,
+                stock: 0,
+                minimum: this._getInventoryVariantMinimumStock(product.ean),
+                configuredMinimum: product.minimumStock ?? null
+            });
+        }
+        for (const physicalItem of physicalItems) {
+            const variantData = this._parseInventoryVariant(physicalItem);
+            const ean = variantData.ean;
+            const key = ean || "__manual__";
+            const existing = options.get(key) || {
+                ean,
+                product: this._inventoryVariantProduct(ean),
+                item: null,
+                stock: 0,
+                minimum: this._getInventoryVariantMinimumStock(ean, physicalItem),
+                configuredMinimum: ean ? null : variantData.minimumStock
+            };
+            existing.item = physicalItem;
+            existing.stock += this._getQuantity(physicalItem.name);
+            if (!ean) {
+                existing.configuredMinimum = variantData.minimumStock;
+                existing.minimum = this._getInventoryVariantMinimumStock(null, physicalItem);
+            }
+            options.set(key, existing);
+        }
+        if (!options.has("__manual__")) {
+            options.set("__manual__", {
+                ean: null,
+                product: null,
+                item: null,
+                stock: 0,
+                minimum: this._getInventoryVariantMinimumStock(null),
+                configuredMinimum: null
+            });
+        }
+        return [...options.values()].sort((a, b) => {
+            if (a.ean === null) return 1;
+            if (b.ean === null) return -1;
+            return this._inventoryVariantLabel(a.ean).localeCompare(
+                this._inventoryVariantLabel(b.ean), detectLanguage(), { sensitivity: "base" }
+            );
+        });
     }
 
-    async _offerInventoryCorrectionTransfer(previousName, currentName, category, previousQuantity, currentQuantity) {
+    _selectInventoryVariant(item, action) {
+        if (!item?.inventoryGroup && item?.inventoryVariantEan !== undefined) {
+            const ean = item.inventoryVariantEan;
+            return Promise.resolve({
+                ean,
+                product: this._inventoryVariantProduct(ean),
+                item,
+                stock: this._getQuantity(item.name),
+                minimum: this._getInventoryVariantMinimumStock(ean, item),
+                configuredMinimum: ean ? null : this._parseInventoryVariant(item).minimumStock
+            });
+        }
+
+        const name = this._getNameOnly(item?.name);
+        const category = this._getCategory(item?.name) || null;
+        const options = this._getInventoryVariantOptions(name, category);
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(500px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+            const title = document.createElement('h3');
+            title.textContent = translate(action === "add"
+                ? "ui.inventory.choose_variant_add"
+                : "ui.inventory.choose_variant_remove").replace("{name}", name);
+            title.style.margin = '0 0 12px';
+            popup.appendChild(title);
+
+            const close = value => {
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(value);
+            };
+            const onKeyDown = event => {
+                if (event.key === 'Escape') close(false);
+            };
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.style.cssText = 'display:flex;width:100%;justify-content:space-between;gap:12px;padding:10px;margin:0 0 7px;border:1px solid var(--divider-color,#ccc);border-radius:6px;background:var(--secondary-background-color,#eee);color:inherit;text-align:left;cursor:pointer;';
+                const label = document.createElement('span');
+                label.textContent = this._inventoryVariantLabel(option.ean);
+                const values = document.createElement('span');
+                values.style.whiteSpace = 'nowrap';
+                values.style.color = 'var(--secondary-text-color,#666)';
+                values.textContent = option.minimum === null
+                    ? translate("ui.inventory.variant_stock").replace("{stock}", String(option.stock))
+                    : `${translate("ui.inventory.variant_stock").replace("{stock}", String(option.stock))} · ${translate("ui.inventory.variant_minimum").replace("{minimum}", String(option.minimum))}`;
+                button.appendChild(label);
+                button.appendChild(values);
+                button.addEventListener('click', () => close(option));
+                popup.appendChild(button);
+            });
+            const cancel = document.createElement('button');
+            cancel.type = 'button';
+            cancel.textContent = translate("ui.common.cancel");
+            cancel.style.cssText = 'margin-top:5px;padding:7px 12px;cursor:pointer;';
+            cancel.addEventListener('click', () => close(false));
+            popup.appendChild(cancel);
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close(false);
+            });
+            window.addEventListener('keydown', onKeyDown, true);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    async _changeInventoryVariant(name, category, option, change) {
+        if (!option || !change) return false;
+        if (change > 0) {
+            const result = await this._addShoppingQuantityByName(name, category, change, option.ean);
+            if (result.status === "error") return false;
+            this._showInventoryFeedback(name, result.previousQuantity, result.quantity, {
+                action: "inventory_add",
+                category,
+                transferId: null,
+                transferQuantity: 0,
+                product: option.product,
+                ean: option.ean
+            });
+            await this._notifyOnChange(`${translate("ui.message.quantity_increased")}: ${name} (${result.quantity})`);
+            return true;
+        }
+        return this._handleInventoryVariantMinus(name, category, option);
+    }
+
+    async _handleInventoryVariantMinus(name, category, option) {
+        const product = option?.product || this._inventoryVariantProduct(option?.ean) || null;
+        const ean = option?.ean || null;
+        const currentStock = this._getShoppingStockByName(name, ean);
+        if (currentStock === 0) {
+            const pseudoItem = option?.item || { name: this._formatInventoryItemName(name, category, 0) };
+            return this._sendInventoryItemWithoutStock(pseudoItem, product, ean);
+        }
+        const remainingStock = Math.max(0, currentStock - 1);
+        let transferWithoutEan = false;
+        let shouldTransfer = false;
+        if (this._isEanTransferActionEnabled("shopping_remove")) {
+            if (product) {
+                shouldTransfer = this._getAutomaticRemovalTransferDecision(product, remainingStock);
+            } else if (this._eanTransferNonEan === "one_to_one") {
+                transferWithoutEan = true;
+            } else if (this._eanTransferNonEan === "minimum") {
+                const minimum = this._getInventoryVariantMinimumStock(null, option?.item || null);
+                transferWithoutEan = minimum !== null && remainingStock <= minimum;
+            } else if (this._eanTransferNonEan === "ask") {
+                transferWithoutEan = await this.confirmPopup(
+                    translate("ui.ean.transfer_non_ean_question").replace("{name}", name)
+                );
+            }
+            shouldTransfer = shouldTransfer || transferWithoutEan;
+        }
+
+        const transferProduct = product || {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        };
+        let transferId = null;
+        if (shouldTransfer) {
+            transferId = await this._createEanTransfer(
+                "shopping_add", ean, transferProduct, 1,
+                { status: "source_pending", sourceOperation: "shopping_remove" }
+            );
+            if (!transferId) return false;
+        }
+
+        const removal = await this._removeShoppingQuantityByName(name, 1, ean);
+        if (["error", "not_found", "no_stock"].includes(removal.status)) {
+            if (transferId) await this._cancelEanTransfer(transferId);
+            return false;
+        }
+
+        const booking = {
+            action: "inventory_remove",
+            category,
+            transferId,
+            transferQuantity: transferId ? removal.removedQuantity : 0,
+            product: transferProduct,
+            ean,
+            scriptData: {
+                ean: ean || "",
+                brand: transferProduct.brand,
+                productQuantity: transferProduct.quantity,
+                category: transferProduct.category,
+                imageUrl: transferProduct.imageUrl,
+                scanMode: "inventory_remove"
+            }
+        };
+        if (transferId) {
+            let activated = await this._activateEanRemovalTransfer(transferId, removal.removedQuantity, removal.status);
+            if (!activated) activated = await this._activateEanRemovalTransfer(transferId, removal.removedQuantity, removal.status);
+            if (!activated) {
+                this._showInventoryFeedback(name, currentStock, removal.quantity, booking);
+                await this.confirmPopup(translate("ui.ean.transfer_send_failed"), true);
+                return false;
+            }
+            await this._runEanScript("transfer_sent", {
+                ean: ean || "",
+                name,
+                brand: transferProduct.brand,
+                productQuantity: transferProduct.quantity,
+                scanQuantity: removal.removedQuantity,
+                category: transferProduct.category,
+                imageUrl: transferProduct.imageUrl,
+                scanMode: "shopping_remove"
+            });
+        }
+        this._showInventoryFeedback(name, currentStock, removal.quantity, booking);
+        await this._notifyOnChange(`${translate("ui.message.quantity_decreased")}: ${name} (${removal.quantity})`);
+        return true;
+    }
+
+    _showInventoryVariantStockPopup(item) {
+        if (!item) return;
+        const name = this._getNameOnly(item.name);
+        const category = this._getCategory(item.name) || null;
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+        const popup = document.createElement('div');
+        popup.style.cssText = 'width:min(480px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+        const title = document.createElement('h3');
+        title.textContent = translate("ui.inventory.variants_title").replace("{name}", name);
+        title.style.margin = '0 0 12px';
+        popup.appendChild(title);
+
+        const list = document.createElement('div');
+        const render = () => {
+            list.replaceChildren();
+            for (const option of this._getInventoryVariantOptions(name, category)) {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;flex-direction:column;gap:9px;padding:12px 0;border-bottom:1px solid var(--divider-color,#ddd);';
+                const label = document.createElement('div');
+                label.textContent = this._inventoryVariantLabel(option.ean, true);
+                label.style.fontWeight = '500';
+                row.appendChild(label);
+
+                const stockRow = document.createElement('div');
+                stockRow.style.cssText = 'display:grid;grid-template-columns:minmax(110px,1fr) auto;gap:8px;align-items:center;';
+                const stockLabel = document.createElement('span');
+                stockLabel.textContent = translate("ui.inventory.stock");
+                stockLabel.style.cssText = 'font-size:13px;color:var(--secondary-text-color,#666);';
+                const stockControls = document.createElement('div');
+                stockControls.style.cssText = 'display:grid;grid-template-columns:34px 58px 34px;gap:6px;align-items:center;';
+                const stockValue = document.createElement('div');
+                stockValue.textContent = String(option.stock);
+                stockValue.style.cssText = 'box-sizing:border-box;height:34px;padding:6px 8px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;';
+                const createStockButton = (symbol, change) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = symbol;
+                    button.style.cssText = 'width:34px;height:34px;font-size:18px;cursor:pointer;';
+                    button.addEventListener('click', async () => {
+                        button.disabled = true;
+                        try {
+                            await this._changeInventoryVariant(name, category, option, change);
+                            render();
+                        } finally {
+                            button.disabled = false;
+                        }
+                    });
+                    return button;
+                };
+                stockControls.appendChild(createStockButton('−', -1));
+                stockControls.appendChild(stockValue);
+                stockControls.appendChild(createStockButton('+', 1));
+                stockRow.appendChild(stockLabel);
+                stockRow.appendChild(stockControls);
+                row.appendChild(stockRow);
+
+                if (option.ean !== null) {
+                    const minimumLabel = document.createElement('div');
+                    minimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                    minimumLabel.style.cssText = 'font-size:13px;color:var(--secondary-text-color,#666);';
+                    const minimumRow = document.createElement('div');
+                    minimumRow.style.cssText = 'display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:center;';
+                    const minimumValue = document.createElement('input');
+                    minimumValue.type = 'text';
+                    minimumValue.readOnly = true;
+                    minimumValue.value = option.minimum === null ? '—' : String(option.minimum);
+                    minimumValue.style.cssText = 'box-sizing:border-box;width:76px;height:34px;padding:5px 8px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;';
+
+                    const editEanProduct = document.createElement('button');
+                    editEanProduct.type = 'button';
+                    editEanProduct.title = translate("ui.inventory.ean_minimum_edit");
+                    editEanProduct.disabled = !this._eanDatabaseEntity || !option.product;
+                    editEanProduct.style.cssText = 'box-sizing:border-box;width:100%;min-height:34px;padding:5px 7px;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:inherit;cursor:pointer;font-size:12px;white-space:normal;';
+                    const editEanIcon = document.createElement('ha-icon');
+                    editEanIcon.setAttribute('icon', 'mdi:pencil');
+                    editEanIcon.style.setProperty('--mdc-icon-size', '16px');
+                    const editEanText = document.createElement('span');
+                    editEanText.textContent = translate("ui.inventory.ean_product_edit");
+                    editEanProduct.appendChild(editEanIcon);
+                    editEanProduct.appendChild(editEanText);
+                    editEanProduct.addEventListener('click', () => {
+                        if (editEanProduct.disabled) return;
+                        overlay.remove();
+                        this._showEanDatabaseManager(option.ean, {
+                            onBack: () => this._showInventoryVariantStockPopup(item)
+                        });
+                    });
+                    minimumRow.appendChild(minimumValue);
+                    minimumRow.appendChild(editEanProduct);
+                    row.appendChild(minimumLabel);
+                    row.appendChild(minimumRow);
+                }
+                if (option.ean === null) {
+                    const minimumRow = document.createElement('div');
+                    minimumRow.style.cssText = 'display:flex;align-items:end;gap:8px;';
+                    const minimumField = document.createElement('label');
+                    minimumField.style.cssText = 'display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:3px;font-size:12px;color:var(--secondary-text-color,#666);';
+                    const minimumLabel = document.createElement('span');
+                    minimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                    const minimumInput = document.createElement('input');
+                    minimumInput.type = 'number';
+                    minimumInput.min = '0';
+                    minimumInput.step = '1';
+                    minimumInput.value = option.configuredMinimum ?? '';
+                    minimumInput.placeholder = this._eanTransferDefaultMinimumStock === null
+                        ? translate("ui.inventory.manual_minimum_none")
+                        : translate("ui.inventory.manual_minimum_default")
+                            .replace("{minimum}", String(this._eanTransferDefaultMinimumStock));
+                    minimumInput.style.cssText = 'box-sizing:border-box;width:100%;height:34px;padding:5px 8px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:var(--primary-text-color,inherit);';
+                    minimumField.appendChild(minimumLabel);
+                    minimumField.appendChild(minimumInput);
+
+                    const saveMinimum = document.createElement('button');
+                    saveMinimum.type = 'button';
+                    saveMinimum.title = translate("ui.inventory.manual_minimum_save");
+                    saveMinimum.setAttribute('aria-label', saveMinimum.title);
+                    saveMinimum.style.cssText = 'width:34px;height:34px;padding:5px;cursor:pointer;';
+                    const saveIcon = document.createElement('ha-icon');
+                    saveIcon.setAttribute('icon', 'mdi:content-save-outline');
+                    saveMinimum.appendChild(saveIcon);
+                    const save = async () => {
+                        const rawValue = minimumInput.value.trim();
+                        const value = rawValue === '' ? null : Number(rawValue);
+                        if (value !== null && (!Number.isInteger(value) || value < 0)) {
+                            minimumInput.reportValidity();
+                            return;
+                        }
+                        saveMinimum.disabled = true;
+                        minimumInput.disabled = true;
+                        const result = await this._setManualInventoryMinimumStock(name, category, value);
+                        if (result.status !== "error") render();
+                        else {
+                            saveMinimum.disabled = false;
+                            minimumInput.disabled = false;
+                        }
+                    };
+                    saveMinimum.addEventListener('click', save);
+                    minimumInput.addEventListener('keydown', event => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            save();
+                        }
+                    });
+                    minimumRow.appendChild(minimumField);
+                    minimumRow.appendChild(saveMinimum);
+                    row.appendChild(minimumRow);
+                }
+                list.appendChild(row);
+            }
+        };
+        render();
+        popup.appendChild(list);
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.textContent = translate("ui.common.close");
+        closeButton.style.cssText = 'margin-top:14px;padding:7px 12px;cursor:pointer;';
+        closeButton.addEventListener('click', () => overlay.remove());
+        popup.appendChild(closeButton);
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) overlay.remove();
+        });
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }
+
+    _getInventoryVariantMinimumStock(ean, item = null) {
+        if (!ean) {
+            const configuredMinimum = item ? this._parseInventoryVariant(item).minimumStock : null;
+            return configuredMinimum !== null
+                ? configuredMinimum
+                : (this._eanTransferDefaultMinimumStock ?? null);
+        }
+        const product = this._inventoryVariantProduct(ean);
+        if (product?.minimumStock !== null && product?.minimumStock !== undefined) {
+            return Number(product.minimumStock);
+        }
+        return this._eanTransferDefaultMinimumStock;
+    }
+
+    _isInventoryItemAtMinimum(item) {
+        const variants = item?.inventoryGroup ? item.inventoryVariants : [item];
+        return (variants || []).some(variant => {
+            const ean = variant.inventoryVariantEan !== undefined
+                ? variant.inventoryVariantEan
+                : this._parseInventoryVariant(variant).ean;
+            const minimum = this._getInventoryVariantMinimumStock(ean, variant);
+            return minimum !== null && this._getQuantity(variant.name) <= minimum;
+        });
+    }
+
+    async _offerInventoryCorrectionTransfer(previousName, currentName, category, previousQuantity, currentQuantity, ean = undefined) {
         if (
             this._mode !== "inventory" ||
             !this._isEanTransferActionEnabled("shopping_remove") ||
@@ -7809,7 +8636,30 @@ async _checkEAN(text, options = {}) {
             return false;
         }
 
-        const products = this._getEanDatabaseEntriesByName(previousName);
+        const manualVariant = ean === null
+            ? (
+                this._findInventoryVariantItem(this._items, currentName, null, null) ||
+                this._findInventoryVariantItem(this._items, previousName, null, null)
+            )
+            : null;
+        if (ean === null) {
+            const minimum = this._getInventoryVariantMinimumStock(null, manualVariant);
+            if (
+                this._eanTransferNonEan !== "minimum" ||
+                !Number.isInteger(minimum) ||
+                minimum < 0 ||
+                previousQuantity <= minimum ||
+                currentQuantity > minimum
+            ) {
+                return false;
+            }
+        }
+
+        const products = ean === null
+            ? []
+            : ean
+                ? [this._eanDatabase?.get(String(ean))].filter(Boolean)
+                : this._getEanDatabaseEntriesByName(previousName);
         const candidates = products.filter(product => {
             if (product.automaticTransferDisabled === true) return false;
             const minimum = product.minimumStock !== null && product.minimumStock !== undefined
@@ -7830,7 +8680,7 @@ async _checkEAN(text, options = {}) {
                     currentName, candidates, false, translate("ui.inventory.send")
                 );
             if (product === false) return false;
-        } else {
+        } else if (ean !== null) {
             const minimum = this._eanTransferRemoveBehavior === "minimum"
                 ? this._eanTransferDefaultMinimumStock
                 : null;
@@ -7885,10 +8735,16 @@ async _checkEAN(text, options = {}) {
         status.style.justifyContent = 'space-between';
         status.style.gap = '8px';
 
+        let displayBefore = Number(before);
+        let displayAfter = Number(after);
+        if (booking && this._inventoryGroupVariants && this._canTrackInventoryVariants()) {
+            displayAfter = this._getShoppingStockByName(name);
+            displayBefore = displayAfter + (Number(before) - Number(after));
+        }
         const message = translate("ui.inventory.stock_change")
             .replace("{name}", name)
-            .replace("{before}", String(before))
-            .replace("{after}", String(after));
+            .replace("{before}", String(displayBefore))
+            .replace("{after}", String(displayAfter));
         const text = document.createElement('span');
         text.textContent = message;
         text.style.minWidth = '0';
@@ -7902,6 +8758,8 @@ async _checkEAN(text, options = {}) {
                 name,
                 before: Number(before),
                 after: Number(after),
+                displayBefore,
+                displayAfter,
                 quantity: Math.abs(Number(after) - Number(before)),
                 expiresAt: Date.now() + 30000
             };
@@ -7981,8 +8839,8 @@ async _checkEAN(text, options = {}) {
                 || this._eanTransferTargetEntity;
             const text = document.createElement('div');
             text.textContent = translate("ui.inventory.undo_transfer_question")
-                .replace("{before}", String(booking.after))
-                .replace("{after}", String(booking.before))
+                .replace("{before}", String(booking.displayAfter ?? booking.after))
+                .replace("{after}", String(booking.displayBefore ?? booking.before))
                 .replace("{target}", target);
             text.style.lineHeight = '1.5';
             text.style.marginBottom = '16px';
@@ -8072,7 +8930,8 @@ async _checkEAN(text, options = {}) {
             const restored = await this._setShoppingQuantityByName(
                 booking.name,
                 booking.category || null,
-                booking.before
+                booking.before,
+                booking.ean || null
             );
             if (restored.status === "error") {
                 if (reversalId) await this._cancelEanTransfer(reversalId);
@@ -8129,8 +8988,8 @@ async _checkEAN(text, options = {}) {
             });
             this._showInventoryNotice(translate("ui.inventory.undo_done")
                 .replace("{name}", booking.name)
-                .replace("{before}", String(booking.after))
-                .replace("{after}", String(booking.before)));
+                .replace("{before}", String(booking.displayAfter ?? booking.after))
+                .replace("{after}", String(booking.displayBefore ?? booking.before)));
             return true;
         } catch (error) {
             console.error("[ha-shopping-list-improved] Inventory undo failed:", error);
@@ -8416,15 +9275,13 @@ async _checkEAN(text, options = {}) {
         let ack = this._config?.acknowledged;
 
         if (this._mode === "inventory") {
+            itemsToRender = this._buildInventoryDisplayItems(itemsToRender);
             if (!this._inventoryShowHidden) itemsToRender = itemsToRender.filter(item => !item.complete);
             itemsToRender = itemsToRender.filter(item => {
                 const stock = this._getQuantity(item.name);
                 if (this._inventoryFilter === "zero") return stock === 0;
                 if (this._inventoryFilter === "low") return stock <= 1;
-                if (this._inventoryFilter === "minimum") {
-                    const minimum = this._getInventoryMinimumStock(item.name);
-                    return minimum !== null && stock <= minimum;
-                }
+                if (this._inventoryFilter === "minimum") return this._isInventoryItemAtMinimum(item);
                 return true;
             });
             ack = "show";
@@ -8689,6 +9546,7 @@ async _checkEAN(text, options = {}) {
             this._listEl.appendChild(liCat);
 
             const itemsContainer = document.createElement('div');
+            itemsContainer.classList.add('list-category-items');
             itemsContainer.style.margin = '4px 0 12px 0';
             itemsContainer.style.display = collapsed ? 'none' : 'block';
 
@@ -8897,6 +9755,7 @@ async _checkEAN(text, options = {}) {
                 this._listEl.appendChild(liCat);
 
                 const itemsContainer = document.createElement('div');
+                itemsContainer.classList.add('list-category-items');
                 itemsContainer.style.margin = '4px 0 12px 0';
                 itemsContainer.style.display = collapsed ? 'none' : 'block';
 
@@ -8929,6 +9788,8 @@ async _checkEAN(text, options = {}) {
             }
         });
 
+        this._applyCategoryDisplay(itemsToRender);
+
         if (nearestDueDateGlobalObj) {
             if (this._showTitleInfo) {
                 if (this._showTitleInfoIcon) this._titleAlertDescIcon.classList.remove("hidden");
@@ -8944,6 +9805,42 @@ async _checkEAN(text, options = {}) {
                 this._titleAlertDesc.textContent = formattedGlobal;    
             }
         }
+    }
+
+    _applyCategoryDisplay(itemsToRender) {
+        if (this._categoryDisplay === "grouped" || !this._listEl) return;
+
+        const directChildren = [...this._listEl.children];
+        const headers = directChildren.filter(element => element.matches('li.category-header'));
+        const categoryContainers = directChildren.filter(element => element.matches('div.list-category-items'));
+
+        if (this._categoryDisplay === "hidden_category_order") {
+            headers.forEach(header => {
+                header.style.display = 'none';
+            });
+            categoryContainers.forEach(container => {
+                container.style.display = 'block';
+                container.style.margin = '0';
+            });
+            return;
+        }
+
+        const renderedIds = new Set(
+            [...this._listEl.querySelectorAll('li[data-item-id]')]
+                .map(element => String(element.dataset.itemId || ''))
+                .filter(Boolean)
+        );
+        headers.forEach(header => header.remove());
+        categoryContainers.forEach(container => container.remove());
+
+        const flatContainer = document.createElement('div');
+        flatContainer.classList.add('list-category-items', 'list-category-items-flat');
+        flatContainer.style.margin = '0';
+        for (const item of itemsToRender || []) {
+            if (!renderedIds.has(String(item.id || ''))) continue;
+            this._renderItem(item, flatContainer);
+        }
+        if (flatContainer.childElementCount) this._listEl.appendChild(flatContainer);
     }
 
     // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
@@ -9553,7 +10450,51 @@ async _checkEAN(text, options = {}) {
                 this._updateEanQueuePopupStatus();
             }
 
-            const hasEditableQuantity = mode === "edit" && ["shopping", "inventory"].includes(this._mode);
+            const isInventoryGroupEdit = this._mode === "inventory" && options.inventoryGroup === true;
+            const hasEditableQuantity = mode === "edit" && ["shopping", "inventory"].includes(this._mode) && !isInventoryGroupEdit;
+            const inventoryVariantData = this._mode === "inventory" && mode === "edit" && item && typeof item === "object"
+                ? this._parseInventoryVariant(item)
+                : null;
+            const isManualInventoryEdit = Boolean(
+                inventoryVariantData && inventoryVariantData.ean === null && !isInventoryGroupEdit
+            );
+            const isInventoryGroupMember = Boolean(
+                this._mode === "inventory" &&
+                mode === "edit" &&
+                !isInventoryGroupEdit &&
+                this._getInventoryVariantItems(
+                    this._getNameOnly(currentName),
+                    this._getCategory(currentName) || null
+                ).length > 1
+            );
+            if (mode === "edit" && this._mode === "inventory") {
+                label.textContent = !isInventoryGroupEdit && inventoryVariantData?.ean
+                    ? translate("ui.inventory.edit_ean_item")
+                    : translate("ui.common.edit_item");
+            }
+            if (
+                mode === "edit" &&
+                this._mode === "inventory" &&
+                (isInventoryGroupEdit || isInventoryGroupMember)
+            ) {
+                label.style.display = 'flex';
+                label.style.alignItems = 'center';
+                label.style.justifyContent = 'center';
+                label.style.flexWrap = 'wrap';
+                label.style.gap = '7px';
+                const groupedBadge = document.createElement('span');
+                groupedBadge.textContent = translate(
+                    isInventoryGroupEdit
+                        ? "ui.inventory.grouped_badge"
+                        : "ui.inventory.group_member_badge"
+                );
+                groupedBadge.style.cssText = `display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;background:${
+                    isInventoryGroupEdit
+                        ? 'var(--warning-color,#e0a526)'
+                        : 'var(--primary-color,#03A9F4)'
+                };color:${isInventoryGroupEdit ? '#111' : 'white'};font-size:11px;font-weight:700;line-height:1.3;letter-spacing:.02em;`;
+                label.appendChild(groupedBadge);
+            }
 
             // Keep the quantity separate while editing shopping and inventory items.
             const qty = this._getQuantity(currentName);
@@ -9693,7 +10634,7 @@ async _checkEAN(text, options = {}) {
                 quantityControls.style.gap = '8px';
                 quantityControls.style.margin = '-2px 0 12px';
 
-                const quantityField = document.createElement('label');
+                const quantityField = document.createElement('div');
                 quantityField.style.display = 'flex';
                 quantityField.style.flex = '1 1 auto';
                 quantityField.style.flexDirection = 'column';
@@ -9806,8 +10747,126 @@ async _checkEAN(text, options = {}) {
                 }
             }
 
+            let manualMinimumControls = null;
+            let manualMinimumInput = null;
+            if (isManualInventoryEdit) {
+                manualMinimumControls = document.createElement('label');
+                manualMinimumControls.style.cssText = 'display:flex;flex-direction:column;gap:4px;text-align:left;margin:-2px 0 12px;';
+                const manualMinimumLabel = document.createElement('span');
+                manualMinimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                manualMinimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);';
+                manualMinimumInput = document.createElement('input');
+                manualMinimumInput.type = 'number';
+                manualMinimumInput.min = '0';
+                manualMinimumInput.step = '1';
+                manualMinimumInput.value = inventoryVariantData.minimumStock ?? '';
+                manualMinimumInput.placeholder = this._eanTransferDefaultMinimumStock === null
+                    ? translate("ui.inventory.manual_minimum_none")
+                    : translate("ui.inventory.manual_minimum_default")
+                        .replace("{minimum}", String(this._eanTransferDefaultMinimumStock));
+                manualMinimumInput.style.cssText = 'box-sizing:border-box;width:100%;height:38px;padding:6px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:var(--primary-text-color,inherit);';
+                manualMinimumControls.appendChild(manualMinimumLabel);
+                manualMinimumControls.appendChild(manualMinimumInput);
+            }
+
+            let eanMinimumControls = null;
+            if (inventoryVariantData?.ean && !isInventoryGroupEdit) {
+                const variantEan = inventoryVariantData.ean;
+                const product = this._inventoryVariantProduct(variantEan);
+                const configuredMinimum = product?.minimumStock ?? null;
+                const effectiveMinimum = this._getInventoryVariantMinimumStock(variantEan, item);
+
+                eanMinimumControls = document.createElement('div');
+                eanMinimumControls.style.cssText = 'margin:-2px 0 12px;text-align:left;';
+                const minimumLabel = document.createElement('div');
+                minimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                minimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);margin-bottom:4px;';
+                const minimumRow = document.createElement('div');
+                minimumRow.style.cssText = 'display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;align-items:center;';
+                const minimumValue = document.createElement('input');
+                minimumValue.type = 'text';
+                minimumValue.readOnly = true;
+                minimumValue.value = effectiveMinimum === null ? '—' : String(effectiveMinimum);
+                minimumValue.title = configuredMinimum !== null
+                    ? translate("ui.inventory.ean_minimum_database_source")
+                    : effectiveMinimum !== null
+                        ? translate("ui.inventory.ean_minimum_card_default")
+                        : translate("ui.inventory.ean_minimum_not_set");
+                minimumValue.style.cssText = 'box-sizing:border-box;width:86px;height:38px;padding:6px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;';
+
+                const editMinimum = document.createElement('button');
+                editMinimum.type = 'button';
+                editMinimum.title = translate("ui.inventory.ean_minimum_edit");
+                editMinimum.setAttribute('aria-label', editMinimum.title);
+                editMinimum.disabled = !this._eanDatabaseEntity || !product;
+                editMinimum.style.cssText = 'box-sizing:border-box;width:100%;height:38px;padding:6px 10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);cursor:pointer;';
+                const editIcon = document.createElement('ha-icon');
+                editIcon.setAttribute('icon', 'mdi:pencil');
+                editIcon.style.setProperty('--mdc-icon-size', '19px');
+                const editText = document.createElement('span');
+                editText.textContent = translate("ui.inventory.ean_product_edit");
+                editMinimum.appendChild(editIcon);
+                editMinimum.appendChild(editText);
+                editMinimum.addEventListener('click', () => {
+                    if (editMinimum.disabled) return;
+                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                    resolve(null);
+                    setTimeout(() => this._showEanDatabaseManager(variantEan, {
+                        onBack: () => this._handleEditItem(item)
+                    }), 0);
+                });
+                minimumRow.appendChild(minimumValue);
+                minimumRow.appendChild(editMinimum);
+                eanMinimumControls.appendChild(minimumLabel);
+                eanMinimumControls.appendChild(minimumRow);
+            }
+
+            let inventoryGroupControls = null;
+            if (isInventoryGroupEdit) {
+                inventoryGroupControls = document.createElement('div');
+                inventoryGroupControls.style.display = 'flex';
+                inventoryGroupControls.style.alignItems = 'end';
+                inventoryGroupControls.style.gap = '8px';
+                inventoryGroupControls.style.margin = '-2px 0 12px';
+
+                const totalField = document.createElement('label');
+                totalField.style.display = 'flex';
+                totalField.style.flex = '1 1 auto';
+                totalField.style.flexDirection = 'column';
+                totalField.style.gap = '4px';
+                totalField.style.textAlign = 'left';
+                const totalLabel = document.createElement('span');
+                totalLabel.textContent = translate("ui.inventory.grouped_total");
+                totalLabel.style.fontSize = '12px';
+                totalLabel.style.color = 'var(--secondary-text-color, #666)';
+                const totalValue = document.createElement('div');
+                totalValue.textContent = String(qty);
+                totalValue.style.height = '34px';
+                totalValue.style.boxSizing = 'border-box';
+                totalValue.style.padding = '7px 10px';
+                totalValue.style.border = '1px solid var(--divider-color, #ccc)';
+                totalValue.style.borderRadius = '4px';
+                totalValue.style.background = 'var(--secondary-background-color, #eee)';
+                totalField.appendChild(totalLabel);
+                totalField.appendChild(totalValue);
+
+                const manageButton = document.createElement('button');
+                manageButton.type = 'button';
+                manageButton.textContent = translate("ui.inventory.manage_variants");
+                manageButton.style.height = '34px';
+                manageButton.style.padding = '0 10px';
+                manageButton.style.cursor = 'pointer';
+                manageButton.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(null);
+                    setTimeout(() => this._showInventoryVariantStockPopup(options.inventoryGroupItem), 0);
+                });
+                inventoryGroupControls.appendChild(totalField);
+                inventoryGroupControls.appendChild(manageButton);
+            }
+
             // Description Input, only if supported by the selected todo entity
-            const supportsDescription = this._supportsTodoDescription();
+            const supportsDescription = this._mode !== "inventory" && this._supportsTodoDescription();
             let descriptionContainer = null;
             let descriptionInput = null;
 
@@ -10077,6 +11136,9 @@ async _checkEAN(text, options = {}) {
             popup.appendChild(input);
             if (eanNameControls) popup.appendChild(eanNameControls);
             if (quantityControls) popup.appendChild(quantityControls);
+            if (manualMinimumControls) popup.appendChild(manualMinimumControls);
+            if (eanMinimumControls) popup.appendChild(eanMinimumControls);
+            if (inventoryGroupControls) popup.appendChild(inventoryGroupControls);
             if (descriptionContainer) popup.appendChild(descriptionContainer);
             popup.appendChild(catContainer);
             if(this._allowDynamicCats) popup.appendChild(dynamicCategory);
@@ -10393,6 +11455,20 @@ async _checkEAN(text, options = {}) {
                     }
                 }
 
+                let manualMinimumStock = undefined;
+                if (isManualInventoryEdit) {
+                    const minimumText = String(manualMinimumInput.value ?? '').trim();
+                    manualMinimumStock = minimumText === '' ? null : Number(minimumText);
+                    if (
+                        manualMinimumStock !== null &&
+                        (!Number.isInteger(manualMinimumStock) || manualMinimumStock < 0)
+                    ) {
+                        manualMinimumInput.focus();
+                        manualMinimumInput.reportValidity?.();
+                        return;
+                    }
+                }
+
                 if (this._allowDynamicCats && dynamicCategory.value.trim() && finalName && finalName.trim()) {
                     selectedCategory = dynamicCategory.value.trim();
                 }
@@ -10406,6 +11482,9 @@ async _checkEAN(text, options = {}) {
                 if (hasEditableQuantity) {
                     result.previous_quantity = qty;
                     result.quantity = editedQuantity;
+                }
+                if (isManualInventoryEdit) {
+                    result.manual_minimum_stock = manualMinimumStock;
                 }
 
                 if (eanProductName) {
@@ -10637,6 +11716,19 @@ async _checkEAN(text, options = {}) {
 
                 appendInfoRow(labels.originalName, product.originalName, true);
                 appendInfoRow(labels.ean, product.ean);
+                if (this._mode === "inventory") {
+                    appendInfoRow(
+                        translate("ui.inventory.stock"),
+                        String(this._getShoppingStockByName(product.name, product.ean))
+                    );
+                    const minimum = this._getInventoryVariantMinimumStock(product.ean);
+                    if (minimum !== null) {
+                        appendInfoRow(
+                            translate("ui.ean.database_minimum_stock"),
+                            String(minimum)
+                        );
+                    }
+                }
                 const actions = document.createElement('div');
                 actions.style.display = 'flex';
                 actions.style.justifyContent = 'flex-end';
@@ -10666,7 +11758,9 @@ async _checkEAN(text, options = {}) {
                 editBtn.addEventListener('click', event => {
                     event.stopPropagation();
                     close();
-                    this._showEanDatabaseManager(product.ean);
+                    this._showEanDatabaseManager(product.ean, {
+                        onBack: () => this._showEanDatabaseEntriesPopup(productName)
+                    });
                 });
 
                 const refreshBtn = document.createElement('button');
@@ -10882,7 +11976,7 @@ async _checkEAN(text, options = {}) {
         const nameOnly = this._getNameOnly(item.name);
         const qty = this._getQuantity(item.name);
         let displayName = nameOnly;
-        const descriptionText = (this._showDescriptions && item.description)
+        const descriptionText = (this._mode !== "inventory" && this._showDescriptions && item.description)
             ? item.description.trim()
             : "";
 
@@ -10895,10 +11989,7 @@ async _checkEAN(text, options = {}) {
         if (this._mode === "inventory") {
             if (item.complete) li.style.opacity = '0.55';
             if (qty === 0 && this._inventoryHighlightZero) li.classList.add('inventory-zero');
-            else {
-                const minimum = this._getInventoryMinimumStock(item.name);
-                if (minimum !== null && qty <= minimum) li.classList.add('inventory-minimum');
-            }
+            else if (this._isInventoryItemAtMinimum(item)) li.classList.add('inventory-minimum');
         }
 
         if (item.due && this._mode === "todo") {
@@ -11105,6 +12196,14 @@ async _checkEAN(text, options = {}) {
             this._appendEanDatabaseBadge(nameRow, nameOnly);
             nameSpan.appendChild(nameRow);
 
+            if (this._mode === "inventory" && !item.inventoryGroup && item.inventoryVariantEan !== undefined) {
+                const variantInfo = document.createElement('div');
+                variantInfo.className = 'item-description';
+                variantInfo.textContent = this._inventoryVariantLabel(item.inventoryVariantEan);
+                variantInfo.style.color = 'var(--secondary-text-color)';
+                nameSpan.appendChild(variantInfo);
+            }
+
             if (descriptionText) {
                 const descriptionDiv = document.createElement('div');
                 descriptionDiv.className = 'item-description';
@@ -11136,6 +12235,16 @@ async _checkEAN(text, options = {}) {
             plusBtn._processing = true;
 
             try {
+                if (this._mode === "inventory") {
+                    const option = await this._selectInventoryVariant(item, "add");
+                    if (option) {
+                        await this._changeInventoryVariant(
+                            this._getNameOnly(item.name), this._getCategory(item.name) || null, option, 1
+                        );
+                    }
+                    plusBtn._processing = false;
+                    return;
+                }
                 const nameOnly = this._getNameOnly(item.name);
                 const category = this._getCategory(item.name);
                 let currentQty = this._getQuantity(item.name);
@@ -11155,7 +12264,7 @@ async _checkEAN(text, options = {}) {
 
                 formattedName = this._preserveSortIndex(item.name, formattedName);
 
-                await this._hass.connection.sendMessagePromise({
+                await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: "update_item",
@@ -11207,7 +12316,7 @@ async _checkEAN(text, options = {}) {
             actions.appendChild(minusBtn);
         }
 
-        if (this._canManualSort()) {
+        if (this._canManualSort() && !item.inventoryGroup) {
             const sortHandle = document.createElement('button');
             sortHandle.className = 'sort-handle';
             sortHandle.textContent = '⋮⋮';
@@ -11258,15 +12367,96 @@ async _checkEAN(text, options = {}) {
 
             actions.appendChild(sortHandle);
         }
-		
+
         li.appendChild(left);
         li.appendChild(actions);
         parentEl.appendChild(li);
     }
 
+    async _updateEanGroupIdentity(previousName, nextName, nextCategory) {
+        const products = this._getEanDatabaseEntriesByName(previousName);
+        for (const product of products) {
+            const saved = await this._saveEanDatabaseProduct({
+                ...product,
+                _allowGroupCategoryChange: true,
+                name: nextName,
+                category: nextCategory && nextCategory.toLocaleLowerCase() !== "none" ? nextCategory : null
+            });
+            if (!saved) return false;
+        }
+        return true;
+    }
+
+    async _updateCurrentInventoryGroupCategory(name, category) {
+        if (this._mode !== "inventory") return true;
+        const variants = this._getInventoryVariantItems(name);
+        for (const variant of variants) {
+            const renamed = this._formatInventoryItemName(
+                this._getNameOnly(variant.name), category, this._getQuantity(variant.name), variant.name
+            );
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: "update_item",
+                target: { entity_id: this._entity },
+                service_data: { item: variant.id, rename: renamed }
+            });
+        }
+        if (variants.length) await this._refresh();
+        return true;
+    }
+
+    async _handleEditInventoryGroup(item) {
+        const previousName = this._getNameOnly(item.name);
+        const previousCategory = this._getCategory(item.name) || "none";
+        const updated = await this.editItemPopup(item, "edit", false, null, {
+            inventoryGroup: true,
+            inventoryGroupItem: item
+        });
+        if (!updated) return;
+        if (updated === "__DELETE__" || updated?.name === "__DELETE__") {
+            await this._removeItem(item);
+            return;
+        }
+
+        const nextName = this._getNameOnly(updated.name);
+        const nextCategory = this._getCategory(updated.name) || "none";
+        if (!nextName) return;
+        if (nextCategory.toLocaleLowerCase() !== previousCategory.toLocaleLowerCase()) {
+            const question = translate("ui.inventory.group_category_confirm")
+                .replace("{name}", previousName)
+                .replace("{count}", String(item.inventoryVariants?.length || 0));
+            if (!(await this.confirmPopup(question))) return;
+        }
+
+        try {
+            for (const variant of item.inventoryVariants || []) {
+                const quantity = this._getQuantity(variant.name);
+                const renamed = this._formatInventoryItemName(nextName, nextCategory, quantity, variant.name);
+                await this._callListService({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: variant.id, rename: renamed }
+                });
+            }
+            await this._updateEanGroupIdentity(previousName, nextName, nextCategory);
+            await this._refresh();
+            await this._notifyOnChange(`${translate("ui.message.edited")}: ${nextName}`);
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to update inventory group:", error);
+        }
+    }
+
     // save edited item
     async _handleEditItem(item) {
         if(debugMode) console.debug('[ha-shopping-list-improved] due:', item.due);
+
+        if (this._mode === "inventory" && item.inventoryGroup) {
+            await this._handleEditInventoryGroup(item);
+            return;
+        }
 
         const updatedItem = await this.editItemPopup(item, "edit", false);
 
@@ -11276,6 +12466,7 @@ async _checkEAN(text, options = {}) {
         let description = undefined;
         let previousQuantity = null;
         let correctedQuantity = null;
+        let manualMinimumStock = undefined;
 
         if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
             newName = updatedItem.name || '';
@@ -11295,6 +12486,9 @@ async _checkEAN(text, options = {}) {
             if (Number.isInteger(updatedItem.quantity)) {
                 correctedQuantity = updatedItem.quantity;
             }
+            if (Object.prototype.hasOwnProperty.call(updatedItem, "manual_minimum_stock")) {
+                manualMinimumStock = updatedItem.manual_minimum_stock;
+            }
         } else if (typeof updatedItem === 'string') {
             newName = updatedItem;
         }
@@ -11307,6 +12501,22 @@ async _checkEAN(text, options = {}) {
         }
 
         newName = this._preserveSortIndex(item.name, newName);
+
+        const previousBaseName = this._getNameOnly(item.name);
+        const previousCategory = this._getCategory(item.name) || "none";
+        const nextCategory = this._getCategory(newName) || "none";
+        const relatedVariants = this._mode === "inventory"
+            ? this._getInventoryVariantItems(previousBaseName)
+            : [];
+        const updateGroupCategory = this._mode === "inventory" &&
+            relatedVariants.length > 1 &&
+            previousCategory.toLocaleLowerCase() !== nextCategory.toLocaleLowerCase();
+        if (updateGroupCategory) {
+            const question = translate("ui.inventory.group_category_confirm")
+                .replace("{name}", previousBaseName)
+                .replace("{count}", String(relatedVariants.length));
+            if (!(await this.confirmPopup(question))) return;
+        }
 
         // ServiceData
         const serviceData = {
@@ -11323,11 +12533,18 @@ async _checkEAN(text, options = {}) {
         if (this._supportsTodoDescription() && description !== undefined) {
             serviceData.description = description;
         }
+        if (
+            this._mode === "inventory" &&
+            manualMinimumStock !== undefined &&
+            this._parseInventoryVariant(item).ean === null
+        ) {
+            serviceData.description = this._serializeInventoryVariant(null, manualMinimumStock);
+        }
 
         if(debugMode) console.debug('[ha-shopping-list-improved] serviceData:', serviceData);
 
         try {
-            await this._hass.connection.sendMessagePromise({
+            await this._callListService({
                 type: "call_service",
                 domain: "todo",
                 service: "update_item",
@@ -11335,8 +12552,43 @@ async _checkEAN(text, options = {}) {
                 service_data: serviceData,
             });
 
+            if (updateGroupCategory) {
+                for (const variant of relatedVariants.filter(entry => entry.id !== item.id)) {
+                    const variantName = this._getNameOnly(variant.name);
+                    const renamed = this._formatInventoryItemName(
+                        variantName, nextCategory, this._getQuantity(variant.name), variant.name
+                    );
+                    await this._callListService({
+                        type: "call_service",
+                        domain: "todo",
+                        service: "update_item",
+                        target: { entity_id: this._entity },
+                        service_data: { item: variant.id, rename: renamed }
+                    });
+                }
+                await this._updateEanGroupIdentity(previousBaseName, previousBaseName, nextCategory);
+            }
+
             const nameOnly = this._getNameOnly(newName);
             const newQty = this._getQuantity(newName);
+            if (this._mode === "inventory") {
+                const variantEan = this._parseInventoryVariant(item).ean;
+                const variantProduct = this._inventoryVariantProduct(variantEan);
+                if (variantProduct && (
+                    this._normalizeEanDatabaseProductName(variantProduct.name) !==
+                        this._normalizeEanDatabaseProductName(nameOnly) ||
+                    String(variantProduct.category || "none").trim().toLocaleLowerCase() !==
+                        String(nextCategory || "none").trim().toLocaleLowerCase()
+                )) {
+                    const saved = await this._saveEanDatabaseProduct({
+                        ...variantProduct,
+                        _allowGroupCategoryChange: true,
+                        name: nameOnly,
+                        category: nextCategory.toLocaleLowerCase() === "none" ? null : nextCategory
+                    });
+                    if (!saved) throw new Error("EAN product could not be updated after inventory edit");
+                }
+            }
 
             await this._refresh();
             if (
@@ -11350,11 +12602,12 @@ async _checkEAN(text, options = {}) {
             await this._notifyOnChange(translate("ui.message.edited") + ": " + nameOnly +  ` (${newQty})`);
             if (previousQuantity !== null && correctedQuantity !== null) {
                 await this._offerInventoryCorrectionTransfer(
-                    item.name,
+                    previousBaseName,
                     nameOnly,
                     this._getCategory(newName),
                     previousQuantity,
-                    correctedQuantity
+                    correctedQuantity,
+                    this._mode === "inventory" ? this._parseInventoryVariant(item).ean : undefined
                 );
             }
         } catch (err) {
@@ -11497,6 +12750,178 @@ async _checkEAN(text, options = {}) {
         this._onAdd();
     }
 
+    _formatInventoryItemName(productName, category, quantity, previousName = null) {
+        let name = this._quantityPosition === 'beginning'
+            ? `${quantity}× ${productName}`
+            : `${productName} (${quantity})`;
+        if (category && String(category).toLocaleLowerCase() !== "none") name = `@${category}@ ${name}`;
+        return previousName ? this._preserveSortIndex(previousName, name) : name;
+    }
+
+    async _addInventoryVariantQuantity(productName, category = null, amount = 1, ean = null) {
+        const addQty = Math.max(1, Math.floor(Number(amount) || 1));
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const existing = this._findInventoryVariantItem(targetItems, productName, ean, null);
+            const existingName = String(existing?.summary || existing?.name || productName);
+            const existingMinimum = existing && !ean
+                ? this._parseInventoryVariant(existing).minimumStock
+                : null;
+            const currentQty = existing ? this._getQuantity(existingName) : 0;
+            const nextQuantity = currentQty + addQty;
+            const effectiveCategory = this._getCategory(existingName) || category;
+            const formattedName = this._formatInventoryItemName(
+                productName, effectiveCategory, nextQuantity, existingName
+            );
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: existing ? "update_item" : "add_item",
+                target: { entity_id: this._entity },
+                service_data: existing
+                    ? {
+                        item: existing.uid,
+                        rename: formattedName,
+                        description: this._serializeInventoryVariant(ean, existingMinimum)
+                    }
+                    : {
+                        item: formattedName,
+                        description: this._serializeInventoryVariant(ean)
+                    }
+            });
+            await this._refresh();
+            const refreshed = this._findInventoryVariantItem(this._items, productName, ean, null);
+            return {
+                status: existing ? "increased" : "added",
+                name: productName,
+                quantity: nextQuantity,
+                previousQuantity: currentQty,
+                targetUid: existing?.uid || refreshed?.id || null,
+                ean: ean || null
+            };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory variant add failed:", error);
+            return { status: "error", name: productName, quantity: 0, error };
+        }
+    }
+
+    async _removeInventoryVariantQuantity(productName, amount = 1, ean = null) {
+        const item = this._findInventoryVariantItem(this._items, productName, ean, null);
+        if (!item) return { status: "not_found", name: productName, quantity: 0, previousQuantity: 0, removedQuantity: 0 };
+        const currentQty = this._getQuantity(item.name);
+        if (currentQty === 0) return { status: "no_stock", name: productName, quantity: 0, previousQuantity: 0, removedQuantity: 0 };
+        const removeQty = Math.max(1, Math.floor(Number(amount) || 1));
+        const nextQuantity = Math.max(0, currentQty - removeQty);
+        const category = this._getCategory(item.name);
+        const formattedName = this._formatInventoryItemName(productName, category, nextQuantity, item.name);
+        try {
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: "update_item",
+                target: { entity_id: this._entity },
+                service_data: {
+                    item: item.id,
+                    rename: formattedName,
+                    description: this._serializeInventoryVariant(
+                        ean,
+                        !ean ? this._parseInventoryVariant(item).minimumStock : null
+                    )
+                }
+            });
+            await this._refresh();
+            return {
+                status: "decreased",
+                name: productName,
+                quantity: nextQuantity,
+                previousQuantity: currentQty,
+                removedQuantity: Math.min(currentQty, removeQty),
+                ean: ean || null
+            };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory variant removal failed:", error);
+            return { status: "error", name: productName, quantity: currentQty, previousQuantity: currentQty, removedQuantity: 0, error };
+        }
+    }
+
+    async _setInventoryVariantQuantity(productName, category, quantity, ean = null) {
+        const nextQuantity = Math.max(0, Math.floor(Number(quantity) || 0));
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const existing = this._findInventoryVariantItem(targetItems, productName, ean, null);
+            const existingName = String(existing?.summary || existing?.name || productName);
+            const existingMinimum = existing && !ean
+                ? this._parseInventoryVariant(existing).minimumStock
+                : null;
+            const effectiveCategory = category || this._getCategory(existingName);
+            const formattedName = this._formatInventoryItemName(
+                productName, effectiveCategory, nextQuantity, existing ? existingName : null
+            );
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: existing ? "update_item" : "add_item",
+                target: { entity_id: this._entity },
+                service_data: existing
+                    ? {
+                        item: existing.uid,
+                        rename: formattedName,
+                        description: this._serializeInventoryVariant(ean, existingMinimum)
+                    }
+                    : {
+                        item: formattedName,
+                        description: this._serializeInventoryVariant(ean)
+                    }
+            });
+            await this._refresh();
+            return { status: "updated", quantity: nextQuantity, ean: ean || null };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory variant correction failed:", error);
+            return { status: "error", quantity: this._getShoppingStockByName(productName, ean), error };
+        }
+    }
+
+    async _setManualInventoryMinimumStock(productName, category, minimumStock) {
+        const normalizedMinimum = (
+            minimumStock !== null &&
+            minimumStock !== "" &&
+            Number.isInteger(Number(minimumStock)) &&
+            Number(minimumStock) >= 0
+        ) ? Number(minimumStock) : null;
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const existing = this._findInventoryVariantItem(targetItems, productName, null, null);
+            if (!existing && normalizedMinimum === null) {
+                return { status: "unchanged", minimumStock: null };
+            }
+
+            const existingName = String(existing?.summary || existing?.name || productName);
+            const formattedName = existing
+                ? existingName
+                : this._formatInventoryItemName(productName, category, 0);
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: existing ? "update_item" : "add_item",
+                target: { entity_id: this._entity },
+                service_data: existing
+                    ? {
+                        item: existing.uid,
+                        description: this._serializeInventoryVariant(null, normalizedMinimum)
+                    }
+                    : {
+                        item: formattedName,
+                        description: this._serializeInventoryVariant(null, normalizedMinimum)
+                    }
+            });
+            await this._refresh();
+            return { status: "updated", minimumStock: normalizedMinimum };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Manual inventory minimum update failed:", error);
+            return { status: "error", minimumStock: normalizedMinimum, error };
+        }
+    }
+
     _hideSuggestions() {
         if (this._suggestionsEl) {
             this._suggestionsEl.classList.remove('visible');
@@ -11520,7 +12945,10 @@ async _checkEAN(text, options = {}) {
         items[newIndex].scrollIntoView({ block: 'nearest' });
     }
 
-    async _addShoppingQuantityByName(productName, category = null, amount = 1) {
+    async _addShoppingQuantityByName(productName, category = null, amount = 1, ean = undefined) {
+        if (this._canTrackInventoryVariants()) {
+            return this._addInventoryVariantQuantity(productName, category, amount, ean === undefined ? null : ean);
+        }
         const addQty = Math.max(1, Math.floor(Number(amount) || 1));
 
         try {
@@ -11551,7 +12979,7 @@ async _checkEAN(text, options = {}) {
                 }
                 finalName = this._preserveSortIndex(existingName, finalName);
 
-                await this._hass.connection.sendMessagePromise({
+                await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: "update_item",
@@ -11582,7 +13010,7 @@ async _checkEAN(text, options = {}) {
                 finalName = `@${category}@ ${finalName}`;
             }
 
-            await this._hass.connection.sendMessagePromise({
+            await this._callListService({
                 type: "call_service",
                 domain: "todo",
                 service: "add_item",
@@ -11599,7 +13027,10 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    async _removeShoppingQuantityByName(productName, amount = 1) {
+    async _removeShoppingQuantityByName(productName, amount = 1, ean = undefined) {
+        if (this._canTrackInventoryVariants()) {
+            return this._removeInventoryVariantQuantity(productName, amount, ean === undefined ? null : ean);
+        }
         const normalizedName = String(productName || '').trim().toLocaleLowerCase();
         const item = (this._items || []).find(entry =>
             this._getNameOnly(entry.name).trim().toLocaleLowerCase() === normalizedName
@@ -11631,7 +13062,7 @@ async _checkEAN(text, options = {}) {
                 if (category) formattedName = `@${category}@ ${formattedName}`;
                 formattedName = this._preserveSortIndex(item.name, formattedName);
 
-                await this._hass.connection.sendMessagePromise({
+                await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: "update_item",
@@ -11650,7 +13081,7 @@ async _checkEAN(text, options = {}) {
                 return { status: "decreased", name: nameOnly, quantity: newQty, previousQuantity: currentQty, removedQuantity: Math.min(currentQty, removeQty) };
             }
 
-            await this._hass.connection.sendMessagePromise({
+            await this._callListService({
                 type: "call_service",
                 domain: "todo",
                 service: "remove_item",
@@ -11672,7 +13103,10 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    async _setShoppingQuantityByName(productName, category, quantity) {
+    async _setShoppingQuantityByName(productName, category, quantity, ean = undefined) {
+        if (this._canTrackInventoryVariants()) {
+            return this._setInventoryVariantQuantity(productName, category, quantity, ean === undefined ? null : ean);
+        }
         const normalizedName = String(productName || '').trim().toLocaleLowerCase();
         const item = (this._items || []).find(entry =>
             this._getNameOnly(entry.name).trim().toLocaleLowerCase() === normalizedName
@@ -11682,7 +13116,7 @@ async _checkEAN(text, options = {}) {
         try {
             if (nextQuantity === 0 && this._mode !== "inventory") {
                 if (!item) return { status: "unchanged", quantity: 0 };
-                await this._hass.connection.sendMessagePromise({
+                await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: "remove_item",
@@ -11700,7 +13134,7 @@ async _checkEAN(text, options = {}) {
                 if (effectiveCategory) formattedName = `@${effectiveCategory}@ ${formattedName}`;
                 if (item) formattedName = this._preserveSortIndex(item.name, formattedName);
 
-                await this._hass.connection.sendMessagePromise({
+                await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: item ? "update_item" : "add_item",
@@ -11718,7 +13152,7 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    async _sendInventoryItemWithoutStock(item) {
+    async _sendInventoryItemWithoutStock(item, forcedProduct = undefined, forcedEan = undefined) {
         const name = this._getNameOnly(item.name);
         if (!this._isEanTransferEntityUsable(true)) {
             this._showInventoryNotice(translate("ui.inventory.no_stock").replace("{name}", name));
@@ -11733,13 +13167,12 @@ async _checkEAN(text, options = {}) {
         if (!(await this.confirmPopup(question))) return false;
 
         const products = this._getEanDatabaseEntriesByName(name);
-        let product = products[0] || null;
-        if (products.length > 1) {
-            product = await this._selectEanProductForRemoval(
-                name, products, true, translate("ui.inventory.send")
-            );
+        let product = forcedProduct !== undefined ? forcedProduct : (products[0] || null);
+        if (forcedProduct === undefined && products.length > 1) {
+            product = await this._selectEanProductForRemoval(name, products, true, translate("ui.inventory.send"));
             if (product === false) return false;
         }
+        const ean = forcedEan !== undefined ? forcedEan : (product?.ean || null);
 
         const transferProduct = {
             ...(product || {}),
@@ -11747,13 +13180,13 @@ async _checkEAN(text, options = {}) {
             category: product?.category || this._getCategory(item.name) || null
         };
         const transferId = await this._createEanTransfer(
-            "shopping_add", product?.ean || null, transferProduct, 1,
+            "shopping_add", ean, transferProduct, 1,
             { sourceOperation: "manual_send" }
         );
         if (!transferId) return false;
 
         await this._runEanScript("transfer_sent", {
-            ean: product?.ean || "",
+            ean: ean || "",
             name,
             brand: product?.brand || null,
             productQuantity: product?.quantity || null,
@@ -11769,14 +13202,16 @@ async _checkEAN(text, options = {}) {
     }
 
     async _handleShoppingMinus(item) {
+        if (this._mode === "inventory") {
+            const option = await this._selectInventoryVariant(item, "remove");
+            if (!option) return false;
+            return this._handleInventoryVariantMinus(
+                this._getNameOnly(item.name), this._getCategory(item.name) || null, option
+            );
+        }
         const name = this._getNameOnly(item.name);
         const category = this._getCategory(item.name) || null;
-        const currentStock = this._mode === "inventory"
-            ? this._getQuantity(item.name)
-            : Math.max(1, Number(this._getQuantity(item.name) || 1));
-        if (this._mode === "inventory" && currentStock === 0) {
-            return this._sendInventoryItemWithoutStock(item);
-        }
+        const currentStock = Math.max(1, Number(this._getQuantity(item.name) || 1));
         const remainingStock = Math.max(0, currentStock - 1);
 
         if (this._mode !== "inventory" && currentStock <= 1 && this._acknowledgeDeletion) {
@@ -12078,16 +13513,18 @@ async _checkEAN(text, options = {}) {
                 });
 
                 if (eanScanMode === "inventory_register") {
-                    const normalizedProductName = productName.toLocaleLowerCase();
-                    const existingInventoryItem = (this._items || []).find(item =>
-                        this._getNameOnly(item.name).trim().toLocaleLowerCase() === normalizedProductName
-                    );
+                    const effectiveInventoryCategory = this._eanDatabase?.get(eanCode)?.category || category;
+                    const existingInventoryItem = this._canTrackInventoryVariants()
+                        ? this._findInventoryVariantItem(this._items, productName, eanCode, null)
+                        : (this._items || []).find(item => this._inventoryItemMatchesName(item, productName));
                     if (existingInventoryItem) {
                         this._showInventoryNotice(translate("ui.inventory.already_registered")
                             .replace("{name}", productName)
                             .replace("{quantity}", String(this._getQuantity(existingInventoryItem.name))));
                     } else {
-                        const stockResult = await this._setShoppingQuantityByName(productName, category, 0);
+                        const stockResult = await this._setShoppingQuantityByName(
+                            productName, effectiveInventoryCategory, 0, eanCode
+                        );
                         if (stockResult.status === "error") {
                             await this._runEanScript("error", {
                                 ean: eanCode,
@@ -12110,7 +13547,15 @@ async _checkEAN(text, options = {}) {
                 let transferWithoutEan = false;
                 if (!eanCode && this._isEanTransferActionEnabled("shopping_remove")) {
                     const products = this._getEanDatabaseEntriesByName(eanCheck.name);
-                    if (products.length > 1) {
+                    if (this._mode === "inventory") {
+                        if (this._eanTransferNonEan === "one_to_one") {
+                            transferWithoutEan = true;
+                        } else if (this._eanTransferNonEan === "ask") {
+                            transferWithoutEan = await this.confirmPopup(
+                                translate("ui.ean.transfer_non_ean_question").replace("{name}", eanCheck.name)
+                            );
+                        }
+                    } else if (products.length > 1) {
                         const selected = await this._selectEanProductForRemoval(
                             eanCheck.name,
                             products,
@@ -12129,9 +13574,24 @@ async _checkEAN(text, options = {}) {
                         );
                     }
                 }
-                const currentStock = this._getShoppingStockByName(eanCheck.name);
                 const removalEan = removalProduct?.ean || eanCode;
+                const currentStock = this._getShoppingStockByName(
+                    eanCheck.name,
+                    this._canTrackInventoryVariants() ? (removalEan || null) : undefined
+                );
                 const anticipatedRemainingStock = Math.max(0, currentStock - inputQty);
+                if (
+                    this._mode === "inventory" &&
+                    !removalEan &&
+                    !removalProduct &&
+                    this._eanTransferNonEan === "minimum"
+                ) {
+                    const manualVariant = this._findInventoryVariantItem(
+                        this._items, eanCheck.name, null, null
+                    );
+                    const minimum = this._getInventoryVariantMinimumStock(null, manualVariant);
+                    transferWithoutEan = minimum !== null && anticipatedRemainingStock <= minimum;
+                }
                 const shouldTransferRemoval = currentStock > 0 && (transferWithoutEan || Boolean(
                     removalProduct && this._getAutomaticRemovalTransferDecision(
                         removalProduct,
@@ -12178,7 +13638,9 @@ async _checkEAN(text, options = {}) {
                             this._saveEanScanQueue();
                         }
 
-                        const removal = await this._removeShoppingQuantityByName(eanCheck.name, inputQty);
+                        const removal = await this._removeShoppingQuantityByName(
+                            eanCheck.name, inputQty, this._canTrackInventoryVariants() ? (removalEan || null) : undefined
+                        );
                         if (removal.status === "error" || removal.status === "not_found" || removal.status === "no_stock") {
                             this._eanTransferSourceAppliedIds.delete(transferId);
                             if (queueItem) {
@@ -12302,7 +13764,9 @@ async _checkEAN(text, options = {}) {
                     return true;
                 }
 
-                const removal = await this._removeShoppingQuantityByName(eanCheck.name, inputQty);
+                const removal = await this._removeShoppingQuantityByName(
+                    eanCheck.name, inputQty, this._canTrackInventoryVariants() ? (removalEan || null) : undefined
+                );
                 if (removal.status === "error") {
                     await this._runEanScript("error", {
                         ean: removalEan,
@@ -12382,9 +13846,11 @@ async _checkEAN(text, options = {}) {
             const nameOnly = this._getNameOnly(inputName);
 
             // Check if the item already exists
-            const existing = this._items.find(i =>
-                this._getNameOnly(i.name).trim().toLocaleLowerCase() === nameOnly.toLocaleLowerCase()
-            );
+            const existing = this._canTrackInventoryVariants()
+                ? this._findInventoryVariantItem(this._items, nameOnly, eanCode || null, null)
+                : this._items.find(i =>
+                    this._getNameOnly(i.name).trim().toLocaleLowerCase() === nameOnly.toLocaleLowerCase()
+                );
 
             let assignedCategory = null;
 
@@ -12486,6 +13952,9 @@ async _checkEAN(text, options = {}) {
                     await this.confirmPopup(this._eanDatabaseErrorMessage("save"), true);
                     return false;
                 }
+                if (this._mode === "inventory") {
+                    assignedCategory = this._eanDatabase?.get(eanCode)?.category || assignedCategory;
+                }
             }
 
             if (this._mode !== "inventory" && eanCode && this._isEanTransferActionEnabled("shopping_add")) {
@@ -12569,10 +14038,16 @@ async _checkEAN(text, options = {}) {
 							item: existing.id,
 							rename: finalName,
                             ...(this._mode === "inventory" ? {} : { status: "needs_action" }),
+							...(this._mode === "inventory" && this._supportsTodoDescription()
+                                ? { description: this._serializeInventoryVariant(
+                                    eanCode || null,
+                                    !eanCode ? this._parseInventoryVariant(existing).minimumStock : null
+                                ) }
+                                : {}),
 						},
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Updating existing item:", updateMsg);
-					await this._hass.connection.sendMessagePromise(updateMsg);
+					await this._callListService(updateMsg, { ean: eanCode || undefined });
 					} catch (err) {
 						console.error("[ha-shopping-list-improved] Error while updating item:", err);
 						await this._runEanScript("error", {
@@ -12604,13 +14079,17 @@ async _checkEAN(text, options = {}) {
                     item: finalName,
                 };
 
+                if (this._mode === "inventory" && this._supportsTodoDescription()) {
+                    serviceData.description = this._serializeInventoryVariant(eanCode || null);
+                }
+
                 if (dueDateTime) {
                     serviceData.due_datetime = dueDateTime;
                 } else if (dueDate) {
                     serviceData.due_date = dueDate;
                 }
 
-                if (this._supportsTodoDescription() && description !== undefined) {
+                if (this._mode !== "inventory" && this._supportsTodoDescription() && description !== undefined) {
                     serviceData.description = description;
                 }
 
@@ -12623,7 +14102,7 @@ async _checkEAN(text, options = {}) {
 						service_data: serviceData,
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
-					await this._hass.connection.sendMessagePromise(addMsg);
+					await this._callListService(addMsg, { ean: eanCode || undefined });
 					} catch (err) {
 						console.error("[ha-shopping-list-improved] Unable to add:", err);
 						await this._runEanScript("error", {
@@ -13045,6 +14524,20 @@ async _checkEAN(text, options = {}) {
         try {
             const newStatus = item.complete ? "needs_action" : "completed";
 
+            if (this._mode === "inventory" && item.inventoryGroup) {
+                for (const variant of item.inventoryVariants || []) {
+                    await this._hass.connection.sendMessagePromise({
+                        type: "call_service",
+                        domain: "todo",
+                        service: "update_item",
+                        target: { entity_id: this._entity },
+                        service_data: { item: variant.id, status: newStatus }
+                    });
+                }
+                await this._refresh();
+                return;
+            }
+
             const msg = {
                 type: "call_service",
                 domain: "todo",
@@ -13071,7 +14564,11 @@ async _checkEAN(text, options = {}) {
 
 		const itemNameOnly = this._getNameOnly(item.name);
         const itemQtyOnly  = this._getQuantity(item.name);
-		const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
+		const msgRemove = item.inventoryGroup
+            ? translate("ui.inventory.group_delete_confirm")
+                .replace("{name}", itemNameOnly)
+                .replace("{count}", String(item.inventoryVariants?.length || 0))
+            : translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
     
         // show confirmation except when acknowledgeDeletion=false AND not todo
         if (this._mode === "todo" || this._acknowledgeDeletion) {
@@ -13082,6 +14579,20 @@ async _checkEAN(text, options = {}) {
         }
 
         try {
+            if (this._mode === "inventory" && item.inventoryGroup) {
+                for (const variant of item.inventoryVariants || []) {
+                    await this._callListService({
+                        type: "call_service",
+                        domain: "todo",
+                        service: "remove_item",
+                        target: { entity_id: this._entity },
+                        service_data: { item: variant.id }
+                    });
+                }
+                await this._refresh();
+                await this._notifyOnChange(`${translate("ui.message.item_removed")}: ${itemNameOnly} (${itemQtyOnly})`);
+                return;
+            }
             const msg = {
                 type: "call_service",
                 domain: "todo",
@@ -13094,7 +14605,7 @@ async _checkEAN(text, options = {}) {
 
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", msg);
 
-            await this._hass.connection.sendMessagePromise(msg);
+            await this._callListService(msg);
             await this._refresh();
             await this._notifyOnChange(translate("ui.message.item_removed") + ": " + itemNameOnly +  ` (${itemQtyOnly})`);
         } catch (err) {
@@ -13117,7 +14628,7 @@ async _checkEAN(text, options = {}) {
             };
 
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending clearCompleted WS message:", msg);
-            await this._hass.connection.sendMessagePromise(msg);
+            await this._callListService(msg);
             await this._refresh();
             await this._notifyOnChange();
         } catch (err) {
