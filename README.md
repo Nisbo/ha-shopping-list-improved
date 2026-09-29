@@ -152,7 +152,7 @@ Since I prefer spending my time coding rather than writing documentation, I aske
 - Optional local EAN file for custom product names and overrides.
 - Local EAN file supports **EAN-8, UPC (12), EAN-13, and GS1-14**.
 - Works with **global text files** for chips and categories (`/local/chips.txt`, `/local/categories.txt`).   
-- Fully localized in **English** 🇬🇧 and **German** 🇩🇪.
+- Fully localized in **English** 🇬🇧, **German** 🇩🇪, **French** 🇫🇷, and **Spanish** 🇪🇸.
 - Debug logging can be enabled explicitly with `debug_mode: true`.
 
 > 💡 **Tip:**  
