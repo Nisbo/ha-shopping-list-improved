@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-7.29";
+const version = "3.2.0-BETA-8.3";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -176,6 +176,7 @@ const TRANSLATIONS = {
         "ui.inventory.filter.zero"                     : "Bestand 0",
         "ui.inventory.filter.low"                      : "Bestand 0–1",
         "ui.inventory.filter.minimum"                  : "≤ Mindestbestand",
+        "ui.inventory.filter.below_minimum"            : "< Mindestbestand",
         "ui.inventory.stock_change"                    : "{name}: Bestand {before} → {after}",
         "ui.inventory.undo"                            : "Rückgängig",
         "ui.inventory.undo_done"                       : "{name}: Bestand {before} → {after} wiederhergestellt.",
@@ -207,6 +208,11 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.none"                 : "Ohne Modus",
         "ui.inventory.group_variants"                  : "EAN-Varianten gruppieren",
         "ui.inventory.grouped_total"                   : "Gesamtbestand",
+        "ui.inventory.group_minimum"                   : "Gruppen-Mindestbestand (optional)",
+        "ui.inventory.group_minimum_help"              : "Gilt für den gemeinsamen Gesamtbestand aller Varianten. Leer lassen, um die einzelnen Produktwerte oder den Kartenstandard zu verwenden.",
+        "ui.inventory.group_minimum_conflict"          : "Die bestehende Gruppe „{target}“ hat den Mindestbestand {targetMinimum}, die verschobene Gruppe {sourceMinimum}. Welcher Gruppen-Mindestbestand soll nach dem Zusammenführen gelten?",
+        "ui.inventory.group_minimum_use_source"        : "{minimum} aus verschobener Gruppe",
+        "ui.inventory.group_minimum_use_target"        : "{minimum} aus bestehender Gruppe",
         "ui.inventory.manage_variants"                 : "Teilbestände bearbeiten",
         "ui.inventory.variants_title"                  : "Teilbestände für {name}",
         "ui.inventory.without_ean"                     : "Ohne EAN",
@@ -233,6 +239,16 @@ const TRANSLATIONS = {
         "editor.labels.inventory_default_action"        : "Startmodus nach dem Laden",
         "editor.labels.inventory_highlight_zero"        : "Artikel mit Bestand 0 rot markieren",
         "editor.labels.inventory_group_variants"        : "EAN-Varianten gruppieren",
+        "editor.labels.inventory_stock_marking"         : "Kennzeichnung Inventarmodus",
+        "editor.labels.inventory_mark_above_minimum"    : "Größer als Mindestbestand",
+        "editor.labels.inventory_mark_at_minimum"       : "Gleich Mindestbestand",
+        "editor.labels.inventory_mark_below_minimum"    : "Kleiner als Mindestbestand",
+        "editor.labels.inventory_mark_zero"             : "Bestand 0",
+        "editor.options.inventory_mark.none"             : "Keine Kennzeichnung",
+        "editor.options.inventory_mark.green"            : "Grün",
+        "editor.options.inventory_mark.orange"           : "Orange",
+        "editor.options.inventory_mark.red"              : "Rot",
+        "editor.labels.ean_transfer_grouped_as_name"    : "Gruppierte Artikel immer als Namen übertragen",
         "editor.options.mode.inventory"                : "Inventar",
         "editor.options.inventory_default_action.none"  : "Keine Buchung aktiv (Standard)",
         "editor.options.inventory_default_action.add"   : "Einlagern",
@@ -241,6 +257,8 @@ const TRANSLATIONS = {
         "editor.helpers.inventory_default_action"       : "Nur im Inventarmodus: Legt fest, welcher Buchungsmodus beim Laden der Karte aktiv ist.",
         "editor.helpers.inventory_highlight_zero"       : "Nur im Inventarmodus: Markiert Artikel mit Bestand 0 rot und zeigt einen schmalen roten Rand.",
         "editor.helpers.inventory_group_variants"       : "Nur im Inventarmodus: Fasst getrennt gespeicherte EAN- und manuelle Bestände mit demselben Namen und derselben Kategorie optisch zusammen. Der Umschalter in der Karte kann die Ansicht vorübergehend ändern.",
+        "editor.helpers.inventory_stock_marking"        : "Nur im Inventarmodus: Legt die farbliche Kennzeichnung im Verhältnis zum wirksamen Mindestbestand fest. Ohne festgelegten Mindestbestand gelten die drei Mindestbestandsstufen nicht. Bestand 0 wird separat und mit Vorrang behandelt.",
+        "editor.helpers.ean_transfer_grouped_as_name"   : "Wenn aktiviert, überträgt die Karte Entnahmen aus gruppierten Inventarartikeln nur mit dem gemeinsamen Artikelnamen und der Kategorie. Die konkrete EAN sowie Marke, Produktmenge und Bild der gewählten Variante werden nicht an die Zielliste gesendet. Standard: Aus.",
         "ui.ean.transfer_remove"                       : "Entnehmen",
         "ui.ean.transfer_invalid_config"               : "Die ISL-Transfer-Konfiguration ist ungültig. Verwende eine separate To-do-Liste mit Beschreibungsunterstützung und wähle beim Senden eine andere Ziel-Einkaufsliste aus.",
         "ui.ean.transfer_send_failed"                  : "Der Scan konnte nicht in der ISL-Transfer-Liste gespeichert werden.",
@@ -558,7 +576,7 @@ const TRANSLATIONS = {
         "editor.helpers.ean_database_entity"            : "Optionale, ausschließlich für diese Funktion vorgesehene To-do-Liste. Sie speichert gelernte EAN-Produkte und Kategorien dauerhaft und geräteübergreifend. Verwende diese Liste nicht für andere Einträge. Die Standard-Einkaufsliste ist ungeeignet, da sie keine Beschreibungen unterstützt. Um die Funktion zu deaktivieren, entferne die ausgewählte Liste wieder aus der Konfiguration.",
         "editor.helpers.ean_create_chip"                : "Erstellt nach dem Hinzufügen eines per EAN erkannten Artikels einen lokalen Chip, sofern die lokale Chip-Erstellung allgemein aktiviert ist. Dies gilt für Bluetooth-Scanner, Kamera und manuell eingegebene EANs.",
         "editor.helpers.list_script_enabled"            : "Meldet erfolgreiche Änderungen durch diese Karte: Artikel hinzugefügt, entfernt, Anzahl geändert oder umbenannt. Standard: Aus.",
-        "editor.helpers.list_script_entity"             : "Empfängt den Namen ohne Kategorie- und Mengenmarkierungen, Kategorie, Anzahl, Listenentität und Modus. Änderungen außerhalb dieser Karte werden nicht gemeldet. Das EAN-Skript kann parallel verwendet werden.",
+        "editor.helpers.list_script_entity"             : "Sendet Namen, Kategorie, Anzahl, Listenentität und Modus an das ausgewählte Skript. Änderungen außerhalb dieser Karte werden systembedingt nicht gemeldet. Das EAN-Skript kann parallel verwendet werden.",
         "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf.",
         "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
         "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um eindeutige Produktnamen aus der EAN-Datenbank. Die Produkte können auch über ihre EAN gefunden werden. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
@@ -804,6 +822,7 @@ const TRANSLATIONS = {
         "ui.inventory.filter.zero"                     : "Stock 0",
         "ui.inventory.filter.low"                      : "Stock 0–1",
         "ui.inventory.filter.minimum"                  : "≤ minimum stock",
+        "ui.inventory.filter.below_minimum"            : "< minimum stock",
         "ui.inventory.stock_change"                    : "{name}: stock {before} → {after}",
         "ui.inventory.undo"                            : "Undo",
         "ui.inventory.undo_done"                       : "{name}: restored stock {before} → {after}.",
@@ -835,6 +854,11 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.none"                 : "No mode",
         "ui.inventory.group_variants"                  : "Group EAN variants",
         "ui.inventory.grouped_total"                   : "Total stock",
+        "ui.inventory.group_minimum"                   : "Group minimum stock (optional)",
+        "ui.inventory.group_minimum_help"              : "Applies to the combined stock of all variants. Leave empty to use the individual product values or the card default.",
+        "ui.inventory.group_minimum_conflict"          : "The existing group “{target}” uses minimum stock {targetMinimum}, while the moved group uses {sourceMinimum}. Which group minimum should be kept after merging?",
+        "ui.inventory.group_minimum_use_source"        : "{minimum} from moved group",
+        "ui.inventory.group_minimum_use_target"        : "{minimum} from existing group",
         "ui.inventory.manage_variants"                 : "Manage variant stock",
         "ui.inventory.variants_title"                  : "Stock variants for {name}",
         "ui.inventory.without_ean"                     : "Without EAN",
@@ -861,6 +885,16 @@ const TRANSLATIONS = {
         "editor.labels.inventory_default_action"        : "Mode after loading",
         "editor.labels.inventory_highlight_zero"        : "Mark zero stock in red",
         "editor.labels.inventory_group_variants"        : "Group EAN variants",
+        "editor.labels.inventory_stock_marking"         : "Inventory mode highlighting",
+        "editor.labels.inventory_mark_above_minimum"    : "Above minimum stock",
+        "editor.labels.inventory_mark_at_minimum"       : "Equal to minimum stock",
+        "editor.labels.inventory_mark_below_minimum"    : "Below minimum stock",
+        "editor.labels.inventory_mark_zero"             : "Stock 0",
+        "editor.options.inventory_mark.none"             : "No highlighting",
+        "editor.options.inventory_mark.green"            : "Green",
+        "editor.options.inventory_mark.orange"           : "Orange",
+        "editor.options.inventory_mark.red"              : "Red",
+        "editor.labels.ean_transfer_grouped_as_name"    : "Always transfer grouped items by name",
         "editor.options.mode.inventory"                : "Inventory",
         "editor.options.inventory_default_action.none"  : "No booking active (default)",
         "editor.options.inventory_default_action.add"   : "Stock in",
@@ -869,6 +903,8 @@ const TRANSLATIONS = {
         "editor.helpers.inventory_default_action"       : "Inventory mode only: Sets the booking mode used whenever the card loads.",
         "editor.helpers.inventory_highlight_zero"       : "Inventory mode only: Marks zero-stock items in red and adds a narrow red border.",
         "editor.helpers.inventory_group_variants"       : "Inventory mode only: Visually combines separately stored EAN and manual stock variants with the same name and category. The card switch can temporarily change the view.",
+        "editor.helpers.inventory_stock_marking"        : "Inventory mode only: Controls highlighting relative to the effective minimum stock. The three minimum-stock levels do not apply when no minimum is configured. Stock 0 is handled separately and takes priority.",
+        "editor.helpers.ean_transfer_grouped_as_name"   : "When enabled, removals from grouped inventory items are transferred using only the shared item name and category. The selected variant's EAN, brand, package quantity and image are not sent to the target list. Default: Off.",
         "ui.ean.transfer_remove"                       : "Remove",
         "ui.ean.transfer_invalid_config"               : "The ISL transfer configuration is invalid. Use a separate to-do list with description support and select a different target shopping list when sending.",
         "ui.ean.transfer_send_failed"                  : "The scan could not be saved to the ISL transfer list.",
@@ -1185,7 +1221,7 @@ const TRANSLATIONS = {
         "editor.helpers.ean_database_entity"            : "Optional to-do list reserved exclusively for this feature. It stores learned EAN products and categories permanently across devices. Do not use this list for other entries. The standard Shopping List is unsuitable because it does not support descriptions. To disable the feature, remove the selected list from the configuration.",
         "editor.helpers.ean_create_chip"                : "Creates a local chip after adding a product recognized by EAN, provided that local chip creation is enabled globally. This applies to Bluetooth scanners, the camera, and manually entered EANs.",
         "editor.helpers.list_script_enabled"            : "Reports successful changes made by this card: item added, removed, quantity changed, or renamed. Default: Off.",
-        "editor.helpers.list_script_entity"             : "Receives the name without category or quantity markers, category, quantity, list entity, and mode. Changes outside this card are not reported. The EAN script can be used in parallel.",
+        "editor.helpers.list_script_entity"             : "Sends the name, category, quantity, list entity and mode to the selected script. Changes made outside this card cannot be reported. The EAN script can be used in parallel.",
         "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with the status and product data when an EAN event occurs.",
         "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
         "editor.helpers.ean_database_suggestions"        : "Adds unique product names from the EAN database to the normal search suggestions. Products can also be found by their EAN. Multiple EANs with the same product name are suggested only once.",
@@ -1262,6 +1298,631 @@ const TRANSLATIONS = {
 		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference.",
 		"editor.helpers.dishes"							: "With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). For more information about the structure, please check the documentation.",
         "editor.helpers.dishes_confirm_add"             : "When enabled, clicking a dish opens a selection dialog. When disabled, all dish items are added immediately."
+    },
+    es: {
+        "card.description"                                          : "Lista de la compra mejorada con ordenación alfabética, plantillas para añadir artículos, cantidad al inicio o al final, posición personalizable de chips y botones más/menos para ajustar la cantidad.",
+        "ui.common.yes"                                             : "Sí",
+        "ui.common.no"                                              : "No",
+        "ui.common.ok"                                              : "Aceptar",
+        "ui.common.cancel"                                          : "Cancelar",
+        "ui.common.all"                                             : "Todos",
+        "ui.common.edit_item"                                       : "Editar elemento",
+        "ui.common.add_item"                                        : "Añadir elemento",
+        "ui.common.description"                                     : "Descripción",
+        "ui.common.no_cat"                                          : "Ninguna",
+        "ui.common.delete"                                          : "Eliminar",
+        "ui.common.sync_to_ha"                                      : "Enviar cambios a Home Assistant",
+        "ui.common.sync"                                            : "Sincronizando...",
+        "ui.common.sync_finished"                                   : "¡Sincronización completada!",
+        "ui.common.sync_error"                                      : "Error durante la sincronización:",
+        "ui.common.sync_without_category"                           : "Sin categoría",
+        "ui.common.sync_offline_list"                               : "Lista de la compra sin conexión",
+        "ui.common.sync_created"                                    : "creado el",
+        "ui.category.hidden_notice_one"                             : "1 elemento no se muestra porque su categoría no está habilitada en esta tarjeta. Activa las categorías dinámicas para mostrarlo.",
+        "ui.category.hidden_notice"                                 : "{count} elementos no se muestran porque sus categorías no están habilitadas en esta tarjeta. Activa las categorías dinámicas para mostrarlos.",
+        "ui.category.hidden_details"                                : "Detalles",
+        "ui.category.hidden_title"                                  : "Elementos no visibles",
+        "ui.category.hidden_help"                                   : "Activa las categorías dinámicas o edita un elemento para asignarle una categoría disponible en esta tarjeta.",
+        "ui.common.export"                                          : "Exportar HTML",
+        "ui.common.export_pdf"                                      : "Exportar PDF",
+        "ui.common.close"                                           : "Cerrar",
+        "ui.common.dynamic_category"                                : "Nueva categoría (dinámica)",
+        "ui.common.loading_list"                                    : "Cargando lista...",
+        "ui.qr.secure_context_required"                             : "El escáner QR requiere una conexión HTTPS segura. Abre Home Assistant a través de HTTPS y vuelve a intentarlo.",
+        "ui.qr.camera_unavailable"                                  : "No se pudo acceder a la cámara. Comprueba los permisos de la cámara y la conexión HTTPS.",
+        "ui.qr.library_load_failed"                                 : "No se pudo cargar el escáner QR. Comprueba la conexión de red y vuelve a intentarlo.",
+        "ui.message.quantity_increased"                             : "Cantidad aumentada",
+        "ui.message.quantity_decreased"                             : "Cantidad disminuida",
+        "ui.message.edited"                                         : "Elemento editado",
+        "ui.message.item_added"                                     : "Elemento añadido",
+        "ui.message.item_removed"                                   : "Elemento eliminado",
+        "ui.message.sent"                                           : "Mensaje enviado",
+        "ui.admin.options"                                          : "Opciones de administración",
+        "ui.admin.options.browser_chips"                            : "Chips del navegador",
+        "ui.admin.options.browser_chips_copy"                       : "Copiar",
+        "ui.admin.options.browser_chips_delete"                     : "Eliminar chips del navegador",
+        "ui.admin.options.browser_chips_delete_con"                 : "¿Seguro que quieres eliminar todos los chips del navegador?",
+        "ui.admin.options.dynamic_categories"                       : "Categorías dinámicas",
+        "ui.admin.options.dynamic_categories_copy"                  : "Copiar",
+        "ui.admin.options.dynamic_categories_include"               : "Incluir elementos",
+        "ui.admin.options.manual_assigned"                          : "Elementos asignados manualmente",
+        "ui.admin.options.manual_assigned_copy"                     : "Copiar",
+        "ui.admin.options.manual_assigned_include"                  : "Incluir elementos ya configurados",
+        "ui.admin.options.process_ean_scans"                        : "Procesar escaneos EAN en este dispositivo",
+        "ui.admin.options.process_ean_scans_help"                   : "Si está activado, esta tarjeta procesará los escaneos EAN coincidentes en este dispositivo. La tarjeta debe estar visible mientras se escanea y no debe abrirse simultáneamente en otra pestaña o ventana.",
+        "ui.admin.options.ean_scanner_mac"                          : "MAC del escáner:",
+        "ui.admin.options.ean_scanner_mac_missing"                  : "El filtro MAC Bluetooth no está disponible en este dispositivo.",
+        "ui.admin.options.ean_queue"                                : "Cola de escaneo EAN",
+        "ui.admin.options.ean_queue_pending"                        : "Escaneos pendientes: {count}",
+        "ui.admin.options.ean_queue_shopping"                       : "Lista de la compra: {count}",
+        "ui.admin.options.ean_queue_database"                       : "Base de datos EAN: {count}",
+        "ui.admin.options.ean_queue_remove"                         : "Retiradas: {count}",
+        "ui.admin.options.ean_queue_process"                        : "Procesar cola",
+        "ui.admin.options.ean_queue_clear"                          : "Vaciar cola",
+        "ui.admin.options.ean_database_status"                      : "Base de datos EAN",
+        "ui.admin.options.ean_database_products"                    : "{count} productos",
+        "ui.admin.options.ean_database_invalid"                     : "{count} no válidos",
+        "ui.ean.database_manager_title"                             : "Gestor de base de datos EAN",
+        "ui.ean.database_search"                                    : "Buscar productos...",
+        "ui.ean.database_sort"                                      : "Ordenar por",
+        "ui.ean.database_sort_name"                                 : "Nombre",
+        "ui.ean.database_sort_category"                             : "Categoría / nombre",
+        "ui.ean.database_no_products"                               : "No se encontraron productos en la base de datos.",
+        "ui.ean.database_no_category"                               : "Sin categoría asignada",
+        "ui.ean.database_invalid_title"                             : "Entradas de base de datos no válidas",
+        "ui.ean.database_invalid_entry"                             : "Entrada no válida en la base de datos EAN.",
+        "ui.ean.database_edit_title"                                : "Editar entrada EAN",
+        "ui.ean.database_name"                                      : "Nombre del producto",
+        "ui.ean.database_original_name"                             : "Nombre original",
+        "ui.ean.database_ean"                                       : "EAN",
+        "ui.ean.database_brand"                                     : "Marca",
+        "ui.ean.database_quantity"                                  : "Cantidad del paquete",
+        "ui.ean.database_category"                                  : "Categoría",
+        "ui.ean.database_save"                                      : "Guardar",
+        "ui.ean.database_reload_off"                                : "Actualizar desde Open Food Facts",
+        "ui.ean.database_loading_off"                               : "Cargando datos de Open Food Facts...",
+        "ui.ean.database_apply_off"                                 : "Aplicar datos de Open Food Facts",
+        "ui.ean.database_off_preview"                               : "Vista previa de Open Food Facts",
+        "ui.ean.database_off_name_preserved"                        : "Se conservó el nombre existente del producto.",
+        "ui.ean.database_off_not_found"                             : "No se encontró el producto en Open Food Facts.",
+        "ui.ean.database_delete_confirm"                            : "¿Eliminar esta entrada EAN de la base de datos?",
+        "ui.ean.database_delete_failed"                             : "No se pudo eliminar la entrada de la base de datos.",
+        "ui.ean.database_name_required"                             : "Se requiere un nombre de producto.",
+        "ui.ean.database_back"                                      : "Volver a la vista general",
+        "ui.ean.database_fill_start"                                : "Iniciar llenado",
+        "ui.ean.database_fill_active"                               : "Modo de llenado de base de datos activo – los escaneos no modifican la lista de la compra.",
+        "ui.ean.database_fill_help"                                 : "Escanea productos sucesivamente para añadirlos a la base de datos central de EAN.",
+        "ui.ean.database_fill_end"                                  : "Finalizar llenado",
+        "ui.ean.database_fill_existing"                             : "¡El producto ya existe en la base de datos!",
+        "ui.ean.database_fill_new"                                  : "Nuevo producto añadido a la base de datos.",
+        "ui.ean.database_fill_save"                                 : "Guardar y siguiente",
+        "ui.ean.remove_mode_active"                                 : "Retirada activa",
+        "ui.ean.remove_not_found"                                   : "{name} no está en la lista de la compra.",
+        "ui.ean.queue_status"                                       : "Escaneado {quantity}× · {count} elementos más en espera",
+        "ui.ean.database_invalid"                                   : "La lista de tareas de EAN configurada contiene {count} entradas no válidas. Estas entradas se ignorarán.",
+        "ui.ean.database_unavailable"                               : "No se puede usar la lista de tareas de EAN configurada: {reason}",
+        "ui.ean.database_reason_entity"                             : "Selecciona una lista de tareas diferente a la lista de la compra.",
+        "ui.ean.database_reason_description"                        : "La lista seleccionada no admite descripciones.",
+        "ui.ean.database_reason_load"                               : "No se pudieron cargar las entradas.",
+        "ui.ean.database_reason_save"                               : "No se pudo guardar el registro del producto.",
+        "ui.ean.lookup_failed_title"                                : "Producto no encontrado",
+        "ui.ean.lookup_failed_text"                                 : "No se pudieron cargar los datos del producto para el EAN {ean}.",
+        "ui.ean.lookup_retry"                                       : "Reintentar",
+        "ui.ean.lookup_manual"                                      : "Introducir manualmente",
+        "ui.ean.lookup_later"                                       : "Más tarde",
+        "ui.ean.lookup_discard"                                     : "Descartar",
+        "ui.ean.queue_summary"                                      : "Quedan {count} escaneos EAN pendientes de procesar.",
+        "ui.ean.queue_summary_one"                                  : "Queda 1 escaneo EAN pendiente de procesar.",
+        "ui.ean.queue_process_now"                                  : "Procesar ahora",
+        "ui.ean.queue_keep_later"                                   : "Más tarde",
+        "ui.ean.queue_admin_hint"                                   : "Puedes continuar procesando la cola más tarde desde las opciones de administración.",
+        "ui.ean.add"                                                : "Añadir a la lista",
+        "ui.ean.name_brand"                                         : "Marca",
+        "ui.ean.name_quantity"                                      : "Cantidad",
+        "ui.ean.brand_in_name"                                      : "La marca «{brand}» ya está incluida en el nombre del producto y no se volverá a añadir.",
+        "ui.ean.database_entries_title"                             : "Entradas EAN de {name}",
+        "ui.ean.database_entries_badge"                             : "Mostrar {count} entradas EAN",
+        "ui.ean.database_entry_refresh"                             : "Actualizar datos",
+        "ui.ean.database_entry_open_off"                            : "Abrir en Open Food Facts",
+        "ui.ean.database_entry_edit"                                : "Editar entrada de la base de datos",
+        "ui.ean.database_entry_updated"                             : "Entrada de la base de datos guardada.",
+        "ui.ean.database_transfer_title"                            : "Sincronización / Transferencia",
+        "ui.ean.database_manual_only"                               : "Solo añadir a la base de datos (sin transferencia)",
+        "ui.ean.database_minimum_stock"                             : "Stock mínimo",
+        "ui.ean.database_minimum_stock_help"                        : "Stock mínimo para reorden automática o transferencias.",
+        "ui.ean.database_transfer_disabled"                         : "Desactivar transferencia automática para este producto",
+        "ui.ean.database_current_stock"                             : "Stock actual:",
+        "ui.ean.database_set_stock"                                 : "Corregir stock",
+        "ui.ean.database_stock_updated"                             : "Se modificó el stock sin crear una transferencia.",
+        "ui.ean.database_create_stock_confirm"                      : "«{name}» aún no está en esta lista. ¿Añadir el elemento con un stock de {quantity}?",
+        "ui.ean.database_manual_send_quantity"                      : "Cantidad a enviar:",
+        "ui.ean.database_manual_send"                               : "Enviar a la lista de destino",
+        "ui.ean.database_manual_send_done"                          : "Elemento enviado a la lista de destino.",
+        "ui.ean.database_transfer_unavailable"                      : "El envío manual requiere una configuración de envío válida.",
+        "ui.ean.database_number_invalid"                            : "Por favor, introduce un número válido.",
+        "ui.ean.database_send_number_invalid"                       : "Introduce un número entero igual o superior a 1.",
+        "ui.ean.transfer_choose_product"                            : "¿Qué EAN debe usarse para «{name}»?",
+        "ui.ean.transfer_without_ean"                               : "Transferir sin EAN",
+        "ui.ean.transfer_non_ean_question"                          : "¿Transferir «{name}» a la lista de la compra de destino?",
+        "ui.inventory.title"                                        : "Inventario",
+        "ui.inventory.idle"                                         : "Ningún modo de registro activo",
+        "ui.inventory.add"                                          : "Entrada",
+        "ui.inventory.remove"                                       : "Salida",
+        "ui.inventory.register"                                     : "Registrar",
+        "ui.inventory.add_active"                                   : "Modo de entrada activo – los escaneos y entradas EAN aumentan el stock.",
+        "ui.inventory.remove_active"                                : "Modo de salida activo – los escaneos y entradas EAN reducen el stock.",
+        "ui.inventory.register_active"                              : "Modo de registro activo – los escaneos y entradas EAN crean elementos con stock 0.",
+        "ui.inventory.select_mode"                                  : "Selecciona primero un modo de registro.",
+        "ui.inventory.select_mode_button"                           : "Seleccionar modo primero",
+        "ui.inventory.registered"                                   : "Se ha registrado {name} con stock 0.",
+        "ui.inventory.already_registered"                           : "{name} ya existe en el inventario. El stock se mantiene en {quantity}.",
+        "ui.inventory.register_database_required"                   : "El modo de registro requiere una base de datos EAN configurada.",
+        "ui.inventory.hidden"                                       : "Mostrar elementos ocultos",
+        "ui.inventory.hide"                                         : "Ocultar elemento",
+        "ui.inventory.unhide"                                       : "Mostrar elemento",
+        "ui.inventory.filter.all"                                   : "Todo",
+        "ui.inventory.filter.zero"                                  : "Stock 0",
+        "ui.inventory.filter.low"                                   : "Stock 0–1",
+        "ui.inventory.filter.minimum"                               : "≤ stock mínimo",
+        "ui.inventory.filter.below_minimum"                         : "< stock mínimo",
+        "ui.inventory.stock_change"                                 : "{name}: stock {before} → {after}",
+        "ui.inventory.undo"                                         : "Deshacer",
+        "ui.inventory.undo_done"                                    : "{name}: stock restaurado {before} → {after}.",
+        "ui.inventory.undo_transfer_question"                       : "El stock local se restablecerá de {before} a {after}. La transferencia original puede haber sido procesada por «{target}». ¿Cómo debe gestionarse esta transferencia?",
+        "ui.inventory.undo_both"                                    : "Corregir stock + lista de destino",
+        "ui.inventory.undo_local"                                   : "Solo corregir stock",
+        "ui.inventory.undo_cancel"                                  : "No deshacer",
+        "ui.inventory.undo_failed"                                  : "No se pudo deshacer el último movimiento.",
+        "ui.inventory.undo_transfer_failed"                         : "Se restauró el stock, pero falló la corrección en la lista de destino.",
+        "ui.inventory.stock"                                        : "Stock",
+        "ui.inventory.quantity"                                     : "Cantidad",
+        "ui.inventory.correction_transfer_question"                 : "El nuevo stock de «{name}» está en o por debajo del stock mínimo. ¿Enviar 1 × a «{target}»?",
+        "ui.inventory.no_stock"                                     : "{name} ya está agotado.",
+        "ui.inventory.send_without_stock"                           : "No queda stock de «{name}». ¿Enviar 1 × a «{target}» de todos modos? El stock se mantiene en 0.",
+        "ui.inventory.sent_without_stock"                           : "Se ha enviado 1 × {name} a {target}. El stock se mantiene en 0.",
+        "ui.inventory.send"                                         : "Enviar",
+        "ui.inventory.controls"                                     : "Códigos de control",
+        "ui.inventory.controls_help"                                : "Escanea uno de estos códigos QR con el escáner configurado para cambiar el modo de registro.",
+        "ui.inventory.database"                                     : "Base de datos EAN",
+        "ui.inventory.database_short"                               : "BD EAN",
+        "ui.inventory.queue"                                        : "Cola de escaneo",
+        "ui.inventory.queue_empty"                                  : "La cola de escaneo está vacía.",
+        "ui.inventory.queue_clear_confirm"                          : "¿Realmente deseas eliminar todas las entradas de la cola de escaneo?",
+        "ui.inventory.queue_mode.shopping"                          : "Lista de la compra",
+        "ui.inventory.queue_mode.database"                          : "Base de datos EAN",
+        "ui.inventory.queue_mode.add"                               : "Entrada de stock",
+        "ui.inventory.queue_mode.remove"                            : "Salida de stock",
+        "ui.inventory.queue_mode.register"                          : "Registrar",
+        "ui.inventory.queue_mode.none"                              : "Sin modo",
+        "ui.inventory.group_variants"                               : "Agrupar variantes EAN",
+        "ui.inventory.grouped_total"                                : "Stock total",
+        "ui.inventory.group_minimum"                                : "Stock mínimo del grupo (opcional)",
+        "ui.inventory.group_minimum_help"                           : "Se aplica al stock combinado de todas las variantes. Déjalo vacío para usar los valores individuales de los productos o el valor predeterminado de la tarjeta.",
+        "ui.inventory.group_minimum_conflict"                       : "El grupo existente «{target}» usa un stock mínimo de {targetMinimum}, mientras que el grupo movido usa {sourceMinimum}. ¿Qué stock mínimo del grupo debe conservarse después de fusionarlos?",
+        "ui.inventory.group_minimum_use_source"                     : "{minimum} del grupo movido",
+        "ui.inventory.group_minimum_use_target"                     : "{minimum} del grupo existente",
+        "ui.inventory.manage_variants"                              : "Gestionar stock de variantes",
+        "ui.inventory.variants_title"                               : "Variantes de stock de {name}",
+        "ui.inventory.without_ean"                                  : "Sin EAN",
+        "ui.inventory.variant_stock"                                : "Stock: {stock}",
+        "ui.inventory.variant_minimum"                              : "Stock mínimo: {minimum}",
+        "ui.inventory.manual_minimum"                               : "Stock mínimo (opcional)",
+        "ui.inventory.manual_minimum_default"                       : "Vacío = por defecto de la tarjeta: {minimum}",
+        "ui.inventory.manual_minimum_none"                          : "Vacío = sin stock mínimo",
+        "ui.inventory.manual_minimum_save"                          : "Guardar stock mínimo",
+        "ui.inventory.ean_minimum_edit"                             : "Editar stock mínimo EAN",
+        "ui.inventory.ean_minimum_database_source"                  : "Guardado en la base de datos central de EAN",
+        "ui.inventory.ean_minimum_card_default"                     : "Por defecto de la tarjeta",
+        "ui.inventory.ean_minimum_not_set"                          : "Sin stock mínimo configurado",
+        "ui.inventory.ean_product_edit"                             : "Editar producto EAN",
+        "ui.inventory.edit_ean_item"                                : "Editar elemento EAN",
+        "ui.inventory.grouped_badge"                                : "[AGRUPADO]",
+        "ui.inventory.group_member_badge"                           : "[MIEMBRO DEL GRUPO]",
+        "ui.inventory.choose_variant_add"                           : "¿Qué variante de «{name}» se debe reponer?",
+        "ui.inventory.choose_variant_remove"                        : "¿Qué variante de «{name}» se debe retirar?",
+        "ui.inventory.group_category_confirm"                       : "«{name}» contiene {count} variantes independientes. La categoría se cambiará para todas las variantes y registros EAN asociados. ¿Deseas continuar?",
+        "ui.inventory.group_delete_confirm"                         : "«{name}» contiene {count} variantes independientes. ¿Eliminar todas las variantes?",
+        "ui.inventory.ean_category_confirm"                         : "Este EAN pertenece al elemento agrupado «{name}». La categoría se cambiará para todas las variantes EAN con este nombre. La base de datos central de EAN también puede ser utilizada por otras tarjetas. ¿Deseas continuar?",
+        "ui.inventory.category_conflict"                            : "Se han guardado diferentes categorías para «{name}». El elemento no se puede agrupar hasta que se seleccione una categoría común.",
+        "editor.labels.inventory_default_action"                    : "Modo de registro por defecto",
+        "editor.labels.inventory_highlight_zero"                    : "Destacar elementos con stock 0",
+        "editor.labels.inventory_group_variants"                    : "Agrupar variantes de EAN",
+        "editor.labels.inventory_stock_marking"                    : "Marcado del modo inventario",
+        "editor.labels.inventory_mark_above_minimum"               : "Por encima del stock mínimo",
+        "editor.labels.inventory_mark_at_minimum"                  : "Igual al stock mínimo",
+        "editor.labels.inventory_mark_below_minimum"               : "Por debajo del stock mínimo",
+        "editor.labels.inventory_mark_zero"                        : "Stock 0",
+        "editor.options.inventory_mark.none"                       : "Sin marcado",
+        "editor.options.inventory_mark.green"                      : "Verde",
+        "editor.options.inventory_mark.orange"                     : "Naranja",
+        "editor.options.inventory_mark.red"                        : "Rojo",
+        "editor.labels.ean_transfer_grouped_as_name"               : "Transferir siempre los artículos agrupados por nombre",
+        "editor.options.mode.inventory"                             : "Inventario",
+        "editor.options.inventory_default_action.none"              : "Ninguno",
+        "editor.options.inventory_default_action.add"               : "Entrada de stock",
+        "editor.options.inventory_default_action.remove"            : "Salida de stock",
+        "editor.options.inventory_default_action.register"          : "Registrar",
+        "editor.helpers.inventory_default_action"                   : "Modo de registro por defecto activado al abrir la tarjeta.",
+        "editor.helpers.inventory_highlight_zero"                   : "Destaca visualmente en la lista los elementos de inventario con stock 0.",
+        "editor.helpers.inventory_group_variants"                   : "Agrupa variantes de productos con el mismo nombre en una sola entrada en el inventario.",
+        "editor.helpers.inventory_stock_marking"                   : "Solo en el modo inventario: controla el marcado en relación con el stock mínimo efectivo. Los tres niveles de stock mínimo no se aplican cuando no hay ningún mínimo configurado. El stock 0 se gestiona por separado y tiene prioridad.",
+        "editor.helpers.ean_transfer_grouped_as_name"              : "Cuando está activado, las retiradas de artículos de inventario agrupados se transfieren usando únicamente el nombre compartido del artículo y la categoría. No se envían a la lista de destino el EAN, la marca, la cantidad del paquete ni la imagen de la variante seleccionada. Por defecto: desactivado.",
+        "ui.ean.transfer_remove"                                    : "Retirar",
+        "ui.ean.transfer_invalid_config"                            : "La configuración de transferencia ISL no es válida. Usa una lista de tareas independiente compatible con descripciones y selecciona una lista de la compra de destino diferente al enviar.",
+        "ui.ean.transfer_send_failed"                               : "No se pudo guardar el escaneo en la lista de transferencia ISL.",
+        "ui.ean.transfer_receive_failed"                            : "No se pudo procesar una transferencia ISL. La entrada queda disponible para su revisión.",
+        "ui.ean.transfer_cleanup_failed"                            : "Se completó la transferencia, pero no se pudo confirmar la eliminación de la lista de transferencia ISL.",
+        "ui.todo.general"                                           : "General",
+        "ui.todo.hours"                                             : "Horas",
+        "ui.todo.days"                                              : "Días",
+        "ui.todo.months"                                            : "Meses",
+        "ui.todo.due_every"                                         : "Vence cada:",
+        "ui.todo.remove_due"                                        : "Eliminar fecha de vencimiento",
+        "ui.todo.next_due"                                          : "Establecer próxima fecha de vencimiento",
+        "ui.todo.next_due_now"                                      : "Establecer próxima fecha de vencimiento a partir de ahora",
+        "ui.todo.edit"                                              : "Editar entrada",
+        "ui.todo.delete"                                            : "Eliminar entrada",
+        "ui.todo.interval_once"                                     : "Puntual",
+        "ui.todo.due_label"                                         : "Vencido",
+        "ui.todo.select_action"                                     : "Selecciona una acción para este elemento:",
+        "ui.todo.list.year"                                         : "Año",
+        "ui.todo.list.years"                                        : "Años",
+        "ui.todo.list.month"                                        : "Mes",
+        "ui.todo.list.months"                                       : "Meses",
+        "ui.todo.list.day"                                          : "Día",
+        "ui.todo.list.days"                                         : "Días",
+        "ui.todo.list.hour"                                         : "Hora",
+        "ui.todo.list.hours"                                        : "Horas",
+        "ui.todo.list.minute"                                       : "Minuto",
+        "ui.todo.list.minutes"                                      : "Minutos",
+        "ui.todo.set.completed.true"                                : "Marcar como completado",
+        "ui.todo.set.completed.false"                               : "Desmarcar completado",
+        "ui.todo.filter"                                            : "Filtro",
+        "ui.todo.filter.all"                                        : "Todos",
+        "ui.todo.filter.today"                                      : "Hoy",
+        "ui.todo.filter.overdue"                                    : "Vencidos",
+        "ui.todo.filter.overdue_include_today"                      : "Vencidos (incluye hoy)",
+        "ui.todo.filter.upcoming"                                   : "Próximos",
+        "ui.todo.filter.dated"                                      : "Con fecha",
+        "ui.todo.filter.undated"                                    : "Sin fecha",
+        "ui.todo.filter.remember"                                   : "Recordar para esta lista",
+        "ui.todo.filter.reset"                                      : "Restablecer filtro guardado",
+        "ui.labels.alert_item_exists_todo"                          : "El elemento '{item}' ya existe en la lista de tareas pendientes.",
+        "editor.placeholders.quantity"                              : "Cantidad",
+        "editor.placeholders.item"                                  : "Elemento...",
+        "editor.labels.show_message_button"                         : "Mostrar botón de mensaje",
+        "editor.labels.show_clear_button"                           : "Mostrar botón de limpiar completados",
+        "editor.labels.notify_entity"                               : "Entidad de notificación",
+        "editor.labels.add_button"                                  : "Añadir",
+        "editor.labels.clear_button"                                : "Limpiar completados",
+        "editor.labels.no_items"                                    : "Sin elementos",
+        "editor.labels.complete_btn"                                : "Marcar como completado",
+        "editor.labels.plus_btn"                                    : "Aumentar cantidad",
+        "editor.labels.minus_btn"                                   : "Disminuir cantidad o eliminar",
+        "editor.labels.confirm_remove"                              : "¿Eliminar elemento: {item}?",
+        "editor.labels.confirm_clear_done"                          : "¿Eliminar todos los elementos completados?",
+        "editor.labels.confirm_remove_history"                      : "¿Eliminar el chip '{item}' del historial?",
+        "editor.labels.chip_highlighted"                            : "Chip destacado",
+        "editor.labels.chip_standard"                               : "Chip estándar",
+        "editor.labels.chip_global"                                 : "Chip global",
+        "editor.labels.alert_cannot_delete_standard"                : "Este chip estándar no se puede eliminar",
+        "editor.labels.alert_no_valid_ean"                          : "¡No se encontró un EAN o producto válido!",
+        "editor.labels.categories"                                  : "Categorías",
+        "editor.labels.show_cat_count"                              : "¿Mostrar recuento de elementos en categorías?",
+        "editor.labels.hide_cat_count_all_done"                     : "¿Ocultar recuento de elementos cuando todos estén completados?",
+        "editor.labels.show_cat_next_due"                           : "¿Mostrar próximo vencimiento en categoría?",
+        "editor.labels.cat_double_sized_icon"                       : "¿Mostrar icono más grande?",
+        "editor.labels.show_cat_exclamation_mark"                   : "Mostrar signo de exclamación para elementos vencidos",
+        "editor.labels.show_title_exclamation_mark"                 : "Mostrar signo de exclamación para elementos vencidos en el título",
+        "editor.labels.show_cat_popup"                              : "¿Mostrar ventana emergente de categoría?",
+        "editor.labels.category_merge_mode"                         : "Modo de combinación de categorías",
+        "editor.labels.category_display"                            : "Visualización de encabezados de categoría",
+        "editor.labels.dishes"                                      : "Platos",
+        "editor.labels.dishes_confirm_add"                          : "Confirmar platos antes de añadir",
+        "editor.labels.mode"                                        : "Modo",
+        "editor.labels.font.sizes"                                  : "Tamaños de fuente",
+        "editor.labels.colors"                                      : "Ajustes de color",
+        "editor.labels.category.options"                            : "Categorías",
+        "editor.labels.export.options"                              : "Opciones de exportación",
+        "editor.labels.message.options"                             : "Notificaciones",
+        "editor.labels.dishes.options"                              : "Platos",
+        "editor.labels.chips.options"                               : "Chips",
+        "editor.labels.item.options"                                : "Elementos",
+        "editor.labels.ean_scanner.options"                         : "Escáner EAN",
+        "editor.labels.general.options"                             : "Ajustes generales",
+        "editor.labels.input_row_position"                          : "Posición de la barra de entrada",
+        "editor.labels.option_row_position"                         : "Posición de la barra de botones",
+        "editor.labels.allow_dynamic_categories"                    : "Permitir categorías dinámicas",
+        "editor.labels.show_admin_button"                           : "Mostrar botón de opciones de administración",
+        "editor.labels.notify_on_change"                            : "Notificar al cambiar",
+        "editor.labels.notify_on_change_all"                        : "Enviar siempre la lista completa",
+        "editor.labels.notify_on_change_time"                       : "Tiempo antes de enviar notificaciones",
+        "editor.labels.notify_entity_smtp"                          : "Nombre de tu entidad de notificación SMTP",
+        "editor.labels.notify_on_done"                              : "Notificar también al marcar como completado",
+        "editor.labels.show_category_chips"                         : "Generar chips a partir de elementos de categoría",
+        "editor.labels.show_category_add_all"                       : "Mostrar chip 'Añadir todos'",
+        "editor.labels.allow_filter"                                : "Permitir filtrar elementos",
+        "editor.labels.allow_suggestions"                           : "Permitir sugerencias",
+        "editor.labels.show_done_hidden_items_in_search"            : "Mostrar elementos completados (ocultos) en la búsqueda",
+        "editor.labels.capitalize_first_letter"                     : "Poner en mayúscula la primera letra",
+        "editor.labels.show_descriptions"                           : "Mostrar descripciones",
+        "editor.labels.show_ean_brand"                              : "Mostrar marca",
+        "editor.labels.show_ean_quantity"                           : "Mostrar cantidad del paquete",
+        "editor.labels.ean_scanner_mac"                             : "Filtro de dirección MAC Bluetooth",
+        "editor.labels.ean_database_entity"                         : "Lista de base de datos EAN",
+        "editor.labels.ean_create_chip"                             : "Crear chip al escanear EAN",
+        "editor.labels.list_script_enabled"                         : "Activar script de eventos de lista",
+        "editor.labels.list_script_entity"                          : "Script de eventos de lista",
+        "editor.labels.ean_script_enabled"                          : "Activar script de eventos EAN",
+        "editor.labels.ean_script_entity"                           : "Script de eventos EAN",
+        "editor.labels.ean_remove_mode"                             : "Modo de retirada por pulsación larga",
+        "editor.labels.ean_database_suggestions"                    : "Añadir productos EAN a sugerencias de búsqueda",
+        "editor.labels.show_ean_database_badge"                     : "Mostrar distintivo de base de datos EAN",
+        "editor.labels.ean_transfer_mode"                           : "Modo de transferencia ISL",
+        "editor.labels.ean_transfer_entity"                         : "Lista de transferencia ISL",
+        "editor.labels.ean_transfer_target_entity"                  : "Lista de la compra de destino",
+        "editor.labels.ean_transfer_actions"                        : "Acciones transferidas",
+        "editor.labels.sync_transfer.options"                       : "Sincronización / Transferencia",
+        "editor.labels.ean_transfer_remove_behavior"                : "Comportamiento en retiradas",
+        "editor.labels.ean_transfer_default_minimum_stock"          : "Stock mínimo por defecto",
+        "editor.labels.ean_transfer_non_ean"                        : "Retiradas sin EAN",
+        "editor.labels.todo_filter"                                 : "Filtro de tareas pendientes",
+        "editor.labels.show_todo_filter_menu"                       : "Mostrar menú de filtro de tareas pendientes",
+        "editor.options.chips_position.auto"                        : "Automático Derecha / Abajo (según tamaño de pantalla)",
+        "editor.options.chips_position.auto_panel"                  : "Automático Panel / Abajo (según tamaño de pantalla)",
+        "editor.options.chips_position.bottom"                      : "Siempre abajo",
+        "editor.options.chips_position.right"                       : "Siempre a la derecha",
+        "editor.options.chips_position.full"                        : "Derecha, multicolumna (solo modo panel)",
+        "editor.options.chips_position.none"                        : "Sin chips (ocultar chips)",
+        "editor.options.chip_click.single"                          : "Clic",
+        "editor.options.chip_click.dblclick"                        : "Doble clic",
+        "editor.options.chip_merge.combined"                        : "Combinar chips estándar y del navegador (por defecto)",
+        "editor.options.chip_merge.standard_first"                  : "Chips estándar primero, luego del navegador",
+        "editor.options.chip_merge.browser_first"                   : "Chips del navegador primero, luego estándar",
+        "editor.options.chip_merge.global_only"                     : "Solo chips globales (desde archivo de texto)",
+        "editor.options.chip_merge.global_combined"                 : "Todos los chips combinados (globales, estándar, navegador)",
+        "editor.options.quantity.beginning"                         : "Cantidad al principio, ej. '10x Mantequilla'",
+        "editor.options.quantity.end"                               : "Cantidad al final, ej. 'Mantequilla (10)'",
+        "editor.options.acknowledged.show"                          : "Mostrar elementos completados",
+        "editor.options.acknowledged.hide"                          : "Ocultar elementos completados",
+        "editor.options.acknowledged.end"                           : "Mostrar elementos completados al final de la categoría",
+        "editor.defaults.sub_text"                                  : "Consejo: Usa los chips para volver a añadir elementos rápidamente.",
+        "editor.options.category_merge.local_only"                  : "[1] Solo categorías locales (por defecto)",
+        "editor.options.category_merge.global_only"                 : "[1] Solo categorías globales (desde archivo)",
+        "editor.options.category_merge.dynamic_only"                : "[1] Solo categorías dinámicas",
+        "editor.options.category_merge.local_only_sorted"           : "[1] Solo categorías locales (ordenadas)",
+        "editor.options.category_merge.global_only_sorted"          : "[1] Solo categorías globales (ordenadas)",
+        "editor.options.category_merge.dynamic_only_sorted"         : "[1] Solo categorías dinámicas (ordenadas)",
+        "editor.options.category_merge.local_global"                : "[2] Local → Global",
+        "editor.options.category_merge.local_dynamic"               : "[2] Local → Dinámica",
+        "editor.options.category_merge.global_dynamic"              : "[2] Global → Dinámica",
+        "editor.options.category_merge.global_local"                : "[2] Global → Local",
+        "editor.options.category_merge.dynamic_local"               : "[2] Dinámica → Local",
+        "editor.options.category_merge.dynamic_global"              : "[2] Dinámica → Global",
+        "editor.options.category_merge.local_global_sorted"         : "[2] Local → Global (ordenadas)",
+        "editor.options.category_merge.local_dynamic_sorted"        : "[2] Local → Dinámica (ordenadas)",
+        "editor.options.category_merge.global_dynamic_sorted"       : "[2] Global → Dinámica (ordenadas)",
+        "editor.options.category_merge.global_local_sorted"         : "[2] Global → Local (ordenadas)",
+        "editor.options.category_merge.dynamic_local_sorted"        : "[2] Dinámica → Local (ordenadas)",
+        "editor.options.category_merge.dynamic_global_sorted"       : "[2] Dinámica → Global (ordenadas)",
+        "editor.options.category_merge.local_global_sorted_total"   : "[2] Local + Global (totalmente ordenadas)",
+        "editor.options.category_merge.local_dynamic_sorted_total"  : "[2] Local + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.global_dynamic_sorted_total" : "[2] Global + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.global_local_sorted_total"   : "[2] Global + Local (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_local_sorted_total"  : "[2] Dinámica + Local (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_global_sorted_total" : "[2] Dinámica + Global (totalmente ordenadas)",
+        "editor.options.category_merge.local_global_dynamic"        : "[3] Local → Global → Dinámica",
+        "editor.options.category_merge.local_dynamic_global"        : "[3] Local → Dinámica → Global",
+        "editor.options.category_merge.global_local_dynamic"        : "[3] Global → Local → Dinámica",
+        "editor.options.category_merge.global_dynamic_local"        : "[3] Global → Dinámica → Local",
+        "editor.options.category_merge.dynamic_local_global"        : "[3] Dinámica → Local → Global",
+        "editor.options.category_merge.dynamic_global_local"        : "[3] Dinámica → Global → Local",
+        "editor.options.category_merge.local_global_dynamic_sorted" : "[3] Local → Global → Dinámica (ordenadas)",
+        "editor.options.category_merge.local_dynamic_global_sorted" : "[3] Local → Dinámica → Global (ordenadas)",
+        "editor.options.category_merge.global_local_dynamic_sorted" : "[3] Global → Local → Dinámica (ordenadas)",
+        "editor.options.category_merge.global_dynamic_local_sorted" : "[3] Global → Dinámica → Local (ordenadas)",
+        "editor.options.category_merge.dynamic_local_global_sorted" : "[3] Dinámica → Local → Global (ordenadas)",
+        "editor.options.category_merge.dynamic_global_local_sorted" : "[3] Dinámica → Global → Local (ordenadas)",
+        "editor.options.category_merge.local_global_dynamic_sorted_total": "[3] Local + Global + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.local_dynamic_global_sorted_total": "[3] Local + Dinámica + Global (totalmente ordenadas)",
+        "editor.options.category_merge.global_local_dynamic_sorted_total": "[3] Global + Local + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.global_dynamic_local_sorted_total": "[3] Global + Dinámica + Local (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_local_global_sorted_total": "[3] Dinámica + Local + Global (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_global_local_sorted_total": "[3] Dinámica + Global + Local (totalmente ordenadas)",
+        "editor.options.category_display.grouped"                   : "Mostrar encabezados de categoría",
+        "editor.options.category_display.hidden_category_order"     : "Ocultar encabezados (ordenar por categoría)",
+        "editor.options.category_display.hidden_global_order"       : "Ocultar encabezados (orden global)",
+        "editor.options.sort_mode.alpha"                            : "Alfabético (A → Z)",
+        "editor.options.sort_mode.manual"                           : "Manual (arrastrar y soltar)",
+        "editor.options.sort_mode.none"                             : "Sin ordenación adicional",
+        "editor.options.sort_mode.due"                              : "Ordenar por fecha de vencimiento (Tareas)",
+        "editor.options.todo_filter.all"                            : "Todos",
+        "editor.options.todo_filter.today"                          : "Hoy",
+        "editor.options.todo_filter.overdue"                        : "Vencidos",
+        "editor.options.todo_filter.overdue_include_today"          : "Vencidos (incluye hoy)",
+        "editor.options.todo_filter.upcoming"                       : "Próximos",
+        "editor.options.todo_filter.dated"                          : "Con fecha",
+        "editor.options.todo_filter.undated"                        : "Sin fecha",
+        "editor.options.mode.shopping"                              : "Lista de la compra",
+        "editor.options.mode.todo"                                  : "Lista de tareas pendientes",
+        "editor.options.inputrow.top"                               : "Arriba",
+        "editor.options.inputrow.bottom"                            : "Abajo",
+        "editor.options.ean_transfer_mode.disabled"                 : "Desactivado",
+        "editor.options.ean_transfer_mode.send"                     : "Enviar escaneos",
+        "editor.options.ean_transfer_mode.receive"                  : "Recibir escaneos",
+        "editor.options.ean_transfer_mode.send_receive"             : "Enviar y recibir escaneos",
+        "editor.options.ean_transfer_actions.add"                   : "Solo adición",
+        "editor.options.ean_transfer_actions.remove"                : "Solo retirada",
+        "editor.options.ean_transfer_actions.both"                  : "Añadir y retirar",
+        "editor.options.ean_transfer_remove_behavior.one_to_one"    : "1:1 (cada retirada)",
+        "editor.options.ean_transfer_remove_behavior.minimum"       : "Stock mínimo",
+        "editor.options.ean_transfer_remove_behavior.off"           : "No transferir",
+        "editor.options.ean_transfer_non_ean.one_to_one"            : "1:1 (cada retirada)",
+        "editor.options.ean_transfer_non_ean.minimum"               : "Usar stock mínimo",
+        "editor.options.ean_transfer_non_ean.ask"                   : "Preguntar siempre",
+        "editor.options.ean_transfer_non_ean.off"                   : "No transferir",
+        "editor.labels.entity"                                      : "Lista de tareas pendientes (Entidad)",
+        "editor.labels.highlight_words"                             : "Palabras destacadas",
+        "editor.labels.chips_with_cat_color"                        : "Usar colores de categoría",
+        "editor.labels.allow_filter_chips"                          : "Permitir filtrar chips",
+        "editor.labels.highlight_color"                             : "Color de resaltado",
+        "editor.labels.chip_merge"                                  : "Combinar chips",
+        "editor.labels.local_chips"                                 : "¿Permitir chips locales?",
+        "editor.labels.chip_font_size"                              : "Tamaño de fuente de chips (px)",
+        "editor.labels.own_css"                                     : "Código CSS personalizado",
+        "editor.labels.chip_color"                                  : "Color de chips locales (navegador)",
+        "editor.labels.chip_color_global"                           : "Color de chips globales (archivo de texto)",
+        "editor.labels.chip_color_default"                          : "Color de chips estándar",
+        "editor.labels.chip_color_dish"                             : "Color de chips de platos",
+        "editor.labels.list_font_size"                              : "Tamaño de fuente de elementos (px)",
+        "editor.labels.title_font_size"                             : "Tamaño de fuente del título (px)",
+        "editor.labels.cat_font_size"                               : "Tamaño de fuente de categorías (px)",
+        "editor.labels.chips_width"                                 : "Ancho de chips - Solo para '(Auto) Modo panel'",
+        "editor.labels.chips_position"                              : "Posición de chips",
+        "editor.labels.quantity"                                    : "Posición de la cantidad del elemento",
+        "editor.labels.acknowledged"                                : "Elementos completados",
+        "editor.labels.chip_click"                                  : "Comportamiento del clic en chips",
+        "editor.labels.show_quantity_box"                           : "Mostrar casilla de cantidad",
+        "editor.labels.show_submit_button"                          : "Mostrar botón de añadir",
+        "editor.labels.show_qrscan_button"                          : "Mostrar botón de escáner QR (solo con https)",
+        "editor.labels.show_export_button_pdf"                      : "Mostrar botón de exportar PDF",
+        "editor.labels.show_export_button"                          : "Mostrar botón de exportar HTML",
+        "editor.labels.show_input_mask"                             : "Mostrar máscara de entrada",
+        "editor.labels.show_plus_minus"                             : "Mostrar botones Más / Menos (solo en modo 'Lista de la compra')",
+        "editor.labels.acknowledge_deletion"                        : "Solicitar confirmación al eliminar elementos",
+        "editor.labels.show_quantity_one"                           : "Mostrar cantidad 1",
+        "editor.labels.sub_text"                                    : "Texto de sugerencia debajo del campo de entrada",
+        "editor.labels.chips"                                       : "Chips por defecto (separados por coma o punto y coma)",
+        "editor.labels.longlived_token"                             : "Token de acceso de larga duración (para acceso mediante archivo de exportación)",
+        "editor.labels.external_url"                                : "URL (externa) de Home Assistant (para acceso mediante archivo de exportación)",
+        "editor.labels.bubble_card"                                 : "Modo Bubble PopUp Card",
+        "editor.labels.debug_mode"                                  : "Modo de depuración",
+        "editor.labels.chip_file"                                   : "Ruta al archivo de texto con los chips globales",
+        "editor.labels.ean_file"                                    : "Ruta al archivo de texto con la lista local de EAN",
+        "editor.labels.category_file"                               : "Ruta al archivo de texto con las categorías globales",
+        "editor.labels.title"                                       : "Título",
+        "editor.labels.title_icon"                                  : "Icono del título",
+        "editor.labels.todo_yellow_m"                               : "Umbral de advertencia para intervalos en meses",
+        "editor.labels.todo_yellow_d"                               : "Umbral de advertencia para intervalos en días",
+        "editor.labels.todo_yellow_h"                               : "Umbral de advertencia para intervalos en horas",
+        "editor.labels.todo_yellow_s"                               : "Umbral de advertencia para fechas de vencimiento sin hora",
+        "editor.labels.todo_warning_thresholds"                     : "Umbrales de advertencia para modo de tareas pendientes",
+        "editor.labels.show_title_info"                             : "Mostrar próxima fecha de vencimiento en modo de tareas pendientes",
+        "editor.labels.show_title_info_icon"                        : "Mostrar icono de próxima fecha de vencimiento",
+        "editor.labels.sort_mode"                                   : "Modo de ordenación",
+        "editor.helpers.show_title_info"                            : "Muestra la próxima fecha de vencimiento de todos los elementos de todas las categorías debajo del título en modo de tareas pendientes, siempre que haya un título configurado. Los elementos vencidos no se muestran aquí; se indican con un signo de exclamación a la derecha del nombre.",
+        "editor.helpers.show_title_info_icon"                       : "Muestra un icono de calendario antes de la fecha de vencimiento como resaltado visual.",
+        "editor.helpers.sort_mode"                                  : "Controla cómo se ordenan los elementos: alfabéticamente, manualmente mediante arrastrar y soltar, por fecha de vencimiento o sin ordenación adicional.",
+        "editor.helpers.todo_filter"                                : "Establece el filtro predeterminado para elementos de tareas pendientes. Este filtro solo se aplica en modo de tareas pendientes.",
+        "editor.helpers.show_todo_filter_menu"                      : "Muestra un botón de filtro en la barra de botones en modo de tareas pendientes. Los usuarios pueden cambiar temporalmente el filtro allí o recordarlo por lista en el navegador.",
+        "editor.helpers.todo_warning_thresholds"                    : "Configuración de los umbrales de advertencia en modo de tareas pendientes. Los valores se especifican en minutos y determinan cuándo las tareas se marcan como 'próximas a vencer'.",
+        "editor.helpers.todo_yellow_m"                              : "Umbral de advertencia para intervalos en meses, definido en minutos (Por defecto: 1440 = 24 horas)",
+        "editor.helpers.todo_yellow_d"                              : "Umbral de advertencia para intervalos en días, definido en minutos (Por defecto: 120 = 2 horas)",
+        "editor.helpers.todo_yellow_h"                              : "Umbral de advertencia para intervalos en horas, definido en minutos (Por defecto: 10)",
+        "editor.helpers.todo_yellow_s"                              : "Umbral de advertencia para fechas de vencimiento sin hora, definido en minutos (Por defecto: 120 = 2 horas)",
+        "editor.helpers.title"                                      : "El título de la tarjeta. Déjalo vacío para ocultarlo",
+        "editor.helpers.input_row_position"                         : "Determina si la máscara de entrada (cantidad, elemento, botón) se muestra arriba o abajo de las entradas.",
+        "editor.helpers.option_row_position"                        : "Determina si los botones (mensaje, limpiar, exportar) se muestran arriba o abajo.",
+        "editor.helpers.allow_dynamic_categories"                   : "Las categorías dinámicas permiten asignar elementos a categorías que no están predefinidas, incluso desde fuera de la tarjeta (ej. mediante automatizaciones en el formato: '@Categoría@ Elemento'). Además, se pueden crear nuevas categorías al añadir elementos mediante la tarjeta. Estas categorías permanecen disponibles hasta que se elimina el último elemento de la categoría.",
+        "editor.helpers.show_message_button"                        : "Muestra (en modo 'Lista de la compra') un botón de mensaje que permite enviar la lista por correo electrónico, Telegram (usando 'notify') o similar. La entidad de notificación debe configurarse en la sección Notificaciones.",
+        "editor.helpers.show_clear_button"                          : "Muestra un botón para limpiar todos los elementos completados de la lista.",
+        "editor.helpers.notify_entity"                              : "La entidad de notificación utilizada, ej. para enviar la lista al pulsar el botón de mensaje. Esta entidad debe estar configurada en Home Assistant previamente (ej. 'notify.mobile_app_xyz' o 'notify.telegram'). Las notificaciones incluyen formato HTML para mejorar la legibilidad. Asegúrate de que la entidad configurada sea compatible con HTML. Las notificaciones mediante SMTP no se incluyen aquí; para SMTP, usa la opción 'notify_entity_smtp'.",
+        "editor.helpers.show_admin_button"                          : "Muestra un botón de opciones de administración, que abre un diálogo para copiar chips del navegador, categorías dinámicas y elementos asignados manualmente.",
+        "editor.helpers.notify_on_change"                           : "Envía una notificación mediante la entidad configurada cada vez que se añade, edita o elimina un elemento.",
+        "editor.helpers.notify_on_change_all"                       : "Envía también la lista completa con cada notificación, en lugar de solo el elemento modificado.",
+        "editor.helpers.notify_on_change_time"                      : "Define (en segundos) cuánto tiempo esperar antes de enviar una notificación (lista completa). Esto es útil cuando se realizan varios cambios en poco tiempo para evitar enviar demasiadas notificaciones. Introduce '0' (cero) para desactivar esta función.",
+        "editor.helpers.notify_entity_smtp"                         : "Nombre de la plataforma de notificación SMTP (de configuration.yaml) utilizada para enviar notificaciones por correo HTML. Importante: Aquí solo se refiere al nombre configurado como 'name: miNombre', ej. 'email_notification', no la entidad completa como 'notify.email_notification'.",
+        "editor.helpers.notify_on_done"                             : "También envía una notificación cuando un elemento se marca como completado. Nota: Esto puede generar muchas notificaciones si se completan muchos elementos durante la compra.",
+        "editor.helpers.show_category_chips"                        : "Genera automáticamente chips basados en los elementos asignados a una categoría. Cada categoría se muestra como un chip desplegable, siempre que contenga al menos un elemento.",
+        "editor.helpers.show_category_add_all"                      : "Muestra un chip 'Todos' dentro de los chips de categoría expandidos. Abre un diálogo de selección para añadir todos o algunos elementos de la categoría a la vez.",
+        "editor.helpers.allow_filter"                               : "Permite filtrar los elementos de la lista mediante el campo de entrada.",
+        "editor.helpers.allow_suggestions"                          : "Muestra sugerencias debajo del campo de entrada cuando el texto coincide con un elemento asignado a una categoría. Al hacer clic en una sugerencia, se añade a la lista. También puedes navegar por las sugerencias con las flechas del teclado y confirmar con Enter.",
+        "editor.helpers.show_done_hidden_items_in_search"           : "Al filtrar elementos de la lista, esta opción asegura que los elementos completados (y ocultos) también se incluyan en los resultados de búsqueda.",
+        "editor.helpers.capitalize_first_letter"                    : "Si está activado, la primera letra del campo de entrada se pondrá automáticamente en mayúscula.",
+        "editor.helpers.show_descriptions"                          : "Muestra la descripción del elemento debajo de su nombre, si la lista de tareas seleccionada admite descripciones.",
+        "editor.helpers.show_ean_brand"                             : "Muestra la marca debajo del nombre del producto si está disponible.",
+        "editor.helpers.show_ean_quantity"                          : "Muestra la indicación de cantidad del producto EAN si está disponible.",
+        "editor.helpers.ean_scanner_mac"                            : "Filtro opcional para la dirección MAC Bluetooth. Si se especifica, solo se procesarán los escaneos de este dispositivo. Déjalo vacío para permitir cualquier escáner.",
+        "editor.helpers.ean_database_entity"                        : "Lista de tareas opcional dedicada exclusivamente a esta función. Guarda de forma permanente los productos EAN aprendidos y sus categorías entre todos los dispositivos. No utilices esta lista para otras tareas. La lista de la compra predeterminada no es adecuada porque no admite descripciones. Para desactivar la función, vuelve a quitar la lista seleccionada de la configuración.",
+        "editor.helpers.ean_create_chip"                            : "Crea un chip local tras añadir un producto reconocido por EAN, siempre que la creación de chips locales esté activada globalmente. Esto se aplica a escáneres Bluetooth, la cámara y códigos EAN introducidos manualmente.",
+        "editor.helpers.list_script_enabled"                        : "Notifica cambios realizados con éxito por esta tarjeta: elemento añadido, eliminado, cantidad cambiada o renombrado. Por defecto: Desactivado.",
+        "editor.helpers.list_script_entity"                         : "Envía el nombre, la categoría, la cantidad, la entidad de lista y el modo al script seleccionado. Los cambios realizados fuera de esta tarjeta no se pueden notificar. El script EAN se puede usar en paralelo.",
+        "editor.helpers.ean_script_enabled"                         : "Llama al script de Home Assistant seleccionado con el estado y los datos del producto cuando ocurre un evento EAN.",
+        "editor.helpers.ean_remove_mode"                            : "Mantén pulsado el botón Añadir durante un segundo para activar el modo de retirada. Los escaneos EAN reducirán la cantidad de un elemento coincidente o lo eliminarán de la lista. Un clic normal en el botón o recargar la página finaliza el modo. El botón Añadir debe estar visible.",
+        "editor.helpers.ean_database_suggestions"                   : "Añade nombres de productos únicos de la base de datos EAN a las sugerencias de búsqueda normales. Los productos también se pueden buscar por su EAN. Varios EAN con el mismo nombre de producto se sugerirán una sola vez.",
+        "editor.helpers.show_ean_database_badge"                    : "Muestra un icono discreto de código de barras junto a los elementos con coincidencia exacta de nombre de producto. Al hacer clic, muestra todos los registros EAN asignados sin editarlos.",
+        "editor.helpers.ean_transfer_mode"                          : "Determina si esta tarjeta envía los escaneos EAN resueltos a través de una lista compartida de transferencia ISL, recibe escaneos para su propia lista de la compra o ambos. Por defecto: Desactivado.",
+        "editor.helpers.ean_transfer_entity"                        : "Lista de tareas independiente reservada exclusivamente como cola de transferencia persistente ISL. No debe ser a la vez una lista de la compra ni una base de datos EAN, y debe admitir descripciones.",
+        "editor.helpers.ean_transfer_target_entity"                 : "Se utiliza solo en «Enviar escaneos» y «Enviar y recibir escaneos». En los demás modos, este ajuste se ignora.",
+        "editor.helpers.ean_transfer_actions"                       : "Determina si los escaneos de adición, los escaneos de retirada o ambas acciones se transfieren a la lista de la compra de destino. El modo de llenado de la base de datos siempre permanece local. Por defecto: Añadir y retirar.",
+        "editor.helpers.sync_transfer.options"                      : "Aquí defines la lista de transferencia compartida, el destino y el comportamiento en retiradas. Los ajustes no requeridos para el modo seleccionado se ignoran.",
+        "editor.helpers.ean_transfer_remove_behavior"               : "1:1 transfiere cada cantidad realmente retirada. Stock mínimo transfiere solo cuando el stock restante alcanza o cae por debajo del umbral. Los valores del producto en la base de datos EAN anulan este valor por defecto. Por defecto: 1:1.",
+        "editor.helpers.ean_transfer_default_minimum_stock"         : "Valor por defecto opcional de la tarjeta para el modo Stock mínimo. Sin un valor, los productos sin su propio mínimo no se transfieren automáticamente.",
+        "editor.helpers.ean_transfer_non_ean"                       : "Comportamiento en retiradas de variantes de inventario sin EAN. «Usar stock mínimo» utiliza el valor de la variante manual o, en su defecto, el valor por defecto de la tarjeta. Solo se aplica mientras el envío de retiradas esté activado. Por defecto: No transferir.",
+        "editor.helpers.ean_script_entity"                          : "El script puede proporcionar salida de voz, reproducir sonidos, enviar notificaciones o ejecutar acciones adicionales. La selección se conserva al desactivar la salida de script.",
+        "editor.helpers.title_icon"                                 : "Muestra el icono seleccionado antes del título.",
+        "editor.helpers.font.sizes"                                 : "Define los tamaños de fuente para la lista, categorías y chips.",
+        "editor.helpers.colors"                                     : "Define los ajustes de color para los chips.",
+        "editor.helpers.category.options"                           : "Aquí puedes configurar las categorías utilizadas en la lista de la compra y de tareas pendientes. Puedes definir categorías locales (en la tarjeta) o cargar un archivo de texto con categorías globales. Para más información sobre la estructura de categorías, consulta la documentación.",
+        "editor.helpers.export.options"                             : "Aquí puedes configurar las opciones de exportación.",
+        "editor.helpers.message.options"                            : "Aquí puedes configurar cómo funciona el sistema de mensajes y qué entidad de notificación se utiliza para enviar la lista. El sistema de notificaciones solo funciona en modo 'Lista de la compra'.",
+        "editor.helpers.dishes.options"                             : "Aquí puedes configurar platos utilizados en la lista de la compra. Esta función permite añadir varios elementos a la vez.",
+        "editor.helpers.chips.options"                              : "Aquí puedes configurar las opciones de chips. Los chips son botones de selección rápida para añadir rápidamente elementos frecuentes a la lista.",
+        "editor.helpers.item.options"                               : "Aquí puedes configurar los ajustes para los elementos de la lista.",
+        "editor.helpers.ean_scanner.options"                        : "Aquí puedes configurar el reconocimiento EAN y el escáner Bluetooth. Para procesar eventos de escaneo, también debes activar la función en las opciones de administración de la tarjeta en el dispositivo correspondiente.",
+        "editor.helpers.general.options"                            : "Aquí puedes configurar los ajustes generales de la tarjeta.",
+        "editor.helpers.entity"                                     : "Si no se selecciona ninguna entidad, se usará automáticamente la lista de la compra predeterminada de Home Assistant. Sin embargo, esta lista no cuenta con función de fechas de vencimiento y solo debe usarse en modo 'Lista de la compra', no en modo 'Lista de tareas pendientes'.",
+        "editor.helpers.mode"                                       : "Define cómo se utiliza la lista. En modo 'Lista de la compra', dispone de funciones ampliadas para la lista original, pero sin fechas de vencimiento. En modo 'Lista de tareas pendientes', se pueden establecer y gestionar fechas de vencimiento adicionales. Nota: La entidad original 'Shopping List' de Home Assistant no admite fechas de vencimiento. En modo de tareas pendientes tampoco hay entrada de cantidad, botones más/menos, botones de exportación ni botón para eliminar completados.",
+        "editor.helpers.highlight_words"                            : "Lista de palabras que deben destacarse en los chips (por fondo). Introduce como lista separada por comas o punto y coma, ej. 'Mantequilla,Plátanos,Harina'.",
+        "editor.helpers.chips_with_cat_color"                       : "Si un chip está asignado como 'elemento' a una categoría y esa categoría tiene un color definido, el chip se mostrará en el color de la categoría. El orden de prioridad de color es: Destacado > Categoría > Global > Estándar > Navegador.",
+        "editor.helpers.allow_filter_chips"                         : "Permite filtrar los chips mediante el campo de entrada.",
+        "editor.helpers.highlight_color"                            : "Código de color hexadecimal o rgba para palabras destacadas. Ejemplos: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+        "editor.helpers.chip_merge"                                 : "Determina cómo se combinan y muestran los chips globales, estándar y del navegador.",
+        "editor.helpers.list_font_size"                             : "Establece el tamaño de fuente para los elementos de la lista. Por defecto: 14px.",
+        "editor.helpers.title_font_size"                            : "Establece el tamaño de fuente para el título. Por defecto: 16px.",
+        "editor.helpers.cat_font_size"                              : "Establece el tamaño de fuente para las categorías en la lista. Por defecto: 16px.",
+        "editor.helpers.chip_font_size"                             : "Establece el tamaño de fuente para los chips de selección rápida. Por defecto: 12px.",
+        "editor.helpers.own_css"                                    : "Aquí puedes introducir tu propio código CSS para personalizar la tarjeta. Ejemplo: '.card { background: transparent; }'. Para CSS multilínea, usa el símbolo de barra vertical '|' en la primera línea sin código adicional. Si prefieres escribir el CSS en una sola línea, usa comillas dobles antes y después del código. Advertencia: Un CSS no válido puede provocar que la tarjeta no se muestre correctamente.",
+        "editor.helpers.chip_color"                                 : "Código de color hexadecimal o rgba para chips locales (navegador), ej. '#2196f3' o 'rgba(100,100,100,0.3)'.",
+        "editor.helpers.chip_color_global"                          : "Código de color hexadecimal o rgba para chips globales (archivo de texto), ej. '#2196f3' o 'rgba(100,100,100,0.3)'.",
+        "editor.helpers.chip_color_default"                         : "Código de color hexadecimal o rgba para chips estándar, ej. '#2196f3' o 'rgba(100,100,255,0.3)'.",
+        "editor.helpers.chip_color_dish"                            : "Código de color hexadecimal o rgba para chips de platos, ej. '#745E3D' o 'rgba(100,100,255,0.3)'.",
+        "editor.helpers.local_chips"                                : "Los chips locales se guardan únicamente en el navegador y no se sincronizan con otros dispositivos. Se perderán al borrar la caché del navegador.",
+        "editor.helpers.chips_width"                                : "Ancho del contenedor de chips en píxeles. Solo se aplica cuando se selecciona '(Auto) Modo panel'.",
+        "editor.helpers.chips_position"                             : "Controla dónde se muestran los chips (auto: abajo en móviles, derecha en escritorio/tablet, o posiciones fijas).",
+        "editor.helpers.quantity"                                   : "Determina si la cantidad se muestra al principio ('10x Mantequilla') o al final ('Mantequilla (10)'). Afecta solo a elementos nuevos.",
+        "editor.helpers.acknowledged"                               : "Controla cómo se muestran los elementos completados (marcados): visibles, ocultos o movidos al final.",
+        "editor.helpers.chip_click"                                 : "Determina si los chips añaden elementos con un solo clic o con doble clic. Clics repetidos aumentan la cantidad en 1.",
+        "editor.helpers.show_quantity_box"                          : "Muestra la pequeña casilla de entrada de cantidad (arriba a la izquierda) o la oculta.",
+        "editor.helpers.show_submit_button"                         : "Muestra el botón de añadir. Si está oculto, pulsa Enter para añadir un elemento.",
+        "editor.helpers.show_qrscan_button"                         : "Muestra el botón de escáner QR. Permite escanear uno o varios elementos a la vez mediante código QR. Para múltiples elementos, cada uno debe estar en una línea separada. Las cantidades se pueden especificar entre paréntesis, ej., 'Plátanos (6)'. Debes acceder a Home Assistant mediante conexión https://.",
+        "editor.helpers.show_export_button_pdf"                     : "Muestra el botón de exportar PDF abajo. Con la función de exportar a PDF, puedes descargar la lista de tareas actual como archivo PDF para uso sin conexión.",
+        "editor.helpers.show_export_button"                         : "Muestra el botón de exportar HTML abajo. Con la función de exportar a HTML, puedes descargar la lista de tareas actual como archivo HTML para uso sin conexión.",
+        "editor.helpers.show_input_mask"                            : "Muestra la máscara de entrada completa (cantidad + texto + botón de añadir). Útil para restringir la entrada a chips predefinidos.",
+        "editor.helpers.show_plus_minus"                            : "Muestra los botones Más / Menos para aumentar / disminuir la cantidad. (No disponible en modo 'Lista de tareas pendientes').",
+        "editor.helpers.acknowledge_deletion"                       : "Activa un cuadro de diálogo de confirmación al eliminar elementos para evitar eliminaciones accidentales.",
+        "editor.helpers.show_quantity_one"                          : "Muestra también la cantidad '1'. Si está desactivado, la cantidad 1 se omite para elementos nuevos.",
+        "editor.helpers.sub_text"                                   : "Texto mostrado debajo del campo de entrada para sugerencias o explicaciones. Se permite HTML. Usa un solo espacio para ocultar el campo.",
+        "editor.helpers.chips"                                      : "Define los chips por defecto, ej. 'Leche,Huevos,Pan'.",
+        "editor.helpers.chip_file"                                  : "Ejemplo: /local/chips.txt si el archivo se encuentra en la carpeta www. Se requiere un chip por línea.",
+        "editor.helpers.ean_file"                                   : "Ejemplo: /local/ean.txt si el archivo se encuentra en la carpeta www. Cada línea debe contener una entrada en el formato 'EAN Nombre', ej. '1234567890123 Artículo de prueba'. Admite formatos EAN EAN-8, UPC (12), EAN-13 y GS1-14.",
+        "editor.helpers.category_file"                              : "Ejemplo: /local/categories.txt si el archivo se encuentra en la carpeta www. Para el formato del archivo, consulta la documentación.",
+        "editor.helpers.category_merge_mode"                        : "Elige cómo deben combinarse las categorías locales, globales y dinámicas. 'local_only' muestra solo las categorías locales, 'global_only' solo las globales y 'dynamic_only' solo las dinámicas. Todas las demás opciones combinan dos o los tres tipos de distintas formas. La prioridad de combinación sigue el orden en que aparecen de izquierda a derecha.",
+        "editor.helpers.category_display"                           : "Determina si se muestran los encabezados de categoría. Las categorías permanecen activas para asignación, ordenación, sugerencias y chips incluso si los encabezados están ocultos. Sin encabezados, sus colores de categoría no serán visibles en la lista.",
+        "editor.helpers.bubble_card"                                : "Activa esta opción si usas la tarjeta dentro de Bubble PopUp Card. En Bubble Card, `background_update: true` y `close_by_clicking_outside: false` deben estar activados para que la tarjeta funcione correctamente.",
+        "editor.helpers.debug_mode"                                 : "Escribe mensajes de diagnóstico adicionales en la consola del navegador. Debe permanecer desactivado en uso normal.",
+        "editor.helpers.show_cat_exclamation_mark"                  : "Muestra un signo de exclamación en la categoría en modo de tareas pendientes si contiene elementos vencidos.",
+        "editor.helpers.show_title_exclamation_mark"                : "Muestra un signo de exclamación en el título en modo de tareas pendientes si contiene elementos vencidos en cualquier categoría.",
+        "editor.helpers.show_cat_next_due"                          : "Si está activado, la próxima fecha de vencimiento se mostrará debajo del nombre de la categoría en modo de tareas pendientes. Así puedes ver de un vistazo cuándo vence el próximo elemento.",
+        "editor.helpers.cat_double_sized_icon"                      : "Si se muestra la próxima fecha de vencimiento, esta opción permite agrandar el icono para que se integre mejor visualmente.",
+        "editor.helpers.show_cat_count"                             : "Si está activado, el número de elementos de cada categoría se mostrará junto al nombre. En modo de tareas pendientes, el recuento se muestra invertido. Así, el número antes de la '/' solo incluye las entradas no vencidas. (Ejemplo: 3/5 significa que de 5 entradas, 3 aún no han vencido).",
+        "editor.helpers.hide_cat_count_all_done"                    : "Si está activado, el recuento de elementos se ocultará para las categorías donde todos los elementos estén marcados como completados.",
+        "editor.helpers.show_cat_popup"                             : "Si está activado, aparecerá una ventana emergente al añadir un elemento nuevo para seleccionar una categoría para el elemento.",
+        "editor.helpers.longlived_token"                            : "Un token de acceso de larga duración para autenticación persistente con Home Assistant. Se puede crear en el perfil de usuario en 'Seguridad → Tokens de acceso de larga duración'. Advertencia: Trata este token con confidencialidad ya que otorga acceso total a tu sistema. Ten en cuenta también que si se usa HTTP en lugar de HTTPS, el token se transmite sin cifrar.",
+        "editor.helpers.external_url"                               : "La URL (externa) de tu instalación de Home Assistant (ej. 'https://mi-ha.duckdns.org:8123'). Es necesaria si usas la función de exportación para sincronizar elementos posteriormente con Home Assistant. Si no introduces una URL aquí, se usará la URL desde la que se accedió al panel.",
+        "editor.helpers.categories"                                 : "Las categorías permiten agrupar elementos automáticamente. Cada categoría comienza con - name: <NombreCategoría> y contiene una lista de palabras clave bajo items. Ejemplo: - name: Frutas items: - Fresas - Ciruelas - Peras - Plátanos. Opcionalmente, cada categoría puede tener un icono (ej. mdi:apple) y un color de fondo bgcolor (ej. #247645). Cualquier elemento que coincida con una de las palabras clave se asignará automáticamente a esta categoría.",
+        "editor.helpers.dishes"                                     : "Con los platos puedes añadir varios elementos a la vez. Cada plato comienza con - name: <Plato> y contiene una lista de elementos bajo 'items'. Ejemplo: - name: Hamburguesa items: - Pan - Carne (2) - Queso - Patatas (4). Cada plato puede tener opcionalmente un color de fondo (bgcolor, ej. #247645). Para más información, consulta la documentación.",
+        "editor.helpers.dishes_confirm_add"                         : "Si está activado, al hacer clic en un plato se abre un diálogo de selección. Si está desactivado, todos los elementos del plato se añaden inmediatamente."
     },
 
     fr: {
@@ -1658,6 +2319,8 @@ function detectLanguage() {
 function translate(key) {
     const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
+    const baseLang = lang.split('-')[0];
+    if (TRANSLATIONS[baseLang] && TRANSLATIONS[baseLang][key]) return TRANSLATIONS[baseLang][key];
     if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key]; // Fallback Englisch
     return key;
 }
@@ -1960,6 +2623,15 @@ class HaShoppingListImproved extends HTMLElement {
         this._inventoryDefaultAction = ["none", "add", "remove", "register"].includes(config.inventory_default_action)
             ? config.inventory_default_action : "none";
         this._inventoryHighlightZero = config.inventory_highlight_zero !== false;
+        this._inventoryMarkAboveMinimum = ["green", "none"].includes(config.inventory_mark_above_minimum)
+            ? config.inventory_mark_above_minimum : "none";
+        this._inventoryMarkAtMinimum = ["orange", "red", "green", "none"].includes(config.inventory_mark_at_minimum)
+            ? config.inventory_mark_at_minimum : "none";
+        this._inventoryMarkBelowMinimum = ["orange", "red", "none"].includes(config.inventory_mark_below_minimum)
+            ? config.inventory_mark_below_minimum : "orange";
+        this._inventoryMarkZero = ["red", "none"].includes(config.inventory_mark_zero)
+            ? config.inventory_mark_zero
+            : (config.inventory_highlight_zero === false ? "none" : "red");
         this._inventoryGroupVariants = config.inventory_group_variants !== false;
         this._inventoryShowHidden = false;
         this._inventoryFilter = "all";
@@ -2000,6 +2672,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanTransferNonEan = ["one_to_one", "minimum", "ask", "off"].includes(config.ean_transfer_non_ean)
             ? config.ean_transfer_non_ean
             : "off";
+        this._eanTransferGroupedAsName = config.ean_transfer_grouped_as_name === true;
 
         if (
             !["shopping", "inventory"].includes(this._mode) ||
@@ -2313,7 +2986,6 @@ class HaShoppingListImproved extends HTMLElement {
                         ] } },
                         default: "none"
                     },
-                    { name: "inventory_highlight_zero", selector: { boolean: {} }, default: true },
                     {
                         name: "sort_mode",
                         selector: {
@@ -2542,6 +3214,11 @@ class HaShoppingListImproved extends HTMLElement {
                             }
                         },
                         default: "off"
+                    },
+                    {
+                        name: "ean_transfer_grouped_as_name",
+                        selector: { boolean: {} },
+                        default: false
                     }
                 ]
             },
@@ -2779,6 +3456,48 @@ class HaShoppingListImproved extends HTMLElement {
                 label: 'colors',
                 icon: 'mdi:format-color-fill',
                 schema: [
+                    {
+                        type: 'expandable',
+                        label: 'inventory_stock_marking',
+                        icon: 'mdi:palette-swatch-outline',
+                        schema: [
+                            {
+                                name: "inventory_mark_above_minimum",
+                                selector: { select: { options: [
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
+                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
+                                ] } },
+                                default: "none"
+                            },
+                            {
+                                name: "inventory_mark_at_minimum",
+                                selector: { select: { options: [
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
+                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
+                                ] } },
+                                default: "none"
+                            },
+                            {
+                                name: "inventory_mark_below_minimum",
+                                selector: { select: { options: [
+                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
+                                ] } },
+                                default: "orange"
+                            },
+                            {
+                                name: "inventory_mark_zero",
+                                selector: { select: { options: [
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
+                                ] } },
+                                default: "red"
+                            }
+                        ]
+                    },
                     {
                         name: "chip_color",
                         selector: { text: {} },
@@ -3331,6 +4050,24 @@ class HaShoppingListImproved extends HTMLElement {
             console.warn("[ha-shopping-list-improved] Unable to save EAN scan queue:", error);
         }
         this._updateEanQueuePopupStatus();
+        this._updateInventoryQueueButton();
+    }
+
+    _getEanScanQueueCount() {
+        return (this._eanScanQueue || []).reduce(
+            (sum, item) => sum + Math.max(1, Math.floor(Number(item?.quantity) || 1)),
+            0
+        );
+    }
+
+    _updateInventoryQueueButton() {
+        const label = this._shadow?.getElementById('inventoryQueueLabel');
+        if (!label) return;
+
+        const count = this._getEanScanQueueCount();
+        label.textContent = count > 0
+            ? `${translate("ui.inventory.queue")} (${count})`
+            : translate("ui.inventory.queue");
     }
 
     _clearEanScanQueue() {
@@ -3482,7 +4219,7 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _parseInventoryVariant(item) {
-        if (!item) return { ean: null, minimumStock: null, legacy: true };
+        if (!item) return { ean: null, minimumStock: null, groupMinimumStock: null, legacy: true };
         try {
             const record = JSON.parse(String(item.description || ""));
             if (
@@ -3498,19 +4235,27 @@ class HaShoppingListImproved extends HTMLElement {
                     Number.isInteger(Number(record.minimumStock)) &&
                     Number(record.minimumStock) >= 0
                 ) ? Number(record.minimumStock) : null;
+                const groupMinimumStock = (
+                    record.groupMinimumStock !== null &&
+                    record.groupMinimumStock !== undefined &&
+                    record.groupMinimumStock !== "" &&
+                    Number.isInteger(Number(record.groupMinimumStock)) &&
+                    Number(record.groupMinimumStock) >= 0
+                ) ? Number(record.groupMinimumStock) : null;
                 return {
                     ean: record.ean === null ? null : String(record.ean),
                     minimumStock,
+                    groupMinimumStock,
                     legacy: false
                 };
             }
         } catch (_error) {
             // Existing inventory descriptions are treated as the manual variant.
         }
-        return { ean: null, minimumStock: null, legacy: true };
+        return { ean: null, minimumStock: null, groupMinimumStock: null, legacy: true };
     }
 
-    _serializeInventoryVariant(ean = null, minimumStock = null) {
+    _serializeInventoryVariant(ean = null, minimumStock = null, groupMinimumStock = null) {
         const record = {
             schema: INVENTORY_VARIANT_SCHEMA,
             type: INVENTORY_VARIANT_TYPE,
@@ -3525,6 +4270,14 @@ class HaShoppingListImproved extends HTMLElement {
         ) {
             record.minimumStock = Number(minimumStock);
         }
+        if (
+            groupMinimumStock !== null &&
+            groupMinimumStock !== "" &&
+            Number.isInteger(Number(groupMinimumStock)) &&
+            Number(groupMinimumStock) >= 0
+        ) {
+            record.groupMinimumStock = Number(groupMinimumStock);
+        }
         return JSON.stringify(record);
     }
 
@@ -3533,7 +4286,7 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _inventoryItemMatchesName(item, productName) {
-        return this._normalizeEanDatabaseProductName(this._getNameOnly(item?.name)) ===
+        return this._normalizeEanDatabaseProductName(this._getNameOnly(item?.name || item?.summary || "")) ===
             this._normalizeEanDatabaseProductName(productName);
     }
 
@@ -3544,8 +4297,73 @@ class HaShoppingListImproved extends HTMLElement {
         return (items || []).filter(item => {
             if (!this._inventoryItemMatchesName(item, productName)) return false;
             if (normalizedCategory === undefined) return true;
-            return String(this._getCategory(item.name) || "none").trim().toLocaleLowerCase() === normalizedCategory;
+            return String(this._getCategory(item.name || item.summary || "") || "none").trim().toLocaleLowerCase() === normalizedCategory;
         });
+    }
+
+    _getInventoryGroupState(productName, category, items = this._items) {
+        const variants = this._getInventoryVariantItems(productName, category, items);
+        const values = [...new Set(variants
+            .map(item => this._parseInventoryVariant(item).groupMinimumStock)
+            .filter(value => Number.isInteger(value) && value >= 0))];
+        return {
+            variants,
+            stock: variants.reduce((sum, item) => sum + Math.max(0, Number(
+                this._getQuantity(item.name || item.summary || "") || 0
+            )), 0),
+            minimum: variants.length > 1 && values.length ? values[0] : null,
+            conflictingMinimums: variants.length > 1 && values.length > 1,
+            minimumValues: values
+        };
+    }
+
+    async _writeInventoryVariantMetadata(item, overrides = {}) {
+        const parsed = this._parseInventoryVariant(item);
+        await this._callListService({
+            type: "call_service",
+            domain: "todo",
+            service: "update_item",
+            target: { entity_id: this._entity },
+            service_data: {
+                item: item.id,
+                description: this._serializeInventoryVariant(
+                    Object.prototype.hasOwnProperty.call(overrides, "ean") ? overrides.ean : parsed.ean,
+                    Object.prototype.hasOwnProperty.call(overrides, "minimumStock") ? overrides.minimumStock : parsed.minimumStock,
+                    Object.prototype.hasOwnProperty.call(overrides, "groupMinimumStock")
+                        ? overrides.groupMinimumStock
+                        : parsed.groupMinimumStock
+                )
+            }
+        });
+    }
+
+    async _setInventoryGroupMinimum(productName, category, minimum, items = this._items) {
+        const variants = this._getInventoryVariantItems(productName, category, items);
+        const normalized = variants.length > 1 &&
+            minimum !== null &&
+            minimum !== undefined &&
+            minimum !== "" &&
+            Number.isInteger(Number(minimum)) &&
+            Number(minimum) >= 0
+            ? Number(minimum)
+            : null;
+        for (const variant of variants) {
+            if (this._parseInventoryVariant(variant).groupMinimumStock === normalized) continue;
+            await this._writeInventoryVariantMetadata(variant, { groupMinimumStock: normalized });
+        }
+        return normalized;
+    }
+
+    async _normalizeInventoryGroupMinimum(productName, category) {
+        const state = this._getInventoryGroupState(productName, category);
+        if (!state.variants.length) return null;
+        if (state.variants.length < 2) {
+            await this._setInventoryGroupMinimum(productName, category, null);
+            return null;
+        }
+        const minimum = state.minimumValues.length ? state.minimumValues[0] : null;
+        await this._setInventoryGroupMinimum(productName, category, minimum);
+        return minimum;
     }
 
     _findInventoryVariantItem(items, productName, ean = null, completed = null) {
@@ -4947,8 +5765,24 @@ class HaShoppingListImproved extends HTMLElement {
                             });
                             if (!peerSaved) return false;
                         }
-                        await this._updateCurrentInventoryGroupCategory(record.name, nextCategory || "none");
+                        const inventoryUpdated = await this._updateCurrentInventoryGroupCategory(
+                            record.name, nextCategory || "none"
+                        );
+                        if (!inventoryUpdated) {
+                            await this._saveEanDatabaseProduct({
+                                ...record,
+                                _allowGroupCategoryChange: true
+                            });
+                            for (const peer of groupPeers) {
+                                await this._saveEanDatabaseProduct({
+                                    ...peer,
+                                    _allowGroupCategoryChange: true
+                                });
+                            }
+                            return false;
+                        }
                     }
+                    if (saved) this._renderList();
                     return saved;
                 };
 
@@ -6260,6 +7094,9 @@ class HaShoppingListImproved extends HTMLElement {
             @media (max-width: 480px) {
                 .inventory-feedback .inventory-undo-text { display: none; }
             }
+            .inventory-stock-red { border-left: 3px solid var(--error-color, #db4437); }
+            .inventory-stock-orange { border-left: 3px solid var(--warning-color, #e0a526); }
+            .inventory-stock-green { border-left: 3px solid var(--success-color, #2e7d32); }
             .inventory-zero { border-left: 3px solid var(--error-color, #db4437); }
             .inventory-zero .name { color: var(--error-color, #db4437); }
             .inventory-minimum { border-left: 3px solid var(--warning-color, #e0a526); }
@@ -6329,7 +7166,7 @@ class HaShoppingListImproved extends HTMLElement {
                             <button type="button" id="inventoryHiddenBtn" title="${translate("ui.inventory.hidden")}" aria-label="${translate("ui.inventory.hidden")}"><ha-icon icon="mdi:eye-off-outline"></ha-icon></button>
                             <button type="button" id="inventoryGroupBtn" title="${translate("ui.inventory.group_variants")}" aria-label="${translate("ui.inventory.group_variants")}" aria-pressed="${String(this._inventoryGroupVariants)}"><ha-icon icon="mdi:layers-triple-outline"></ha-icon></button>
                             <button type="button" class="inventory-filter-secondary" id="inventoryDatabaseBtn" title="${translate("ui.inventory.database")}" aria-label="${translate("ui.inventory.database")}"><ha-icon icon="mdi:database"></ha-icon><span>${translate("ui.inventory.database_short")}</span></button>
-                            <button type="button" class="inventory-filter-secondary" id="inventoryQueueBtn" title="${translate("ui.inventory.queue")}" aria-label="${translate("ui.inventory.queue")}"><ha-icon icon="mdi:format-list-checks"></ha-icon><span>${translate("ui.inventory.queue")}</span></button>
+                            <button type="button" class="inventory-filter-secondary" id="inventoryQueueBtn" title="${translate("ui.inventory.queue")}" aria-label="${translate("ui.inventory.queue")}"><ha-icon icon="mdi:format-list-checks"></ha-icon><span id="inventoryQueueLabel">${translate("ui.inventory.queue")}</span></button>
                         </div>
                     ` : ``}
 
@@ -6475,7 +7312,9 @@ class HaShoppingListImproved extends HTMLElement {
                         ? 'inventory_none' : `inventory_${action}`);
                 });
             });
-            this._shadow.getElementById('inventoryFilterBtn')?.addEventListener('click', () => this._openInventoryFilterPopup());
+            this._shadow.getElementById('inventoryFilterBtn')?.addEventListener('click', event => {
+                this._openInventoryFilterPopup(event.currentTarget);
+            });
             this._shadow.getElementById('inventoryHiddenBtn')?.addEventListener('click', event => {
                 this._inventoryShowHidden = !this._inventoryShowHidden;
                 event.currentTarget.setAttribute('aria-pressed', String(this._inventoryShowHidden));
@@ -6492,6 +7331,7 @@ class HaShoppingListImproved extends HTMLElement {
             this._shadow.getElementById('inventoryQueueBtn')?.addEventListener('click', () => {
                 this._showInventoryQueuePopup();
             });
+            this._updateInventoryQueueButton();
             this._shadow.getElementById('inventoryCodesBtn')?.addEventListener('click', () => this._showInventoryControlCodes());
         }
 
@@ -8297,7 +9137,7 @@ async _checkEAN(text, options = {}) {
                 button.type = 'button';
                 button.style.cssText = 'display:flex;width:100%;justify-content:space-between;gap:12px;padding:10px;margin:0 0 7px;border:1px solid var(--divider-color,#ccc);border-radius:6px;background:var(--secondary-background-color,#eee);color:inherit;text-align:left;cursor:pointer;';
                 const label = document.createElement('span');
-                label.textContent = this._inventoryVariantLabel(option.ean);
+                label.textContent = this._inventoryVariantLabel(option.ean, true);
                 const values = document.createElement('span');
                 values.style.whiteSpace = 'nowrap';
                 values.style.color = 'var(--secondary-text-color,#666)';
@@ -8352,10 +9192,16 @@ async _checkEAN(text, options = {}) {
             return this._sendInventoryItemWithoutStock(pseudoItem, product, ean);
         }
         const remainingStock = Math.max(0, currentStock - 1);
+        const groupState = this._getInventoryGroupState(name, category);
+        const isGrouped = groupState.variants.length > 1;
+        const remainingGroupStock = Math.max(0, groupState.stock - 1);
         let transferWithoutEan = false;
         let shouldTransfer = false;
         if (this._isEanTransferActionEnabled("shopping_remove")) {
-            if (product) {
+            if (isGrouped && groupState.minimum !== null) {
+                shouldTransfer = product?.automaticTransferDisabled !== true &&
+                    remainingGroupStock <= groupState.minimum;
+            } else if (product) {
                 shouldTransfer = this._getAutomaticRemovalTransferDecision(product, remainingStock);
             } else if (this._eanTransferNonEan === "one_to_one") {
                 transferWithoutEan = true;
@@ -8378,10 +9224,20 @@ async _checkEAN(text, options = {}) {
             imageUrl: null,
             category
         };
+        const sendGroupIdentity = isGrouped && (groupState.minimum !== null || this._eanTransferGroupedAsName);
+        const effectiveTransferProduct = sendGroupIdentity ? {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        } : transferProduct;
+        const effectiveTransferEan = sendGroupIdentity ? null : ean;
         let transferId = null;
         if (shouldTransfer) {
             transferId = await this._createEanTransfer(
-                "shopping_add", ean, transferProduct, 1,
+                "shopping_add", effectiveTransferEan, effectiveTransferProduct, 1,
                 { status: "source_pending", sourceOperation: "shopping_remove" }
             );
             if (!transferId) return false;
@@ -8398,14 +9254,15 @@ async _checkEAN(text, options = {}) {
             category,
             transferId,
             transferQuantity: transferId ? removal.removedQuantity : 0,
-            product: transferProduct,
+            product: effectiveTransferProduct,
             ean,
+            transferEan: effectiveTransferEan,
             scriptData: {
-                ean: ean || "",
-                brand: transferProduct.brand,
-                productQuantity: transferProduct.quantity,
-                category: transferProduct.category,
-                imageUrl: transferProduct.imageUrl,
+                ean: effectiveTransferEan || "",
+                brand: effectiveTransferProduct.brand,
+                productQuantity: effectiveTransferProduct.quantity,
+                category: effectiveTransferProduct.category,
+                imageUrl: effectiveTransferProduct.imageUrl,
                 scanMode: "inventory_remove"
             }
         };
@@ -8418,13 +9275,13 @@ async _checkEAN(text, options = {}) {
                 return false;
             }
             await this._runEanScript("transfer_sent", {
-                ean: ean || "",
+                ean: effectiveTransferEan || "",
                 name,
-                brand: transferProduct.brand,
-                productQuantity: transferProduct.quantity,
+                brand: effectiveTransferProduct.brand,
+                productQuantity: effectiveTransferProduct.quantity,
                 scanQuantity: removal.removedQuantity,
-                category: transferProduct.category,
-                imageUrl: transferProduct.imageUrl,
+                category: effectiveTransferProduct.category,
+                imageUrl: effectiveTransferProduct.imageUrl,
                 scanMode: "shopping_remove"
             });
         }
@@ -8613,15 +9470,57 @@ async _checkEAN(text, options = {}) {
         return this._eanTransferDefaultMinimumStock;
     }
 
-    _isInventoryItemAtMinimum(item) {
-        const variants = item?.inventoryGroup ? item.inventoryVariants : [item];
-        return (variants || []).some(variant => {
+    _getInventoryItemMinimumComparison(item) {
+        const itemName = this._getNameOnly(item?.name);
+        const itemCategory = this._getCategory(item?.name) || null;
+        const physicalGroup = this._getInventoryVariantItems(itemName, itemCategory);
+        const displayedVariants = item?.inventoryGroup ? item.inventoryVariants : [item];
+        const groupedVariants = physicalGroup.length > 1 ? physicalGroup : displayedVariants;
+
+        if ((groupedVariants || []).length > 1) {
+            const group = this._getInventoryGroupState(itemName, itemCategory, groupedVariants);
+            if (group.minimum !== null) {
+                return {
+                    hasMinimum: true,
+                    stock: group.stock,
+                    minimum: group.minimum,
+                    relation: group.stock < group.minimum
+                        ? "below"
+                        : group.stock === group.minimum ? "equal" : "above"
+                };
+            }
+        }
+
+        const comparisons = (displayedVariants || []).map(variant => {
             const ean = variant.inventoryVariantEan !== undefined
                 ? variant.inventoryVariantEan
                 : this._parseInventoryVariant(variant).ean;
             const minimum = this._getInventoryVariantMinimumStock(ean, variant);
-            return minimum !== null && this._getQuantity(variant.name) <= minimum;
-        });
+            const stock = this._getQuantity(variant.name);
+            if (minimum === null) return null;
+            return {
+                stock,
+                minimum,
+                relation: stock < minimum ? "below" : stock === minimum ? "equal" : "above"
+            };
+        }).filter(Boolean);
+
+        if (!comparisons.length) {
+            return { hasMinimum: false, stock: this._getQuantity(item?.name || ""), minimum: null, relation: "none" };
+        }
+        const representative = comparisons.find(entry => entry.relation === "below") ||
+            comparisons.find(entry => entry.relation === "equal") || comparisons[0];
+        return { hasMinimum: true, ...representative };
+    }
+
+    _isInventoryItemAtMinimum(item) {
+        const comparison = this._getInventoryItemMinimumComparison(item);
+        return comparison.hasMinimum && ["equal", "below"].includes(comparison.relation);
+    }
+
+    _isInventoryItemBelowMinimum(item) {
+        const comparison = this._getInventoryItemMinimumComparison(item);
+        return comparison.hasMinimum && comparison.relation === "below";
     }
 
     async _offerInventoryCorrectionTransfer(previousName, currentName, category, previousQuantity, currentQuantity, ean = undefined) {
@@ -8636,13 +9535,24 @@ async _checkEAN(text, options = {}) {
             return false;
         }
 
+        const groupState = this._getInventoryGroupState(currentName, category);
+        const isGrouped = groupState.variants.length > 1;
+        const groupPreviousStock = groupState.stock + (previousQuantity - currentQuantity);
+        const usesGroupMinimum = isGrouped && groupState.minimum !== null;
+        if (
+            usesGroupMinimum &&
+            (groupPreviousStock <= groupState.minimum || groupState.stock > groupState.minimum)
+        ) {
+            return false;
+        }
+
         const manualVariant = ean === null
             ? (
                 this._findInventoryVariantItem(this._items, currentName, null, null) ||
                 this._findInventoryVariantItem(this._items, previousName, null, null)
             )
             : null;
-        if (ean === null) {
+        if (ean === null && !usesGroupMinimum) {
             const minimum = this._getInventoryVariantMinimumStock(null, manualVariant);
             if (
                 this._eanTransferNonEan !== "minimum" ||
@@ -8655,7 +9565,7 @@ async _checkEAN(text, options = {}) {
             }
         }
 
-        const products = ean === null
+        const products = usesGroupMinimum || ean === null
             ? []
             : ean
                 ? [this._eanDatabase?.get(String(ean))].filter(Boolean)
@@ -8672,7 +9582,9 @@ async _checkEAN(text, options = {}) {
         });
 
         let product = null;
-        if (products.length) {
+        if (usesGroupMinimum) {
+            product = null;
+        } else if (products.length) {
             if (!candidates.length) return false;
             product = candidates.length === 1
                 ? candidates[0]
@@ -8702,7 +9614,15 @@ async _checkEAN(text, options = {}) {
             .replace("{target}", target);
         if (!(await this.confirmPopup(question))) return false;
 
-        const transferProduct = {
+        const sendGroupIdentity = usesGroupMinimum || (isGrouped && this._eanTransferGroupedAsName);
+        const transferProduct = sendGroupIdentity ? {
+            name: currentName,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category: category || null
+        } : {
             ...(product || {}),
             name: currentName,
             originalName: product?.originalName || null,
@@ -8713,7 +9633,7 @@ async _checkEAN(text, options = {}) {
         };
         return this._createEanTransfer(
             "shopping_add",
-            product?.ean || null,
+            sendGroupIdentity ? null : (product?.ean || null),
             transferProduct,
             1,
             { sourceOperation: "manual_correction" }
@@ -8937,7 +9857,7 @@ async _checkEAN(text, options = {}) {
                 if (reversalId) await this._cancelEanTransfer(reversalId);
                 if (transferResult === "cancelled") {
                     await this._createEanTransfer(
-                        "shopping_add", booking.ean || null, bookingProduct, booking.transferQuantity || 1,
+                        "shopping_add", booking.transferEan ?? booking.ean ?? null, bookingProduct, booking.transferQuantity || 1,
                         { sourceOperation: "shopping_remove" }
                     );
                 }
@@ -8948,7 +9868,7 @@ async _checkEAN(text, options = {}) {
             if (sendReversal) {
                 reversalId = await this._createEanTransfer(
                     "shopping_remove",
-                    booking.ean || null,
+                    booking.transferEan ?? booking.ean ?? null,
                     bookingProduct,
                     booking.transferQuantity || booking.quantity || 1,
                     { sourceOperation: "inventory_undo" }
@@ -9026,12 +9946,12 @@ async _checkEAN(text, options = {}) {
         return true;
     }
 
-    _openInventoryFilterPopup() {
+    _openInventoryFilterPopup(anchor = null) {
         const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:transparent;';
         const popup = document.createElement('div');
-        popup.style.cssText = 'width:min(320px,90vw);max-height:80vh;overflow:auto;background:var(--card-background-color,white);color:var(--primary-text-color);padding:16px;border-radius:8px;';
-        for (const filter of ["all", "zero", "low", "minimum"]) {
+        popup.style.cssText = 'position:fixed;width:min(320px,calc(100vw - 16px));max-height:80vh;overflow:auto;background:var(--card-background-color,white);color:var(--primary-text-color);padding:12px;border:1px solid var(--divider-color,#ccc);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.28);box-sizing:border-box;';
+        for (const filter of ["all", "zero", "low", "minimum", "below_minimum"]) {
             const button = document.createElement('button');
             button.type = 'button';
             button.textContent = `${filter === this._inventoryFilter ? '✓ ' : ''}${translate(`ui.inventory.filter.${filter}`)}`;
@@ -9050,6 +9970,22 @@ async _checkEAN(text, options = {}) {
         });
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
+        const anchorRect = anchor?.getBoundingClientRect?.();
+        if (anchorRect) {
+            const margin = 8;
+            const popupWidth = Math.min(320, window.innerWidth - (margin * 2));
+            const left = Math.max(margin, Math.min(anchorRect.left, window.innerWidth - popupWidth - margin));
+            let top = anchorRect.bottom + 6;
+            if (top + popup.offsetHeight > window.innerHeight - margin) {
+                top = Math.max(margin, anchorRect.top - popup.offsetHeight - 6);
+            }
+            popup.style.left = `${left}px`;
+            popup.style.top = `${top}px`;
+        } else {
+            popup.style.left = '50%';
+            popup.style.top = '50%';
+            popup.style.transform = 'translate(-50%,-50%)';
+        }
     }
 
     _getInventoryQueueModeLabel(mode) {
@@ -9282,6 +10218,7 @@ async _checkEAN(text, options = {}) {
                 if (this._inventoryFilter === "zero") return stock === 0;
                 if (this._inventoryFilter === "low") return stock <= 1;
                 if (this._inventoryFilter === "minimum") return this._isInventoryItemAtMinimum(item);
+                if (this._inventoryFilter === "below_minimum") return this._isInventoryItemBelowMinimum(item);
                 return true;
             });
             ack = "show";
@@ -10783,16 +11720,14 @@ async _checkEAN(text, options = {}) {
                 minimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);margin-bottom:4px;';
                 const minimumRow = document.createElement('div');
                 minimumRow.style.cssText = 'display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;align-items:center;';
-                const minimumValue = document.createElement('input');
-                minimumValue.type = 'text';
-                minimumValue.readOnly = true;
-                minimumValue.value = effectiveMinimum === null ? '—' : String(effectiveMinimum);
+                const minimumValue = document.createElement('div');
+                minimumValue.textContent = effectiveMinimum === null ? '—' : String(effectiveMinimum);
                 minimumValue.title = configuredMinimum !== null
                     ? translate("ui.inventory.ean_minimum_database_source")
                     : effectiveMinimum !== null
                         ? translate("ui.inventory.ean_minimum_card_default")
                         : translate("ui.inventory.ean_minimum_not_set");
-                minimumValue.style.cssText = 'box-sizing:border-box;width:86px;height:38px;padding:6px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;';
+                minimumValue.style.cssText = 'box-sizing:border-box;width:86px;height:38px;padding:8px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;user-select:none;';
 
                 const editMinimum = document.createElement('button');
                 editMinimum.type = 'button';
@@ -10807,14 +11742,28 @@ async _checkEAN(text, options = {}) {
                 editText.textContent = translate("ui.inventory.ean_product_edit");
                 editMinimum.appendChild(editIcon);
                 editMinimum.appendChild(editText);
-                editMinimum.addEventListener('click', () => {
+                const openEanProductEditor = () => {
                     if (editMinimum.disabled) return;
                     if (document.body.contains(overlay)) document.body.removeChild(overlay);
                     resolve(null);
                     setTimeout(() => this._showEanDatabaseManager(variantEan, {
                         onBack: () => this._handleEditItem(item)
                     }), 0);
-                });
+                };
+                editMinimum.addEventListener('click', openEanProductEditor);
+                if (!editMinimum.disabled) {
+                    minimumValue.setAttribute('role', 'button');
+                    minimumValue.tabIndex = 0;
+                    minimumValue.title = `${minimumValue.title} · ${translate("ui.inventory.ean_minimum_edit")}`;
+                    minimumValue.style.cursor = 'pointer';
+                    minimumValue.addEventListener('click', openEanProductEditor);
+                    minimumValue.addEventListener('keydown', event => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            openEanProductEditor();
+                        }
+                    });
+                }
                 minimumRow.appendChild(minimumValue);
                 minimumRow.appendChild(editMinimum);
                 eanMinimumControls.appendChild(minimumLabel);
@@ -10822,6 +11771,8 @@ async _checkEAN(text, options = {}) {
             }
 
             let inventoryGroupControls = null;
+            let inventoryGroupMinimumControls = null;
+            let inventoryGroupMinimumInput = null;
             if (isInventoryGroupEdit) {
                 inventoryGroupControls = document.createElement('div');
                 inventoryGroupControls.style.display = 'flex';
@@ -10863,6 +11814,30 @@ async _checkEAN(text, options = {}) {
                 });
                 inventoryGroupControls.appendChild(totalField);
                 inventoryGroupControls.appendChild(manageButton);
+
+                const groupState = this._getInventoryGroupState(
+                    this._getNameOnly(currentName),
+                    this._getCategory(currentName) || null,
+                    options.inventoryGroupItem?.inventoryVariants || this._items
+                );
+                inventoryGroupMinimumControls = document.createElement('label');
+                inventoryGroupMinimumControls.style.cssText = 'display:flex;flex-direction:column;gap:4px;text-align:left;margin:-2px 0 12px;';
+                const groupMinimumLabel = document.createElement('span');
+                groupMinimumLabel.textContent = translate("ui.inventory.group_minimum");
+                groupMinimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);';
+                inventoryGroupMinimumInput = document.createElement('input');
+                inventoryGroupMinimumInput.type = 'number';
+                inventoryGroupMinimumInput.min = '0';
+                inventoryGroupMinimumInput.step = '1';
+                inventoryGroupMinimumInput.value = groupState.minimum ?? '';
+                inventoryGroupMinimumInput.placeholder = translate("ui.inventory.manual_minimum_none");
+                inventoryGroupMinimumInput.style.cssText = 'box-sizing:border-box;width:100%;height:38px;padding:6px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:var(--primary-text-color,inherit);';
+                const groupMinimumHelp = document.createElement('span');
+                groupMinimumHelp.textContent = translate("ui.inventory.group_minimum_help");
+                groupMinimumHelp.style.cssText = 'font-size:11px;line-height:1.35;color:var(--secondary-text-color,#666);';
+                inventoryGroupMinimumControls.appendChild(groupMinimumLabel);
+                inventoryGroupMinimumControls.appendChild(inventoryGroupMinimumInput);
+                inventoryGroupMinimumControls.appendChild(groupMinimumHelp);
             }
 
             // Description Input, only if supported by the selected todo entity
@@ -11139,6 +12114,7 @@ async _checkEAN(text, options = {}) {
             if (manualMinimumControls) popup.appendChild(manualMinimumControls);
             if (eanMinimumControls) popup.appendChild(eanMinimumControls);
             if (inventoryGroupControls) popup.appendChild(inventoryGroupControls);
+            if (inventoryGroupMinimumControls) popup.appendChild(inventoryGroupMinimumControls);
             if (descriptionContainer) popup.appendChild(descriptionContainer);
             popup.appendChild(catContainer);
             if(this._allowDynamicCats) popup.appendChild(dynamicCategory);
@@ -11469,6 +12445,20 @@ async _checkEAN(text, options = {}) {
                     }
                 }
 
+                let groupMinimumStock = undefined;
+                if (isInventoryGroupEdit) {
+                    const groupMinimumText = String(inventoryGroupMinimumInput?.value ?? '').trim();
+                    groupMinimumStock = groupMinimumText === '' ? null : Number(groupMinimumText);
+                    if (
+                        groupMinimumStock !== null &&
+                        (!Number.isInteger(groupMinimumStock) || groupMinimumStock < 0)
+                    ) {
+                        inventoryGroupMinimumInput.focus();
+                        inventoryGroupMinimumInput.reportValidity?.();
+                        return;
+                    }
+                }
+
                 if (this._allowDynamicCats && dynamicCategory.value.trim() && finalName && finalName.trim()) {
                     selectedCategory = dynamicCategory.value.trim();
                 }
@@ -11485,6 +12475,9 @@ async _checkEAN(text, options = {}) {
                 }
                 if (isManualInventoryEdit) {
                     result.manual_minimum_stock = manualMinimumStock;
+                }
+                if (isInventoryGroupEdit) {
+                    result.group_minimum_stock = groupMinimumStock;
                 }
 
                 if (eanProductName) {
@@ -11988,8 +12981,22 @@ async _checkEAN(text, options = {}) {
 
         if (this._mode === "inventory") {
             if (item.complete) li.style.opacity = '0.55';
-            if (qty === 0 && this._inventoryHighlightZero) li.classList.add('inventory-zero');
-            else if (this._isInventoryItemAtMinimum(item)) li.classList.add('inventory-minimum');
+            const comparison = this._getInventoryItemMinimumComparison(item);
+            let marking = "none";
+            if (qty === 0) {
+                marking = this._inventoryMarkZero;
+            } else if (comparison.hasMinimum) {
+                if (comparison.relation === "below") marking = this._inventoryMarkBelowMinimum;
+                else if (comparison.relation === "equal") marking = this._inventoryMarkAtMinimum;
+                else if (comparison.relation === "above") marking = this._inventoryMarkAboveMinimum;
+            }
+            if (["red", "orange", "green"].includes(marking)) {
+                li.classList.add(`inventory-stock-${marking}`);
+            }
+            if (qty === 0 && marking === "red") li.classList.add('inventory-zero');
+            if (comparison.relation === "below" && marking === "orange") {
+                li.classList.add('inventory-minimum');
+            }
         }
 
         if (item.due && this._mode === "todo") {
@@ -12199,7 +13206,7 @@ async _checkEAN(text, options = {}) {
             if (this._mode === "inventory" && !item.inventoryGroup && item.inventoryVariantEan !== undefined) {
                 const variantInfo = document.createElement('div');
                 variantInfo.className = 'item-description';
-                variantInfo.textContent = this._inventoryVariantLabel(item.inventoryVariantEan);
+                variantInfo.textContent = this._inventoryVariantLabel(item.inventoryVariantEan, true);
                 variantInfo.style.color = 'var(--secondary-text-color)';
                 nameSpan.appendChild(variantInfo);
             }
@@ -12390,25 +13397,86 @@ async _checkEAN(text, options = {}) {
     async _updateCurrentInventoryGroupCategory(name, category) {
         if (this._mode !== "inventory") return true;
         const variants = this._getInventoryVariantItems(name);
+        const minimumValues = [...new Set(variants
+            .map(variant => this._parseInventoryVariant(variant).groupMinimumStock)
+            .filter(value => value !== null))];
+        let groupMinimum = minimumValues[0] ?? null;
+        if (minimumValues.length > 1) {
+            const choice = await this._chooseInventoryGroupMinimum(
+                minimumValues[0], minimumValues[1], name
+            );
+            if (!choice) return false;
+            groupMinimum = choice === "target" ? minimumValues[1] : minimumValues[0];
+        }
         for (const variant of variants) {
             const renamed = this._formatInventoryItemName(
                 this._getNameOnly(variant.name), category, this._getQuantity(variant.name), variant.name
             );
+            const parsed = this._parseInventoryVariant(variant);
             await this._callListService({
                 type: "call_service",
                 domain: "todo",
                 service: "update_item",
                 target: { entity_id: this._entity },
-                service_data: { item: variant.id, rename: renamed }
+                service_data: {
+                    item: variant.id,
+                    rename: renamed,
+                    description: this._serializeInventoryVariant(
+                        parsed.ean, parsed.minimumStock, groupMinimum
+                    )
+                }
             });
         }
         if (variants.length) await this._refresh();
+        await this._normalizeInventoryGroupMinimum(name, category);
+        if (variants.length) await this._refresh();
         return true;
+    }
+
+    _chooseInventoryGroupMinimum(sourceMinimum, targetMinimum, targetName) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10005;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(520px,calc(100vw - 32px));padding:18px;box-sizing:border-box;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+            const message = document.createElement('p');
+            message.textContent = translate("ui.inventory.group_minimum_conflict")
+                .replace("{target}", targetName)
+                .replace("{sourceMinimum}", String(sourceMinimum))
+                .replace("{targetMinimum}", String(targetMinimum));
+            message.style.cssText = 'margin:0 0 16px;line-height:1.45;';
+            popup.appendChild(message);
+            const buttons = document.createElement('div');
+            buttons.style.cssText = 'display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;';
+            const close = value => {
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(value);
+            };
+            const onKeyDown = event => { if (event.key === 'Escape') close(false); };
+            const addButton = (label, value, primary = false) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = label;
+                button.style.cssText = `padding:8px 12px;cursor:pointer;${primary ? 'background:var(--primary-color,#03A9F4);color:white;border:0;border-radius:4px;' : ''}`;
+                button.addEventListener('click', () => close(value));
+                buttons.appendChild(button);
+            };
+            addButton(translate("ui.inventory.group_minimum_use_source").replace("{minimum}", String(sourceMinimum)), "source", true);
+            addButton(translate("ui.inventory.group_minimum_use_target").replace("{minimum}", String(targetMinimum)), "target");
+            addButton(translate("ui.common.cancel"), false);
+            popup.appendChild(buttons);
+            overlay.addEventListener('click', event => { if (event.target === overlay) close(false); });
+            window.addEventListener('keydown', onKeyDown, true);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
     }
 
     async _handleEditInventoryGroup(item) {
         const previousName = this._getNameOnly(item.name);
         const previousCategory = this._getCategory(item.name) || "none";
+        const sourceState = this._getInventoryGroupState(previousName, previousCategory, item.inventoryVariants || []);
         const updated = await this.editItemPopup(item, "edit", false, null, {
             inventoryGroup: true,
             inventoryGroupItem: item
@@ -12422,6 +13490,29 @@ async _checkEAN(text, options = {}) {
         const nextName = this._getNameOnly(updated.name);
         const nextCategory = this._getCategory(updated.name) || "none";
         if (!nextName) return;
+        let groupMinimum = Object.prototype.hasOwnProperty.call(updated, "group_minimum_stock")
+            ? updated.group_minimum_stock
+            : sourceState.minimum;
+        const identityChanged =
+            this._normalizeEanDatabaseProductName(previousName) !== this._normalizeEanDatabaseProductName(nextName) ||
+            previousCategory.toLocaleLowerCase() !== nextCategory.toLocaleLowerCase();
+        const sourceIds = new Set((item.inventoryVariants || []).map(variant => String(variant.id)));
+        const targetVariants = identityChanged
+            ? this._getInventoryVariantItems(nextName, nextCategory).filter(variant => !sourceIds.has(String(variant.id)))
+            : [];
+        const targetState = this._getInventoryGroupState(nextName, nextCategory, targetVariants);
+        if (
+            targetVariants.length > 1 &&
+            groupMinimum !== null &&
+            targetState.minimum !== null &&
+            groupMinimum !== targetState.minimum
+        ) {
+            const choice = await this._chooseInventoryGroupMinimum(groupMinimum, targetState.minimum, nextName);
+            if (!choice) return;
+            groupMinimum = choice === "target" ? targetState.minimum : groupMinimum;
+        } else if (groupMinimum === null && targetState.minimum !== null) {
+            groupMinimum = targetState.minimum;
+        }
         if (nextCategory.toLocaleLowerCase() !== previousCategory.toLocaleLowerCase()) {
             const question = translate("ui.inventory.group_category_confirm")
                 .replace("{name}", previousName)
@@ -12433,15 +13524,26 @@ async _checkEAN(text, options = {}) {
             for (const variant of item.inventoryVariants || []) {
                 const quantity = this._getQuantity(variant.name);
                 const renamed = this._formatInventoryItemName(nextName, nextCategory, quantity, variant.name);
+                const parsed = this._parseInventoryVariant(variant);
                 await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: "update_item",
                     target: { entity_id: this._entity },
-                    service_data: { item: variant.id, rename: renamed }
+                    service_data: {
+                        item: variant.id,
+                        rename: renamed,
+                        description: this._serializeInventoryVariant(parsed.ean, parsed.minimumStock, groupMinimum)
+                    }
                 });
             }
+            for (const variant of targetVariants) {
+                await this._writeInventoryVariantMetadata(variant, { groupMinimumStock: groupMinimum });
+            }
             await this._updateEanGroupIdentity(previousName, nextName, nextCategory);
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(nextName, nextCategory);
+            if (identityChanged) await this._normalizeInventoryGroupMinimum(previousName, previousCategory);
             await this._refresh();
             await this._notifyOnChange(`${translate("ui.message.edited")}: ${nextName}`);
         } catch (error) {
@@ -12505,8 +13607,10 @@ async _checkEAN(text, options = {}) {
         const previousBaseName = this._getNameOnly(item.name);
         const previousCategory = this._getCategory(item.name) || "none";
         const nextCategory = this._getCategory(newName) || "none";
+        const nextBaseName = this._getNameOnly(newName);
+        const parsedInventoryVariant = this._mode === "inventory" ? this._parseInventoryVariant(item) : null;
         const relatedVariants = this._mode === "inventory"
-            ? this._getInventoryVariantItems(previousBaseName)
+            ? this._getInventoryVariantItems(previousBaseName, previousCategory)
             : [];
         const updateGroupCategory = this._mode === "inventory" &&
             relatedVariants.length > 1 &&
@@ -12516,6 +13620,43 @@ async _checkEAN(text, options = {}) {
                 .replace("{name}", previousBaseName)
                 .replace("{count}", String(relatedVariants.length));
             if (!(await this.confirmPopup(question))) return;
+        }
+
+        const inventoryIdentityChanged = this._mode === "inventory" && (
+            this._normalizeEanDatabaseProductName(previousBaseName) !==
+                this._normalizeEanDatabaseProductName(nextBaseName) ||
+            previousCategory.toLocaleLowerCase() !== nextCategory.toLocaleLowerCase()
+        );
+        const movedVariants = updateGroupCategory ? relatedVariants : [item];
+        const movedIds = new Set(movedVariants.map(variant => String(variant.id)));
+        const sourceGroupState = this._mode === "inventory"
+            ? this._getInventoryGroupState(previousBaseName, previousCategory, relatedVariants)
+            : null;
+        const targetVariants = inventoryIdentityChanged
+            ? this._getInventoryVariantItems(nextBaseName, nextCategory)
+                .filter(variant => !movedIds.has(String(variant.id)))
+            : [];
+        const targetGroupState = this._mode === "inventory"
+            ? this._getInventoryGroupState(nextBaseName, nextCategory, targetVariants)
+            : null;
+        let movedGroupMinimum = parsedInventoryVariant?.groupMinimumStock ?? null;
+        if (updateGroupCategory) movedGroupMinimum = sourceGroupState?.minimum ?? null;
+        if (inventoryIdentityChanged && !updateGroupCategory) {
+            movedGroupMinimum = targetGroupState?.minimum ?? null;
+        } else if (inventoryIdentityChanged && targetGroupState?.minimum !== null) {
+            if (
+                movedGroupMinimum !== null &&
+                movedGroupMinimum !== targetGroupState.minimum &&
+                targetVariants.length > 1
+            ) {
+                const choice = await this._chooseInventoryGroupMinimum(
+                    movedGroupMinimum, targetGroupState.minimum, nextBaseName
+                );
+                if (!choice) return;
+                movedGroupMinimum = choice === "target" ? targetGroupState.minimum : movedGroupMinimum;
+            } else if (movedGroupMinimum === null) {
+                movedGroupMinimum = targetGroupState.minimum;
+            }
         }
 
         // ServiceData
@@ -12536,9 +13677,17 @@ async _checkEAN(text, options = {}) {
         if (
             this._mode === "inventory" &&
             manualMinimumStock !== undefined &&
-            this._parseInventoryVariant(item).ean === null
+            parsedInventoryVariant.ean === null
         ) {
-            serviceData.description = this._serializeInventoryVariant(null, manualMinimumStock);
+            serviceData.description = this._serializeInventoryVariant(
+                null, manualMinimumStock, movedGroupMinimum
+            );
+        } else if (this._mode === "inventory" && inventoryIdentityChanged) {
+            serviceData.description = this._serializeInventoryVariant(
+                parsedInventoryVariant.ean,
+                parsedInventoryVariant.minimumStock,
+                movedGroupMinimum
+            );
         }
 
         if(debugMode) console.debug('[ha-shopping-list-improved] serviceData:', serviceData);
@@ -12558,12 +13707,24 @@ async _checkEAN(text, options = {}) {
                     const renamed = this._formatInventoryItemName(
                         variantName, nextCategory, this._getQuantity(variant.name), variant.name
                     );
+                    const parsed = this._parseInventoryVariant(variant);
                     await this._callListService({
                         type: "call_service",
                         domain: "todo",
                         service: "update_item",
                         target: { entity_id: this._entity },
-                        service_data: { item: variant.id, rename: renamed }
+                        service_data: {
+                            item: variant.id,
+                            rename: renamed,
+                            description: this._serializeInventoryVariant(
+                                parsed.ean, parsed.minimumStock, movedGroupMinimum
+                            )
+                        }
+                    });
+                }
+                for (const variant of targetVariants) {
+                    await this._writeInventoryVariantMetadata(variant, {
+                        groupMinimumStock: movedGroupMinimum
                     });
                 }
                 await this._updateEanGroupIdentity(previousBaseName, previousBaseName, nextCategory);
@@ -12591,6 +13752,11 @@ async _checkEAN(text, options = {}) {
             }
 
             await this._refresh();
+            if (this._mode === "inventory" && inventoryIdentityChanged) {
+                await this._normalizeInventoryGroupMinimum(previousBaseName, previousCategory);
+                await this._normalizeInventoryGroupMinimum(nextBaseName, nextCategory);
+                await this._refresh();
+            }
             if (
                 this._mode === "inventory" &&
                 previousQuantity !== null &&
@@ -12767,6 +13933,9 @@ async _checkEAN(text, options = {}) {
             const existingMinimum = existing && !ean
                 ? this._parseInventoryVariant(existing).minimumStock
                 : null;
+            const existingGroupMinimum = existing
+                ? this._parseInventoryVariant(existing).groupMinimumStock
+                : this._getInventoryGroupState(productName, category, targetItems).minimum;
             const currentQty = existing ? this._getQuantity(existingName) : 0;
             const nextQuantity = currentQty + addQty;
             const effectiveCategory = this._getCategory(existingName) || category;
@@ -12782,13 +13951,15 @@ async _checkEAN(text, options = {}) {
                     ? {
                         item: existing.uid,
                         rename: formattedName,
-                        description: this._serializeInventoryVariant(ean, existingMinimum)
+                        description: this._serializeInventoryVariant(ean, existingMinimum, existingGroupMinimum)
                     }
                     : {
                         item: formattedName,
-                        description: this._serializeInventoryVariant(ean)
+                        description: this._serializeInventoryVariant(ean, null, existingGroupMinimum)
                     }
             });
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(productName, effectiveCategory);
             await this._refresh();
             const refreshed = this._findInventoryVariantItem(this._items, productName, ean, null);
             return {
@@ -12825,7 +13996,8 @@ async _checkEAN(text, options = {}) {
                     rename: formattedName,
                     description: this._serializeInventoryVariant(
                         ean,
-                        !ean ? this._parseInventoryVariant(item).minimumStock : null
+                        !ean ? this._parseInventoryVariant(item).minimumStock : null,
+                        this._parseInventoryVariant(item).groupMinimumStock
                     )
                 }
             });
@@ -12854,6 +14026,9 @@ async _checkEAN(text, options = {}) {
                 ? this._parseInventoryVariant(existing).minimumStock
                 : null;
             const effectiveCategory = category || this._getCategory(existingName);
+            const existingGroupMinimum = existing
+                ? this._parseInventoryVariant(existing).groupMinimumStock
+                : this._getInventoryGroupState(productName, effectiveCategory, targetItems).minimum;
             const formattedName = this._formatInventoryItemName(
                 productName, effectiveCategory, nextQuantity, existing ? existingName : null
             );
@@ -12866,13 +14041,15 @@ async _checkEAN(text, options = {}) {
                     ? {
                         item: existing.uid,
                         rename: formattedName,
-                        description: this._serializeInventoryVariant(ean, existingMinimum)
+                        description: this._serializeInventoryVariant(ean, existingMinimum, existingGroupMinimum)
                     }
                     : {
                         item: formattedName,
-                        description: this._serializeInventoryVariant(ean)
+                        description: this._serializeInventoryVariant(ean, null, existingGroupMinimum)
                     }
             });
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(productName, effectiveCategory);
             await this._refresh();
             return { status: "updated", quantity: nextQuantity, ean: ean || null };
         } catch (error) {
@@ -12896,6 +14073,9 @@ async _checkEAN(text, options = {}) {
             }
 
             const existingName = String(existing?.summary || existing?.name || productName);
+            const existingGroupMinimum = existing
+                ? this._parseInventoryVariant(existing).groupMinimumStock
+                : this._getInventoryGroupState(productName, category, targetItems).minimum;
             const formattedName = existing
                 ? existingName
                 : this._formatInventoryItemName(productName, category, 0);
@@ -12907,13 +14087,15 @@ async _checkEAN(text, options = {}) {
                 service_data: existing
                     ? {
                         item: existing.uid,
-                        description: this._serializeInventoryVariant(null, normalizedMinimum)
+                        description: this._serializeInventoryVariant(null, normalizedMinimum, existingGroupMinimum)
                     }
                     : {
                         item: formattedName,
-                        description: this._serializeInventoryVariant(null, normalizedMinimum)
+                        description: this._serializeInventoryVariant(null, normalizedMinimum, existingGroupMinimum)
                     }
             });
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(productName, category);
             await this._refresh();
             return { status: "updated", minimumStock: normalizedMinimum };
         } catch (error) {
@@ -13173,26 +14355,36 @@ async _checkEAN(text, options = {}) {
             if (product === false) return false;
         }
         const ean = forcedEan !== undefined ? forcedEan : (product?.ean || null);
+        const category = product?.category || this._getCategory(item.name) || null;
+        const groupState = this._getInventoryGroupState(name, category);
+        const sendGroupIdentity = groupState.variants.length > 1 && this._eanTransferGroupedAsName;
 
-        const transferProduct = {
+        const transferProduct = sendGroupIdentity ? {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        } : {
             ...(product || {}),
             name,
-            category: product?.category || this._getCategory(item.name) || null
+            category
         };
         const transferId = await this._createEanTransfer(
-            "shopping_add", ean, transferProduct, 1,
+            "shopping_add", sendGroupIdentity ? null : ean, transferProduct, 1,
             { sourceOperation: "manual_send" }
         );
         if (!transferId) return false;
 
         await this._runEanScript("transfer_sent", {
-            ean: ean || "",
+            ean: sendGroupIdentity ? "" : (ean || ""),
             name,
-            brand: product?.brand || null,
-            productQuantity: product?.quantity || null,
+            brand: transferProduct.brand || null,
+            productQuantity: transferProduct.quantity || null,
             scanQuantity: 1,
             category: transferProduct.category,
-            imageUrl: product?.imageUrl || null,
+            imageUrl: transferProduct.imageUrl || null,
             scanMode: "inventory_remove"
         });
         this._showInventoryNotice(translate("ui.inventory.sent_without_stock")
@@ -13580,6 +14772,19 @@ async _checkEAN(text, options = {}) {
                     this._canTrackInventoryVariants() ? (removalEan || null) : undefined
                 );
                 const anticipatedRemainingStock = Math.max(0, currentStock - inputQty);
+                const inventoryRemovalItem = this._canTrackInventoryVariants()
+                    ? this._findInventoryVariantItem(this._items, eanCheck.name, removalEan || null, null)
+                    : null;
+                const inventoryRemovalCategory = this._getCategory(inventoryRemovalItem?.name || "") ||
+                    removalProduct?.category || eanCheck.category || null;
+                const inventoryGroupState = this._mode === "inventory"
+                    ? this._getInventoryGroupState(eanCheck.name, inventoryRemovalCategory)
+                    : { variants: [], stock: 0, minimum: null };
+                const isGroupedInventoryRemoval = inventoryGroupState.variants.length > 1;
+                const anticipatedGroupStock = Math.max(
+                    0,
+                    inventoryGroupState.stock - Math.min(inputQty, currentStock)
+                );
                 if (
                     this._mode === "inventory" &&
                     !removalEan &&
@@ -13592,25 +14797,44 @@ async _checkEAN(text, options = {}) {
                     const minimum = this._getInventoryVariantMinimumStock(null, manualVariant);
                     transferWithoutEan = minimum !== null && anticipatedRemainingStock <= minimum;
                 }
-                const shouldTransferRemoval = currentStock > 0 && (transferWithoutEan || Boolean(
-                    removalProduct && this._getAutomaticRemovalTransferDecision(
-                        removalProduct,
-                        anticipatedRemainingStock
+                const groupMinimumTransfer = this._isEanTransferActionEnabled("shopping_remove") &&
+                    isGroupedInventoryRemoval &&
+                    inventoryGroupState.minimum !== null &&
+                    removalProduct?.automaticTransferDisabled !== true &&
+                    anticipatedGroupStock <= inventoryGroupState.minimum;
+                const shouldTransferRemoval = currentStock > 0 && (
+                    groupMinimumTransfer || transferWithoutEan || Boolean(
+                        removalProduct && this._getAutomaticRemovalTransferDecision(
+                            removalProduct,
+                            anticipatedRemainingStock
+                        )
                     )
-                ));
+                );
+                const sendGroupIdentity = isGroupedInventoryRemoval && (
+                    groupMinimumTransfer || this._eanTransferGroupedAsName
+                );
+                const removalTransferProduct = sendGroupIdentity ? {
+                    name: eanCheck.name,
+                    originalName: null,
+                    brand: null,
+                    quantity: null,
+                    imageUrl: null,
+                    category: inventoryRemovalCategory
+                } : {
+                    name: eanCheck.name,
+                    originalName: removalProduct?.originalName || eanCheck.originalName,
+                    brand: removalProduct?.brand || eanCheck.brand,
+                    quantity: removalProduct?.quantity || eanCheck.quantity,
+                    imageUrl: removalProduct?.imageUrl || eanCheck.imageUrl,
+                    category: removalProduct?.category || eanCheck.category
+                };
+                const removalTransferEan = sendGroupIdentity ? null : removalEan;
 
                 if (shouldTransferRemoval) {
                     const transferId = await this._createEanTransfer(
                         "shopping_add",
-                        removalEan,
-                        {
-                            name: eanCheck.name,
-                            originalName: removalProduct?.originalName || eanCheck.originalName,
-                            brand: removalProduct?.brand || eanCheck.brand,
-                            quantity: removalProduct?.quantity || eanCheck.quantity,
-                            imageUrl: removalProduct?.imageUrl || eanCheck.imageUrl,
-                            category: removalProduct?.category || eanCheck.category
-                        },
+                        removalTransferEan,
+                        removalTransferProduct,
                         Math.min(inputQty, currentStock),
                         {
                             status: "source_pending",
@@ -13704,31 +14928,24 @@ async _checkEAN(text, options = {}) {
 
                     const showAppliedInventoryUndo = () => {
                         if (this._mode !== "inventory" || !appliedRemoval) return;
-                        const transferProduct = {
-                            name: eanCheck.name,
-                            originalName: removalProduct?.originalName || eanCheck.originalName,
-                            brand: removalProduct?.brand || eanCheck.brand,
-                            quantity: removalProduct?.quantity || eanCheck.quantity,
-                            imageUrl: removalProduct?.imageUrl || eanCheck.imageUrl,
-                            category: removalProduct?.category || eanCheck.category
-                        };
                         this._showInventoryFeedback(
                             eanCheck.name,
                             appliedRemoval.previousQuantity,
                             appliedRemoval.quantity,
                             {
                                 action: "inventory_remove",
-                                category: transferProduct.category,
+                                category: removalTransferProduct.category,
                                 transferId,
                                 transferQuantity: sourceState.quantity,
-                                product: transferProduct,
+                                product: removalTransferProduct,
                                 ean: removalEan || null,
+                                transferEan: removalTransferEan || null,
                                 scriptData: {
-                                    ean: removalEan || "",
-                                    brand: transferProduct.brand,
-                                    productQuantity: transferProduct.quantity,
-                                    category: transferProduct.category,
-                                    imageUrl: transferProduct.imageUrl,
+                                    ean: removalTransferEan || "",
+                                    brand: removalTransferProduct.brand,
+                                    productQuantity: removalTransferProduct.quantity,
+                                    category: removalTransferProduct.category,
+                                    imageUrl: removalTransferProduct.imageUrl,
                                     scanMode: "inventory_remove"
                                 }
                             }
@@ -13748,13 +14965,13 @@ async _checkEAN(text, options = {}) {
 
                     this._eanTransferSourceAppliedIds.delete(transferId);
                     await this._runEanScript("transfer_sent", {
-                        ean: removalEan,
+                        ean: removalTransferEan || "",
                         name: eanCheck.name,
-                        brand: removalProduct?.brand || eanCheck.brand,
-                        productQuantity: removalProduct?.quantity || eanCheck.quantity,
+                        brand: removalTransferProduct.brand,
+                        productQuantity: removalTransferProduct.quantity,
                         scanQuantity: sourceState.quantity,
-                        category: removalProduct?.category || eanCheck.category,
-                        imageUrl: removalProduct?.imageUrl || eanCheck.imageUrl,
+                        category: removalTransferProduct.category,
+                        imageUrl: removalTransferProduct.imageUrl,
                         scanMode: "shopping_remove"
                     });
                     showAppliedInventoryUndo();
@@ -14041,7 +15258,8 @@ async _checkEAN(text, options = {}) {
 							...(this._mode === "inventory" && this._supportsTodoDescription()
                                 ? { description: this._serializeInventoryVariant(
                                     eanCode || null,
-                                    !eanCode ? this._parseInventoryVariant(existing).minimumStock : null
+                                    !eanCode ? this._parseInventoryVariant(existing).minimumStock : null,
+                                    this._parseInventoryVariant(existing).groupMinimumStock
                                 ) }
                                 : {}),
 						},
@@ -14080,7 +15298,11 @@ async _checkEAN(text, options = {}) {
                 };
 
                 if (this._mode === "inventory" && this._supportsTodoDescription()) {
-                    serviceData.description = this._serializeInventoryVariant(eanCode || null);
+                    serviceData.description = this._serializeInventoryVariant(
+                        eanCode || null,
+                        null,
+                        this._getInventoryGroupState(inputName, assignedCategory || null).minimum
+                    );
                 }
 
                 if (dueDateTime) {
@@ -14564,6 +15786,7 @@ async _checkEAN(text, options = {}) {
 
 		const itemNameOnly = this._getNameOnly(item.name);
         const itemQtyOnly  = this._getQuantity(item.name);
+		const inventoryCategory = this._mode === "inventory" ? (this._getCategory(item.name) || "none") : null;
 		const msgRemove = item.inventoryGroup
             ? translate("ui.inventory.group_delete_confirm")
                 .replace("{name}", itemNameOnly)
@@ -14607,6 +15830,10 @@ async _checkEAN(text, options = {}) {
 
             await this._callListService(msg);
             await this._refresh();
+            if (this._mode === "inventory") {
+                await this._normalizeInventoryGroupMinimum(itemNameOnly, inventoryCategory);
+                await this._refresh();
+            }
             await this._notifyOnChange(translate("ui.message.item_removed") + ": " + itemNameOnly +  ` (${itemQtyOnly})`);
         } catch (err) {
             console.error("[ha-shopping-list-improved] Remove failed", err);
