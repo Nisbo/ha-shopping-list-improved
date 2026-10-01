@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-8.3";
+const version = "3.2.0-BETA-9.6";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -47,6 +47,8 @@ const TRANSLATIONS = {
         "ui.message.edited"                             : "Artikel bearbeitet",
         "ui.message.item_added"                         : "Artikel hinzugefügt",
         "ui.message.item_removed"                       : "Artikel entfernt",
+        "ui.message.item_completed"                     : "Artikel als erledigt markiert",
+        "ui.message.item_reopened"                      : "Erledigt-Markierung entfernt",
         "ui.message.sent"                               : "Nachricht gesendet",
 
         "ui.admin.options"                              : "Admin Optionen",
@@ -161,9 +163,11 @@ const TRANSLATIONS = {
         "ui.inventory.add"                              : "Einlagern",
         "ui.inventory.remove"                           : "Entnehmen",
         "ui.inventory.register"                         : "Erfassen",
+        "ui.inventory.correct"                          : "Korrigieren",
         "ui.inventory.add_active"                       : "Einlagern-Modus aktiviert – Scans und EAN-Eingaben erhöhen den Bestand.",
         "ui.inventory.remove_active"                    : "Entnehmen-Modus aktiviert – Scans und EAN-Eingaben verringern den Bestand.",
         "ui.inventory.register_active"                  : "Erfassungsmodus aktiviert – Scans und EAN-Eingaben legen Artikel mit Bestand 0 an.",
+        "ui.inventory.correct_active"                   : "Korrekturmodus aktiviert – Scans und EAN-Eingaben öffnen die Bestandskorrektur.",
         "ui.inventory.select_mode"                      : "Wähle zuerst einen Buchungsmodus.",
         "ui.inventory.select_mode_button"               : "Zuerst Modus wählen",
         "ui.inventory.registered"                       : "{name} mit Bestand 0 erfasst.",
@@ -205,8 +209,11 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.add"                  : "Einlagern",
         "ui.inventory.queue_mode.remove"               : "Entnehmen",
         "ui.inventory.queue_mode.register"             : "Erfassen",
+        "ui.inventory.queue_mode.correct"              : "Korrigieren",
         "ui.inventory.queue_mode.none"                 : "Ohne Modus",
         "ui.inventory.group_variants"                  : "EAN-Varianten gruppieren",
+        "ui.inventory.product_details"                 : "Produktdetails anzeigen",
+        "ui.inventory.category_below_minimum"          : "{count} unter Minimum",
         "ui.inventory.grouped_total"                   : "Gesamtbestand",
         "ui.inventory.group_minimum"                   : "Gruppen-Mindestbestand (optional)",
         "ui.inventory.group_minimum_help"              : "Gilt für den gemeinsamen Gesamtbestand aller Varianten. Leer lassen, um die einzelnen Produktwerte oder den Kartenstandard zu verwenden.",
@@ -232,6 +239,16 @@ const TRANSLATIONS = {
         "ui.inventory.group_member_badge"              : "[GRUPPENMITGLIED]",
         "ui.inventory.choose_variant_add"              : "Welche Variante von „{name}“ soll eingelagert werden?",
         "ui.inventory.choose_variant_remove"           : "Welche Variante von „{name}“ soll entnommen werden?",
+        "ui.inventory.choose_variant_correct"          : "Welche Variante von „{name}“ soll korrigiert werden?",
+        "ui.inventory.correction_title"                : "Bestand korrigieren",
+        "ui.inventory.correction_current"              : "Aktueller Bestand",
+        "ui.inventory.correction_new"                  : "Neuer Bestand",
+        "ui.inventory.correction_no_transfer"          : "Bestandskorrekturen lösen keine automatische Übertragung über ISL Sync / Transfer aus.",
+        "ui.inventory.correction_saved"                : "Der Bestand von {name} wurde von {before} auf {after} korrigiert.",
+        "ui.inventory.correction_manual_transfer"      : "Menge manuell übertragen (ohne Bestandsänderung)",
+        "ui.inventory.correction_manual_sent"          : "Die Menge wurde an die Zielliste gesendet. Der Bestand wurde nicht verändert.",
+        "ui.inventory.correction_save"                 : "Bestand speichern",
+        "ui.inventory.correction_edit"                 : "Artikel bearbeiten",
         "ui.inventory.group_category_confirm"          : "„{name}“ enthält {count} getrennte Varianten. Die Kategorie wird für alle Varianten und zugehörigen EAN-Einträge geändert. Möchtest Du fortfahren?",
         "ui.inventory.group_delete_confirm"            : "„{name}“ enthält {count} getrennte Varianten. Sollen wirklich alle Varianten gelöscht werden?",
         "ui.inventory.ean_category_confirm"            : "Diese EAN gehört zum gruppierten Artikel „{name}“. Die Kategorie wird für alle EAN-Varianten mit diesem Namen geändert. Die zentrale EAN-Datenbank kann auch von anderen Karten verwendet werden. Möchtest Du fortfahren?",
@@ -239,6 +256,8 @@ const TRANSLATIONS = {
         "editor.labels.inventory_default_action"        : "Startmodus nach dem Laden",
         "editor.labels.inventory_highlight_zero"        : "Artikel mit Bestand 0 rot markieren",
         "editor.labels.inventory_group_variants"        : "EAN-Varianten gruppieren",
+        "editor.labels.inventory_show_product_details"  : "Produktdetails in der Inventarliste anzeigen",
+        "editor.labels.inventory_show_category_minimum_status": "Mindestbestandsstatus in Kategorien anzeigen",
         "editor.labels.inventory_stock_marking"         : "Kennzeichnung Inventarmodus",
         "editor.labels.inventory_mark_above_minimum"    : "Größer als Mindestbestand",
         "editor.labels.inventory_mark_at_minimum"       : "Gleich Mindestbestand",
@@ -254,9 +273,14 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.add"   : "Einlagern",
         "editor.options.inventory_default_action.remove": "Entnehmen",
         "editor.options.inventory_default_action.register": "Erfassen",
+        "editor.options.inventory_default_action.correct": "Korrigieren",
         "editor.helpers.inventory_default_action"       : "Nur im Inventarmodus: Legt fest, welcher Buchungsmodus beim Laden der Karte aktiv ist.",
+        "editor.labels.inventory_mode_timeout"          : "Buchungsmodus nach Inaktivität zurücksetzen (Sekunden)",
+        "editor.helpers.inventory_mode_timeout"         : "Nur im Inventarmodus: Setzt einen vorübergehend gewählten Modus nach dieser Zeit ohne erfolgreiche Buchung auf den Startmodus zurück. Jede erfolgreiche Buchung startet den Countdown neu. 0 deaktiviert das automatische Zurücksetzen.",
         "editor.helpers.inventory_highlight_zero"       : "Nur im Inventarmodus: Markiert Artikel mit Bestand 0 rot und zeigt einen schmalen roten Rand.",
         "editor.helpers.inventory_group_variants"       : "Nur im Inventarmodus: Fasst getrennt gespeicherte EAN- und manuelle Bestände mit demselben Namen und derselben Kategorie optisch zusammen. Der Umschalter in der Karte kann die Ansicht vorübergehend ändern.",
+        "editor.helpers.inventory_show_product_details" : "Nur im Inventarmodus: Zeigt bei EAN-Artikeln den ursprünglichen Produktnamen, Marke, Produktmenge und EAN unter dem gespeicherten Artikelnamen. Der Umschalter in der Karte kann die Anzeige vorübergehend ändern.",
+        "editor.helpers.inventory_show_category_minimum_status": "Nur im Inventarmodus: Zeigt in Kategorieüberschriften an, wie viele Artikel oder Gruppen unter ihrem wirksamen Mindestbestand liegen.",
         "editor.helpers.inventory_stock_marking"        : "Nur im Inventarmodus: Legt die farbliche Kennzeichnung im Verhältnis zum wirksamen Mindestbestand fest. Ohne festgelegten Mindestbestand gelten die drei Mindestbestandsstufen nicht. Bestand 0 wird separat und mit Vorrang behandelt.",
         "editor.helpers.ean_transfer_grouped_as_name"   : "Wenn aktiviert, überträgt die Karte Entnahmen aus gruppierten Inventarartikeln nur mit dem gemeinsamen Artikelnamen und der Kategorie. Die konkrete EAN sowie Marke, Produktmenge und Bild der gewählten Variante werden nicht an die Zielliste gesendet. Standard: Aus.",
         "ui.ean.transfer_remove"                       : "Entnehmen",
@@ -339,6 +363,23 @@ const TRANSLATIONS = {
         "editor.labels.category.options"                : "Kategorien",
         "editor.labels.export.options"                  : "Export-Optionen",
         "editor.labels.message.options"                 : "Benachrichtigungen",
+        "editor.labels.notify.options"                  : "Standard-Notify",
+        "editor.labels.ntfy.options"                    : "ntfy",
+        "editor.labels.email.options"                   : "E-Mail",
+        "editor.labels.notify_change_mode"              : "Automatische Benachrichtigungen",
+        "editor.labels.notify_include_manual"           : "Beim manuellen Senden berücksichtigen",
+        "editor.labels.notify_delay"                    : "Verzögerung (Sekunden)",
+        "editor.labels.notify_format"                   : "Nachrichtenformat",
+        "editor.labels.ntfy_entity"                     : "ntfy-Notify-Entität",
+        "editor.labels.ntfy_change_mode"                : "Automatische Benachrichtigungen",
+        "editor.labels.ntfy_include_manual"             : "Beim manuellen Senden berücksichtigen",
+        "editor.labels.ntfy_on_done"                    : "Auch beim Erledigen benachrichtigen",
+        "editor.labels.ntfy_delay"                      : "Verzögerung (Sekunden)",
+        "editor.labels.ntfy_format"                     : "Nachrichtenformat",
+        "editor.labels.email_change_mode"               : "Automatische Benachrichtigungen",
+        "editor.labels.email_include_manual"            : "Beim manuellen Senden berücksichtigen",
+        "editor.labels.email_on_done"                   : "Auch beim Erledigen benachrichtigen",
+        "editor.labels.email_delay"                     : "Verzögerung (Sekunden)",
         "editor.labels.dishes.options"                  : "Gerichte",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Artikel",
@@ -353,6 +394,13 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_change_time"           : "Zeit bevor eine Benachrichtigung verschickt wird",
         "editor.labels.notify_entity_smtp"              : "Name des SMTP-Notify-Eintrags",
         "editor.labels.notify_on_done"                  : "Benachrichtigung auch beim 'als erledigt' markieren",
+        "editor.options.notification_mode.off"          : "Aus",
+        "editor.options.notification_mode.change"       : "Nur die Änderung",
+        "editor.options.notification_mode.full"         : "Vollständige Liste",
+        "editor.options.notification_mode.change_and_full": "Änderung und vollständige Liste",
+        "editor.options.notification_format.plain"      : "Klartext",
+        "editor.options.notification_format.html"       : "HTML",
+        "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Chips aus Kategorie-Items generieren",
         "editor.labels.show_category_add_all"           : "'Alle hinzufügen'-Chip anzeigen",
         "editor.labels.allow_filter"                    : "Filterung der Artikel erlauben",
@@ -556,7 +604,24 @@ const TRANSLATIONS = {
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
         "editor.helpers.show_message_button"            : "Zeigt im Modus 'Einkaufsliste' einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
         "editor.helpers.show_clear_button"              : "Zeigt einen Button an, um alle als erledigt markierten Artikel aus der Liste zu entfernen.",
-        "editor.helpers.notify_entity"                  : "Die Notify-Entität, die verwendet wird, um die Liste zu senden, wenn z.B. der Nachrichten-Button gedrückt wird. Beispiel: 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Die Benachrichtigungen enthalten HTML Formattierungen, um die Lesbarkeit zu verbessern. Stelle sicher, dass die verwendete Notify-Entität HTML-Formattierungen unterstützt. Benachrichtigungen über die SMTP Platform, sind in der Auswahl nicht vorhanden und müssen separat konfiguriert werden.",
+        "editor.helpers.notify_entity"                  : "Home-Assistant-Notify-Entität für diesen Versandweg, zum Beispiel 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Verwende eine ntfy-Entität im eigenen ntfy-Bereich, damit Markdown korrekt unterstützt wird.",
+        "editor.helpers.notify.options"                 : "Versand über eine beliebige Home-Assistant-Notify-Entität. Automatische Meldungen und der manuelle Nachrichten-Button können getrennt konfiguriert werden.",
+        "editor.helpers.ntfy.options"                   : "Versand über die Home-Assistant-Integration ntfy. Die Karte verwendet ntfy.publish und kann die Liste als Klartext oder Markdown senden.",
+        "editor.helpers.email.options"                  : "Versand als HTML-E-Mail über einen in Home Assistant eingerichteten SMTP-Notify-Dienst.",
+        "editor.helpers.notify_change_mode"             : "Legt fest, ob bei einer Änderung nur die Änderung, nur die vollständige Liste, beides oder nichts automatisch gesendet wird.",
+        "editor.helpers.notify_include_manual"          : "Sendet die vollständige Liste über diesen Kanal, wenn der Nachrichten-Button in der Karte gedrückt wird.",
+        "editor.helpers.notify_delay"                   : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
+        "editor.helpers.notify_format"                  : "Klartext entfernt HTML-Markierungen. HTML erhält die vorhandene Formatierung für kompatible Notify-Dienste.",
+        "editor.helpers.ntfy_entity"                    : "Notify-Entität eines Topics aus der Home-Assistant-Integration ntfy, zum Beispiel 'notify.einkaufsliste'.",
+        "editor.helpers.ntfy_change_mode"               : "Legt fest, ob bei einer Änderung nur die Änderung, nur die vollständige Liste, beides oder nichts automatisch gesendet wird.",
+        "editor.helpers.ntfy_include_manual"            : "Sendet die vollständige Liste an ntfy, wenn der Nachrichten-Button in der Karte gedrückt wird.",
+        "editor.helpers.ntfy_on_done"                   : "Sendet über ntfy auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wird.",
+        "editor.helpers.ntfy_delay"                     : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
+        "editor.helpers.ntfy_format"                    : "Markdown formatiert Kategorieüberschriften und erledigte Artikel passend für ntfy. Klartext entfernt alle Formatierungen.",
+        "editor.helpers.email_change_mode"              : "Legt fest, ob bei einer Änderung nur die Änderung, nur die vollständige Liste, beides oder nichts automatisch per E-Mail gesendet wird.",
+        "editor.helpers.email_include_manual"           : "Sendet die vollständige Liste per E-Mail, wenn der Nachrichten-Button in der Karte gedrückt wird.",
+        "editor.helpers.email_on_done"                  : "Sendet per E-Mail auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wird.",
+        "editor.helpers.email_delay"                    : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
         "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
         "editor.helpers.notify_on_change"               : "Sendet eine Benachrichtigung über die konfigurierte Notify-Entität, sobald ein Artikel hinzugefügt, bearbeitet oder entfernt wurde.",
         "editor.helpers.notify_on_change_all"           : "Standardmäßig wird nur der hinzugefügte, bearbeitete oder entfernte Artikel in der Benachrichtigung erwähnt. Wenn diese Option aktiviert ist, wird zusätzlich die komplette Liste gesendet.",
@@ -595,7 +660,7 @@ const TRANSLATIONS = {
         "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
         "editor.helpers.category.options"               : "Hier kannst du Kategorien konfigurieren, die in der Einkaufs- und ToDo-liste verwendet werden. Du kannst lokale Kategorien (hier in der Karte) definieren oder eine Textdatei mit globalen Kategorien laden. Weitere Informationen zum Aufbau der Kategorien findest du in der Dokumentation.",
         "editor.helpers.export.options"                 : "Hier kannst du die Export-Optionen konfigurieren.",
-        "editor.helpers.message.options"                : "Hier kannst du einstellen, wie das Nachrichtensystem funktioniert und welche Notify-Entität verwendet wird, um die Liste zu senden. Das Nachrichtensystem funktioniert nur im Modus 'Einkaufsliste'.",
+        "editor.helpers.message.options"                : "Konfiguriert den manuellen und automatischen Versand der Liste getrennt für Standard-Notify, ntfy und E-Mail. Benachrichtigungen stehen im Einkaufslisten- und Inventarmodus zur Verfügung.",
         "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
         "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
         "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
@@ -642,7 +707,7 @@ const TRANSLATIONS = {
         "editor.helpers.debug_mode"                     : "Schreibt zusätzliche Diagnosemeldungen in die Browser-Konsole. Sollte im normalen Betrieb deaktiviert bleiben.",
         "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
         "editor.helpers.show_title_exclamation_mark"    : "Zeigt im To-Do Mode im Titel ein Ausrufezeichen an, sofern es in einer Kategorie fällige Einträge gibt.",
-        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im ToDo Modus wird die Anzahl ivertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.) So kann man z.B. bei (5/5) einfach sehen, dass aktuell keine Einträge zu erledigen sind.",
+        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im Inventarmodus zählt jede dargestellte Variante oder Gruppe einmal. Im ToDo Modus wird die Anzahl invertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.)",
         "editor.helpers.hide_cat_count_all_done"        : "Wenn diese Option aktiviert ist, wird die Artikelanzahl in der Kategorie ausgeblendet, sobald alle Einträge in der Kategorie als erledigt markiert wurden.",
         "editor.helpers.show_cat_next_due"              : "Wenn diese Option aktiviert ist, wird im To-Do Modus das nächste Fälligkeitsdatum unter dem Kategorienamen angezeigt. So kann man auf einen Blick sehen, wann der nächste Eintrag in dieser Kategorie fällig ist.",
         "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passt.",
@@ -693,6 +758,8 @@ const TRANSLATIONS = {
         "ui.message.edited"                             : "Item edited",
         "ui.message.item_added"                         : "Item added",
         "ui.message.item_removed"                       : "Item removed",
+        "ui.message.item_completed"                     : "Item marked completed",
+        "ui.message.item_reopened"                      : "Completed status removed",
         "ui.message.sent"                               : "Message sent",
 
         "ui.admin.options"                              : "Admin Options",
@@ -807,9 +874,11 @@ const TRANSLATIONS = {
         "ui.inventory.add"                              : "Stock in",
         "ui.inventory.remove"                           : "Stock out",
         "ui.inventory.register"                         : "Register",
+        "ui.inventory.correct"                          : "Correct",
         "ui.inventory.add_active"                       : "Stock-in mode active – scans and EAN entries increase stock.",
         "ui.inventory.remove_active"                    : "Stock-out mode active – scans and EAN entries reduce stock.",
         "ui.inventory.register_active"                  : "Registration mode active – scans and EAN entries create items with stock 0.",
+        "ui.inventory.correct_active"                   : "Correction mode active – scans and EAN entries open stock correction.",
         "ui.inventory.select_mode"                      : "Select a booking mode first.",
         "ui.inventory.select_mode_button"               : "Select mode first",
         "ui.inventory.registered"                       : "Registered {name} with stock 0.",
@@ -851,8 +920,11 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.add"                  : "Stock in",
         "ui.inventory.queue_mode.remove"               : "Stock out",
         "ui.inventory.queue_mode.register"             : "Register",
+        "ui.inventory.queue_mode.correct"              : "Correct",
         "ui.inventory.queue_mode.none"                 : "No mode",
         "ui.inventory.group_variants"                  : "Group EAN variants",
+        "ui.inventory.product_details"                 : "Show product details",
+        "ui.inventory.category_below_minimum"          : "{count} below minimum",
         "ui.inventory.grouped_total"                   : "Total stock",
         "ui.inventory.group_minimum"                   : "Group minimum stock (optional)",
         "ui.inventory.group_minimum_help"              : "Applies to the combined stock of all variants. Leave empty to use the individual product values or the card default.",
@@ -878,6 +950,16 @@ const TRANSLATIONS = {
         "ui.inventory.group_member_badge"              : "[GROUP MEMBER]",
         "ui.inventory.choose_variant_add"              : "Which variant of “{name}” should be stocked?",
         "ui.inventory.choose_variant_remove"           : "Which variant of “{name}” should be removed?",
+        "ui.inventory.choose_variant_correct"          : "Which variant of “{name}” should be corrected?",
+        "ui.inventory.correction_title"                : "Correct stock",
+        "ui.inventory.correction_current"              : "Current stock",
+        "ui.inventory.correction_new"                  : "New stock",
+        "ui.inventory.correction_no_transfer"          : "Stock corrections do not trigger an automatic ISL Sync / Transfer.",
+        "ui.inventory.correction_saved"                : "Stock for {name} was corrected from {before} to {after}.",
+        "ui.inventory.correction_manual_transfer"      : "Quantity to transfer manually (without changing stock)",
+        "ui.inventory.correction_manual_sent"          : "The quantity was sent to the target list. Stock was not changed.",
+        "ui.inventory.correction_save"                 : "Save stock",
+        "ui.inventory.correction_edit"                 : "Edit item",
         "ui.inventory.group_category_confirm"          : "“{name}” contains {count} separate variants. The category will be changed for all variants and related EAN records. Do you want to continue?",
         "ui.inventory.group_delete_confirm"            : "“{name}” contains {count} separate variants. Delete all variants?",
         "ui.inventory.ean_category_confirm"            : "This EAN belongs to the grouped item “{name}”. The category will be changed for every EAN variant using this name. The central EAN database may also be used by other cards. Do you want to continue?",
@@ -885,6 +967,8 @@ const TRANSLATIONS = {
         "editor.labels.inventory_default_action"        : "Mode after loading",
         "editor.labels.inventory_highlight_zero"        : "Mark zero stock in red",
         "editor.labels.inventory_group_variants"        : "Group EAN variants",
+        "editor.labels.inventory_show_product_details"  : "Show product details in the inventory list",
+        "editor.labels.inventory_show_category_minimum_status": "Show minimum-stock status in categories",
         "editor.labels.inventory_stock_marking"         : "Inventory mode highlighting",
         "editor.labels.inventory_mark_above_minimum"    : "Above minimum stock",
         "editor.labels.inventory_mark_at_minimum"       : "Equal to minimum stock",
@@ -900,9 +984,14 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.add"   : "Stock in",
         "editor.options.inventory_default_action.remove": "Stock out",
         "editor.options.inventory_default_action.register": "Register",
+        "editor.options.inventory_default_action.correct": "Correct",
         "editor.helpers.inventory_default_action"       : "Inventory mode only: Sets the booking mode used whenever the card loads.",
+        "editor.labels.inventory_mode_timeout"          : "Reset booking mode after inactivity (seconds)",
+        "editor.helpers.inventory_mode_timeout"         : "Inventory mode only: Resets a temporarily selected mode to the configured start mode after this period without a successful booking. Each successful booking restarts the countdown. 0 disables automatic reset.",
         "editor.helpers.inventory_highlight_zero"       : "Inventory mode only: Marks zero-stock items in red and adds a narrow red border.",
         "editor.helpers.inventory_group_variants"       : "Inventory mode only: Visually combines separately stored EAN and manual stock variants with the same name and category. The card switch can temporarily change the view.",
+        "editor.helpers.inventory_show_product_details" : "Inventory mode only: Shows the original product name, brand, package quantity and EAN below the saved item name. The card switch can temporarily change the display.",
+        "editor.helpers.inventory_show_category_minimum_status": "Inventory mode only: Shows how many items or groups in each category are below their effective minimum stock.",
         "editor.helpers.inventory_stock_marking"        : "Inventory mode only: Controls highlighting relative to the effective minimum stock. The three minimum-stock levels do not apply when no minimum is configured. Stock 0 is handled separately and takes priority.",
         "editor.helpers.ean_transfer_grouped_as_name"   : "When enabled, removals from grouped inventory items are transferred using only the shared item name and category. The selected variant's EAN, brand, package quantity and image are not sent to the target list. Default: Off.",
         "ui.ean.transfer_remove"                       : "Remove",
@@ -985,6 +1074,23 @@ const TRANSLATIONS = {
         "editor.labels.category.options"                : "Categories",
         "editor.labels.export.options"                  : "Export options",
         "editor.labels.message.options"                 : "Notifications",
+        "editor.labels.notify.options"                  : "Standard notify",
+        "editor.labels.ntfy.options"                    : "ntfy",
+        "editor.labels.email.options"                   : "Email",
+        "editor.labels.notify_change_mode"              : "Automatic notifications",
+        "editor.labels.notify_include_manual"           : "Include when sending manually",
+        "editor.labels.notify_delay"                    : "Delay (seconds)",
+        "editor.labels.notify_format"                   : "Message format",
+        "editor.labels.ntfy_entity"                     : "ntfy notify entity",
+        "editor.labels.ntfy_change_mode"                : "Automatic notifications",
+        "editor.labels.ntfy_include_manual"             : "Include when sending manually",
+        "editor.labels.ntfy_on_done"                    : "Notify when marking an item completed",
+        "editor.labels.ntfy_delay"                      : "Delay (seconds)",
+        "editor.labels.ntfy_format"                     : "Message format",
+        "editor.labels.email_change_mode"               : "Automatic notifications",
+        "editor.labels.email_include_manual"            : "Include when sending manually",
+        "editor.labels.email_on_done"                   : "Notify when marking an item completed",
+        "editor.labels.email_delay"                     : "Delay (seconds)",
         "editor.labels.dishes.options"                  : "Dishes",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Items",
@@ -999,6 +1105,13 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_change_time"           : "Time before sending notifications",
         "editor.labels.notify_entity_smtp"              : "Name of your SMTP-Notify-Entity",
         "editor.labels.notify_on_done"                  : "Notify also when item is marked as done",
+        "editor.options.notification_mode.off"          : "Off",
+        "editor.options.notification_mode.change"       : "Change only",
+        "editor.options.notification_mode.full"         : "Full list",
+        "editor.options.notification_mode.change_and_full": "Change and full list",
+        "editor.options.notification_format.plain"      : "Plain text",
+        "editor.options.notification_format.html"       : "HTML",
+        "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Generate chips from categorie items",
         "editor.labels.show_category_add_all"           : "Show 'Add all' chip",
         "editor.labels.allow_filter"                    : "Allow filtering items",
@@ -1201,7 +1314,24 @@ const TRANSLATIONS = {
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
         "editor.helpers.show_message_button"            : "Displays (in Shopping List Mode) a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
         "editor.helpers.show_clear_button"              : "Displays a button to clear all completed items from the list.",
-        "editor.helpers.notify_entity"                  : "The notify entity used e.g. to send the list when the message button is pressed. This entity must be configured in Home Assistant beforehand (e.g. 'notify.mobile_app_xyz' or 'notify.telegram'). Notifications include HTML formatting to improve readability. Make sure the configured notify entity supports HTML formatting. Notifications via SMTP platform are not included here; for SMTP, use the 'notify_entity_smtp' option.",
+        "editor.helpers.notify_entity"                  : "Home Assistant notify entity for this channel, for example 'notify.mobile_app_xyz' or 'notify.telegram'. Use an ntfy entity in the dedicated ntfy section so Markdown is handled correctly.",
+        "editor.helpers.notify.options"                 : "Send through any Home Assistant notify entity. Automatic messages and the manual message button can be configured separately.",
+        "editor.helpers.ntfy.options"                   : "Send through the Home Assistant ntfy integration. The card uses ntfy.publish and can send the list as plain text or Markdown.",
+        "editor.helpers.email.options"                  : "Send an HTML email through an SMTP notify service configured in Home Assistant.",
+        "editor.helpers.notify_change_mode"             : "Choose whether an item change automatically sends only the change, only the full list, both, or nothing.",
+        "editor.helpers.notify_include_manual"          : "Send the full list through this channel when the message button on the card is pressed.",
+        "editor.helpers.notify_delay"                   : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
+        "editor.helpers.notify_format"                  : "Plain text removes HTML tags. HTML keeps the existing formatting for compatible notify services.",
+        "editor.helpers.ntfy_entity"                    : "Notify entity of a topic from the Home Assistant ntfy integration, for example 'notify.shopping_list'.",
+        "editor.helpers.ntfy_change_mode"               : "Choose whether an item change automatically sends only the change, only the full list, both, or nothing.",
+        "editor.helpers.ntfy_include_manual"            : "Send the full list to ntfy when the message button on the card is pressed.",
+        "editor.helpers.ntfy_on_done"                   : "Also send an ntfy notification when an item is marked completed.",
+        "editor.helpers.ntfy_delay"                     : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
+        "editor.helpers.ntfy_format"                    : "Markdown formats category headings and completed items for ntfy. Plain text removes all formatting.",
+        "editor.helpers.email_change_mode"              : "Choose whether an item change automatically sends only the change, only the full list, both, or nothing by email.",
+        "editor.helpers.email_include_manual"           : "Send the full list by email when the message button on the card is pressed.",
+        "editor.helpers.email_on_done"                  : "Also send an email when an item is marked completed.",
+        "editor.helpers.email_delay"                    : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
         "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
         "editor.helpers.notify_on_change"               : "Sends a notification via the configured notify entity whenever an item is added, edited, or removed.",
         "editor.helpers.notify_on_change_all"           : "Sends also the entire list with each notification, rather than just the changed item.",
@@ -1240,7 +1370,7 @@ const TRANSLATIONS = {
         "editor.helpers.colors"                         : "Defines the color settings for the chips.",
         "editor.helpers.category.options"               : "Here you can configure categories used in the shopping and to-do list. You can define local categories (here in the card) or load a text file with global categories. For more information on the structure of the categories, please refer to the documentation.",
         "editor.helpers.export.options"                 : "Here you can configure the export options.",
-        "editor.helpers.message.options"                : "Here you can configure how the message system works and which notify entity is used to send the list. The notification system only works in 'Shopping List' mode.",
+        "editor.helpers.message.options"                : "Configure manual and automatic list delivery separately for standard notify, ntfy, and email. Notifications are available in Shopping List and Inventory modes.",
         "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
         "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
         "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
@@ -1290,7 +1420,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",       
         "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
         "editor.helpers.cat_double_sized_icon"          : "If the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
-        "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
+        "editor.helpers.show_cat_count"                 : "If enabled, the number of items in each category is displayed next to the category name. In Inventory mode, each displayed variant or group counts once. In To-do mode, the count is inverted; the number before '/' contains only entries that are not yet due. (Example: 3/5 means that 3 of 5 entries are not yet due.)",
         "editor.helpers.hide_cat_count_all_done"        : "If this option is enabled, the item count will be hidden for categories where all items are marked as completed.",
         "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
@@ -1336,6 +1466,8 @@ const TRANSLATIONS = {
         "ui.message.edited"                                         : "Elemento editado",
         "ui.message.item_added"                                     : "Elemento añadido",
         "ui.message.item_removed"                                   : "Elemento eliminado",
+        "ui.message.item_completed"                                 : "Elemento marcado como completado",
+        "ui.message.item_reopened"                                  : "Estado completado eliminado",
         "ui.message.sent"                                           : "Mensaje enviado",
         "ui.admin.options"                                          : "Opciones de administración",
         "ui.admin.options.browser_chips"                            : "Chips del navegador",
@@ -1449,9 +1581,11 @@ const TRANSLATIONS = {
         "ui.inventory.add"                                          : "Entrada",
         "ui.inventory.remove"                                       : "Salida",
         "ui.inventory.register"                                     : "Registrar",
+        "ui.inventory.correct"                                      : "Corregir",
         "ui.inventory.add_active"                                   : "Modo de entrada activo – los escaneos y entradas EAN aumentan el stock.",
         "ui.inventory.remove_active"                                : "Modo de salida activo – los escaneos y entradas EAN reducen el stock.",
         "ui.inventory.register_active"                              : "Modo de registro activo – los escaneos y entradas EAN crean elementos con stock 0.",
+        "ui.inventory.correct_active"                               : "Modo de corrección activo – los escaneos y entradas EAN abren la corrección de stock.",
         "ui.inventory.select_mode"                                  : "Selecciona primero un modo de registro.",
         "ui.inventory.select_mode_button"                           : "Seleccionar modo primero",
         "ui.inventory.registered"                                   : "Se ha registrado {name} con stock 0.",
@@ -1493,8 +1627,11 @@ const TRANSLATIONS = {
         "ui.inventory.queue_mode.add"                               : "Entrada de stock",
         "ui.inventory.queue_mode.remove"                            : "Salida de stock",
         "ui.inventory.queue_mode.register"                          : "Registrar",
+        "ui.inventory.queue_mode.correct"                           : "Corregir",
         "ui.inventory.queue_mode.none"                              : "Sin modo",
         "ui.inventory.group_variants"                               : "Agrupar variantes EAN",
+        "ui.inventory.product_details"                              : "Mostrar detalles del producto",
+        "ui.inventory.category_below_minimum"                       : "{count} por debajo del mínimo",
         "ui.inventory.grouped_total"                                : "Stock total",
         "ui.inventory.group_minimum"                                : "Stock mínimo del grupo (opcional)",
         "ui.inventory.group_minimum_help"                           : "Se aplica al stock combinado de todas las variantes. Déjalo vacío para usar los valores individuales de los productos o el valor predeterminado de la tarjeta.",
@@ -1520,6 +1657,16 @@ const TRANSLATIONS = {
         "ui.inventory.group_member_badge"                           : "[MIEMBRO DEL GRUPO]",
         "ui.inventory.choose_variant_add"                           : "¿Qué variante de «{name}» se debe reponer?",
         "ui.inventory.choose_variant_remove"                        : "¿Qué variante de «{name}» se debe retirar?",
+        "ui.inventory.choose_variant_correct"                       : "¿Qué variante de «{name}» se debe corregir?",
+        "ui.inventory.correction_title"                             : "Corregir stock",
+        "ui.inventory.correction_current"                           : "Stock actual",
+        "ui.inventory.correction_new"                               : "Nuevo stock",
+        "ui.inventory.correction_no_transfer"                       : "Las correcciones de stock no activan una transferencia automática mediante ISL Sync / Transfer.",
+        "ui.inventory.correction_saved"                             : "El stock de {name} se corrigió de {before} a {after}.",
+        "ui.inventory.correction_manual_transfer"                   : "Cantidad a transferir manualmente (sin cambiar el stock)",
+        "ui.inventory.correction_manual_sent"                       : "La cantidad se envió a la lista de destino. El stock no se modificó.",
+        "ui.inventory.correction_save"                              : "Guardar stock",
+        "ui.inventory.correction_edit"                              : "Editar artículo",
         "ui.inventory.group_category_confirm"                       : "«{name}» contiene {count} variantes independientes. La categoría se cambiará para todas las variantes y registros EAN asociados. ¿Deseas continuar?",
         "ui.inventory.group_delete_confirm"                         : "«{name}» contiene {count} variantes independientes. ¿Eliminar todas las variantes?",
         "ui.inventory.ean_category_confirm"                         : "Este EAN pertenece al elemento agrupado «{name}». La categoría se cambiará para todas las variantes EAN con este nombre. La base de datos central de EAN también puede ser utilizada por otras tarjetas. ¿Deseas continuar?",
@@ -1527,6 +1674,8 @@ const TRANSLATIONS = {
         "editor.labels.inventory_default_action"                    : "Modo de registro por defecto",
         "editor.labels.inventory_highlight_zero"                    : "Destacar elementos con stock 0",
         "editor.labels.inventory_group_variants"                    : "Agrupar variantes de EAN",
+        "editor.labels.inventory_show_product_details"              : "Mostrar detalles del producto en la lista de inventario",
+        "editor.labels.inventory_show_category_minimum_status"      : "Mostrar el estado del stock mínimo en las categorías",
         "editor.labels.inventory_stock_marking"                    : "Marcado del modo inventario",
         "editor.labels.inventory_mark_above_minimum"               : "Por encima del stock mínimo",
         "editor.labels.inventory_mark_at_minimum"                  : "Igual al stock mínimo",
@@ -1542,9 +1691,14 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.add"               : "Entrada de stock",
         "editor.options.inventory_default_action.remove"            : "Salida de stock",
         "editor.options.inventory_default_action.register"          : "Registrar",
+        "editor.options.inventory_default_action.correct"           : "Corregir",
         "editor.helpers.inventory_default_action"                   : "Modo de registro por defecto activado al abrir la tarjeta.",
+        "editor.labels.inventory_mode_timeout"                      : "Restablecer el modo tras inactividad (segundos)",
+        "editor.helpers.inventory_mode_timeout"                     : "Solo en modo inventario: restablece un modo seleccionado temporalmente al modo inicial tras este periodo sin una operación correcta. Cada operación correcta reinicia la cuenta atrás. 0 desactiva el restablecimiento automático.",
         "editor.helpers.inventory_highlight_zero"                   : "Destaca visualmente en la lista los elementos de inventario con stock 0.",
         "editor.helpers.inventory_group_variants"                   : "Agrupa variantes de productos con el mismo nombre en una sola entrada en el inventario.",
+        "editor.helpers.inventory_show_product_details"             : "Solo en el modo inventario: muestra el nombre original del producto, la marca, la cantidad del envase y el EAN debajo del nombre guardado. El botón de la tarjeta puede cambiar temporalmente la visualización.",
+        "editor.helpers.inventory_show_category_minimum_status"     : "Solo en el modo inventario: muestra cuántos artículos o grupos de cada categoría están por debajo de su stock mínimo efectivo.",
         "editor.helpers.inventory_stock_marking"                   : "Solo en el modo inventario: controla el marcado en relación con el stock mínimo efectivo. Los tres niveles de stock mínimo no se aplican cuando no hay ningún mínimo configurado. El stock 0 se gestiona por separado y tiene prioridad.",
         "editor.helpers.ean_transfer_grouped_as_name"              : "Cuando está activado, las retiradas de artículos de inventario agrupados se transfieren usando únicamente el nombre compartido del artículo y la categoría. No se envían a la lista de destino el EAN, la marca, la cantidad del paquete ni la imagen de la variante seleccionada. Por defecto: desactivado.",
         "ui.ean.transfer_remove"                                    : "Retirar",
@@ -1625,6 +1779,23 @@ const TRANSLATIONS = {
         "editor.labels.category.options"                            : "Categorías",
         "editor.labels.export.options"                              : "Opciones de exportación",
         "editor.labels.message.options"                             : "Notificaciones",
+        "editor.labels.notify.options"                              : "Notificación estándar",
+        "editor.labels.ntfy.options"                                : "ntfy",
+        "editor.labels.email.options"                               : "Correo electrónico",
+        "editor.labels.notify_change_mode"                          : "Notificaciones automáticas",
+        "editor.labels.notify_include_manual"                       : "Incluir al enviar manualmente",
+        "editor.labels.notify_delay"                                : "Retraso (segundos)",
+        "editor.labels.notify_format"                               : "Formato del mensaje",
+        "editor.labels.ntfy_entity"                                 : "Entidad de notificación ntfy",
+        "editor.labels.ntfy_change_mode"                            : "Notificaciones automáticas",
+        "editor.labels.ntfy_include_manual"                         : "Incluir al enviar manualmente",
+        "editor.labels.ntfy_on_done"                                : "Notificar al marcar como completado",
+        "editor.labels.ntfy_delay"                                  : "Retraso (segundos)",
+        "editor.labels.ntfy_format"                                 : "Formato del mensaje",
+        "editor.labels.email_change_mode"                           : "Notificaciones automáticas",
+        "editor.labels.email_include_manual"                        : "Incluir al enviar manualmente",
+        "editor.labels.email_on_done"                               : "Notificar al marcar como completado",
+        "editor.labels.email_delay"                                 : "Retraso (segundos)",
         "editor.labels.dishes.options"                              : "Platos",
         "editor.labels.chips.options"                               : "Chips",
         "editor.labels.item.options"                                : "Elementos",
@@ -1639,6 +1810,13 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_change_time"                       : "Tiempo antes de enviar notificaciones",
         "editor.labels.notify_entity_smtp"                          : "Nombre de tu entidad de notificación SMTP",
         "editor.labels.notify_on_done"                              : "Notificar también al marcar como completado",
+        "editor.options.notification_mode.off"                      : "Desactivado",
+        "editor.options.notification_mode.change"                   : "Solo el cambio",
+        "editor.options.notification_mode.full"                     : "Lista completa",
+        "editor.options.notification_mode.change_and_full"          : "Cambio y lista completa",
+        "editor.options.notification_format.plain"                  : "Texto sin formato",
+        "editor.options.notification_format.html"                   : "HTML",
+        "editor.options.notification_format.markdown"               : "Markdown",
         "editor.labels.show_category_chips"                         : "Generar chips a partir de elementos de categoría",
         "editor.labels.show_category_add_all"                       : "Mostrar chip 'Añadir todos'",
         "editor.labels.allow_filter"                                : "Permitir filtrar elementos",
@@ -1826,7 +2004,24 @@ const TRANSLATIONS = {
         "editor.helpers.allow_dynamic_categories"                   : "Las categorías dinámicas permiten asignar elementos a categorías que no están predefinidas, incluso desde fuera de la tarjeta (ej. mediante automatizaciones en el formato: '@Categoría@ Elemento'). Además, se pueden crear nuevas categorías al añadir elementos mediante la tarjeta. Estas categorías permanecen disponibles hasta que se elimina el último elemento de la categoría.",
         "editor.helpers.show_message_button"                        : "Muestra (en modo 'Lista de la compra') un botón de mensaje que permite enviar la lista por correo electrónico, Telegram (usando 'notify') o similar. La entidad de notificación debe configurarse en la sección Notificaciones.",
         "editor.helpers.show_clear_button"                          : "Muestra un botón para limpiar todos los elementos completados de la lista.",
-        "editor.helpers.notify_entity"                              : "La entidad de notificación utilizada, ej. para enviar la lista al pulsar el botón de mensaje. Esta entidad debe estar configurada en Home Assistant previamente (ej. 'notify.mobile_app_xyz' o 'notify.telegram'). Las notificaciones incluyen formato HTML para mejorar la legibilidad. Asegúrate de que la entidad configurada sea compatible con HTML. Las notificaciones mediante SMTP no se incluyen aquí; para SMTP, usa la opción 'notify_entity_smtp'.",
+        "editor.helpers.notify_entity"                              : "Entidad notify de Home Assistant para este canal, por ejemplo 'notify.mobile_app_xyz' o 'notify.telegram'. Usa las entidades ntfy en la sección ntfy para que Markdown funcione correctamente.",
+        "editor.helpers.notify.options"                             : "Envía mediante cualquier entidad notify de Home Assistant. Los mensajes automáticos y el botón de envío manual se configuran por separado.",
+        "editor.helpers.ntfy.options"                               : "Envía mediante la integración ntfy de Home Assistant usando ntfy.publish, como texto sin formato o Markdown.",
+        "editor.helpers.email.options"                              : "Envía correos HTML mediante un servicio SMTP notify configurado en Home Assistant.",
+        "editor.helpers.notify_change_mode"                         : "Elige si un cambio envía automáticamente solo el cambio, solo la lista completa, ambos o nada.",
+        "editor.helpers.notify_include_manual"                      : "Envía la lista completa por este canal al pulsar el botón de mensaje de la tarjeta.",
+        "editor.helpers.notify_delay"                               : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
+        "editor.helpers.notify_format"                              : "Texto sin formato elimina las etiquetas HTML. HTML conserva el formato para servicios compatibles.",
+        "editor.helpers.ntfy_entity"                                : "Entidad notify de un tema de la integración ntfy, por ejemplo 'notify.lista_de_compras'.",
+        "editor.helpers.ntfy_change_mode"                           : "Elige si un cambio envía automáticamente solo el cambio, solo la lista completa, ambos o nada.",
+        "editor.helpers.ntfy_include_manual"                        : "Envía la lista completa a ntfy al pulsar el botón de mensaje.",
+        "editor.helpers.ntfy_on_done"                               : "También envía una notificación ntfy al marcar un elemento como completado.",
+        "editor.helpers.ntfy_delay"                                 : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
+        "editor.helpers.ntfy_format"                                : "Markdown da formato a categorías y elementos completados. Texto sin formato elimina todo el formato.",
+        "editor.helpers.email_change_mode"                          : "Elige si un cambio envía por correo solo el cambio, solo la lista completa, ambos o nada.",
+        "editor.helpers.email_include_manual"                       : "Envía la lista completa por correo al pulsar el botón de mensaje.",
+        "editor.helpers.email_on_done"                              : "También envía un correo al marcar un elemento como completado.",
+        "editor.helpers.email_delay"                                : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
         "editor.helpers.show_admin_button"                          : "Muestra un botón de opciones de administración, que abre un diálogo para copiar chips del navegador, categorías dinámicas y elementos asignados manualmente.",
         "editor.helpers.notify_on_change"                           : "Envía una notificación mediante la entidad configurada cada vez que se añade, edita o elimina un elemento.",
         "editor.helpers.notify_on_change_all"                       : "Envía también la lista completa con cada notificación, en lugar de solo el elemento modificado.",
@@ -1865,7 +2060,7 @@ const TRANSLATIONS = {
         "editor.helpers.colors"                                     : "Define los ajustes de color para los chips.",
         "editor.helpers.category.options"                           : "Aquí puedes configurar las categorías utilizadas en la lista de la compra y de tareas pendientes. Puedes definir categorías locales (en la tarjeta) o cargar un archivo de texto con categorías globales. Para más información sobre la estructura de categorías, consulta la documentación.",
         "editor.helpers.export.options"                             : "Aquí puedes configurar las opciones de exportación.",
-        "editor.helpers.message.options"                            : "Aquí puedes configurar cómo funciona el sistema de mensajes y qué entidad de notificación se utiliza para enviar la lista. El sistema de notificaciones solo funciona en modo 'Lista de la compra'.",
+        "editor.helpers.message.options"                            : "Configura por separado el envío manual y automático para notify estándar, ntfy y correo. Está disponible en los modos Lista de la compra e Inventario.",
         "editor.helpers.dishes.options"                             : "Aquí puedes configurar platos utilizados en la lista de la compra. Esta función permite añadir varios elementos a la vez.",
         "editor.helpers.chips.options"                              : "Aquí puedes configurar las opciones de chips. Los chips son botones de selección rápida para añadir rápidamente elementos frecuentes a la lista.",
         "editor.helpers.item.options"                               : "Aquí puedes configurar los ajustes para los elementos de la lista.",
@@ -1915,7 +2110,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_exclamation_mark"                : "Muestra un signo de exclamación en el título en modo de tareas pendientes si contiene elementos vencidos en cualquier categoría.",
         "editor.helpers.show_cat_next_due"                          : "Si está activado, la próxima fecha de vencimiento se mostrará debajo del nombre de la categoría en modo de tareas pendientes. Así puedes ver de un vistazo cuándo vence el próximo elemento.",
         "editor.helpers.cat_double_sized_icon"                      : "Si se muestra la próxima fecha de vencimiento, esta opción permite agrandar el icono para que se integre mejor visualmente.",
-        "editor.helpers.show_cat_count"                             : "Si está activado, el número de elementos de cada categoría se mostrará junto al nombre. En modo de tareas pendientes, el recuento se muestra invertido. Así, el número antes de la '/' solo incluye las entradas no vencidas. (Ejemplo: 3/5 significa que de 5 entradas, 3 aún no han vencido).",
+        "editor.helpers.show_cat_count"                             : "Si está activado, el número de elementos de cada categoría se muestra junto al nombre. En el modo inventario, cada variante o grupo visible cuenta una vez. En el modo de tareas, el recuento se muestra invertido; el número antes de '/' solo incluye las entradas que aún no han vencido.",
         "editor.helpers.hide_cat_count_all_done"                    : "Si está activado, el recuento de elementos se ocultará para las categorías donde todos los elementos estén marcados como completados.",
         "editor.helpers.show_cat_popup"                             : "Si está activado, aparecerá una ventana emergente al añadir un elemento nuevo para seleccionar una categoría para el elemento.",
         "editor.helpers.longlived_token"                            : "Un token de acceso de larga duración para autenticación persistente con Home Assistant. Se puede crear en el perfil de usuario en 'Seguridad → Tokens de acceso de larga duración'. Advertencia: Trata este token con confidencialidad ya que otorga acceso total a tu sistema. Ten en cuenta también que si se usa HTTP en lugar de HTTPS, el token se transmite sin cifrar.",
@@ -1956,6 +2151,8 @@ const TRANSLATIONS = {
         "ui.message.edited"                             : "Article modifié",
         "ui.message.item_added"                         : "Article ajouté",
         "ui.message.item_removed"                       : "Article supprimé",
+        "ui.message.item_completed"                     : "Article marqué comme terminé",
+        "ui.message.item_reopened"                      : "Statut terminé supprimé",
         "ui.message.sent"                               : "Message envoyé",
 
         "ui.admin.options"                              : "Options d'administration",
@@ -2045,6 +2242,23 @@ const TRANSLATIONS = {
         "editor.labels.category.options"                : "Catégories",
         "editor.labels.export.options"                  : "Options d'exportation",
         "editor.labels.message.options"                 : "Notifications",
+        "editor.labels.notify.options"                  : "Notification standard",
+        "editor.labels.ntfy.options"                    : "ntfy",
+        "editor.labels.email.options"                   : "E-mail",
+        "editor.labels.notify_change_mode"              : "Notifications automatiques",
+        "editor.labels.notify_include_manual"           : "Inclure lors de l'envoi manuel",
+        "editor.labels.notify_delay"                    : "Délai (secondes)",
+        "editor.labels.notify_format"                   : "Format du message",
+        "editor.labels.ntfy_entity"                     : "Entité de notification ntfy",
+        "editor.labels.ntfy_change_mode"                : "Notifications automatiques",
+        "editor.labels.ntfy_include_manual"             : "Inclure lors de l'envoi manuel",
+        "editor.labels.ntfy_on_done"                    : "Notifier lorsqu'un article est terminé",
+        "editor.labels.ntfy_delay"                      : "Délai (secondes)",
+        "editor.labels.ntfy_format"                     : "Format du message",
+        "editor.labels.email_change_mode"               : "Notifications automatiques",
+        "editor.labels.email_include_manual"            : "Inclure lors de l'envoi manuel",
+        "editor.labels.email_on_done"                   : "Notifier lorsqu'un article est terminé",
+        "editor.labels.email_delay"                     : "Délai (secondes)",
         "editor.labels.dishes.options"                  : "Plats",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Articles",
@@ -2058,6 +2272,13 @@ const TRANSLATIONS = {
         "editor.labels.notify_on_change_time"           : "Délai avant d'envoyer les notifications",
         "editor.labels.notify_entity_smtp"              : "Nom de l'entité SMTP-Notify",
         "editor.labels.notify_on_done"                  : "Notifier également lorsqu'un article est marqué comme terminé",
+        "editor.options.notification_mode.off"          : "Désactivé",
+        "editor.options.notification_mode.change"       : "Modification uniquement",
+        "editor.options.notification_mode.full"         : "Liste complète",
+        "editor.options.notification_mode.change_and_full": "Modification et liste complète",
+        "editor.options.notification_format.plain"      : "Texte brut",
+        "editor.options.notification_format.html"       : "HTML",
+        "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Générer des chips à partir des articles de catégorie",
         "editor.labels.show_category_add_all"           : "Afficher le chip « Tout ajouter »",
         "editor.labels.allow_filter"                    : "Autoriser le filtrage des articles",
@@ -2219,7 +2440,24 @@ const TRANSLATIONS = {
         "editor.helpers.allow_dynamic_categories"       : "Les catégories dynamiques permettent d'attribuer des articles à des catégories qui ne sont pas prédéfinies, même depuis l'extérieur de la carte (ex. via des automatisations au format : « @Catégorie@ Article »). De plus, de nouvelles catégories peuvent être créées lors de l'ajout d'articles via la carte. Celles-ci restent disponibles jusqu'à ce que le dernier article de la catégorie soit supprimé.",
         "editor.helpers.show_message_button"            : "Affiche (en mode liste de courses) un bouton de message qui permet d'envoyer la liste par e-mail, Telegram (via « notify »), etc. L'entité notify doit être configurée dans la section Notifications.",
         "editor.helpers.show_clear_button"              : "Affiche un bouton permettant d'effacer tous les articles terminés.",
-        "editor.helpers.notify_entity"                  : "L'entité notify utilisée pour envoyer la liste lorsque le bouton de message est pressé. Cette entité doit être configurée dans Home Assistant (ex. « notify.mobile_app_xyz » ou « notify.telegram »). Les notifications incluent un formatage HTML pour améliorer la lisibilité. Assurez-vous que l'entité configurée le prend en charge. Les notifications SMTP ne sont pas incluses ici ; utilisez l'option 'notify_entity_smtp' pour le SMTP.",
+        "editor.helpers.notify_entity"                  : "Entité notify Home Assistant pour ce canal, par exemple 'notify.mobile_app_xyz' ou 'notify.telegram'. Utilisez les entités ntfy dans la section ntfy pour gérer correctement Markdown.",
+        "editor.helpers.notify.options"                 : "Envoi via une entité notify Home Assistant. Les messages automatiques et le bouton d'envoi manuel se configurent séparément.",
+        "editor.helpers.ntfy.options"                   : "Envoi via l'intégration ntfy de Home Assistant avec ntfy.publish, en texte brut ou Markdown.",
+        "editor.helpers.email.options"                  : "Envoi d'un e-mail HTML via un service SMTP notify configuré dans Home Assistant.",
+        "editor.helpers.notify_change_mode"             : "Choisissez si une modification envoie uniquement la modification, uniquement la liste complète, les deux ou rien.",
+        "editor.helpers.notify_include_manual"          : "Envoie la liste complète par ce canal lorsque le bouton de message de la carte est pressé.",
+        "editor.helpers.notify_delay"                   : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
+        "editor.helpers.notify_format"                  : "Le texte brut supprime les balises HTML. HTML conserve le formatage pour les services compatibles.",
+        "editor.helpers.ntfy_entity"                    : "Entité notify d'un sujet de l'intégration ntfy, par exemple 'notify.liste_de_courses'.",
+        "editor.helpers.ntfy_change_mode"               : "Choisissez si une modification envoie uniquement la modification, uniquement la liste complète, les deux ou rien.",
+        "editor.helpers.ntfy_include_manual"            : "Envoie la liste complète à ntfy lorsque le bouton de message est pressé.",
+        "editor.helpers.ntfy_on_done"                   : "Envoie aussi une notification ntfy lorsqu'un article est marqué comme terminé.",
+        "editor.helpers.ntfy_delay"                     : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
+        "editor.helpers.ntfy_format"                    : "Markdown formate les catégories et les articles terminés. Le texte brut supprime tout formatage.",
+        "editor.helpers.email_change_mode"              : "Choisissez si une modification envoie par e-mail uniquement la modification, uniquement la liste complète, les deux ou rien.",
+        "editor.helpers.email_include_manual"           : "Envoie la liste complète par e-mail lorsque le bouton de message est pressé.",
+        "editor.helpers.email_on_done"                  : "Envoie aussi un e-mail lorsqu'un article est marqué comme terminé.",
+        "editor.helpers.email_delay"                    : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
         "editor.helpers.show_admin_button"              : "Affiche un bouton d'options d'administration, ouvrant un dialogue pour copier les chips du navigateur, les catégories dynamiques et les articles assignés manuellement.",
         "editor.helpers.notify_on_change"               : "Envoie une notification via l'entité notify configurée chaque fois qu'un article est ajouté, modifié ou supprimé.",
         "editor.helpers.notify_on_change_all"           : "Envoie systématiquement la liste complète à chaque notification, plutôt que le seul article modifié.",
@@ -2238,7 +2476,7 @@ const TRANSLATIONS = {
         "editor.helpers.colors"                         : "Définit les paramètres de couleur pour les chips.",
         "editor.helpers.category.options"               : "Vous pouvez configurer ici les catégories utilisées dans la liste de courses ou liste de choses à faire. Vous pouvez définir des catégories locales (dans la carte) ou charger un fichier texte avec des catégories globales. Consultez la documentation pour plus d'informations sur leur structure.",
         "editor.helpers.export.options"                 : "Ici, vous pouvez configurer les options d'exportation.",
-        "editor.helpers.message.options"                : "Configurez ici le fonctionnement du système de messages et l'entité notify utilisée. Ce système ne fonctionne qu'en mode liste de courses.",
+        "editor.helpers.message.options"                : "Configure séparément l'envoi manuel et automatique pour notify standard, ntfy et e-mail. Disponible en modes liste de courses et inventaire.",
         "editor.helpers.dishes.options"                 : "Configurez ici des plats utilisés dans la liste de courses. Cette fonction permet d'ajouter plusieurs articles à la fois.",
         "editor.helpers.chips.options"                  : "Configurez ici les options des chips. Ce sont des boutons de sélection rapide permettant d'ajouter facilement les articles fréquemment utilisés.",
         "editor.helpers.item.options"                   : "Configurez ici les paramètres des articles de la liste.",
@@ -2334,6 +2572,11 @@ function getSmallerFontSize(size, smallerby = 0.8, defaultSize = 14) {
 
 // determine the default Shopping List entity
 function getDefaultShoppingListEntity(hass) {
+    if (!hass?.states || typeof hass.states !== "object") {
+        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] No Home Assistant states available for default entity detection.");
+        return null;
+    }
+
     // Filter all todo-entities
     const todoEntities = Object.values(hass.states).filter(s => s.entity_id.startsWith("todo."));
 
@@ -2386,6 +2629,8 @@ class HaShoppingListImproved extends HTMLElement {
         };
 
         this._messageCache = "";
+        this._notificationTimers = new Map();
+        this._pendingNotificationChanges = new Map();
 
         this._eanDatabase = new Map();
         this._eanDatabaseByName = new Map();
@@ -2409,6 +2654,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanTransferRetryIds = new Map();
         this._eanTransferSourceAppliedIds = new Map();
         this._eanTransferStartupTimers = [];
+        this._inventoryModeResetTimer = null;
+        this._inventoryModeResetDeadline = null;
 
         this._refreshDebounceTimer = null;
         this._dragSortActive = false;
@@ -2444,9 +2691,7 @@ class HaShoppingListImproved extends HTMLElement {
             }, delay);
         };
 
-        this.sendMessageTimer = null;
         this._updateTimesTimeout = null;
-        this._sendMessageDelay = 30; // 30 Seconds
 
         console.log(
             "%cImproved Shopping List Card %cv" + version,
@@ -2476,6 +2721,12 @@ class HaShoppingListImproved extends HTMLElement {
     
 	setConfig(config){
 	    this._config = config || {};
+
+        // A configuration change must not leave delayed messages from the
+        // previous channel setup behind.
+        for (const timer of this._notificationTimers.values()) clearTimeout(timer);
+        this._notificationTimers.clear();
+        this._pendingNotificationChanges.clear();
 
         // Entity
         const entity = config.entity || getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass);
@@ -2513,6 +2764,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._highlightColor        = config.highlight_color || "#D9534F";
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
+        this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true);
         this._showCatNextDue        = (config.show_cat_next_due === false) ? false : true;
         this._doubleSizedIcon       = (config.cat_double_sized_icon === false) ? false : true;
         this._showCatExclamation    = (config.show_cat_exclamation_mark === false) ? false : true;
@@ -2530,12 +2782,43 @@ class HaShoppingListImproved extends HTMLElement {
 		this._categoryFile          = config.category_file || "";
         this._allowDynamicCats      = (config.allow_dynamic_categories === true) ? true : false;
         this._listReloadTime        = Math.min(Math.max(config.list_reload_time || 10, 1), 3600) * 1000; // in seconds, min 1s, max 1h
+        const legacyNotificationMode = config.notify_on_change === true
+            ? (config.notify_on_change_all === true ? "change_and_full" : "change")
+            : "off";
+        const notificationModes = ["off", "change", "full", "change_and_full"];
+        const notificationMode = (value, fallback) => notificationModes.includes(value) ? value : fallback;
+        const notificationDelay = (value, fallback = 0) => {
+            const number = Number(value ?? fallback);
+            return Number.isFinite(number) ? Math.min(Math.max(number, 0), 300) : fallback;
+        };
+
+        // The legacy notification settings remain runtime fallbacks so existing cards
+        // keep their exact behavior until a channel-specific option is saved.
         this._notifyEntity          = config.notify_entity || "";
-        this._notifyOnChangeEna     = (config.notify_on_change === true) ? true : false;
-        this._notifyOnChangeAll     = (config.notify_on_change_all === true) ? true : false;
-        this._notifyOnDone          = (config.notify_on_done === true) ? true : false;
-        this._sendMessageDelay      = config.notify_on_change_time || 0;
-        this._notifyEntitySMTP      = config.notify_entity_smtp || "";
+        this._notifyChangeMode      = notificationMode(config.notify_change_mode, legacyNotificationMode);
+        this._notifyIncludeManual   = config.notify_include_manual !== false;
+        this._notifyOnDone          = config.notify_on_done === true;
+        this._notifyDelay           = notificationDelay(config.notify_delay, config.notify_on_change_time || 0);
+        this._notifyFormat          = ["plain", "html"].includes(config.notify_format)
+            ? config.notify_format
+            : "html";
+
+        this._ntfyEntity            = config.ntfy_entity || "";
+        this._ntfyChangeMode        = notificationMode(config.ntfy_change_mode, "off");
+        this._ntfyIncludeManual     = config.ntfy_include_manual !== false;
+        this._ntfyOnDone            = config.ntfy_on_done === true;
+        this._ntfyDelay             = notificationDelay(config.ntfy_delay, 0);
+        this._ntfyFormat            = ["plain", "markdown"].includes(config.ntfy_format)
+            ? config.ntfy_format
+            : "markdown";
+
+        this._emailNotifyService    = config.notify_entity_smtp || "";
+        this._emailChangeMode       = notificationMode(config.email_change_mode, legacyNotificationMode);
+        this._emailIncludeManual    = config.email_include_manual !== false;
+        this._emailOnDone           = config.email_on_done !== undefined
+            ? config.email_on_done === true
+            : config.notify_on_done === true;
+        this._emailDelay            = notificationDelay(config.email_delay, config.notify_on_change_time || 0);
         this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
         this._showCategoryAddAll    = (config.show_category_add_all === true) ? true : false;
         this._dishesConfirmAdd      = (config.dishes_confirm_add === false) ? false : true;
@@ -2546,7 +2829,7 @@ class HaShoppingListImproved extends HTMLElement {
         const validSortModes        = ["alpha", "manual", "none", "due"];
         const configuredSortMode    = validSortModes.includes(config.sort_mode) ? config.sort_mode : null;
         this._sortMode              = configuredSortMode || (config.sort_items === false ? "none" : "alpha"); // sort_mode is the new option.
-        this._sortItems             = this._sortMode === "alpha";                                             // sort_items is kept only for backwards compatibility with older configurations and will be removed later.
+        // sort_items remains supported as an input fallback for older configurations.
         const validTodoFilters      = ["all", "today", "overdue", "overdue_include_today", "upcoming", "dated", "undated"];
         this._validTodoFilters      = validTodoFilters;
         this._todoFilterDefault     = validTodoFilters.includes(config.todo_filter) ? config.todo_filter : "all";
@@ -2620,9 +2903,9 @@ class HaShoppingListImproved extends HTMLElement {
             : "grouped";
         this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
 		this._mode                  = ["shopping", "todo", "inventory"].includes(config.mode) ? config.mode : "shopping";
-        this._inventoryDefaultAction = ["none", "add", "remove", "register"].includes(config.inventory_default_action)
+        this._inventoryDefaultAction = ["none", "add", "remove", "register", "correct"].includes(config.inventory_default_action)
             ? config.inventory_default_action : "none";
-        this._inventoryHighlightZero = config.inventory_highlight_zero !== false;
+        this._inventoryModeTimeout = Math.min(3600, Math.max(0, Math.floor(Number(config.inventory_mode_timeout) || 0)));
         this._inventoryMarkAboveMinimum = ["green", "none"].includes(config.inventory_mark_above_minimum)
             ? config.inventory_mark_above_minimum : "none";
         this._inventoryMarkAtMinimum = ["orange", "red", "green", "none"].includes(config.inventory_mark_at_minimum)
@@ -2633,6 +2916,8 @@ class HaShoppingListImproved extends HTMLElement {
             ? config.inventory_mark_zero
             : (config.inventory_highlight_zero === false ? "none" : "red");
         this._inventoryGroupVariants = config.inventory_group_variants !== false;
+        this._inventoryShowProductDetails = config.inventory_show_product_details !== false;
+        this._inventoryShowCategoryMinimumStatus = config.inventory_show_category_minimum_status !== false;
         this._inventoryShowHidden = false;
         this._inventoryFilter = "all";
         this._inventoryFeedbackTimer = null;
@@ -2688,6 +2973,7 @@ class HaShoppingListImproved extends HTMLElement {
             }
             this._showClearButton = false;
         }
+        this._clearInventoryModeResetTimer();
 
         this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
         this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
@@ -2746,16 +3032,25 @@ class HaShoppingListImproved extends HTMLElement {
         this._loadLocalEANFromFile();
     }
 
-    // Start / Restart Send Message Timer
-    _resetSendMessageTimer() {
-        if (this.sendMessageTimer) {
-            clearTimeout(this.sendMessageTimer);
+    // Restart one channel's debounce timer without delaying the other channels.
+    _scheduleNotification(channel, info = "") {
+        if (info && info.trim()) {
+            const pending = this._pendingNotificationChanges.get(channel.id) || [];
+            pending.push(info.trim());
+            this._pendingNotificationChanges.set(channel.id, pending);
         }
 
-        this.sendMessageTimer = setTimeout(() => {
-            this.sendMessageTimer = null;
-            this._sendMessage();
-        }, this._sendMessageDelay * 1000);
+        const activeTimer = this._notificationTimers.get(channel.id);
+        if (activeTimer) clearTimeout(activeTimer);
+
+        const timer = setTimeout(async () => {
+            this._notificationTimers.delete(channel.id);
+            const pending = this._pendingNotificationChanges.get(channel.id) || [];
+            this._pendingNotificationChanges.delete(channel.id);
+            await this._sendNotificationChannel(channel, pending.join("\n"), channel.mode);
+        }, channel.delay * 1000);
+
+        this._notificationTimers.set(channel.id, timer);
     }
 
     // Global Chips
@@ -2982,9 +3277,15 @@ class HaShoppingListImproved extends HTMLElement {
                             { value: "none", label: translate("editor.options.inventory_default_action.none") },
                             { value: "add", label: translate("editor.options.inventory_default_action.add") },
                             { value: "remove", label: translate("editor.options.inventory_default_action.remove") },
-                            { value: "register", label: translate("editor.options.inventory_default_action.register") }
+                            { value: "register", label: translate("editor.options.inventory_default_action.register") },
+                            { value: "correct", label: translate("editor.options.inventory_default_action.correct") }
                         ] } },
                         default: "none"
+                    },
+                    {
+                        name: "inventory_mode_timeout",
+                        selector: { number: { min: 0, max: 3600, step: 5, mode: "box" } },
+                        default: 0
                     },
                     {
                         name: "sort_mode",
@@ -3052,6 +3353,8 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
                     { name: "show_descriptions", selector: { boolean: {} }, default: false },
                     { name: "inventory_group_variants", selector: { boolean: {} }, default: true },
+                    { name: "inventory_show_product_details", selector: { boolean: {} }, default: true },
+                    { name: "inventory_show_category_minimum_status", selector: { boolean: {} }, default: true },
                     {
                         type: 'expandable',
                         label: 'todo_warning_thresholds',
@@ -3564,29 +3867,114 @@ class HaShoppingListImproved extends HTMLElement {
                 type: 'expandable',
                 label: 'message.options',
                 icon: 'mdi:message-badge',
-                schema: [       
+                schema: [
                     {
-                        name: "notify_entity",
-                        required: false,
-                        selector: {
-                            entity: {
-                                domain: ["notify"] // only entities with domain "notify"
+                        type: 'expandable',
+                        label: 'notify.options',
+                        icon: 'mdi:message-text-outline',
+                        schema: [
+                            {
+                                name: "notify_entity",
+                                required: false,
+                                selector: { entity: { domain: ["notify"] } }
+                            },
+                            {
+                                name: "notify_change_mode",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "off", label: translate("editor.options.notification_mode.off") },
+                                    { value: "change", label: translate("editor.options.notification_mode.change") },
+                                    { value: "full", label: translate("editor.options.notification_mode.full") },
+                                    { value: "change_and_full", label: translate("editor.options.notification_mode.change_and_full") }
+                                ] } },
+                                default: "off"
+                            },
+                            { name: "notify_on_done", selector: { boolean: {} }, default: false },
+                            { name: "notify_include_manual", selector: { boolean: {} }, default: true },
+                            {
+                                name: "notify_format",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "plain", label: translate("editor.options.notification_format.plain") },
+                                    { value: "html", label: translate("editor.options.notification_format.html") }
+                                ] } },
+                                default: "plain"
+                            },
+                            {
+                                name: "notify_delay",
+                                selector: { number: { min: 0, max: 300, step: 1, mode: "box" } },
+                                default: 0
                             }
-                        }
+                        ]
                     },
                     {
-                        name: "notify_entity_smtp",
-                        required: false,
-                        selector: { text: {} },
+                        type: 'expandable',
+                        label: 'ntfy.options',
+                        icon: 'mdi:message-badge-outline',
+                        schema: [
+                            {
+                                name: "ntfy_entity",
+                                required: false,
+                                selector: {
+                                    entity: {
+                                        filter: [{ integration: "ntfy", domain: "notify" }]
+                                    }
+                                }
+                            },
+                            {
+                                name: "ntfy_change_mode",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "off", label: translate("editor.options.notification_mode.off") },
+                                    { value: "change", label: translate("editor.options.notification_mode.change") },
+                                    { value: "full", label: translate("editor.options.notification_mode.full") },
+                                    { value: "change_and_full", label: translate("editor.options.notification_mode.change_and_full") }
+                                ] } },
+                                default: "off"
+                            },
+                            { name: "ntfy_on_done", selector: { boolean: {} }, default: false },
+                            { name: "ntfy_include_manual", selector: { boolean: {} }, default: true },
+                            {
+                                name: "ntfy_format",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "plain", label: translate("editor.options.notification_format.plain") },
+                                    { value: "markdown", label: translate("editor.options.notification_format.markdown") }
+                                ] } },
+                                default: "markdown"
+                            },
+                            {
+                                name: "ntfy_delay",
+                                selector: { number: { min: 0, max: 300, step: 1, mode: "box" } },
+                                default: 0
+                            }
+                        ]
                     },
-                    { name: "notify_on_change", selector: { boolean: {} }, default: false },
-                    { name: "notify_on_change_all", selector: { boolean: {} }, default: false },
-                    { name: "notify_on_done", selector: { boolean: {} }, default: false },
                     {
-                        name: "notify_on_change_time",
-                        selector: { number: { min: 0, max: 300, step: 1 } },
-                        default: 0
-                    },
+                        type: 'expandable',
+                        label: 'email.options',
+                        icon: 'mdi:email-outline',
+                        schema: [
+                            {
+                                name: "notify_entity_smtp",
+                                required: false,
+                                selector: { text: {} }
+                            },
+                            {
+                                name: "email_change_mode",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "off", label: translate("editor.options.notification_mode.off") },
+                                    { value: "change", label: translate("editor.options.notification_mode.change") },
+                                    { value: "full", label: translate("editor.options.notification_mode.full") },
+                                    { value: "change_and_full", label: translate("editor.options.notification_mode.change_and_full") }
+                                ] } },
+                                default: "off"
+                            },
+                            { name: "email_on_done", selector: { boolean: {} }, default: false },
+                            { name: "email_include_manual", selector: { boolean: {} }, default: true },
+                            {
+                                name: "email_delay",
+                                selector: { number: { min: 0, max: 300, step: 1, mode: "box" } },
+                                default: 0
+                            }
+                        ]
+                    }
                 ]
             }
             ],
@@ -3607,8 +3995,10 @@ class HaShoppingListImproved extends HTMLElement {
             },
 
             assertConfig: (config) => {
-                if (config.notify_on_change_time !== undefined && isNaN(Number(config.notify_on_change_time))) {
-                    throw new Error('Configuration error: "notify_on_change_time" must be a valid number between 0 and 300.');
+                for (const key of ["notify_on_change_time", "notify_delay", "ntfy_delay", "email_delay"]) {
+                    if (config[key] !== undefined && isNaN(Number(config[key]))) {
+                        throw new Error(`Configuration error: "${key}" must be a valid number between 0 and 300.`);
+                    }
                 }
             }
         };
@@ -3636,6 +4026,12 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     connectedCallback() {
+        if (this._mode === "inventory") {
+            this._clearInventoryModeResetTimer();
+            this._eanScanMode = this._getInventoryDefaultScanMode();
+            this._clearLastInventoryBooking();
+        }
+
         // Shadow DOM - create only once
         if (!this._shadow) {
             this._shadow = this.attachShadow({ mode: 'open' });
@@ -3652,17 +4048,38 @@ class HaShoppingListImproved extends HTMLElement {
         this._renderSkeleton();
 
         // Subscribe HA WebSocket events, store unsubscribe functions
-        this._unsubEvents = [];
+        const subscriptions = [];
+        this._unsubEvents = subscriptions;
+
+        const registerUnsubscribe = (unsub) => {
+            if (typeof unsub !== "function") return;
+
+            if (this._unsubEvents === subscriptions) {
+                subscriptions.push(unsub);
+                return;
+            }
+
+            // The card was disconnected while the asynchronous subscription
+            // was still being established. Release it immediately so a later
+            // reconnect cannot leave two active listeners behind.
+            try {
+                unsub();
+            } catch (error) {
+                console.warn("[ha-shopping-list-improved] Late WS unsubscribe failed:", error);
+            }
+        };
 
         if (this._hass?.connection?.subscribeEvents) {
             const canSubscribeProtectedEvents = this._hass?.user?.is_admin === true;
 
             const subscribe = async (eventType, handler) => {
                 try {
-                    const unsub = await this._hass.connection.subscribeEvents(handler, eventType);
-                    if (typeof unsub === "function") {
-                        this._unsubEvents.push(unsub);
-                    }
+                    const guardedHandler = (event) => {
+                        if (this._unsubEvents !== subscriptions) return;
+                        handler(event);
+                    };
+                    const unsub = await this._hass.connection.subscribeEvents(guardedHandler, eventType);
+                    registerUnsubscribe(unsub);
 
                     if(debugMode) console.debug("[ha-shopping-list-improved] WS subscribed:", eventType, this._entity);
                 } catch (e) {
@@ -3735,6 +4152,7 @@ class HaShoppingListImproved extends HTMLElement {
         ) {
             this._hass.connection.subscribeMessage(
                 (message) => {
+                    if (this._unsubEvents !== subscriptions) return;
                     if (Array.isArray(message?.items)) {
                         this._eanDatabaseError = null;
                         this._setEanDatabaseItems(message.items);
@@ -3745,9 +4163,7 @@ class HaShoppingListImproved extends HTMLElement {
                     entity_id: this._eanDatabaseEntity
                 }
             ).then((unsub) => {
-                if (typeof unsub === "function" && Array.isArray(this._unsubEvents)) {
-                    this._unsubEvents.push(unsub);
-                }
+                registerUnsubscribe(unsub);
             }).catch((error) => {
                 console.warn("[ha-shopping-list-improved] EAN database subscription failed:", error);
             });
@@ -3760,6 +4176,7 @@ class HaShoppingListImproved extends HTMLElement {
         ) {
             this._hass.connection.subscribeMessage(
                 (message) => {
+                    if (this._unsubEvents !== subscriptions) return;
                     if (Array.isArray(message?.items)) {
                         this._processEanTransferItems(message.items).catch((error) => {
                             console.error("[ha-shopping-list-improved] ISL transfer processing failed:", error);
@@ -3771,9 +4188,7 @@ class HaShoppingListImproved extends HTMLElement {
                     entity_id: this._eanTransferEntity
                 }
             ).then((unsub) => {
-                if (typeof unsub === "function" && Array.isArray(this._unsubEvents)) {
-                    this._unsubEvents.push(unsub);
-                }
+                registerUnsubscribe(unsub);
             }).catch((error) => {
                 console.warn("[ha-shopping-list-improved] ISL transfer subscription failed:", error);
             });
@@ -3802,8 +4217,10 @@ class HaShoppingListImproved extends HTMLElement {
             console.error("Error during scanner cleanup:", err);
         });
 
-        if (Array.isArray(this._unsubEvents)) {
-            for (const unsub of this._unsubEvents) {
+        const subscriptions = this._unsubEvents;
+        this._unsubEvents = null;
+        if (Array.isArray(subscriptions)) {
+            for (const unsub of subscriptions) {
                 if (typeof unsub === "function") {
                     try {
                         unsub();
@@ -3812,12 +4229,6 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 }
             }
-        } else if (typeof this._unsubEvents === "function") {
-            try {
-                this._unsubEvents();
-            } catch(e) {
-                console.warn("[ha-shopping-list-improved] WS unsubscribe failed:", e);
-            }
         }
 
         if (this._timeInterval) {
@@ -3825,10 +4236,9 @@ class HaShoppingListImproved extends HTMLElement {
             this._timeInterval = null;
         }
 
-        if (this.sendMessageTimer) {
-            clearTimeout(this.sendMessageTimer);
-            this.sendMessageTimer = null;
-        }
+        for (const timer of this._notificationTimers.values()) clearTimeout(timer);
+        this._notificationTimers.clear();
+        this._pendingNotificationChanges.clear();
 
         if (this._updateTimesTimeout) {
             clearTimeout(this._updateTimesTimeout);
@@ -3839,6 +4249,18 @@ class HaShoppingListImproved extends HTMLElement {
             clearTimeout(this._refreshDebounceTimer);
             this._refreshDebounceTimer = null;
         }
+
+        if (this._eanLongPressTimer) {
+            clearTimeout(this._eanLongPressTimer);
+            this._eanLongPressTimer = null;
+        }
+
+        if (this._inventoryFeedbackTimer) {
+            clearTimeout(this._inventoryFeedbackTimer);
+            this._inventoryFeedbackTimer = null;
+        }
+
+        this._clearInventoryModeResetTimer();
 
         if (Array.isArray(this._eanTransferStartupTimers)) {
             this._eanTransferStartupTimers.forEach(timer => clearTimeout(timer));
@@ -3853,7 +4275,6 @@ class HaShoppingListImproved extends HTMLElement {
         window.removeEventListener('resize', this._onPositionResize);
         document.removeEventListener('visibilitychange', this._onEanTransferVisibilityChange);
 
-        this._unsubEvents = null;
         this._eanTransferRerunRequested = false;
         this._firstStartDone = false;
     }
@@ -3907,9 +4328,74 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _normalizeEanScanMode(mode) {
-        return ["shopping", "database", "shopping_remove", "inventory_none", "inventory_add", "inventory_remove", "inventory_register"].includes(mode)
+        return ["shopping", "database", "shopping_remove", "inventory_none", "inventory_add", "inventory_remove", "inventory_register", "inventory_correct"].includes(mode)
             ? mode
             : "shopping";
+    }
+
+    _getInventoryDefaultScanMode() {
+        const configured = `inventory_${this._inventoryDefaultAction || "none"}`;
+        if (configured === "inventory_register" && !this._eanDatabaseEntity) return "inventory_none";
+        return this._normalizeEanScanMode(configured);
+    }
+
+    _clearInventoryModeResetTimer() {
+        if (this._inventoryModeResetTimer) {
+            clearInterval(this._inventoryModeResetTimer);
+            this._inventoryModeResetTimer = null;
+        }
+        this._inventoryModeResetDeadline = null;
+        this._updateInventoryModeButtonLabels();
+    }
+
+    _updateInventoryModeButtonLabels() {
+        if (!this._shadow || this._mode !== "inventory") return;
+        const currentAction = String(this._eanScanMode || "").replace(/^inventory_/, "");
+        const remaining = this._inventoryModeResetDeadline
+            ? Math.max(0, Math.ceil((this._inventoryModeResetDeadline - Date.now()) / 1000))
+            : null;
+        for (const action of ["add", "remove", "register", "correct"]) {
+            const label = this._shadow.querySelector(`[data-inventory-mode-label="${action}"]`);
+            if (!label) continue;
+            const base = translate(`ui.inventory.${action}`);
+            label.textContent = action === currentAction && remaining !== null
+                ? `${base} (${remaining})`
+                : base;
+        }
+    }
+
+    _restartInventoryModeResetTimer() {
+        if (this._inventoryModeResetTimer) {
+            clearInterval(this._inventoryModeResetTimer);
+            this._inventoryModeResetTimer = null;
+        }
+        this._inventoryModeResetDeadline = null;
+
+        const defaultMode = this._getInventoryDefaultScanMode();
+        if (
+            this._mode !== "inventory" ||
+            this._inventoryModeTimeout <= 0 ||
+            !String(this._eanScanMode || "").startsWith("inventory_") ||
+            this._eanScanMode === defaultMode
+        ) {
+            this._updateInventoryModeButtonLabels();
+            return;
+        }
+
+        this._inventoryModeResetDeadline = Date.now() + (this._inventoryModeTimeout * 1000);
+        const update = () => {
+            if (!this._inventoryModeResetDeadline) return;
+            if (Date.now() >= this._inventoryModeResetDeadline) {
+                if (this._inventoryModeResetTimer) clearInterval(this._inventoryModeResetTimer);
+                this._inventoryModeResetTimer = null;
+                this._inventoryModeResetDeadline = null;
+                this._setEanScanMode(defaultMode);
+                return;
+            }
+            this._updateInventoryModeButtonLabels();
+        };
+        update();
+        this._inventoryModeResetTimer = setInterval(update, 1000);
     }
 
     _getCurrentEanScanMode() {
@@ -3929,6 +4415,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanScanMode = nextMode;
         if (previousMode && previousMode !== nextMode) this._clearLastInventoryBooking();
         this._updateEanScanModeUi();
+        this._restartInventoryModeResetTimer();
         if (inventoryDatabaseMissing) {
             this._showInventoryNotice(translate("ui.inventory.register_database_required"));
         }
@@ -3960,6 +4447,11 @@ class HaShoppingListImproved extends HTMLElement {
                 addBtn.disabled = false;
                 addBtn.style.background = 'var(--primary-color, #03A9F4)';
                 addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "inventory_correct") {
+                addBtn.textContent = translate("ui.inventory.correct");
+                addBtn.disabled = false;
+                addBtn.style.background = 'var(--accent-color, #8e5bb7)';
+                addBtn.style.color = 'white';
             } else if (this._eanScanMode === "shopping_remove") {
                 addBtn.disabled = false;
                 addBtn.textContent = translate("ui.ean.remove_mode_active");
@@ -3984,11 +4476,13 @@ class HaShoppingListImproved extends HTMLElement {
         if (inventoryBar) {
             const action = this._eanScanMode === "inventory_add" ? "add"
                 : this._eanScanMode === "inventory_remove" ? "remove"
-                : this._eanScanMode === "inventory_register" ? "register" : "none";
+                : this._eanScanMode === "inventory_register" ? "register"
+                : this._eanScanMode === "inventory_correct" ? "correct" : "none";
             inventoryBar.style.borderLeftColor = action === "add"
                 ? 'var(--success-color, #2e7d32)'
                 : action === "remove" ? 'var(--warning-color, #ef7d32)'
-                : action === "register" ? 'var(--primary-color, #03A9F4)' : 'var(--divider-color, #888)';
+                : action === "register" ? 'var(--primary-color, #03A9F4)'
+                : action === "correct" ? 'var(--accent-color, #8e5bb7)' : 'var(--divider-color, #888)';
             if (this._inventoryFeedbackTimer) clearTimeout(this._inventoryFeedbackTimer);
             this._inventoryFeedbackTimer = null;
             const status = this._shadow.getElementById('inventoryFeedback');
@@ -4000,6 +4494,7 @@ class HaShoppingListImproved extends HTMLElement {
             for (const button of inventoryBar.querySelectorAll('[data-inventory-mode]')) {
                 button.setAttribute('aria-pressed', String(button.dataset.inventoryMode === action));
             }
+            this._updateInventoryModeButtonLabels();
         }
     }
 
@@ -4007,6 +4502,7 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._eanScanMode === "inventory_add") return translate("ui.inventory.add_active");
         if (this._eanScanMode === "inventory_remove") return translate("ui.inventory.remove_active");
         if (this._eanScanMode === "inventory_register") return translate("ui.inventory.register_active");
+        if (this._eanScanMode === "inventory_correct") return translate("ui.inventory.correct_active");
         return translate("ui.inventory.idle");
     }
 
@@ -4391,6 +4887,17 @@ class HaShoppingListImproved extends HTMLElement {
         return details.length
             ? `${details.join(" · ")} · EAN ${eanLabel}`
             : `EAN ${eanLabel}`;
+    }
+
+    _inventoryVariantCompactLabel(ean) {
+        return ean ? `EAN ${String(ean)}` : translate("ui.inventory.without_ean");
+    }
+
+    _inventoryItemNeedsVariantIdentification(item) {
+        if (!item || item.inventoryGroup || item.inventoryVariantEan === undefined) return false;
+        const name = this._getNameOnly(item.name);
+        const category = this._getCategory(item.name) || null;
+        return this._getInventoryVariantItems(name, category).length > 1;
     }
 
     _buildInventoryDisplayItems(items) {
@@ -5333,6 +5840,8 @@ class HaShoppingListImproved extends HTMLElement {
             overlay.style.justifyContent = 'center';
             overlay.style.zIndex = '9999';
             overlay.style.pointerEvents = 'auto';
+            overlay.style.overflow = 'hidden';
+            overlay.style.overscrollBehavior = 'contain';
 
             const popup = document.createElement('div');
             popup.style.background = 'var(--card-background-color, white)';
@@ -6509,7 +7018,9 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 
-    async _runListScript(status, item, previousItem = null) {
+    async _runListScript(status, item, previousItem = null, extraVariables = {}) {
+        if (!this._listScriptEnabled) return;
+        if (!this._listScriptEntity?.startsWith("script.")) return;
         const rawName = String(item?.summary ?? item?.name ?? "");
         const name = this._getNameOnly(rawName);
         const variant = this._mode === "inventory" ? this._parseInventoryVariant(item) : null;
@@ -6526,19 +7037,21 @@ class HaShoppingListImproved extends HTMLElement {
             list_entity: this._entity,
             mode: this._mode,
             ean: ean || "",
-            is_ean: Boolean(ean) || (variant && !variant.legacy ? Boolean(variant.ean) : products.length > 0)
+            is_ean: Boolean(ean) || (variant && !variant.legacy ? Boolean(variant.ean) : products.length > 0),
+            action: status
         };
         if (previousItem) {
             const previousName = String(previousItem.summary ?? previousItem.name ?? "");
             variables.previous_quantity = this._mode === "todo" ? 1 : this._getQuantity(previousName);
             if (status === "item_renamed") variables.previous_name = this._getNameOnly(previousName);
         }
+        Object.assign(variables, extraVariables);
         await this._callConfiguredScript(this._listScriptEntity, variables, "list changes");
     }
 
     async _callListService(message, options = {}) {
         const data = message.service_data || {};
-        const enabled = this._listScriptEnabled && this._listScriptEntity?.startsWith("script.");
+        const enabled = !options.suppressListScript && this._listScriptEnabled && this._listScriptEntity?.startsWith("script.");
         const watched = enabled && message.type === "call_service" && message.domain === "todo" &&
             message.target?.entity_id === this._entity && (
                 ["add_item", "remove_item", "remove_completed_items"].includes(message.service) ||
@@ -7080,6 +7593,7 @@ class HaShoppingListImproved extends HTMLElement {
                 width: 17px;
                 height: 17px;
             }
+            .inventory-mode-bar [data-inventory-mode-label] { font-variant-numeric: tabular-nums; }
             .inventory-feedback {
                 flex-basis: 100%;
                 box-sizing: border-box;
@@ -7119,9 +7633,10 @@ class HaShoppingListImproved extends HTMLElement {
                 <div id="collapsible">
                     ${this._mode === "inventory" ? `
                         <div id="inventoryModeBar" class="inventory-mode-bar">
-                            <button type="button" data-inventory-mode="add"><ha-icon icon="mdi:package-variant-plus"></ha-icon>${translate("ui.inventory.add")}</button>
-                            <button type="button" data-inventory-mode="remove"><ha-icon icon="mdi:package-variant-minus"></ha-icon>${translate("ui.inventory.remove")}</button>
-                            <button type="button" data-inventory-mode="register"><ha-icon icon="mdi:package-variant"></ha-icon>${translate("ui.inventory.register")}</button>
+                            <button type="button" data-inventory-mode="add"><ha-icon icon="mdi:package-variant-plus"></ha-icon><span data-inventory-mode-label="add">${translate("ui.inventory.add")}</span></button>
+                            <button type="button" data-inventory-mode="remove"><ha-icon icon="mdi:package-variant-minus"></ha-icon><span data-inventory-mode-label="remove">${translate("ui.inventory.remove")}</span></button>
+                            <button type="button" data-inventory-mode="register"><ha-icon icon="mdi:package-variant"></ha-icon><span data-inventory-mode-label="register">${translate("ui.inventory.register")}</span></button>
+                            <button type="button" data-inventory-mode="correct"><ha-icon icon="mdi:pencil-box-outline"></ha-icon><span data-inventory-mode-label="correct">${translate("ui.inventory.correct")}</span></button>
                             <button type="button" id="inventoryCodesBtn" title="${translate("ui.inventory.controls")}" aria-label="${translate("ui.inventory.controls")}"><ha-icon icon="mdi:qrcode"></ha-icon></button>
                             <div id="inventoryFeedback" class="inventory-feedback" role="status" aria-live="polite">${this._getInventoryModeStatusText()}</div>
                         </div>
@@ -7165,6 +7680,7 @@ class HaShoppingListImproved extends HTMLElement {
                             <button type="button" id="inventoryFilterBtn" aria-label="${translate("ui.inventory.filter.all")}"><ha-icon icon="mdi:filter-variant"></ha-icon><span id="inventoryFilterLabel">${translate("ui.inventory.filter.all")}</span> ▾</button>
                             <button type="button" id="inventoryHiddenBtn" title="${translate("ui.inventory.hidden")}" aria-label="${translate("ui.inventory.hidden")}"><ha-icon icon="mdi:eye-off-outline"></ha-icon></button>
                             <button type="button" id="inventoryGroupBtn" title="${translate("ui.inventory.group_variants")}" aria-label="${translate("ui.inventory.group_variants")}" aria-pressed="${String(this._inventoryGroupVariants)}"><ha-icon icon="mdi:layers-triple-outline"></ha-icon></button>
+                            <button type="button" id="inventoryDetailsBtn" title="${translate("ui.inventory.product_details")}" aria-label="${translate("ui.inventory.product_details")}" aria-pressed="${String(this._inventoryShowProductDetails)}"><ha-icon icon="mdi:text-box-outline"></ha-icon></button>
                             <button type="button" class="inventory-filter-secondary" id="inventoryDatabaseBtn" title="${translate("ui.inventory.database")}" aria-label="${translate("ui.inventory.database")}"><ha-icon icon="mdi:database"></ha-icon><span>${translate("ui.inventory.database_short")}</span></button>
                             <button type="button" class="inventory-filter-secondary" id="inventoryQueueBtn" title="${translate("ui.inventory.queue")}" aria-label="${translate("ui.inventory.queue")}"><ha-icon icon="mdi:format-list-checks"></ha-icon><span id="inventoryQueueLabel">${translate("ui.inventory.queue")}</span></button>
                         </div>
@@ -7239,24 +7755,9 @@ class HaShoppingListImproved extends HTMLElement {
             addBtn.addEventListener('contextmenu', event => event.preventDefault());
         }
 
-        this._shadow.getElementById('eanDatabaseFillEndBtn')?.addEventListener('click', () => {
+		this._shadow.getElementById('eanDatabaseFillEndBtn')?.addEventListener('click', () => {
             this._setEanScanMode("shopping");
         });
-
-/*
-        this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
-        this._shadow.getElementById('itemInput').addEventListener('input', (e) => { 
-            if (this._allowFilter) {
-                this._renderList(); // to apply the filter while typing
-            }
-            if (this._allowFilterChips) {
-                this._renderHistory(); // to search in chips as well
-            }
-            if (this._capitalizeFirst && e.target.value.length > 0) {
-                e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
-            }
-        });
-*/
 
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -7323,6 +7824,11 @@ class HaShoppingListImproved extends HTMLElement {
             this._shadow.getElementById('inventoryGroupBtn')?.addEventListener('click', event => {
                 this._inventoryGroupVariants = !this._inventoryGroupVariants;
                 event.currentTarget.setAttribute('aria-pressed', String(this._inventoryGroupVariants));
+                this._renderList();
+            });
+            this._shadow.getElementById('inventoryDetailsBtn')?.addEventListener('click', event => {
+                this._inventoryShowProductDetails = !this._inventoryShowProductDetails;
+                event.currentTarget.setAttribute('aria-pressed', String(this._inventoryShowProductDetails));
                 this._renderList();
             });
             this._shadow.getElementById('inventoryDatabaseBtn')?.addEventListener('click', () => {
@@ -7828,7 +8334,7 @@ class HaShoppingListImproved extends HTMLElement {
             eanScanContainer.appendChild(queueModeStatus);
 
             const updateQueueStatus = () => {
-                const counts = { shopping: 0, database: 0, shopping_remove: 0, inventory_add: 0, inventory_remove: 0, inventory_register: 0, inventory_none: 0 };
+                const counts = { shopping: 0, database: 0, shopping_remove: 0, inventory_add: 0, inventory_remove: 0, inventory_register: 0, inventory_correct: 0, inventory_none: 0 };
                 (this._eanScanQueue || []).forEach(item => {
                     const mode = this._normalizeEanScanMode(item.scan_mode);
                     counts[mode] += Math.max(1, Number(item.quantity || 1));
@@ -7839,7 +8345,8 @@ class HaShoppingListImproved extends HTMLElement {
                 queueModeStatus.textContent = [
                     translate("ui.admin.options.ean_queue_shopping").replace("{count}", String(counts.shopping + counts.inventory_add)),
                     translate("ui.admin.options.ean_queue_database").replace("{count}", String(counts.database + counts.inventory_register)),
-                    translate("ui.admin.options.ean_queue_remove").replace("{count}", String(counts.shopping_remove + counts.inventory_remove))
+                    translate("ui.admin.options.ean_queue_remove").replace("{count}", String(counts.shopping_remove + counts.inventory_remove)),
+                    `${translate("ui.inventory.queue_mode.correct")}: ${counts.inventory_correct}`
                 ].join(' · ');
             };
             updateQueueStatus();
@@ -8058,6 +8565,18 @@ class HaShoppingListImproved extends HTMLElement {
             let includeDefined = false;
             computeManualItems(includeDefined);
 
+            let closed = false;
+            const escapeHandler = (event) => {
+                if (event.key === "Escape") close(null);
+            };
+            const close = (result) => {
+                if (closed) return;
+                closed = true;
+                window.removeEventListener('keydown', escapeHandler);
+                overlay.remove();
+                resolve(result);
+            };
+
             // Close Button
             const closeBtn = document.createElement('button');
             closeBtn.textContent = translate("ui.common.close");
@@ -8068,10 +8587,7 @@ class HaShoppingListImproved extends HTMLElement {
             closeBtn.style.cursor = 'pointer';
             closeBtn.style.marginTop = '10px';
 
-            closeBtn.addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                resolve(true);
-            });
+            closeBtn.addEventListener('click', () => close(true));
 
             popup.appendChild(closeBtn);
 
@@ -8082,19 +8598,12 @@ class HaShoppingListImproved extends HTMLElement {
             // Close on overlay click outside popup
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
-                    document.body.removeChild(overlay);
-                    resolve(null);
+                    close(null);
                 }
             });
 
             // Close on ESC key
-            window.addEventListener('keydown', function handler(e) {
-                if (e.key === "Escape") {
-                    window.removeEventListener('keydown', handler);
-                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
-                    resolve(null);
-                }
-            });
+            window.addEventListener('keydown', escapeHandler);
         });
     }
 
@@ -8237,9 +8746,10 @@ async _checkEAN(text, options = {}) {
     ];
 
     const lang = detectLanguage();
+    const productLanguage = String(lang || "en").split("-")[0].toLowerCase();
 
-    if (lang && lang !== "en") {
-        fields.push(`product_name_${lang}`);
+    if (productLanguage !== "en") {
+        fields.push(`product_name_${productLanguage}`);
     }
 
     const url =
@@ -8251,7 +8761,7 @@ async _checkEAN(text, options = {}) {
         const response = await fetch(url, {
             headers: {
                 "Accept": "application/json",
-                "User-Agent": "ha-shopping-list-improved/3.1.0"
+                "User-Agent": `ha-shopping-list-improved/${version}`
             }
         });
 
@@ -8274,7 +8784,7 @@ async _checkEAN(text, options = {}) {
         // -----------------------------------------------------
 
         const name =
-            p[`product_name_${lang}`]?.trim() ||
+            p[`product_name_${productLanguage}`]?.trim() ||
             p.product_name_en?.trim() ||
             p.product_name?.trim() ||
             false;
@@ -8401,82 +8911,7 @@ async _checkEAN(text, options = {}) {
     }
 }
 
-
-
-	// EAN
-	/*
-	async _checkEAN(text) {
-        // 1st localEAN check - EAN-8, UPC (12), EAN-13 er GS1-14
-        const eanRegexL = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
-        if (!eanRegexL.test(text)) {
-            return { name: text, brands: null, imageUrl: null };
-        }
-
-        if (this._localEAN && Array.isArray(this._localEAN)) {
-            const localEntry = this._localEAN.find(entry => entry.ean === text);
-            if (localEntry) {
-                if (debugMode) console.log("[EAN] Local entry found:", localEntry);
-                return {
-                    name: localEntry.name,
-                    brands: null,
-                    imageUrl: null
-                };
-            }
-        }
-
-        // 2nd internet EAN check
-        const eanRegex = /^\d{13}$/;
-        if (!eanRegex.test(text)) {
-            return { name: text, brands: null, imageUrl: null };
-        }        
-
-        const url = `https://world.openfoodfacts.org/api/v2/product/${text}.json`;
-
-        try {
-            const response = await fetch(url, {
-            headers: {
-                "Accept": "application/json",
-                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.2.0)"
-            }
-            });
-
-            if (!response.ok) {
-                console.error(`HTTP error: ${response.status}`);
-                return false;
-            }
-
-            const data = await response.json();
-
-            if (data.status === 1 && data.product) {
-            const p = data.product;
-
-            const lang = detectLanguage();
-
-            // Productname: local language -> English -> common Name
-            const name =
-                p[`product_name_${lang}`]?.trim() ||
-                p.product_name_en?.trim() ||
-                p.product_name?.trim() ||
-                false;
-
-            const brands = p.brands?.trim() || false;
-            let imageUrl = p.image_front_thumb_url || false;
-
-            if (debugMode) console.log("[Product]", { name, brands, imageUrl });
-
-            return { name, brands, imageUrl };
-            }
-
-            return null;
-
-        } catch (error) {
-            console.error("Error trying EAN request :", error);
-            return null;
-        }
-	}
-	*/
-
-	// QR-Scanner
+		// QR-Scanner
 	async _onScanSuccess(decodedText, decodedResult) {
 		if (this._addingBusyQR) {
 			if (debugMode) console.warn("[ha-shopping-list-improved][DEBUG] Scan ignored to avoid duplicates");
@@ -8561,8 +8996,6 @@ async _checkEAN(text, options = {}) {
 			scannerDiv.style.maxWidth = "90vw";
 			wrapperDiv.appendChild(scannerDiv);
 		}
-        this._scannerDiv = scannerDiv;
-
 		// Close-Button
 		if (!document.getElementById("qr-close-btn-styles")) {
 			const style = document.createElement("style");
@@ -8788,7 +9221,6 @@ async _checkEAN(text, options = {}) {
             wrapperDiv?.remove();
             this._wrapperDiv = null;
 
-            this._scannerDiv = null;
             this._html5QrCodeScanner = null;
 
             this._scannerStarting = false;
@@ -8856,17 +9288,6 @@ async _checkEAN(text, options = {}) {
             }
 
             if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
-
-            /*
-            if (this._acknowledgedMode === "hide") {
-                this._items = this._items.filter(i => !i.complete);
-            } else if (this._acknowledgedMode === "end") {
-                const done = this._items.filter(i => i.complete);
-                const notDone = this._items.filter(i => !i.complete);
-                this._items = [...notDone, ...done];
-            }
-            */
-
             // after we have the items, extract dynamic categories from items
             this._addDynamicCategories(this._items);
 
@@ -9118,9 +9539,12 @@ async _checkEAN(text, options = {}) {
             const popup = document.createElement('div');
             popup.style.cssText = 'width:min(500px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
             const title = document.createElement('h3');
-            title.textContent = translate(action === "add"
+            const titleKey = action === "add"
                 ? "ui.inventory.choose_variant_add"
-                : "ui.inventory.choose_variant_remove").replace("{name}", name);
+                : action === "correct"
+                    ? "ui.inventory.choose_variant_correct"
+                    : "ui.inventory.choose_variant_remove";
+            title.textContent = translate(titleKey).replace("{name}", name);
             title.style.margin = '0 0 12px';
             popup.appendChild(title);
 
@@ -9456,6 +9880,329 @@ async _checkEAN(text, options = {}) {
         document.body.appendChild(overlay);
     }
 
+    async _openInventoryCorrection(product, requestedEan = null, sourceWasEan = false) {
+        const normalizedEan = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(requestedEan || ""))
+            ? String(requestedEan)
+            : null;
+        let name = String(product?.name || "").trim();
+        let exactItem = normalizedEan
+            ? (this._items || []).find(item => this._parseInventoryVariant(item).ean === normalizedEan) || null
+            : null;
+        if (exactItem) name = this._getNameOnly(exactItem.name);
+        if (!name) return false;
+
+        let category = exactItem ? this._getCategory(exactItem.name) : (product?.category || null);
+        if (!category) {
+            const matchingItem = (this._items || []).find(item => this._inventoryItemMatchesName(item, name));
+            if (matchingItem) category = this._getCategory(matchingItem.name) || null;
+        }
+
+        let option = null;
+        if (normalizedEan) {
+            const databaseProduct = this._eanDatabase?.get(normalizedEan) || product || null;
+            option = {
+                ean: normalizedEan,
+                product: databaseProduct,
+                item: exactItem,
+                stock: this._getShoppingStockByName(name, normalizedEan),
+                minimum: this._getInventoryVariantMinimumStock(normalizedEan, exactItem),
+                configuredMinimum: databaseProduct?.minimumStock ?? null
+            };
+        } else {
+            const fakeItem = {
+                name: this._formatInventoryItemName(name, category, this._getShoppingStockByName(name)),
+                inventoryGroup: true
+            };
+            const options = this._getInventoryVariantOptions(name, category);
+            option = options.length === 1
+                ? options[0]
+                : await this._selectInventoryVariant(fakeItem, "correct");
+            if (!option) return false;
+        }
+
+        return this._showInventoryCorrectionPopup({
+            name,
+            category,
+            option,
+            sourceWasEan
+        });
+    }
+
+    _showInventoryCorrectionPopup({ name, category = null, option, sourceWasEan = false }) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10003;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+
+            const heading = document.createElement('h3');
+            heading.textContent = translate("ui.inventory.correction_title");
+            heading.style.margin = '0 0 12px';
+            popup.appendChild(heading);
+
+            const productName = document.createElement('div');
+            productName.textContent = name;
+            productName.style.cssText = 'font-size:18px;font-weight:600;margin-bottom:4px;';
+            popup.appendChild(productName);
+
+            const details = document.createElement('div');
+            details.textContent = option.ean
+                ? this._inventoryVariantLabel(option.ean, true)
+                : translate("ui.inventory.without_ean");
+            details.style.cssText = 'font-size:13px;color:var(--secondary-text-color,#666);margin-bottom:16px;';
+            popup.appendChild(details);
+
+            const stockGrid = document.createElement('div');
+            stockGrid.style.cssText = 'display:grid;grid-template-columns:minmax(120px,1fr) auto;gap:10px;align-items:center;margin-bottom:12px;';
+            const currentLabel = document.createElement('span');
+            currentLabel.textContent = translate("ui.inventory.correction_current");
+            const currentValue = document.createElement('strong');
+            currentValue.textContent = String(Math.max(0, Number(option.stock) || 0));
+            stockGrid.appendChild(currentLabel);
+            stockGrid.appendChild(currentValue);
+
+            const newLabel = document.createElement('span');
+            newLabel.textContent = translate("ui.inventory.correction_new");
+            const controls = document.createElement('div');
+            controls.style.cssText = 'display:grid;grid-template-columns:38px 80px 38px;gap:6px;align-items:center;';
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.min = '0';
+            quantityInput.step = '1';
+            quantityInput.value = String(Math.max(0, Number(option.stock) || 0));
+            quantityInput.style.cssText = 'box-sizing:border-box;width:80px;height:38px;padding:6px 8px;text-align:center;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:5px;';
+            const adjust = delta => {
+                const current = Math.max(0, Math.floor(Number(quantityInput.value) || 0));
+                quantityInput.value = String(Math.max(0, current + delta));
+            };
+            const minus = document.createElement('button');
+            minus.type = 'button';
+            minus.textContent = '−';
+            minus.style.cssText = 'height:38px;font-size:20px;cursor:pointer;';
+            minus.addEventListener('click', () => adjust(-1));
+            const plus = document.createElement('button');
+            plus.type = 'button';
+            plus.textContent = '+';
+            plus.style.cssText = 'height:38px;font-size:20px;cursor:pointer;';
+            plus.addEventListener('click', () => adjust(1));
+            controls.appendChild(minus);
+            controls.appendChild(quantityInput);
+            controls.appendChild(plus);
+            stockGrid.appendChild(newLabel);
+            stockGrid.appendChild(controls);
+            popup.appendChild(stockGrid);
+
+            const noTransfer = document.createElement('div');
+            noTransfer.textContent = translate("ui.inventory.correction_no_transfer");
+            noTransfer.style.cssText = 'padding:9px 11px;margin:8px 0 14px;border-left:4px solid var(--primary-color,#03A9F4);background:var(--secondary-background-color,rgba(100,100,100,.12));font-size:13px;line-height:1.4;';
+            popup.appendChild(noTransfer);
+
+            const status = document.createElement('div');
+            status.style.cssText = 'min-height:20px;margin:8px 0;font-size:13px;';
+
+            if (this._isEanTransferEntityUsable(true)) {
+                const transferBox = document.createElement('div');
+                transferBox.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;padding:12px;margin-bottom:10px;border:1px solid var(--divider-color,#ccc);border-radius:6px;';
+                const transferField = document.createElement('label');
+                transferField.style.cssText = 'display:flex;flex-direction:column;gap:5px;font-size:13px;';
+                const transferLabel = document.createElement('span');
+                transferLabel.textContent = translate("ui.inventory.correction_manual_transfer");
+                const transferQuantity = document.createElement('input');
+                transferQuantity.type = 'number';
+                transferQuantity.min = '1';
+                transferQuantity.step = '1';
+                transferQuantity.value = '1';
+                transferQuantity.style.cssText = 'box-sizing:border-box;width:100%;height:36px;padding:6px 8px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:5px;';
+                transferField.appendChild(transferLabel);
+                transferField.appendChild(transferQuantity);
+
+                const transferButton = document.createElement('button');
+                transferButton.type = 'button';
+                transferButton.textContent = translate("ui.ean.database_manual_send");
+                transferButton.style.cssText = 'min-height:36px;cursor:pointer;';
+                transferButton.addEventListener('click', async () => {
+                    const quantity = Number(transferQuantity.value);
+                    if (!Number.isInteger(quantity) || quantity < 1) {
+                        status.textContent = translate("ui.ean.database_send_number_invalid");
+                        status.style.color = 'var(--error-color,#db4437)';
+                        return;
+                    }
+                    transferButton.disabled = true;
+                    const transferProduct = option.product || {
+                        name,
+                        originalName: null,
+                        brand: null,
+                        quantity: null,
+                        imageUrl: null,
+                        category
+                    };
+                    const transferId = await this._createEanTransfer(
+                        "shopping_add", option.ean, { ...transferProduct, name, category }, quantity,
+                        { sourceOperation: "manual_send" }
+                    );
+                    transferButton.disabled = false;
+                    if (!transferId) return;
+                    await this._runEanScript("transfer_sent", {
+                        ean: option.ean || "",
+                        name,
+                        brand: transferProduct.brand,
+                        productQuantity: transferProduct.quantity,
+                        scanQuantity: quantity,
+                        category,
+                        imageUrl: transferProduct.imageUrl,
+                        scanMode: "inventory_correct",
+                        action: "inventory_manual_transfer"
+                    });
+                    await this._runListScript("inventory_manual_transfer", {
+                        summary: this._formatInventoryItemName(name, category, Number(option.stock) || 0),
+                        description: option.item?.description,
+                        ean: option.ean
+                    }, null, {
+                        transfer_quantity: quantity,
+                        target_entity: this._eanTransferTargetEntity
+                    });
+                    status.textContent = translate("ui.inventory.correction_manual_sent");
+                    status.style.color = 'var(--success-color,#2e7d32)';
+                });
+                transferBox.appendChild(transferField);
+                transferBox.appendChild(transferButton);
+                popup.appendChild(transferBox);
+            }
+
+            popup.appendChild(status);
+            const actions = document.createElement('div');
+            actions.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start;margin-top:8px;';
+            const styleActionButton = (button, primary = false) => {
+                button.type = 'button';
+                button.style.cssText = [
+                    'border:none',
+                    'border-radius:4px',
+                    'padding:8px 12px',
+                    'min-height:36px',
+                    'font:inherit',
+                    'cursor:pointer',
+                    `background:${primary ? 'var(--primary-color,#03A9F4)' : 'var(--secondary-background-color,#eee)'}`,
+                    `color:${primary ? 'var(--text-primary-color,#fff)' : 'var(--primary-text-color,#000)'}`
+                ].join(';');
+            };
+            let closed = false;
+            const close = result => {
+                if (closed) return;
+                closed = true;
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(result);
+            };
+            const onKeyDown = event => {
+                if (event.key === 'Escape') close(false);
+            };
+
+            const editButton = document.createElement('button');
+            editButton.textContent = translate("ui.inventory.correction_edit");
+            styleActionButton(editButton);
+            editButton.disabled = option.ean
+                ? (!this._eanDatabaseEntity || !this._eanDatabase?.has(String(option.ean)))
+                : !option.item;
+            editButton.addEventListener('click', () => {
+                if (editButton.disabled) return;
+                close(true);
+                if (option.ean) {
+                    this._showEanDatabaseManager(option.ean, {
+                        onBack: () => this._openInventoryCorrection(
+                            this._eanDatabase?.get(String(option.ean)) || option.product,
+                            option.ean,
+                            sourceWasEan
+                        )
+                    });
+                } else {
+                    this._handleEditItem(option.item);
+                }
+            });
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = translate("ui.common.cancel");
+            styleActionButton(cancelButton);
+            cancelButton.addEventListener('click', () => close(false));
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = translate("ui.inventory.correction_save");
+            styleActionButton(saveButton, true);
+            saveButton.addEventListener('click', async () => {
+                const nextQuantity = Number(quantityInput.value);
+                if (!Number.isInteger(nextQuantity) || nextQuantity < 0) {
+                    status.textContent = translate("ui.ean.database_number_invalid");
+                    status.style.color = 'var(--error-color,#db4437)';
+                    return;
+                }
+                const previousQuantity = this._getShoppingStockByName(name, option.ean);
+                saveButton.disabled = true;
+                const result = await this._setShoppingQuantityByName(
+                    name, category, nextQuantity, option.ean,
+                    { suppressListScript: true }
+                );
+                saveButton.disabled = false;
+                if (result.status === "error") {
+                    status.textContent = result.error?.message || String(result.error || "");
+                    status.style.color = 'var(--error-color,#db4437)';
+                    return;
+                }
+
+                const previousItem = {
+                    summary: this._formatInventoryItemName(name, category, previousQuantity),
+                    description: option.item?.description,
+                    ean: option.ean
+                };
+                const nextItem = {
+                    summary: this._formatInventoryItemName(name, category, result.quantity),
+                    description: option.item?.description,
+                    ean: option.ean
+                };
+                await this._runListScript("inventory_corrected", nextItem, previousItem, {
+                    quantity_before: previousQuantity,
+                    quantity_after: result.quantity,
+                    quantity_delta: result.quantity - previousQuantity
+                });
+                if (sourceWasEan) {
+                    const scriptProduct = option.product || {};
+                    await this._runEanScript("inventory_corrected", {
+                        ean: option.ean || "",
+                        name,
+                        brand: scriptProduct?.brand,
+                        productQuantity: scriptProduct?.quantity,
+                        scanQuantity: 1,
+                        category,
+                        imageUrl: scriptProduct?.imageUrl,
+                        scanMode: "inventory_correct",
+                        stockBefore: previousQuantity,
+                        stockAfter: result.quantity,
+                        action: "inventory_corrected"
+                    });
+                }
+                this._restartInventoryModeResetTimer();
+                close(true);
+                this._showInventoryNotice(
+                    translate("ui.inventory.correction_saved")
+                        .replace("{name}", name)
+                        .replace("{before}", String(previousQuantity))
+                        .replace("{after}", String(result.quantity))
+                );
+            });
+
+            actions.appendChild(saveButton);
+            actions.appendChild(editButton);
+            actions.appendChild(cancelButton);
+            popup.appendChild(actions);
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close(false);
+            });
+            window.addEventListener('keydown', onKeyDown, true);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+            quantityInput.focus();
+            quantityInput.select();
+        });
+    }
+
     _getInventoryVariantMinimumStock(ean, item = null) {
         if (!ean) {
             const configuredMinimum = item ? this._parseInventoryVariant(item).minimumStock : null;
@@ -9521,6 +10268,40 @@ async _checkEAN(text, options = {}) {
     _isInventoryItemBelowMinimum(item) {
         const comparison = this._getInventoryItemMinimumComparison(item);
         return comparison.hasMinimum && comparison.relation === "below";
+    }
+
+    _countInventoryItemsBelowMinimum(items) {
+        if (this._mode !== "inventory") return 0;
+        const countedGroups = new Set();
+        let count = 0;
+
+        for (const item of items || []) {
+            const name = this._getNameOnly(item?.name || "");
+            const category = this._getCategory(item?.name || "") || null;
+            const group = this._getInventoryGroupState(name, category);
+            if (group.variants.length > 1 && group.minimum !== null) {
+                const key = `${this._normalizeEanDatabaseProductName(name)}::${String(category || "none").trim().toLocaleLowerCase()}`;
+                if (countedGroups.has(key)) continue;
+                countedGroups.add(key);
+                if (group.stock < group.minimum) count += 1;
+                continue;
+            }
+            if (this._isInventoryItemBelowMinimum(item)) count += 1;
+        }
+        return count;
+    }
+
+    _appendInventoryCategoryMinimumStatus(container, items) {
+        if (this._mode !== "inventory" || !this._inventoryShowCategoryMinimumStatus) return;
+        const count = this._countInventoryItemsBelowMinimum(items);
+        if (count < 1) return;
+
+        const status = document.createElement('div');
+        status.textContent = `· ${translate("ui.inventory.category_below_minimum").replace("{count}", String(count))}`;
+        status.style.marginLeft = '8px';
+        status.style.whiteSpace = 'nowrap';
+        status.style.color = 'var(--warning-color, #e0a526)';
+        container.appendChild(status);
     }
 
     async _offerInventoryCorrectionTransfer(previousName, currentName, category, previousQuantity, currentQuantity, ean = undefined) {
@@ -9646,6 +10427,7 @@ async _checkEAN(text, options = {}) {
 
     _showInventoryFeedback(name, before, after, booking = null) {
         if (this._mode !== "inventory") return;
+        this._restartInventoryModeResetTimer();
         const status = this._shadow?.getElementById('inventoryFeedback');
         if (!status) return;
         if (this._inventoryFeedbackTimer) clearTimeout(this._inventoryFeedbackTimer);
@@ -9939,7 +10721,8 @@ async _checkEAN(text, options = {}) {
         const modes = {
             'ISL:INVENTORY:ADD': 'inventory_add',
             'ISL:INVENTORY:REMOVE': 'inventory_remove',
-            'ISL:INVENTORY:REGISTER': 'inventory_register'
+            'ISL:INVENTORY:REGISTER': 'inventory_register',
+            'ISL:INVENTORY:CORRECT': 'inventory_correct'
         };
         if (!modes[value]) return false;
         this._setEanScanMode(modes[value]);
@@ -9994,6 +10777,7 @@ async _checkEAN(text, options = {}) {
             : normalized === "shopping_remove" || normalized === "inventory_remove" ? "remove"
             : normalized === "inventory_add" ? "add"
             : normalized === "inventory_register" ? "register"
+            : normalized === "inventory_correct" ? "correct"
             : normalized === "inventory_none" ? "none" : "shopping";
         return translate(`ui.inventory.queue_mode.${key}`);
     }
@@ -10122,7 +10906,8 @@ async _checkEAN(text, options = {}) {
         const codes = [
             { label: translate("ui.inventory.add"), text: 'ISL:INVENTORY:ADD' },
             { label: translate("ui.inventory.remove"), text: 'ISL:INVENTORY:REMOVE' },
-            { label: translate("ui.inventory.register"), text: 'ISL:INVENTORY:REGISTER' }
+            { label: translate("ui.inventory.register"), text: 'ISL:INVENTORY:REGISTER' },
+            { label: translate("ui.inventory.correct"), text: 'ISL:INVENTORY:CORRECT' }
         ];
         const holders = [];
         for (const code of codes) {
@@ -10425,15 +11210,17 @@ async _checkEAN(text, options = {}) {
 
             if (this._showCatCount) {
                 const doneDiv = document.createElement('div');
-                doneDiv.textContent = `(${done}/${total})`;
+                doneDiv.textContent = this._mode === "inventory" ? `(${total})` : `(${done}/${total})`;
                 // Hide cat count if all done
-                if (this._hideCatCountAllDone && done === total) {
+                if (this._mode !== "inventory" && this._hideCatCountAllDone && done === total) {
                     doneDiv.textContent = '';
                 }
                 doneDiv.style.marginLeft = '8px';
                 doneDiv.style.whiteSpace = 'nowrap';
                 firstRow.appendChild(doneDiv);
             }
+
+            this._appendInventoryCategoryMinimumStatus(firstRow, uncategorized);
 
             if (this._mode === "todo" && done < total && this._showCatExclamation) {
                 const warningEl = document.createElement('span');
@@ -10632,9 +11419,9 @@ async _checkEAN(text, options = {}) {
 
                 if (this._showCatCount) {
                     const doneDiv = document.createElement('div');
-                    doneDiv.textContent = `(${done}/${total})`;
+                    doneDiv.textContent = this._mode === "inventory" ? `(${total})` : `(${done}/${total})`;
                     // Hide cat count if all done
-                    if (this._hideCatCountAllDone && done === total) {
+                    if (this._mode !== "inventory" && this._hideCatCountAllDone && done === total) {
                         doneDiv.textContent = '';
                     }
                     doneDiv.style.marginLeft = '8px';
@@ -10642,6 +11429,8 @@ async _checkEAN(text, options = {}) {
                     if (cat.color) doneDiv.style.color = cat.color;
                     firstRow.appendChild(doneDiv);
                 }
+
+                this._appendInventoryCategoryMinimumStatus(firstRow, catItems);
 
                 if (this._mode === "todo" && done < total && this._showCatExclamation) {
                     const warningEl = document.createElement('span');
@@ -10739,7 +11528,7 @@ async _checkEAN(text, options = {}) {
 
                 if(debugMode) console.log("Next global due date: ", formattedGlobal);
 
-                this._titleAlertDesc.textContent = formattedGlobal;    
+                this._titleAlertDesc.textContent = formattedGlobal;
             }
         }
     }
@@ -10809,11 +11598,6 @@ async _checkEAN(text, options = {}) {
     _getInterval(name) {
         const match = name.match(/\{\{\s*(\d+\s*[HDM])\s*\}\}/);
         return match ? match[1].trim() : null;
-    }
-
-    // Remove only Intervall {{…}}
-    _removeInterval(name) {
-        return name.replace(/\s*\{\{.*?\}\}\s*$/, '').trim();
     }
 
     _getSortIndex(name) {
@@ -11339,9 +12123,55 @@ async _checkEAN(text, options = {}) {
             popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
             popup.style.color = 'var(--primary-text-color, black)';
             popup.style.pointerEvents = 'auto';
-            popup.style.maxHeight = 'calc(100vh - 32px)';
+            popup.style.maxHeight = 'calc(100% - 32px)';
             popup.style.overflowY = 'auto';
+            popup.style.overscrollBehaviorY = 'contain';
+            popup.style.webkitOverflowScrolling = 'touch';
+            popup.style.touchAction = 'pan-y';
             popup.style.boxSizing = 'border-box';
+
+            // Keep touch and wheel scrolling inside the modal. Home Assistant's
+            // dashboard otherwise starts scrolling when the popup reaches an edge.
+            const canScrollInsidePopup = (target, deltaY) => {
+                let node = target?.nodeType === 1 ? target : popup;
+
+                while (node && popup.contains(node)) {
+                    const overflowY = window.getComputedStyle(node).overflowY;
+                    const canOverflow = node === popup || overflowY === 'auto' || overflowY === 'scroll';
+                    const maxScrollTop = node.scrollHeight - node.clientHeight;
+
+                    if (canOverflow && maxScrollTop > 1) {
+                        if (deltaY < 0 && node.scrollTop > 0) return true;
+                        if (deltaY > 0 && node.scrollTop < maxScrollTop - 1) return true;
+                    }
+
+                    if (node === popup) break;
+                    node = node.parentElement;
+                }
+
+                return false;
+            };
+
+            let previousTouchY = null;
+            overlay.addEventListener('touchstart', (event) => {
+                previousTouchY = event.touches[0]?.clientY ?? null;
+            }, { passive: true });
+            overlay.addEventListener('touchmove', (event) => {
+                const currentTouchY = event.touches[0]?.clientY;
+                if (currentTouchY === undefined || previousTouchY === null) return;
+
+                const deltaY = previousTouchY - currentTouchY;
+                previousTouchY = currentTouchY;
+                event.stopPropagation();
+                if (!canScrollInsidePopup(event.target, deltaY)) event.preventDefault();
+            }, { passive: false });
+            const resetTouchScroll = () => { previousTouchY = null; };
+            overlay.addEventListener('touchend', resetTouchScroll, { passive: true });
+            overlay.addEventListener('touchcancel', resetTouchScroll, { passive: true });
+            overlay.addEventListener('wheel', (event) => {
+                event.stopPropagation();
+                if (!canScrollInsidePopup(event.target, event.deltaY)) event.preventDefault();
+            }, { passive: false });
 
             // EAN Image
             if (imageUrl) {
@@ -13203,10 +14033,17 @@ async _checkEAN(text, options = {}) {
             this._appendEanDatabaseBadge(nameRow, nameOnly);
             nameSpan.appendChild(nameRow);
 
-            if (this._mode === "inventory" && !item.inventoryGroup && item.inventoryVariantEan !== undefined) {
+            if (
+                this._mode === "inventory" &&
+                !item.inventoryGroup &&
+                item.inventoryVariantEan !== undefined &&
+                (this._inventoryShowProductDetails || this._inventoryItemNeedsVariantIdentification(item))
+            ) {
                 const variantInfo = document.createElement('div');
                 variantInfo.className = 'item-description';
-                variantInfo.textContent = this._inventoryVariantLabel(item.inventoryVariantEan, true);
+                variantInfo.textContent = this._inventoryShowProductDetails
+                    ? this._inventoryVariantLabel(item.inventoryVariantEan, true)
+                    : this._inventoryVariantCompactLabel(item.inventoryVariantEan);
                 variantInfo.style.color = 'var(--secondary-text-color)';
                 nameSpan.appendChild(variantInfo);
             }
@@ -14016,7 +14853,7 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    async _setInventoryVariantQuantity(productName, category, quantity, ean = null) {
+    async _setInventoryVariantQuantity(productName, category, quantity, ean = null, options = {}) {
         const nextQuantity = Math.max(0, Math.floor(Number(quantity) || 0));
         try {
             const targetItems = await this._getTodoItems(this._entity);
@@ -14047,7 +14884,7 @@ async _checkEAN(text, options = {}) {
                         item: formattedName,
                         description: this._serializeInventoryVariant(ean, null, existingGroupMinimum)
                     }
-            });
+            }, options);
             await this._refresh();
             await this._normalizeInventoryGroupMinimum(productName, effectiveCategory);
             await this._refresh();
@@ -14285,9 +15122,9 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    async _setShoppingQuantityByName(productName, category, quantity, ean = undefined) {
+    async _setShoppingQuantityByName(productName, category, quantity, ean = undefined, options = {}) {
         if (this._canTrackInventoryVariants()) {
-            return this._setInventoryVariantQuantity(productName, category, quantity, ean === undefined ? null : ean);
+            return this._setInventoryVariantQuantity(productName, category, quantity, ean === undefined ? null : ean, options);
         }
         const normalizedName = String(productName || '').trim().toLocaleLowerCase();
         const item = (this._items || []).find(entry =>
@@ -14304,7 +15141,7 @@ async _checkEAN(text, options = {}) {
                     service: "remove_item",
                     target: { entity_id: this._entity },
                     service_data: { item: item.id }
-                });
+                }, options);
             } else {
                 const effectiveCategory = category || (item ? this._getCategory(item.name) : null);
                 const showQty = this._mode === "inventory" || nextQuantity > 1 || this._showQuantityOne;
@@ -14324,7 +15161,7 @@ async _checkEAN(text, options = {}) {
                     service_data: item
                         ? { item: item.id, rename: formattedName, ...(this._mode === "inventory" ? {} : { status: "needs_action" }) }
                         : { item: formattedName }
-                });
+                }, options);
             }
             await this._refresh();
             return { status: "updated", quantity: nextQuantity };
@@ -14641,6 +15478,23 @@ async _checkEAN(text, options = {}) {
                 this._activeEanScanProcessedQuantity = inputQty;
             }
 
+            if (eanScanMode === "inventory_correct") {
+                const correctionProduct = eanCode
+                    ? (this._eanDatabase?.get(eanCode) || eanCheck)
+                    : { ...eanCheck, name: this._getNameOnly(inputName) };
+                const corrected = await this._openInventoryCorrection(
+                    correctionProduct,
+                    eanCode,
+                    Boolean(eanCode)
+                );
+                if (corrected) {
+                    this._inputEl.value = '';
+                    this._qtyEl.value = '';
+                    this._hideSuggestions();
+                }
+                return corrected;
+            }
+
             if (eanScanMode === "database" || eanScanMode === "inventory_register") {
                 if (!eanCode || !this._eanDatabaseEntity) {
                     await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
@@ -14727,6 +15581,7 @@ async _checkEAN(text, options = {}) {
                         }
                         this._showInventoryNotice(translate("ui.inventory.registered").replace("{name}", productName));
                     }
+                    this._restartInventoryModeResetTimer();
                 }
                 this._inputEl.value = '';
                 this._qtyEl.value = '';
@@ -15775,7 +16630,13 @@ async _checkEAN(text, options = {}) {
 
             await this._hass.connection.sendMessagePromise(msg);
             await this._refresh();
-            if(this._notifyOnDone) await this._notifyOnChange();
+            const statusMessage = newStatus === "completed"
+                ? translate("ui.message.item_completed")
+                : translate("ui.message.item_reopened");
+            await this._notifyOnChange(
+                `${statusMessage}: ${this._getNameOnly(item.name)} (${this._getQuantity(item.name)})`,
+                { isDone: true }
+            );
         } catch (err) {
             console.error("[ha-shopping-list-improved] Toggle complete failed", err);
         }
@@ -17074,81 +17935,161 @@ async _checkEAN(text, options = {}) {
 
     async _notifyButtonPressed(){
         if (this._mode !== "shopping" && this._mode !== "inventory") return; // not in ToDo Mode
-        if ((!this._notifyEntity || !this._notifyEntity.trim()) && (!this._notifyEntitySMTP || !this._notifyEntitySMTP.trim())) {
-            return;
-        }
-        await this._sendMessage();
-        this.confirmPopup(translate("ui.message.sent"), true);
+        const sent = await this._sendMessage("", { manual: true });
+        if (sent > 0) this.confirmPopup(translate("ui.message.sent"), true);
     }
 
-    async _notifyOnChange(info = ""){
-        if (this._notifyOnChangeEna !== true) return;
+    _notificationChannels() {
+        return [
+            {
+                id: "notify",
+                type: "notify",
+                target: this._notifyEntity,
+                mode: this._notifyChangeMode,
+                includeManual: this._notifyIncludeManual,
+                onDone: this._notifyOnDone,
+                delay: this._notifyDelay,
+                format: this._notifyFormat
+            },
+            {
+                id: "ntfy",
+                type: "ntfy",
+                target: this._ntfyEntity,
+                mode: this._ntfyChangeMode,
+                includeManual: this._ntfyIncludeManual,
+                onDone: this._ntfyOnDone,
+                delay: this._ntfyDelay,
+                format: this._ntfyFormat
+            },
+            {
+                id: "email",
+                type: "email",
+                target: this._emailNotifyService,
+                mode: this._emailChangeMode,
+                includeManual: this._emailIncludeManual,
+                onDone: this._emailOnDone,
+                delay: this._emailDelay,
+                format: "html"
+            }
+        ].filter(channel => typeof channel.target === "string" && channel.target.trim());
+    }
+
+    async _notifyOnChange(info = "", { isDone = false } = {}){
         if (this._mode !== "shopping" && this._mode !== "inventory") return; // not in ToDo Mode
 
-        if(this._sendMessageDelay > 0){
-            this._resetSendMessageTimer();
-        }else{
-            await this._sendMessage(info);
+        const channels = this._notificationChannels().filter(channel =>
+            channel.mode !== "off" && (!isDone || channel.onDone)
+        );
+
+        for (const channel of channels) {
+            if (channel.delay > 0) {
+                this._scheduleNotification(channel, info);
+            } else {
+                await this._sendNotificationChannel(channel, info, channel.mode);
+            }
         }
     }
 
-    async _sendMessage(info = ""){
+    _notificationMessage(info = "", mode = "full") {
+        const change = typeof info === "string" ? info.trim() : "";
+        const full = (this._messageCache || "").trim();
+
+        if (mode === "change" && change) return change;
+        if (mode === "full") return full;
+        if (mode === "change_and_full" && change && full) return `${change}\n${full}`;
+        if (mode === "change_and_full" && change) return change;
+        return full;
+    }
+
+    _notificationPlainText(message = "") {
+        return String(message)
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p\s*>/gi, "\n")
+            .replace(/<\/div\s*>/gi, "\n")
+            .replace(/<\/?(?:b|u|s)>/gi, "")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
+    }
+
+    _notificationMarkdown(message = "") {
+        return this._notificationPlainText(
+            String(message)
+                .replace(/<b><u>(.*?)<\/u><\/b>/gis, "**$1**")
+                .replace(/<s>(.*?)<\/s>/gis, "~~$1~~")
+        );
+    }
+
+    async _sendNotificationChannel(channel, info = "", mode = "full") {
         if (!this._hass || !this._hass.connection) return;
-
-        if ((!this._notifyEntity || !this._notifyEntity.trim()) && (!this._notifyEntitySMTP || !this._notifyEntitySMTP.trim())) {
-            return;
-        }
-
         if (this._mode !== "shopping" && this._mode !== "inventory") return; // not in ToDo Mode
-
-        // generate the message
-        let message = "";
-        if (info && info.trim()) {
-            message += `${info.trim()}`;
-        }
 
         const stateObj = this._hass.states[this._entity];
         const name = stateObj?.attributes?.friendly_name;
+        const richMessage = this._notificationMessage(info, mode);
+        if (!richMessage) return false;
 
-        if (this._notifyOnChangeAll && info && info.trim()){
-            message = `${info.trim()}\n${this._messageCache}`;
-        } else if (info && info.trim()){
-            message = `${info.trim()}`;
-        } else {
-            message = this._messageCache;
-        }
-        
-        // Standard Notification via 'real' notify 'send_message' service
-        if (this._notifyEntity && this._notifyEntity.trim()) {
-            await this._hass.connection.sendMessagePromise({
-                type: "call_service",
-                domain: "notify",
-                service: "send_message",
-                target: {
-                    entity_id: this._notifyEntity
-                },
-                service_data: {
-                    title: name,
-                    message: message
-                }
-            });
-        }
+        try {
+            if (channel.type === "notify") {
+                const message = channel.format === "plain"
+                    ? this._notificationPlainText(richMessage)
+                    : richMessage;
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "notify",
+                    service: "send_message",
+                    target: { entity_id: channel.target },
+                    service_data: { title: name, message }
+                });
+                return true;
+            }
 
-        //SMTP HTML Notification via custom notify service
-        if (this._notifyEntitySMTP && this._notifyEntitySMTP.trim()) {
-            await this._hass.connection.sendMessagePromise({
-                type: "call_service",
-                domain: "notify",
-                service: this._notifyEntitySMTP, //"email_notification", 
-                service_data: {
-                    title: name,
-                    message: "You have to enable HTML view",
-                    data: {
-                        html: message.replace(/\n/g, "<br>")
+            if (channel.type === "ntfy") {
+                const markdown = channel.format === "markdown";
+                const message = markdown
+                    ? this._notificationMarkdown(richMessage)
+                    : this._notificationPlainText(richMessage);
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "ntfy",
+                    service: "publish",
+                    target: { entity_id: channel.target },
+                    service_data: { title: name, message, markdown }
+                });
+                return true;
+            }
+
+            if (channel.type === "email") {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "notify",
+                    service: channel.target,
+                    service_data: {
+                        title: name,
+                        message: "You have to enable HTML view",
+                        data: { html: richMessage.replace(/\n/g, "<br>") }
                     }
-                }
-            });
+                });
+                return true;
+            }
+        } catch (err) {
+            console.error(`[ha-shopping-list-improved] Notification channel '${channel.id}' failed`, err);
         }
+        return false;
+    }
+
+    async _sendMessage(info = "", { manual = false } = {}){
+        if (!this._hass || !this._hass.connection) return 0;
+        if (this._mode !== "shopping" && this._mode !== "inventory") return 0;
+
+        const channels = this._notificationChannels().filter(channel =>
+            manual ? channel.includeManual : channel.mode !== "off"
+        );
+        let sent = 0;
+        for (const channel of channels) {
+            const mode = manual ? "full" : channel.mode;
+            if (await this._sendNotificationChannel(channel, info, mode)) sent += 1;
+        }
+        return sent;
     }
 
     _chipExistsInCategory(categories, name) {
