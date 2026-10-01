@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-9.6";
+const version = "3.2.0-BETA-10.6";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -258,7 +258,7 @@ const TRANSLATIONS = {
         "editor.labels.inventory_group_variants"        : "EAN-Varianten gruppieren",
         "editor.labels.inventory_show_product_details"  : "Produktdetails in der Inventarliste anzeigen",
         "editor.labels.inventory_show_category_minimum_status": "Mindestbestandsstatus in Kategorien anzeigen",
-        "editor.labels.inventory_stock_marking"         : "Kennzeichnung Inventarmodus",
+        "editor.labels.inventory_stock_marking"         : "Bestandskennzeichnung",
         "editor.labels.inventory_mark_above_minimum"    : "Größer als Mindestbestand",
         "editor.labels.inventory_mark_at_minimum"       : "Gleich Mindestbestand",
         "editor.labels.inventory_mark_below_minimum"    : "Kleiner als Mindestbestand",
@@ -274,15 +274,19 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.remove": "Entnehmen",
         "editor.options.inventory_default_action.register": "Erfassen",
         "editor.options.inventory_default_action.correct": "Korrigieren",
-        "editor.helpers.inventory_default_action"       : "Nur im Inventarmodus: Legt fest, welcher Buchungsmodus beim Laden der Karte aktiv ist.",
+        "editor.helpers.inventory_default_action"       : "Legt fest, welcher Buchungsmodus beim Laden der Karte aktiv ist.",
         "editor.labels.inventory_mode_timeout"          : "Buchungsmodus nach Inaktivität zurücksetzen (Sekunden)",
-        "editor.helpers.inventory_mode_timeout"         : "Nur im Inventarmodus: Setzt einen vorübergehend gewählten Modus nach dieser Zeit ohne erfolgreiche Buchung auf den Startmodus zurück. Jede erfolgreiche Buchung startet den Countdown neu. 0 deaktiviert das automatische Zurücksetzen.",
+        "editor.helpers.inventory_mode_timeout"         : "Setzt einen vorübergehend gewählten Buchungsmodus nach dieser Zeit ohne erfolgreiche Buchung auf den Startmodus zurück. Jede erfolgreiche Buchung startet den Countdown neu. 0 deaktiviert das automatische Zurücksetzen.",
         "editor.helpers.inventory_highlight_zero"       : "Nur im Inventarmodus: Markiert Artikel mit Bestand 0 rot und zeigt einen schmalen roten Rand.",
-        "editor.helpers.inventory_group_variants"       : "Nur im Inventarmodus: Fasst getrennt gespeicherte EAN- und manuelle Bestände mit demselben Namen und derselben Kategorie optisch zusammen. Der Umschalter in der Karte kann die Ansicht vorübergehend ändern.",
-        "editor.helpers.inventory_show_product_details" : "Nur im Inventarmodus: Zeigt bei EAN-Artikeln den ursprünglichen Produktnamen, Marke, Produktmenge und EAN unter dem gespeicherten Artikelnamen. Der Umschalter in der Karte kann die Anzeige vorübergehend ändern.",
-        "editor.helpers.inventory_show_category_minimum_status": "Nur im Inventarmodus: Zeigt in Kategorieüberschriften an, wie viele Artikel oder Gruppen unter ihrem wirksamen Mindestbestand liegen.",
-        "editor.helpers.inventory_stock_marking"        : "Nur im Inventarmodus: Legt die farbliche Kennzeichnung im Verhältnis zum wirksamen Mindestbestand fest. Ohne festgelegten Mindestbestand gelten die drei Mindestbestandsstufen nicht. Bestand 0 wird separat und mit Vorrang behandelt.",
-        "editor.helpers.ean_transfer_grouped_as_name"   : "Wenn aktiviert, überträgt die Karte Entnahmen aus gruppierten Inventarartikeln nur mit dem gemeinsamen Artikelnamen und der Kategorie. Die konkrete EAN sowie Marke, Produktmenge und Bild der gewählten Variante werden nicht an die Zielliste gesendet. Standard: Aus.",
+        "editor.helpers.inventory_group_variants"       : "Fasst getrennt gespeicherte EAN- und manuelle Bestände mit demselben Namen und derselben Kategorie optisch zusammen. Der Umschalter in der Karte kann die Ansicht vorübergehend ändern.",
+        "editor.helpers.inventory_show_product_details" : "Zeigt bei EAN-Artikeln den ursprünglichen Produktnamen, Marke, Produktmenge und EAN unter dem gespeicherten Artikelnamen. Der Umschalter in der Karte kann die Anzeige vorübergehend ändern.",
+        "editor.helpers.inventory_show_category_minimum_status": "Zeigt in Kategorieüberschriften an, wie viele Artikel oder Gruppen unter ihrem wirksamen Mindestbestand liegen.",
+        "editor.helpers.inventory_stock_marking"        : "Legt die farbliche Kennzeichnung im Verhältnis zum wirksamen Mindestbestand fest. Ohne festgelegten Mindestbestand gelten die drei Mindestbestandsstufen nicht. Bestand 0 wird separat und mit Vorrang behandelt.",
+        "editor.helpers.inventory_mark_above_minimum"  : "Kennzeichnung für Artikel mit einem Bestand über dem wirksamen Mindestbestand.",
+        "editor.helpers.inventory_mark_at_minimum"     : "Kennzeichnung für Artikel, deren Bestand genau dem wirksamen Mindestbestand entspricht.",
+        "editor.helpers.inventory_mark_below_minimum"  : "Kennzeichnung für Artikel mit einem Bestand unter dem wirksamen Mindestbestand.",
+        "editor.helpers.inventory_mark_zero"           : "Kennzeichnung für Artikel mit Bestand 0. Diese Einstellung hat Vorrang vor den Mindestbestandsstufen.",
+        "editor.helpers.ean_transfer_grouped_as_name"   : "Wenn aktiviert, überträgt die Karte Buchungen gruppierter Inventarartikel mit dem gemeinsamen Artikelnamen und der Kategorie. Die konkrete EAN sowie Marke, Produktmenge und Bild der gewählten Variante werden nicht an die Zielliste gesendet. Standard: Aus.",
         "ui.ean.transfer_remove"                       : "Entnehmen",
         "ui.ean.transfer_invalid_config"               : "Die ISL-Transfer-Konfiguration ist ungültig. Verwende eine separate To-do-Liste mit Beschreibungsunterstützung und wähle beim Senden eine andere Ziel-Einkaufsliste aus.",
         "ui.ean.transfer_send_failed"                  : "Der Scan konnte nicht in der ISL-Transfer-Liste gespeichert werden.",
@@ -302,6 +306,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                         : "Einmalig",
         "ui.todo.due_label"                             : "Fällig",
         "ui.todo.select_action"                         : "Wähle eine Aktion für diesen Eintrag:",
+        "ui.todo.actions"                               : "To-do-Aktionen",
         "ui.todo.list.year"                             : "Jahr",
         "ui.todo.list.years"                            : "Jahre",
         "ui.todo.list.month"                            : "Monat",
@@ -329,7 +334,7 @@ const TRANSLATIONS = {
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
         "editor.labels.show_message_button"             : "Nachrichten-Button anzeigen",
-        "editor.labels.show_clear_button"               : "'Erledigte löschen' Button anzeigen",
+        "editor.labels.show_clear_button"               : "Button „Erledigte löschen“ anzeigen",
         "editor.labels.notify_entity"                   : "Notify-Entität",
         "editor.labels.add_button"                      : "Hinzufügen",
         "editor.labels.clear_button"                    : "Erledigte löschen",
@@ -346,13 +351,13 @@ const TRANSLATIONS = {
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
 		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
 		"editor.labels.categories"                   	: "Kategorien",
-        "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
-        "editor.labels.hide_cat_count_all_done"         : "Artikelanzahl ausblenden, wenn alle erledigt ?",
-        "editor.labels.show_cat_next_due"               : "Nächste Fälligkeit in Kategorie anzeigen ?",
-        "editor.labels.cat_double_sized_icon"           : "Größeres Icon anzeigen ?",
+        "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen",
+        "editor.labels.hide_cat_count_all_done"         : "Artikelanzahl ausblenden, wenn alle erledigt",
+        "editor.labels.show_cat_next_due"               : "Nächste Fälligkeit in Kategorien anzeigen",
+        "editor.labels.cat_double_sized_icon"           : "Größeres Symbol anzeigen",
         "editor.labels.show_cat_exclamation_mark"       : "Ausrufezeichen für fällige Einträge",
         "editor.labels.show_title_exclamation_mark"     : "Ausrufezeichen für fällige Einträge",
-        "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
+        "editor.labels.show_cat_popup"                  : "Kategorieauswahl beim Hinzufügen anzeigen",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
         "editor.labels.category_display"              : "Kategorieanzeige",
 		"editor.labels.dishes" 							: "Gerichte",
@@ -360,6 +365,13 @@ const TRANSLATIONS = {
         "editor.labels.mode"                            : "Modus",
         "editor.labels.font.sizes"                      : "Schriftgrößen",
         "editor.labels.colors"                          : "Farbeinstellungen",
+        "editor.labels.chip_colors"                     : "Chip-Farben",
+        "editor.labels.expert_color_settings"           : "Experteneinstellungen",
+        "editor.labels.chip_color_rgb"                  : "Lokale (Browser-)Chips",
+        "editor.labels.chip_color_default_rgb"          : "Standard-Chips",
+        "editor.labels.chip_color_global_rgb"           : "Globale (Textdatei-)Chips",
+        "editor.labels.chip_color_dish_rgb"             : "Gerichte-Chips",
+        "editor.labels.highlight_color_rgb"             : "Hervorgehobene Chips",
         "editor.labels.category.options"                : "Kategorien",
         "editor.labels.export.options"                  : "Export-Optionen",
         "editor.labels.message.options"                 : "Benachrichtigungen",
@@ -385,6 +397,9 @@ const TRANSLATIONS = {
         "editor.labels.item.options"                    : "Artikel",
         "editor.labels.ean_scanner.options"             : "EAN Scanner",
         "editor.labels.general.options"                 : "Allgemeine Einstellungen",
+        "editor.labels.shopping_mode.options"           : "Einkaufsliste",
+        "editor.labels.todo_mode.options"               : "To-do-Liste",
+        "editor.labels.inventory_mode.options"          : "Inventar",
         "editor.labels.input_row_position"              : "Position der Eingabemaske",
         "editor.labels.option_row_position"             : "Position der Buttonleiste",
         "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
@@ -408,8 +423,8 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
         "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         "editor.labels.show_descriptions"               : "Beschreibungen anzeigen",
-        "editor.labels.show_ean_brand"                  : "Marke aus EAN-Daten anzeigen",
-        "editor.labels.show_ean_quantity"               : "Produktmenge aus EAN-Daten anzeigen",
+        "editor.labels.show_ean_brand"                  : "Marke an den Produktnamen anhängen",
+        "editor.labels.show_ean_quantity"               : "Verpackungsmenge an den Produktnamen anhängen",
         "editor.labels.ean_scanner_mac"                 : "Bluetooth-MAC-Adresse des EAN-Scanners",
         "editor.labels.ean_database_entity"             : "To-do-Liste als EAN-Datenbank",
         "editor.labels.ean_create_chip"                 : "Chips für gescannte Artikel erstellen",
@@ -423,12 +438,14 @@ const TRANSLATIONS = {
         "editor.labels.ean_transfer_mode"               : "ISL-Transfer-Modus",
         "editor.labels.ean_transfer_entity"             : "ISL-Transfer-Liste",
         "editor.labels.ean_transfer_target_entity"      : "Ziel-Einkaufsliste",
-        "editor.labels.ean_transfer_actions"            : "Zu übertragende Scanaktionen",
+        "editor.labels.ean_transfer_actions"            : "Zu übertragende Aktionen",
         "editor.labels.sync_transfer.options"           : "Sync / Transfer",
         "editor.labels.ean_transfer_remove_behavior"    : "Standardverhalten bei Entnahmen",
         "editor.labels.ean_transfer_default_minimum_stock": "Standard-Mindestbestand",
         "editor.labels.ean_transfer_non_ean"            : "Artikel ohne EAN-Zuordnung",
-        "editor.labels.todo_filter"                     : "To-Do-Filter",
+        "editor.labels.todo_filter"                     : "Standardfilter",
+        "editor.labels.todo_default_action"             : "Standardaktion",
+        "editor.labels.todo_action_behavior"            : "Verhalten von Aktionsbutton/Checkbox",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
         
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
@@ -508,7 +525,7 @@ const TRANSLATIONS = {
         "editor.options.sort_mode.alpha"                : "Alphabetisch (A → Z)",
         "editor.options.sort_mode.manual"               : "Manuell per Drag-and-drop",
         "editor.options.sort_mode.none"                 : "Keine zusätzliche Sortierung",
-        "editor.options.sort_mode.due"                  : "Nach Fälligkeit (ToDo)",
+        "editor.options.sort_mode.due"                  : "Nach Fälligkeit (To-do)",
 
         "editor.options.todo_filter.all"                : "Alle",
         "editor.options.todo_filter.today"              : "Heute",
@@ -517,15 +534,24 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"           : "Zukünftig",
         "editor.options.todo_filter.dated"              : "Mit Fälligkeit",
         "editor.options.todo_filter.undated"            : "Ohne Fälligkeit",
+        "editor.options.todo_default_action.remove"     : "Fälligkeit entfernen",
+        "editor.options.todo_default_action.next"       : "Nächste Fälligkeit setzen",
+        "editor.options.todo_default_action.now"        : "Nächste Fälligkeit ab jetzt setzen",
+        "editor.options.todo_default_action.edit"       : "Eintrag bearbeiten",
+        "editor.options.todo_default_action.delete"     : "Eintrag löschen",
+        "editor.options.todo_default_action.done"       : "Erledigt-Status umschalten",
+        "editor.options.todo_action_behavior.menu"      : "Menü öffnen (Standard)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Einfachklick: Menü / Langklick: Standardaktion",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Einfachklick: Standardaktion / Langklick: Menü",
 
         "editor.options.mode.shopping"                  : "Einkaufsliste",
-        "editor.options.mode.todo"                      : "To-Do-Liste",
+        "editor.options.mode.todo"                      : "To-do-Liste",
         "editor.options.inputrow.top"                   : "Oben",
         "editor.options.inputrow.bottom"                : "Unten",
         "editor.options.ean_transfer_mode.disabled"     : "Deaktiviert (Standard)",
-        "editor.options.ean_transfer_mode.send"         : "Scans senden",
-        "editor.options.ean_transfer_mode.receive"      : "Scans empfangen",
-        "editor.options.ean_transfer_mode.send_receive" : "Scans senden und empfangen",
+        "editor.options.ean_transfer_mode.send"         : "Buchungen senden",
+        "editor.options.ean_transfer_mode.receive"      : "Buchungen empfangen",
+        "editor.options.ean_transfer_mode.send_receive" : "Buchungen senden und empfangen",
         "editor.options.ean_transfer_actions.add"       : "Nur Hinzufügen",
         "editor.options.ean_transfer_actions.remove"    : "Nur Entfernen",
         "editor.options.ean_transfer_actions.both"      : "Hinzufügen und Entfernen (Standard)",
@@ -537,8 +563,8 @@ const TRANSLATIONS = {
         "editor.options.ean_transfer_non_ean.ask"       : "Immer nachfragen",
         "editor.options.ean_transfer_non_ean.off"       : "Nicht übertragen (Standard)",
 		
-        "editor.labels.entity"                          : "To-Do-Liste (Entität)",
-        "editor.helpers.mode"                           : "Legt fest, wie die Karte verwendet wird. „Einkaufsliste“ bietet Artikelmengen, Kategorien und Einkaufsfunktionen ohne Fälligkeiten. „To-Do-Liste“ verwaltet Aufgaben mit Fälligkeiten; dort gibt es keine Anzahleingabe, Plus-/Minus-Buttons, Export-Buttons oder einen Button zum Löschen erledigter Einträge. „Inventar“ verwaltet Bestände in einer To-do-Liste: Artikel bleiben auch bei Bestand 0 erhalten und können ein- oder ausgelagert werden. Die originale Home-Assistant-Einkaufsliste unterstützt keine Fälligkeiten.",
+        "editor.labels.entity"                          : "To-do-Liste (Entität)",
+        "editor.helpers.mode"                           : "Legt fest, wie die Karte verwendet wird. „Einkaufsliste“ bietet Artikelmengen, Kategorien und Einkaufsfunktionen ohne Fälligkeiten. „To-do-Liste“ verwaltet Aufgaben mit Fälligkeiten; dort gibt es keine Anzahleingabe, Plus-/Minus-Buttons oder Export-Buttons. „Inventar“ verwaltet Bestände in einer To-do-Liste: Artikel bleiben auch bei Bestand 0 erhalten und können ein- oder ausgelagert werden. Die originale Home-Assistant-Einkaufsliste unterstützt keine Fälligkeiten.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.chips_with_cat_color"            : "Farbe der Kategorien nutzen",
         "editor.labels.allow_filter_chips"              : "Filterung der Chips erlauben",
@@ -565,7 +591,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "PDF Export-Button anzeigen",
         "editor.labels.show_export_button"              : "HTML Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
-		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen (Nur im Modus 'Einkaufsliste')",
+		"editor.labels.show_plus_minus"                 : "Plus-/Minus-Buttons anzeigen",
         "editor.labels.acknowledge_deletion"            : "Löschbestätigung anzeigen",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
@@ -575,7 +601,7 @@ const TRANSLATIONS = {
         "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
         "editor.labels.debug_mode"                      : "Debug-Modus",
         "editor.labels.chip_file"                       : "Path zur Textdatei mit den Globalen Chips",
-        "editor.labels.ean_file"                        : "Path zur Textdatei mit der lokalen EAN Liste",
+        "editor.labels.ean_file"                        : "Pfad zur Textdatei mit der lokalen EAN-Liste",
 		"editor.labels.category_file"                   : "Path zur Textdatei mit den Globalen Kategorien",
         "editor.labels.title"                           : "Titel",
         "editor.labels.title_icon"                      : "Titel-Icon",
@@ -583,17 +609,19 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_d"                   : "Warnschwelle für Intervalle in Tagen",
         "editor.labels.todo_yellow_h"                   : "Warnschwelle für Intervalle in Stunden",
         "editor.labels.todo_yellow_s"                   : "Warnschwelle für fällige Aufgaben ohne Zeitangabe",
-        "editor.labels.todo_warning_thresholds"         : "Warnschwellen für ToDo-Modus",
-        "editor.labels.show_title_info"                 : "Nächste Fälligkeit im ToDo-Modus anzeigen",
+        "editor.labels.todo_warning_thresholds"         : "Warnschwellen",
+        "editor.labels.show_title_info"                 : "Nächste Fälligkeit anzeigen",
         "editor.labels.show_title_info_icon"            : "Icon für nächste Fälligkeit anzeigen",
         "editor.labels.sort_mode"                       : "Sortierung",
 
-        "editor.helpers.show_title_info"                : "Zeigt im ToDo-Modus, sofern ein Titel angegeben wurde, die nächste Fälligkeit aller Einträge aller Kategorien unter dem Titel an. Abgelaufene Einträge werden hier nicht angezeigt, diese werden durch ein Ausrufezeichen rechts vom Namen angezeigt.",
+        "editor.helpers.show_title_info"                : "Zeigt unter dem Titel die nächste Fälligkeit aller Kategorien an. Überfällige Einträge werden dort nicht aufgeführt und stattdessen durch das Ausrufezeichen gekennzeichnet.",
         "editor.helpers.show_title_info_icon"           : "Zeigt vor dem Fälligkeitsdatum als optische Hervorhebung ein Kalender-Icon an.",
         "editor.helpers.sort_mode"                      : "Legt fest, wie Artikel sortiert werden: alphabetisch, manuell per Drag-and-drop, nach Fälligkeit oder ohne zusätzliche Sortierung.",
-        "editor.helpers.todo_filter"                    : "Legt den Standardfilter für To-Do-Einträge fest. Der Filter wirkt nur im To-Do-Modus.",
-        "editor.helpers.show_todo_filter_menu"          : "Zeigt im To-Do-Modus einen Filterbutton in der Buttonleiste an. Nutzer können den Filter dort temporär ändern oder pro Liste im Browser speichern.",
-        "editor.helpers.todo_warning_thresholds"        : "Konfiguration der Warnschwellen im ToDo-Modus. Die Werte sind in Minuten anzugeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
+        "editor.helpers.todo_filter"                    : "Legt fest, welche Aufgaben beim Laden standardmäßig angezeigt werden.",
+        "editor.helpers.todo_default_action"            : "Legt fest, welche Aktion je nach gewähltem Klickverhalten direkt ausgeführt wird. Ist sie für einen Eintrag nicht verfügbar, öffnet sich stattdessen das Aktionsmenü.",
+        "editor.helpers.todo_action_behavior"           : "Legt fest, ob die Checkbox das Aktionsmenü öffnet oder die Standardaktion per Einfach- beziehungsweise Langklick ausführt. Ein Langklick dauert etwa 0,6 Sekunden.",
+        "editor.helpers.show_todo_filter_menu"          : "Zeigt einen Filterbutton in der Buttonleiste an. Nutzer können den Filter dort vorübergehend ändern oder pro Liste im Browser speichern.",
+        "editor.helpers.todo_warning_thresholds"        : "Die Werte werden in Minuten angegeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
         "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
         "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
         "editor.helpers.todo_yellow_h"                  : "Warnschwelle für Intervalle in Stunden, definiert in Minuten (Standard: 10)",
@@ -602,8 +630,8 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
         "editor.helpers.option_row_position"            : "Legt fest, ob die Buttonleiste (Export, Nachricht, Admin-Optionen) oben oder unten angezeigt wird.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
-        "editor.helpers.show_message_button"            : "Zeigt im Modus 'Einkaufsliste' einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
-        "editor.helpers.show_clear_button"              : "Zeigt einen Button an, um alle als erledigt markierten Artikel aus der Liste zu entfernen.",
+        "editor.helpers.show_message_button"            : "Zeigt im Einkaufslisten- und Inventarmodus einen Nachrichten-Button an, über den die Liste mit der konfigurierten Benachrichtigungsart gesendet werden kann.",
+        "editor.helpers.show_clear_button"              : "Zeigt im Einkaufslisten- und To-do-Modus einen Button an, um alle als erledigt markierten Einträge zu entfernen. Im Inventarmodus wird der Button ausgeblendet.",
         "editor.helpers.notify_entity"                  : "Home-Assistant-Notify-Entität für diesen Versandweg, zum Beispiel 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Verwende eine ntfy-Entität im eigenen ntfy-Bereich, damit Markdown korrekt unterstützt wird.",
         "editor.helpers.notify.options"                 : "Versand über eine beliebige Home-Assistant-Notify-Entität. Automatische Meldungen und der manuelle Nachrichten-Button können getrennt konfiguriert werden.",
         "editor.helpers.ntfy.options"                   : "Versand über die Home-Assistant-Integration ntfy. Die Karte verwendet ntfy.publish und kann die Liste als Klartext oder Markdown senden.",
@@ -622,7 +650,7 @@ const TRANSLATIONS = {
         "editor.helpers.email_include_manual"           : "Sendet die vollständige Liste per E-Mail, wenn der Nachrichten-Button in der Karte gedrückt wird.",
         "editor.helpers.email_on_done"                  : "Sendet per E-Mail auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wird.",
         "editor.helpers.email_delay"                    : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
-        "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
+        "editor.helpers.show_admin_button"              : "Zeigt den Admin-Button für Browserdaten, dynamische Kategorien, EAN-Datenbank, Verarbeitung und Warteschlangen an.",
         "editor.helpers.notify_on_change"               : "Sendet eine Benachrichtigung über die konfigurierte Notify-Entität, sobald ein Artikel hinzugefügt, bearbeitet oder entfernt wurde.",
         "editor.helpers.notify_on_change_all"           : "Standardmäßig wird nur der hinzugefügte, bearbeitete oder entfernte Artikel in der Benachrichtigung erwähnt. Wenn diese Option aktiviert ist, wird zusätzlich die komplette Liste gesendet.",
         "editor.helpers.notify_on_change_time"          : "Legt fest (in Sekunden), wie lange gewartet wird, bevor eine Benachrichtigung (komplette Liste) gesendet wird. Dies ist nützlich, wenn mehrere Änderungen in kurzer Zeit vorgenommen werden, um zu vermeiden, dass zu viele Benachrichtigungen gesendet werden. Um diese Funktion zu deaktivieren '0' (Null) eingeben.",
@@ -631,42 +659,52 @@ const TRANSLATIONS = {
         "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
         "editor.helpers.show_category_add_all"          : "Zeigt in aufgeklappten Kategorie-Chips einen 'Alle'-Chip an. Damit können alle Artikel der Kategorie über ein Auswahlfenster hinzugefügt werden.",
         "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld.",
-        "editor.helpers.allow_suggestions"              : "Zeigt Vorschläge unter dem Eingabefeld an, wenn die Eingabe mit einem, einer Kategorie zugeordneten Artikel, übereinstimmt. Ein Klick auf den Vorschlag fügt diesen zur Liste hinzu. Alternativ kann man auch mit den Pfeiltasten durch die Vorschläge navigieren und mit Enter bestätigen.",
-        "editor.helpers.show_done_hidden_items_in_search": "Wenn die Filterfunktion aktiviert ist, werden auch erledigte (verborgene) Artikel in den Suchergebnissen angezeigt.",
+        "editor.helpers.allow_suggestions"              : "Zeigt passende Artikel aus den konfigurierten Kategorien unter dem Eingabefeld an. Wenn zusätzlich „EAN-Datenbank in Suchvorschlägen verwenden“ aktiviert ist, werden auch Produkte und EANs aus der EAN-Datenbank berücksichtigt.",
+        "editor.helpers.show_done_hidden_items_in_search": "Bezieht im Einkaufslisten- und To-do-Modus erledigte oder ausgeblendete Einträge in die Suchergebnisse ein. Das Inventar verwendet eine eigene Ausblenden-Funktion.",
         "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
-        "editor.helpers.show_descriptions"              : "Zeigt die Beschreibung eines Artikels unterhalb des Artikelnamens an, sofern die ausgewählte To-Do-Liste Beschreibungen unterstützt.",
-        "editor.helpers.show_ean_brand"                 : "Fügt die Marke aus den EAN-Produktdaten hinzu, sofern sie nicht bereits im Produktnamen enthalten ist.",
-        "editor.helpers.show_ean_quantity"              : "Fügt die Verpackungsmenge aus den EAN-Produktdaten hinzu.",
+        "editor.helpers.show_descriptions"              : "Zeigt im Einkaufslisten- und To-do-Modus die Beschreibung unterhalb des Eintrags an, sofern die ausgewählte To-do-Liste Beschreibungen unterstützt. Im Inventarmodus werden Beschreibungen nicht angezeigt.",
+        "editor.helpers.show_ean_brand"                 : "Hängt die Marke beim Erzeugen des Artikelnamens an, sofern sie nicht bereits im Produktnamen enthalten ist.",
+        "editor.helpers.show_ean_quantity"              : "Hängt die Verpackungsmenge beim Erzeugen des Artikelnamens an.",
         "editor.helpers.ean_scanner_mac"                : "MAC-Adresse des Bluetooth-Scanners, dessen Ereignisse diese Karte verarbeitet. Beispiel: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"            : "Optionale, ausschließlich für diese Funktion vorgesehene To-do-Liste. Sie speichert gelernte EAN-Produkte und Kategorien dauerhaft und geräteübergreifend. Verwende diese Liste nicht für andere Einträge. Die Standard-Einkaufsliste ist ungeeignet, da sie keine Beschreibungen unterstützt. Um die Funktion zu deaktivieren, entferne die ausgewählte Liste wieder aus der Konfiguration.",
         "editor.helpers.ean_create_chip"                : "Erstellt nach dem Hinzufügen eines per EAN erkannten Artikels einen lokalen Chip, sofern die lokale Chip-Erstellung allgemein aktiviert ist. Dies gilt für Bluetooth-Scanner, Kamera und manuell eingegebene EANs.",
-        "editor.helpers.list_script_enabled"            : "Meldet erfolgreiche Änderungen durch diese Karte: Artikel hinzugefügt, entfernt, Anzahl geändert oder umbenannt. Standard: Aus.",
+        "editor.helpers.list_script_enabled"            : "Meldet erfolgreiche Änderungen durch diese Karte: Artikel hinzugefügt, entfernt, Anzahl geändert oder umbenannt. Weitere Informationen und Beispielvariablen: https://github.com/Nisbo/ha-shopping-list-improved/wiki/Card-Configuration",
         "editor.helpers.list_script_entity"             : "Sendet Namen, Kategorie, Anzahl, Listenentität und Modus an das ausgewählte Skript. Änderungen außerhalb dieser Karte werden systembedingt nicht gemeldet. Das EAN-Skript kann parallel verwendet werden.",
-        "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf.",
+        "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf. Weitere Informationen und Beispielvariablen: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
         "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
-        "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um eindeutige Produktnamen aus der EAN-Datenbank. Die Produkte können auch über ihre EAN gefunden werden. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
-        "editor.helpers.show_ean_database_badge"         : "Zeigt neben Artikeln mit exakt passendem Produktnamen ein dezentes Barcode-Symbol. Ein Klick zeigt alle zugeordneten EAN-Datensätze an, ohne sie zu bearbeiten.",
-        "editor.helpers.ean_transfer_mode"               : "Legt fest, ob diese Karte aufgelöste EAN-Scans über eine gemeinsame ISL-Transfer-Liste sendet, für ihre eigene Einkaufsliste empfängt oder beides ausführt. Standard: Deaktiviert.",
+        "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um Produktnamen und EANs aus der EAN-Datenbank. Dafür muss zusätzlich „Vorschläge anzeigen“ aktiviert sein. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
+        "editor.helpers.show_ean_database_badge"         : "Zeigt neben Artikeln mit exakt passendem Produktnamen ein dezentes Barcode-Symbol. Ein Klick zeigt alle zugeordneten EAN-Datensätze an.",
+        "editor.helpers.ean_transfer_mode"               : "Legt fest, ob diese Karte Buchungen über eine gemeinsame ISL-Transfer-Liste sendet, für ihre eigene Liste empfängt oder beides ausführt. Standard: Deaktiviert.",
         "editor.helpers.ean_transfer_entity"             : "Separate To-do-Liste, die ausschließlich als dauerhafte ISL-Transfer-Warteschlange verwendet wird. Sie darf nicht gleichzeitig Einkaufsliste oder EAN-Datenbank sein und muss Beschreibungen unterstützen.",
-        "editor.helpers.ean_transfer_target_entity"      : "Wird nur bei „Scans senden“ und „Scans senden und empfangen“ verwendet. In den anderen Modi wird diese Einstellung ignoriert.",
-        "editor.helpers.ean_transfer_actions"            : "Bestimmt, ob Hinzufügen-Scans, Entnahme-Scans oder beide Aktionen an die Ziel-Einkaufsliste übertragen werden. Der Datenbank-Befüllmodus bleibt immer lokal. Standard: Hinzufügen und Entfernen.",
-        "editor.helpers.sync_transfer.options"           : "Hier legst du die gemeinsame Transferliste, das Ziel und das Verhalten bei Entnahmen fest. Einstellungen, die für den gewählten Modus nicht benötigt werden, werden ignoriert.",
+        "editor.helpers.ean_transfer_target_entity"      : "Wird nur bei „Buchungen senden“ und „Buchungen senden und empfangen“ verwendet. In den anderen Modi wird diese Einstellung ignoriert.",
+        "editor.helpers.ean_transfer_actions"            : "Bestimmt, ob Hinzufügen, Entfernen oder beide Aktionen an die Zielliste übertragen werden. Der Datenbank-Befüllmodus bleibt immer lokal. Standard: Hinzufügen und Entfernen.",
+        "editor.helpers.sync_transfer.options"           : "Überträgt Hinzufügungen und Entnahmen zwischen Einkaufslisten- oder Inventarkarten über eine separate, dauerhafte To-do-Warteschlange. Hier legst du Transferliste, Zielliste und Übertragungsverhalten fest. Einstellungen, die für den gewählten Modus nicht benötigt werden, werden ignoriert.",
         "editor.helpers.ean_transfer_remove_behavior"    : "1:1 überträgt jede tatsächlich entnommene Menge. Mindestbestand überträgt nur, wenn der Restbestand den Grenzwert erreicht oder unterschreitet. Produktwerte in der EAN-Datenbank überschreiben diesen Standard. Standard: 1:1.",
         "editor.helpers.ean_transfer_default_minimum_stock": "Optionaler Kartenstandard für den Modus Mindestbestand. Ohne Wert erfolgt für Produkte ohne eigenen Mindestbestand keine automatische Übertragung.",
         "editor.helpers.ean_transfer_non_ean"            : "Verhalten bei Entnahmen von Inventarvarianten ohne EAN. „Mindestbestand verwenden“ nutzt den Wert der manuellen Variante oder ersatzweise den Kartenstandard. Diese Einstellung wirkt nur bei aktivem Senden von Entnahmen. Standard: Nicht übertragen.",
         "editor.helpers.ean_script_entity"              : "Das Skript kann beispielsweise Sprachausgaben, Sounds, Benachrichtigungen oder weitere Aktionen ausführen. Die Auswahl bleibt gespeichert, wenn die Skriptausgabe deaktiviert wird.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
-        "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
-        "editor.helpers.category.options"               : "Hier kannst du Kategorien konfigurieren, die in der Einkaufs- und ToDo-liste verwendet werden. Du kannst lokale Kategorien (hier in der Karte) definieren oder eine Textdatei mit globalen Kategorien laden. Weitere Informationen zum Aufbau der Kategorien findest du in der Dokumentation.",
+        "editor.helpers.colors"                         : "Konfiguriert die Chip-Farben und eigenes CSS. Die Bestandskennzeichnung befindet sich im Bereich Inventar.",
+        "editor.helpers.chip_colors"                    : "Wählt die Farben für lokale, Standard-, globale, Gerichte- und hervorgehobene Chips aus. Der Farbdialog stammt vom Browser bzw. Betriebssystem; unter macOS ggf. zu den RGB-Reglern wechseln.",
+        "editor.helpers.expert_color_settings"          : "Erlaubt direkte CSS-Farbangaben wie red, #2196f3, #6464644D, rgb(...), rgba(...) oder var(--primary-color). Nur ein tatsächlich eingetragener Wert überschreibt den entsprechenden Colorpicker. Die grau dargestellte Standardfarbe ist lediglich ein Hinweis. Feld leeren, um wieder den Colorpicker oder den Kartenstandard zu verwenden.",
+        "editor.helpers.chip_color_rgb"                 : "Farbe der lokal in diesem Browser gespeicherten Chips.",
+        "editor.helpers.chip_color_default_rgb"         : "Farbe der in der Kartenkonfiguration eingetragenen Standard-Chips.",
+        "editor.helpers.chip_color_global_rgb"          : "Farbe der aus einer Textdatei geladenen globalen Chips.",
+        "editor.helpers.chip_color_dish_rgb"            : "Farbe der Gerichte-Chips.",
+        "editor.helpers.highlight_color_rgb"            : "Farbe für hervorgehobene Chips.",
+        "editor.helpers.category.options"               : "Konfiguriert Kategorien für Einkaufs-, To-do- und Inventarlisten. Du kannst lokale Kategorien definieren oder eine Textdatei mit globalen Kategorien laden.",
         "editor.helpers.export.options"                 : "Hier kannst du die Export-Optionen konfigurieren.",
         "editor.helpers.message.options"                : "Konfiguriert den manuellen und automatischen Versand der Liste getrennt für Standard-Notify, ntfy und E-Mail. Benachrichtigungen stehen im Einkaufslisten- und Inventarmodus zur Verfügung.",
         "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
         "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
         "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
-        "editor.helpers.ean_scanner.options"            : "Hier kannst du die EAN-Erkennung und den Bluetooth-Scanner konfigurieren. Damit Scanner-Ereignisse verarbeitet werden, musst du die Funktion zusätzlich in den Admin-Optionen der Karte auf dem jeweiligen Gerät aktivieren.",
+        "editor.helpers.ean_scanner.options"            : "Konfiguriert EAN-Eingaben, Kamera-Scans, Produktdatenbank und Bluetooth-Scanner. Die EAN-Erkennung funktioniert ohne Gerätefreigabe. Nur eingehende Bluetooth-/Home-Assistant-Scannerereignisse müssen zusätzlich in den Admin-Optionen auf dem jeweiligen Gerät aktiviert werden.",
         "editor.helpers.general.options"                : "Hier kannst du allgemeine Einstellungen für die Karte konfigurieren.",
-        "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet. Diese hat allerdings keine Fälligkeits-Funktion und sollte somit nur im Modus 'Einkaufsliste' und nicht im Modus 'To-Do-Liste' verwendet werden.",
+        "editor.helpers.shopping_mode.options"          : "Einstellungen, die ausschließlich für den Einkaufslistenmodus gelten.",
+        "editor.helpers.todo_mode.options"              : "Einstellungen für Aufgaben, Fälligkeiten und Warnungen im To-do-Modus.",
+        "editor.helpers.inventory_mode.options"         : "Einstellungen für Bestände, Buchungsmodi, Produktvarianten und Mindestbestände im Inventarmodus.",
+        "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, verwendet die Karte die originale Home-Assistant-Einkaufsliste. Sie eignet sich nur für den Einkaufslistenmodus. Selbst erstellte To-do-Entitäten unterstützen die benötigten Felder für To-do- und Inventarmodus.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
         "editor.helpers.chips_with_cat_color"           : "Sofern ein Chip einer Kategorie als 'item' zugewiesen wurde und für die Kategorie eine Farbe angegeben wurde, wird der Chip in der Farbe der Kategorie angezeigt. Die Reihenfolge, wie die Farben vergeben werden: Highlight > Kategorie > Global > Standard > Browser.",
         "editor.helpers.allow_filter_chips"             : "Ermöglicht die Filterung der Chips über das Eingabefeld.",
@@ -685,17 +723,17 @@ const TRANSLATIONS = {
         "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Nur für '(Auto) Panel Mode'.",
         "editor.helpers.chips_position"                 : "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
         "editor.helpers.quantity"                       : "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
-        "editor.helpers.acknowledged"                   : "Steuert, ob erledigte Artikel angezeigt werden.",
+        "editor.helpers.acknowledged"                   : "Steuert im Einkaufslisten- und To-do-Modus, ob erledigte Einträge angezeigt, ausgeblendet oder ans Ende verschoben werden. Das Inventar verwendet eine eigene Ausblenden-Funktion.",
         "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
-        "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
+        "editor.helpers.show_quantity_box"              : "Zeigt im Einkaufslisten- und Inventarmodus das Eingabefeld für die Anzahl an. Im To-do-Modus ist es nicht verfügbar.",
         "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
 		"editor.helpers.show_qrscan_button"   			: "Zeigt den QR-Scanner-Button an. Damit können ein oder mehrere Artikel gleichzeitig per QR-Code gescannt werden. Bei mehreren Artikeln müssen diese jeweils in einer neuen Zeile stehen. Mengenangaben können in Klammern angegeben werden, z. B. 'Bananen (6)'. Funktioniert nur, wenn man über https:// auf Home Assistant zugreift.",
-        "editor.helpers.show_export_button_pdf"         : "Zeigt den PDF Export-Button unten an. Mit der PDF-Export-Funktion kannst du die aktuelle Einkaufsliste als PDF-Datei herunterladen und offline verwenden.",
-        "editor.helpers.show_export_button"             : "Zeigt den HTML Export-Button unten an. Mit der HTML-Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
+        "editor.helpers.show_export_button_pdf"         : "Zeigt im Einkaufslisten- und Inventarmodus den PDF-Export-Button an, um die aktuelle Liste als PDF-Datei herunterzuladen.",
+        "editor.helpers.show_export_button"             : "Zeigt im Einkaufslisten- und Inventarmodus den HTML-Export-Button an, um die aktuelle Liste als HTML-Datei herunterzuladen.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
-		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht. Im Modus 'To-Do-Liste' sind diese Buttons nicht verfügbar.",
-        "editor.helpers.acknowledge_deletion"           : "Zeigt ein Bestätigung-Popup an, bevor ein Artikel gelöscht wird.",
-        "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
+		"editor.helpers.show_plus_minus"                : "Zeigt im Einkaufslisten- und Inventarmodus Plus-/Minus-Buttons zum Ändern der Menge an. Im To-do-Modus sind sie nicht verfügbar.",
+        "editor.helpers.acknowledge_deletion"           : "Zeigt im Einkaufslisten- und Inventarmodus vor dem Löschen eines Artikels eine Bestätigung an. Im To-do-Modus wird das Aktionsfenster unabhängig von dieser Einstellung verwendet.",
+        "editor.helpers.show_quantity_one"              : "Zeigt im Einkaufslistenmodus auch die Anzahl 1 an. Andernfalls wird bei Menge 1 nur der Artikelname dargestellt.",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
         "editor.helpers.ean_file"                       : "Beispiel: /local/ean.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Eintrag im Format 'EAN Name' stehen, z. B. '1234567890123 Test-Artikel'. Unterstützt werden die EAN-Formate EAN-8, UPC (12), EAN-13 und GS1-14.",
@@ -705,13 +743,13 @@ const TRANSLATIONS = {
         "editor.helpers.category_display"               : "Legt fest, ob Kategorieüberschriften angezeigt werden. Kategorien bleiben auch bei verborgenen Überschriften für Zuordnung, Sortierung, Vorschläge und Chips aktiv. Ohne Überschriften sind deren Kategorie-Farben in der Liste nicht sichtbar.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
         "editor.helpers.debug_mode"                     : "Schreibt zusätzliche Diagnosemeldungen in die Browser-Konsole. Sollte im normalen Betrieb deaktiviert bleiben.",
-        "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
-        "editor.helpers.show_title_exclamation_mark"    : "Zeigt im To-Do Mode im Titel ein Ausrufezeichen an, sofern es in einer Kategorie fällige Einträge gibt.",
-        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im Inventarmodus zählt jede dargestellte Variante oder Gruppe einmal. Im ToDo Modus wird die Anzahl invertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.)",
-        "editor.helpers.hide_cat_count_all_done"        : "Wenn diese Option aktiviert ist, wird die Artikelanzahl in der Kategorie ausgeblendet, sobald alle Einträge in der Kategorie als erledigt markiert wurden.",
-        "editor.helpers.show_cat_next_due"              : "Wenn diese Option aktiviert ist, wird im To-Do Modus das nächste Fälligkeitsdatum unter dem Kategorienamen angezeigt. So kann man auf einen Blick sehen, wann der nächste Eintrag in dieser Kategorie fällig ist.",
+        "editor.helpers.show_cat_exclamation_mark"      : "Zeigt an der Kategorie ein Ausrufezeichen an, wenn sie fällige Einträge enthält. Das Ausrufezeichen im Titel wird separat eingestellt.",
+        "editor.helpers.show_title_exclamation_mark"    : "Zeigt im Titel ein Ausrufezeichen an, wenn mindestens eine Kategorie fällige Einträge enthält.",
+        "editor.helpers.show_cat_count"                 : "Zeigt die Anzahl der Einträge neben dem Kategorienamen an. Im Inventarmodus zählt jede dargestellte Variante oder Gruppe einmal. Im To-do-Modus umfasst die Zahl vor dem '/' die nicht überfälligen oder bereits erledigten Einträge.",
+        "editor.helpers.hide_cat_count_all_done"        : "Blendet im Einkaufslisten- und To-do-Modus den Kategoriezähler aus, sobald alle Einträge der Kategorie erledigt sind. Im Inventarmodus wird diese Einstellung ignoriert.",
+        "editor.helpers.show_cat_next_due"              : "Zeigt das nächste Fälligkeitsdatum unter dem Kategorienamen an.",
         "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passt.",
-        "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
+        "editor.helpers.show_cat_popup"                 : "Öffnet beim Hinzufügen eines neuen Artikels die Kategorieauswahl. Ist sie deaktiviert, werden Artikel ohne bereits bekannte Kategorie unter „Allgemein“ eingeordnet. Bekannte Zuordnungen aus Kategorien oder der EAN-Datenbank bleiben erhalten.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
 		"editor.helpers.categories"                     : "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Optional kann jede Kategorie ein icon (z.B. mdi:apple) und eine Hintergrundfarbe bgcolor (z.B. #247645) haben. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann.",
@@ -969,7 +1007,7 @@ const TRANSLATIONS = {
         "editor.labels.inventory_group_variants"        : "Group EAN variants",
         "editor.labels.inventory_show_product_details"  : "Show product details in the inventory list",
         "editor.labels.inventory_show_category_minimum_status": "Show minimum-stock status in categories",
-        "editor.labels.inventory_stock_marking"         : "Inventory mode highlighting",
+        "editor.labels.inventory_stock_marking"         : "Stock highlighting",
         "editor.labels.inventory_mark_above_minimum"    : "Above minimum stock",
         "editor.labels.inventory_mark_at_minimum"       : "Equal to minimum stock",
         "editor.labels.inventory_mark_below_minimum"    : "Below minimum stock",
@@ -985,15 +1023,19 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.remove": "Stock out",
         "editor.options.inventory_default_action.register": "Register",
         "editor.options.inventory_default_action.correct": "Correct",
-        "editor.helpers.inventory_default_action"       : "Inventory mode only: Sets the booking mode used whenever the card loads.",
+        "editor.helpers.inventory_default_action"       : "Sets the booking mode used whenever the card loads.",
         "editor.labels.inventory_mode_timeout"          : "Reset booking mode after inactivity (seconds)",
-        "editor.helpers.inventory_mode_timeout"         : "Inventory mode only: Resets a temporarily selected mode to the configured start mode after this period without a successful booking. Each successful booking restarts the countdown. 0 disables automatic reset.",
+        "editor.helpers.inventory_mode_timeout"         : "Resets a temporarily selected booking mode to the configured start mode after this period without a successful booking. Each successful booking restarts the countdown. 0 disables automatic reset.",
         "editor.helpers.inventory_highlight_zero"       : "Inventory mode only: Marks zero-stock items in red and adds a narrow red border.",
-        "editor.helpers.inventory_group_variants"       : "Inventory mode only: Visually combines separately stored EAN and manual stock variants with the same name and category. The card switch can temporarily change the view.",
-        "editor.helpers.inventory_show_product_details" : "Inventory mode only: Shows the original product name, brand, package quantity and EAN below the saved item name. The card switch can temporarily change the display.",
-        "editor.helpers.inventory_show_category_minimum_status": "Inventory mode only: Shows how many items or groups in each category are below their effective minimum stock.",
-        "editor.helpers.inventory_stock_marking"        : "Inventory mode only: Controls highlighting relative to the effective minimum stock. The three minimum-stock levels do not apply when no minimum is configured. Stock 0 is handled separately and takes priority.",
-        "editor.helpers.ean_transfer_grouped_as_name"   : "When enabled, removals from grouped inventory items are transferred using only the shared item name and category. The selected variant's EAN, brand, package quantity and image are not sent to the target list. Default: Off.",
+        "editor.helpers.inventory_group_variants"       : "Visually combines separately stored EAN and manual stock variants with the same name and category. The card switch can temporarily change the view.",
+        "editor.helpers.inventory_show_product_details" : "Shows the original product name, brand, package quantity, and EAN below the saved item name. The card switch can temporarily change the display.",
+        "editor.helpers.inventory_show_category_minimum_status": "Shows how many items or groups in each category are below their effective minimum stock.",
+        "editor.helpers.inventory_stock_marking"        : "Controls highlighting relative to the effective minimum stock. The three minimum-stock levels do not apply when no minimum is configured. Stock 0 is handled separately and takes priority.",
+        "editor.helpers.inventory_mark_above_minimum"  : "Highlight used when stock is above the effective minimum.",
+        "editor.helpers.inventory_mark_at_minimum"     : "Highlight used when stock exactly matches the effective minimum.",
+        "editor.helpers.inventory_mark_below_minimum"  : "Highlight used when stock is below the effective minimum.",
+        "editor.helpers.inventory_mark_zero"           : "Highlight used at stock 0. This setting takes priority over the minimum-stock levels.",
+        "editor.helpers.ean_transfer_grouped_as_name"   : "When enabled, bookings for grouped inventory items use the shared item name and category. The selected variant's EAN, brand, package quantity, and image are not sent to the target list. Default: Off.",
         "ui.ean.transfer_remove"                       : "Remove",
         "ui.ean.transfer_invalid_config"               : "The ISL transfer configuration is invalid. Use a separate to-do list with description support and select a different target shopping list when sending.",
         "ui.ean.transfer_send_failed"                  : "The scan could not be saved to the ISL transfer list.",
@@ -1013,6 +1055,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                         : "One-time",
         "ui.todo.due_label"                             : "Due",
         "ui.todo.select_action"                         : "Select an action for this item:",
+        "ui.todo.actions"                               : "To-do actions",
         "ui.todo.list.year"                             : "Year",
         "ui.todo.list.years"                            : "Years",
         "ui.todo.list.month"                            : "Month",
@@ -1057,13 +1100,13 @@ const TRANSLATIONS = {
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
 		"editor.labels.categories"                   	: "Categories",
-        "editor.labels.show_cat_count"                  : "Show item count in categories ?",
-        "editor.labels.hide_cat_count_all_done"         : "Hide item count when all items are done ?",
-        "editor.labels.show_cat_next_due"               : "Show next due in category ?",
+        "editor.labels.show_cat_count"                  : "Show item count in categories",
+        "editor.labels.hide_cat_count_all_done"         : "Hide item count when all items are done",
+        "editor.labels.show_cat_next_due"               : "Show next due date in categories",
         "editor.labels.cat_double_sized_icon"           : "Show bigger Icon ?",
         "editor.labels.show_cat_exclamation_mark"       : "Show an exclamation mark for due items",
         "editor.labels.show_title_exclamation_mark"     : "Show an exclamation mark for due items",
-        "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
+        "editor.labels.show_cat_popup"                  : "Show category selection when adding",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
         "editor.labels.category_display"              : "Category display",
 		"editor.labels.dishes" 							: "Dishes",
@@ -1071,6 +1114,13 @@ const TRANSLATIONS = {
         "editor.labels.mode"                            : "Mode",
         "editor.labels.font.sizes"                      : "Font sizes",
         "editor.labels.colors"                          : "Color settings",
+        "editor.labels.chip_colors"                     : "Chip colors",
+        "editor.labels.expert_color_settings"           : "Expert settings",
+        "editor.labels.chip_color_rgb"                  : "Local (browser) chips",
+        "editor.labels.chip_color_default_rgb"          : "Standard chips",
+        "editor.labels.chip_color_global_rgb"           : "Global (text file) chips",
+        "editor.labels.chip_color_dish_rgb"             : "Dish chips",
+        "editor.labels.highlight_color_rgb"             : "Highlighted chips",
         "editor.labels.category.options"                : "Categories",
         "editor.labels.export.options"                  : "Export options",
         "editor.labels.message.options"                 : "Notifications",
@@ -1096,6 +1146,9 @@ const TRANSLATIONS = {
         "editor.labels.item.options"                    : "Items",
         "editor.labels.ean_scanner.options"             : "EAN Scanner",
         "editor.labels.general.options"                 : "General settings",
+        "editor.labels.shopping_mode.options"          : "Shopping List",
+        "editor.labels.todo_mode.options"              : "To-do List",
+        "editor.labels.inventory_mode.options"         : "Inventory",
         "editor.labels.input_row_position"              : "Input row position",
         "editor.labels.option_row_position"             : "Button row position",
         "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
@@ -1119,8 +1172,8 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
         "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
         "editor.labels.show_descriptions"               : "Show descriptions",
-        "editor.labels.show_ean_brand"                  : "Show brand from EAN data",
-        "editor.labels.show_ean_quantity"               : "Show product quantity from EAN data",
+        "editor.labels.show_ean_brand"                  : "Append brand to the product name",
+        "editor.labels.show_ean_quantity"               : "Append package quantity to the product name",
         "editor.labels.ean_scanner_mac"                 : "Bluetooth MAC address of the EAN scanner",
         "editor.labels.ean_database_entity"             : "To-do list used as EAN database",
         "editor.labels.ean_create_chip"                 : "Create chips for scanned products",
@@ -1134,12 +1187,14 @@ const TRANSLATIONS = {
         "editor.labels.ean_transfer_mode"               : "ISL transfer mode",
         "editor.labels.ean_transfer_entity"             : "ISL transfer list",
         "editor.labels.ean_transfer_target_entity"      : "Target shopping list",
-        "editor.labels.ean_transfer_actions"            : "Scan actions to transfer",
+        "editor.labels.ean_transfer_actions"            : "Actions to transfer",
         "editor.labels.sync_transfer.options"           : "Sync / Transfer",
         "editor.labels.ean_transfer_remove_behavior"    : "Default removal behavior",
         "editor.labels.ean_transfer_default_minimum_stock": "Default minimum stock",
         "editor.labels.ean_transfer_non_ean"            : "Items without an EAN assignment",
-        "editor.labels.todo_filter"                     : "To-do filter",
+        "editor.labels.todo_filter"                     : "Default filter",
+        "editor.labels.todo_default_action"             : "Default action",
+        "editor.labels.todo_action_behavior"            : "Action button/checkbox behavior",
         "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
@@ -1228,15 +1283,24 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"           : "Upcoming",
         "editor.options.todo_filter.dated"              : "Dated",
         "editor.options.todo_filter.undated"            : "Undated",
+        "editor.options.todo_default_action.remove"     : "Remove due date",
+        "editor.options.todo_default_action.next"       : "Set next due date",
+        "editor.options.todo_default_action.now"        : "Set next due date from now",
+        "editor.options.todo_default_action.edit"       : "Edit item",
+        "editor.options.todo_default_action.delete"     : "Delete item",
+        "editor.options.todo_default_action.done"       : "Toggle completed status",
+        "editor.options.todo_action_behavior.menu"      : "Open menu (default)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Click: menu / long press: default action",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Click: default action / long press: menu",
 
         "editor.options.mode.shopping"                  : "Shopping list",
         "editor.options.mode.todo"                      : "To-do list",
         "editor.options.inputrow.top"                   : "Top",
         "editor.options.inputrow.bottom"                : "Bottom",
         "editor.options.ean_transfer_mode.disabled"     : "Disabled (default)",
-        "editor.options.ean_transfer_mode.send"         : "Send scans",
-        "editor.options.ean_transfer_mode.receive"      : "Receive scans",
-        "editor.options.ean_transfer_mode.send_receive" : "Send and receive scans",
+        "editor.options.ean_transfer_mode.send"         : "Send bookings",
+        "editor.options.ean_transfer_mode.receive"      : "Receive bookings",
+        "editor.options.ean_transfer_mode.send_receive" : "Send and receive bookings",
         "editor.options.ean_transfer_actions.add"       : "Add only",
         "editor.options.ean_transfer_actions.remove"    : "Remove only",
         "editor.options.ean_transfer_actions.both"      : "Add and remove (default)",
@@ -1275,7 +1339,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "Show PDF Export button",
         "editor.labels.show_export_button"              : "Show HTML Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
-		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons (Only in 'Shopping List' mode)",
+		"editor.labels.show_plus_minus"                 : "Show plus/minus buttons",
         "editor.labels.acknowledge_deletion"            : "Ask for confirmation when deleting items",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
         "editor.labels.sub_text"                        : "Hint text below the input field",
@@ -1293,7 +1357,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_d"                   : "Warning threshold for intervals in days",
         "editor.labels.todo_yellow_h"                   : "Warning threshold for intervals in hours",
         "editor.labels.todo_yellow_s"                   : "Warning threshold for due dates without time",
-        "editor.labels.todo_warning_thresholds"         : "Warning thresholds for ToDo mode",
+        "editor.labels.todo_warning_thresholds"         : "Warning thresholds",
         "editor.labels.show_title_info"                 : "Show next due date in ToDo mode",
         "editor.labels.show_title_info_icon"            : "Show icon for next due date",
         "editor.labels.sort_mode"                       : "Sort mode",
@@ -1301,7 +1365,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_info"                : "Displays the next due date of all items from all categories under the title when in ToDo mode, provided a title is set. Expired items are not shown here; they are indicated by an exclamation mark to the right of the name.",
         "editor.helpers.show_title_info_icon"           : "Displays a calendar icon before the due date as a visual highlight.",
         "editor.helpers.sort_mode"                      : "Controls how items are sorted: alphabetically, manually via drag-and-drop, by due date, or without additional sorting.",
-        "editor.helpers.todo_filter"                    : "Sets the default filter for To-do items. This filter only applies in To-do mode.",
+        "editor.helpers.todo_filter"                    : "Sets which tasks are shown by default when the card loads.",
+        "editor.helpers.todo_default_action"            : "Selects the action executed directly by the configured click behavior. If it is unavailable for an item, the action menu opens instead.",
+        "editor.helpers.todo_action_behavior"           : "Controls whether the checkbox opens the action menu or executes the default action on click or long press. A long press takes about 0.6 seconds.",
         "editor.helpers.show_todo_filter_menu"          : "Shows a filter button in the button row while in To-do mode. Users can temporarily change the filter there or remember it per list in the browser.",
         "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
         "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
@@ -1312,8 +1378,8 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
         "editor.helpers.option_row_position"            : "Determines whether the buttons (message, clear, export) are displayed top or bottom.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
-        "editor.helpers.show_message_button"            : "Displays (in Shopping List Mode) a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
-        "editor.helpers.show_clear_button"              : "Displays a button to clear all completed items from the list.",
+        "editor.helpers.show_message_button"            : "Shows a message button in Shopping List and Inventory modes for sending the list with the configured notification service.",
+        "editor.helpers.show_clear_button"              : "Shows a button in Shopping List and To-do modes for removing all completed entries. It is hidden in Inventory mode.",
         "editor.helpers.notify_entity"                  : "Home Assistant notify entity for this channel, for example 'notify.mobile_app_xyz' or 'notify.telegram'. Use an ntfy entity in the dedicated ntfy section so Markdown is handled correctly.",
         "editor.helpers.notify.options"                 : "Send through any Home Assistant notify entity. Automatic messages and the manual message button can be configured separately.",
         "editor.helpers.ntfy.options"                   : "Send through the Home Assistant ntfy integration. The card uses ntfy.publish and can send the list as plain text or Markdown.",
@@ -1332,7 +1398,7 @@ const TRANSLATIONS = {
         "editor.helpers.email_include_manual"           : "Send the full list by email when the message button on the card is pressed.",
         "editor.helpers.email_on_done"                  : "Also send an email when an item is marked completed.",
         "editor.helpers.email_delay"                    : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
-        "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
+        "editor.helpers.show_admin_button"              : "Shows the admin button for browser data, dynamic categories, the EAN database, processing, and queues.", 
         "editor.helpers.notify_on_change"               : "Sends a notification via the configured notify entity whenever an item is added, edited, or removed.",
         "editor.helpers.notify_on_change_all"           : "Sends also the entire list with each notification, rather than just the changed item.",
         "editor.helpers.notify_on_change_time"          : "Defines (in seconds) how long to wait before sending a notification (entire list). This is useful when multiple changes are made in a short time to avoid sending too many notifications. Enter '0' (zero) to disable this feature.",
@@ -1341,43 +1407,53 @@ const TRANSLATIONS = {
         "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
         "editor.helpers.show_category_add_all"          : "Shows an 'All' chip inside expanded category chips. It opens a selection dialog so all or selected category items can be added at once.",
         "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field.",
-        "editor.helpers.allow_suggestions"              : "Shows suggestions below the input field when the entered text matches an item assigned to a category. Clicking a suggestion adds it to the list. Alternatively, you can navigate through the suggestions using the arrow keys and confirm with Enter.",
-        "editor.helpers.show_done_hidden_items_in_search": "When filtering items in the list, this option ensures that completed (and hidden) items are also included in the search results.",
+        "editor.helpers.allow_suggestions"              : "Shows matching items from configured categories below the input. When Use EAN database in search suggestions is also enabled, EAN database products and EANs are included.",
+        "editor.helpers.show_done_hidden_items_in_search": "Includes completed or hidden entries in search results in Shopping List and To-do modes. Inventory uses its own hidden-item function.",
         "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
-        "editor.helpers.show_descriptions"              : "Shows the item description below the item name, if the selected To-do list supports descriptions.",
-        "editor.helpers.show_ean_brand"                 : "Appends the brand from the EAN product data unless it is already part of the product name.",
-        "editor.helpers.show_ean_quantity"              : "Appends the package quantity from the EAN product data.",
+        "editor.helpers.show_descriptions"              : "Shows descriptions in Shopping List and To-do modes when supported by the selected entity. Descriptions are not shown in Inventory mode.",
+        "editor.helpers.show_ean_brand"                 : "Appends the brand when creating the item name unless it is already part of the product name.",
+        "editor.helpers.show_ean_quantity"              : "Appends the package quantity when creating the item name.",
         "editor.helpers.ean_scanner_mac"                : "MAC address of the Bluetooth scanner whose events this card processes. Example: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"            : "Optional to-do list reserved exclusively for this feature. It stores learned EAN products and categories permanently across devices. Do not use this list for other entries. The standard Shopping List is unsuitable because it does not support descriptions. To disable the feature, remove the selected list from the configuration.",
         "editor.helpers.ean_create_chip"                : "Creates a local chip after adding a product recognized by EAN, provided that local chip creation is enabled globally. This applies to Bluetooth scanners, the camera, and manually entered EANs.",
-        "editor.helpers.list_script_enabled"            : "Reports successful changes made by this card: item added, removed, quantity changed, or renamed. Default: Off.",
+        "editor.helpers.list_script_enabled"            : "Reports successful changes made by this card: item added, removed, quantity changed, or renamed. Details and example variables: https://github.com/Nisbo/ha-shopping-list-improved/wiki/Card-Configuration",
         "editor.helpers.list_script_entity"             : "Sends the name, category, quantity, list entity and mode to the selected script. Changes made outside this card cannot be reported. The EAN script can be used in parallel.",
-        "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with the status and product data when an EAN event occurs.",
+        "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with status and product data for EAN events. Details and example variables: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
         "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
-        "editor.helpers.ean_database_suggestions"        : "Adds unique product names from the EAN database to the normal search suggestions. Products can also be found by their EAN. Multiple EANs with the same product name are suggested only once.",
-        "editor.helpers.show_ean_database_badge"         : "Shows a discreet barcode icon next to items with an exact matching product name. Select it to view all assigned EAN records without editing them.",
-        "editor.helpers.ean_transfer_mode"               : "Controls whether this card sends resolved EAN scans through a shared ISL transfer list, receives scans for its own shopping list, or does both. Default: Disabled.",
+        "editor.helpers.ean_database_suggestions"        : "Adds product names and EANs from the EAN database to normal search suggestions. Show suggestions must also be enabled. Multiple EANs with the same product name are suggested only once.",
+        "editor.helpers.show_ean_database_badge"         : "Shows a discreet barcode icon next to items with an exact matching product name. Select it to view all assigned EAN records.",
+        "editor.helpers.ean_transfer_mode"               : "Controls whether this card sends bookings through a shared ISL transfer list, receives bookings for its own list, or does both. Default: Disabled.",
         "editor.helpers.ean_transfer_entity"             : "Separate to-do list reserved exclusively as the persistent ISL transfer queue. It must not also be a shopping list or EAN database and must support descriptions.",
-        "editor.helpers.ean_transfer_target_entity"      : "Used only by Send scans and Send and receive scans. This setting is ignored in the other modes.",
-        "editor.helpers.ean_transfer_actions"            : "Controls whether add scans, removal scans, or both are transferred to the target shopping list. Database fill mode always remains local. Default: Add and remove.",
-        "editor.helpers.sync_transfer.options"           : "Configure the shared transfer list, target, and removal behavior here. Settings that are not required by the selected mode are ignored.",
+        "editor.helpers.ean_transfer_target_entity"      : "Used only by Send bookings and Send and receive bookings. This setting is ignored in the other modes.",
+        "editor.helpers.ean_transfer_actions"            : "Controls whether additions, removals, or both are transferred to the target list. Database fill mode always remains local. Default: Add and remove.",
+        "editor.helpers.sync_transfer.options"           : "Transfers additions and removals between Shopping List or Inventory cards through a separate persistent to-do queue. Configure the transfer list, target list, and transfer behavior here. Settings not required by the selected mode are ignored.",
         "editor.helpers.ean_transfer_remove_behavior"    : "1:1 transfers every quantity actually removed. Minimum stock transfers only when the remaining stock reaches or falls below the threshold. Product values in the EAN database override this default. Default: 1:1.",
         "editor.helpers.ean_transfer_default_minimum_stock": "Optional card default for Minimum stock mode. Without a value, products without their own minimum do not transfer automatically.",
         "editor.helpers.ean_transfer_non_ean"            : "Controls removals for inventory variants without an EAN. Use minimum stock takes the manual variant value or falls back to the card default. This applies only while removal transfers are enabled. Default: Do not transfer.",
         "editor.helpers.ean_script_entity"              : "The script can provide speech output, play sounds, send notifications, or run additional actions. The selection is retained when script output is disabled.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
-        "editor.helpers.colors"                         : "Defines the color settings for the chips.",
-        "editor.helpers.category.options"               : "Here you can configure categories used in the shopping and to-do list. You can define local categories (here in the card) or load a text file with global categories. For more information on the structure of the categories, please refer to the documentation.",
+        "editor.helpers.colors"                         : "Configures chip colors and custom CSS. Stock highlighting is located in the Inventory section.",
+        "editor.helpers.chip_colors"                    : "Selects the colors for local, standard, global, dish, and highlighted chips. The color dialog is provided by the browser or operating system; on macOS, switch to the RGB sliders if necessary.",
+        "editor.helpers.expert_color_settings"          : "Allows direct CSS colors such as red, #2196f3, #6464644D, rgb(...), rgba(...), or var(--primary-color). Only a value actually entered overrides the corresponding color picker. The gray default color is only a hint. Clear the field to use the color picker or card default again.",
+        "editor.helpers.chip_color_rgb"                 : "Color of chips stored locally in this browser.",
+        "editor.helpers.chip_color_default_rgb"         : "Color of standard chips configured on the card.",
+        "editor.helpers.chip_color_global_rgb"          : "Color of global chips loaded from a text file.",
+        "editor.helpers.chip_color_dish_rgb"            : "Color of dish chips.",
+        "editor.helpers.highlight_color_rgb"            : "Color of highlighted chips.",
+        "editor.helpers.category.options"               : "Configures categories for Shopping List, To-do, and Inventory modes. You can define local categories or load global categories from a text file.",
         "editor.helpers.export.options"                 : "Here you can configure the export options.",
         "editor.helpers.message.options"                : "Configure manual and automatic list delivery separately for standard notify, ntfy, and email. Notifications are available in Shopping List and Inventory modes.",
         "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
         "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
         "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
-        "editor.helpers.ean_scanner.options"            : "Here you can configure EAN recognition and the Bluetooth scanner. To process scanner events, you must also enable the function in the card's admin options on the respective device.",
+        "editor.helpers.ean_scanner.options"            : "Configures manual EAN input, camera scans, the product database, and Bluetooth scanners. EAN recognition works without device authorization. Only incoming Bluetooth/Home Assistant scanner events must be enabled in the card's admin options on each device.",
         "editor.helpers.general.options"                : "Here you can configure general settings for the card.",
-        "editor.helpers.entity"                         : "If no Entity is selected, Home Assistant's default shopping list will be used automatically. However, this list does not have a due date function and should therefore only be used in 'Shopping List' mode, not in 'To-Do List' mode.",
-        "editor.helpers.mode"                           : "Sets how the card is used. Shopping List provides item quantities, categories and shopping features without due dates. To-Do List manages tasks with due dates; it has no quantity input, plus/minus buttons, export buttons or button to delete completed entries. Inventory tracks stock in a to-do list: items remain at stock 0 and can be stocked in or out. The original Home Assistant shopping list does not support due dates.",
+        "editor.helpers.shopping_mode.options"          : "Settings used only in Shopping List mode.",
+        "editor.helpers.todo_mode.options"              : "Settings for tasks, due dates, and warnings in To-do mode.",
+        "editor.helpers.inventory_mode.options"         : "Settings for stock, booking modes, product variants, and minimum stock in Inventory mode.",
+        "editor.helpers.entity"                         : "If no entity is selected, the original Home Assistant shopping list is used. It is suitable only for Shopping List mode. User-created To-do entities provide the fields required by To-do and Inventory modes.",
+        "editor.helpers.mode"                           : "Sets how the card is used. Shopping List provides quantities, categories, and shopping features without due dates. To-do List manages tasks with due dates and has no quantity input, plus/minus buttons, or export buttons. Inventory tracks stock in a to-do list and retains items at stock 0. The original Home Assistant shopping list does not support due dates.",
         "editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.chips_with_cat_color"           : "If a chip is assigned as an 'item' to a category and that category has a color defined, the chip will be displayed in the category's color. The order of color priority is: Highlight > Category > Global > Standard > Browser.",
         "editor.helpers.allow_filter_chips"             : "Allows filtering of chips via the input field.",
@@ -1396,17 +1472,17 @@ const TRANSLATIONS = {
 		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when '(Auto) Panel Mode' is selected.",
 		"editor.helpers.chips_position"                 : "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
 		"editor.helpers.quantity"                       : "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
-		"editor.helpers.acknowledged"                   : "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
+		"editor.helpers.acknowledged"                   : "Controls whether completed entries are shown, hidden, or moved to the end in Shopping List and To-do modes. Inventory uses its own hidden-item function.",
 		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
-		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
+		"editor.helpers.show_quantity_box"              : "Shows the quantity input in Shopping List and Inventory modes. It is not available in To-do mode.",
 		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
 		"editor.helpers.show_qrscan_button"   			: "Displays the QR scanner button. Allows scanning one or multiple items at once via QR code. For multiple items, each item must be on a separate line. Quantities can be specified in parentheses, e.g., 'Bananas (6)'. You must access Home Assistant via a https:// connection.",
-        "editor.helpers.show_export_button_pdf"         : "Shows the PDF Export button on the bottom. With the PDF-Export function, you can download the current todo list as an PDF file for offline use.",
-        "editor.helpers.show_export_button"             : "Shows the HTML Export button on the bottom. With the HTML-Export function, you can download the current todo list as an HTML file for offline use.",
+        "editor.helpers.show_export_button_pdf"         : "Shows the PDF export button in Shopping List and Inventory modes to download the current list as a PDF file.",
+        "editor.helpers.show_export_button"             : "Shows the HTML export button in Shopping List and Inventory modes to download the current list as an HTML file.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
-		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity. (Not available in 'To-Do List' mode).",
-		"editor.helpers.acknowledge_deletion"           : "Enables a confirmation dialog when deleting items to prevent accidental deletions.",
-        "editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
+		"editor.helpers.show_plus_minus"                : "Shows plus/minus buttons for changing quantities in Shopping List and Inventory modes. They are not available in To-do mode.",
+		"editor.helpers.acknowledge_deletion"           : "Shows a confirmation before deleting an item in Shopping List and Inventory modes. To-do mode uses its action dialog independently of this setting.",
+        "editor.helpers.show_quantity_one"              : "Shows quantity 1 in Shopping List mode. Otherwise only the item name is shown when the quantity is 1.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
@@ -1420,9 +1496,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",       
         "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
         "editor.helpers.cat_double_sized_icon"          : "If the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
-        "editor.helpers.show_cat_count"                 : "If enabled, the number of items in each category is displayed next to the category name. In Inventory mode, each displayed variant or group counts once. In To-do mode, the count is inverted; the number before '/' contains only entries that are not yet due. (Example: 3/5 means that 3 of 5 entries are not yet due.)",
-        "editor.helpers.hide_cat_count_all_done"        : "If this option is enabled, the item count will be hidden for categories where all items are marked as completed.",
-        "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
+        "editor.helpers.show_cat_count"                 : "Shows the entry count next to each category. In Inventory mode, every displayed variant or group counts once. In To-do mode, the number before '/' counts entries that are not overdue or are already completed.",
+        "editor.helpers.hide_cat_count_all_done"        : "Hides the category count when all entries are completed in Shopping List and To-do modes. This setting is ignored in Inventory mode.",
+        "editor.helpers.show_cat_popup"                 : "Opens category selection when a new item is added. When disabled, items without a known category are placed under General. Existing assignments from categories or the EAN database are preserved.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
 		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference.",
@@ -1676,7 +1752,7 @@ const TRANSLATIONS = {
         "editor.labels.inventory_group_variants"                    : "Agrupar variantes de EAN",
         "editor.labels.inventory_show_product_details"              : "Mostrar detalles del producto en la lista de inventario",
         "editor.labels.inventory_show_category_minimum_status"      : "Mostrar el estado del stock mínimo en las categorías",
-        "editor.labels.inventory_stock_marking"                    : "Marcado del modo inventario",
+        "editor.labels.inventory_stock_marking"                    : "Marcado del stock",
         "editor.labels.inventory_mark_above_minimum"               : "Por encima del stock mínimo",
         "editor.labels.inventory_mark_at_minimum"                  : "Igual al stock mínimo",
         "editor.labels.inventory_mark_below_minimum"               : "Por debajo del stock mínimo",
@@ -1694,13 +1770,17 @@ const TRANSLATIONS = {
         "editor.options.inventory_default_action.correct"           : "Corregir",
         "editor.helpers.inventory_default_action"                   : "Modo de registro por defecto activado al abrir la tarjeta.",
         "editor.labels.inventory_mode_timeout"                      : "Restablecer el modo tras inactividad (segundos)",
-        "editor.helpers.inventory_mode_timeout"                     : "Solo en modo inventario: restablece un modo seleccionado temporalmente al modo inicial tras este periodo sin una operación correcta. Cada operación correcta reinicia la cuenta atrás. 0 desactiva el restablecimiento automático.",
+        "editor.helpers.inventory_mode_timeout"                     : "Restablece un modo seleccionado temporalmente al modo inicial tras este periodo sin una operación correcta. Cada operación correcta reinicia la cuenta atrás. 0 desactiva el restablecimiento automático.",
         "editor.helpers.inventory_highlight_zero"                   : "Destaca visualmente en la lista los elementos de inventario con stock 0.",
         "editor.helpers.inventory_group_variants"                   : "Agrupa variantes de productos con el mismo nombre en una sola entrada en el inventario.",
-        "editor.helpers.inventory_show_product_details"             : "Solo en el modo inventario: muestra el nombre original del producto, la marca, la cantidad del envase y el EAN debajo del nombre guardado. El botón de la tarjeta puede cambiar temporalmente la visualización.",
-        "editor.helpers.inventory_show_category_minimum_status"     : "Solo en el modo inventario: muestra cuántos artículos o grupos de cada categoría están por debajo de su stock mínimo efectivo.",
-        "editor.helpers.inventory_stock_marking"                   : "Solo en el modo inventario: controla el marcado en relación con el stock mínimo efectivo. Los tres niveles de stock mínimo no se aplican cuando no hay ningún mínimo configurado. El stock 0 se gestiona por separado y tiene prioridad.",
-        "editor.helpers.ean_transfer_grouped_as_name"              : "Cuando está activado, las retiradas de artículos de inventario agrupados se transfieren usando únicamente el nombre compartido del artículo y la categoría. No se envían a la lista de destino el EAN, la marca, la cantidad del paquete ni la imagen de la variante seleccionada. Por defecto: desactivado.",
+        "editor.helpers.inventory_show_product_details"             : "Muestra el nombre original del producto, la marca, la cantidad del envase y el EAN debajo del nombre guardado. El botón de la tarjeta puede cambiar temporalmente la visualización.",
+        "editor.helpers.inventory_show_category_minimum_status"     : "Muestra cuántos artículos o grupos de cada categoría están por debajo de su stock mínimo efectivo.",
+        "editor.helpers.inventory_stock_marking"                   : "Controla el marcado en relación con el stock mínimo efectivo. Los tres niveles no se aplican cuando no hay ningún mínimo configurado. El stock 0 se gestiona por separado y tiene prioridad.",
+        "editor.helpers.inventory_mark_above_minimum"             : "Marcado para artículos con stock superior al mínimo efectivo.",
+        "editor.helpers.inventory_mark_at_minimum"                : "Marcado para artículos cuyo stock coincide con el mínimo efectivo.",
+        "editor.helpers.inventory_mark_below_minimum"             : "Marcado para artículos con stock inferior al mínimo efectivo.",
+        "editor.helpers.inventory_mark_zero"                      : "Marcado para artículos con stock 0. Tiene prioridad sobre los niveles de stock mínimo.",
+        "editor.helpers.ean_transfer_grouped_as_name"              : "Cuando está activado, las operaciones de artículos agrupados usan el nombre compartido y la categoría. No se envían el EAN, la marca, la cantidad del paquete ni la imagen de la variante. Por defecto: desactivado.",
         "ui.ean.transfer_remove"                                    : "Retirar",
         "ui.ean.transfer_invalid_config"                            : "La configuración de transferencia ISL no es válida. Usa una lista de tareas independiente compatible con descripciones y selecciona una lista de la compra de destino diferente al enviar.",
         "ui.ean.transfer_send_failed"                               : "No se pudo guardar el escaneo en la lista de transferencia ISL.",
@@ -1719,6 +1799,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                                     : "Puntual",
         "ui.todo.due_label"                                         : "Vencido",
         "ui.todo.select_action"                                     : "Selecciona una acción para este elemento:",
+        "ui.todo.actions"                                           : "Acciones de tareas",
         "ui.todo.list.year"                                         : "Año",
         "ui.todo.list.years"                                        : "Años",
         "ui.todo.list.month"                                        : "Mes",
@@ -1768,7 +1849,7 @@ const TRANSLATIONS = {
         "editor.labels.cat_double_sized_icon"                       : "¿Mostrar icono más grande?",
         "editor.labels.show_cat_exclamation_mark"                   : "Mostrar signo de exclamación para elementos vencidos",
         "editor.labels.show_title_exclamation_mark"                 : "Mostrar signo de exclamación para elementos vencidos en el título",
-        "editor.labels.show_cat_popup"                              : "¿Mostrar ventana emergente de categoría?",
+        "editor.labels.show_cat_popup"                              : "Mostrar selección de categoría al añadir",
         "editor.labels.category_merge_mode"                         : "Modo de combinación de categorías",
         "editor.labels.category_display"                            : "Visualización de encabezados de categoría",
         "editor.labels.dishes"                                      : "Platos",
@@ -1776,6 +1857,13 @@ const TRANSLATIONS = {
         "editor.labels.mode"                                        : "Modo",
         "editor.labels.font.sizes"                                  : "Tamaños de fuente",
         "editor.labels.colors"                                      : "Ajustes de color",
+        "editor.labels.chip_colors"                                 : "Colores de chips",
+        "editor.labels.expert_color_settings"                       : "Ajustes avanzados",
+        "editor.labels.chip_color_rgb"                              : "Chips locales (navegador)",
+        "editor.labels.chip_color_default_rgb"                      : "Chips estándar",
+        "editor.labels.chip_color_global_rgb"                       : "Chips globales (archivo de texto)",
+        "editor.labels.chip_color_dish_rgb"                         : "Chips de platos",
+        "editor.labels.highlight_color_rgb"                         : "Chips resaltados",
         "editor.labels.category.options"                            : "Categorías",
         "editor.labels.export.options"                              : "Opciones de exportación",
         "editor.labels.message.options"                             : "Notificaciones",
@@ -1801,6 +1889,9 @@ const TRANSLATIONS = {
         "editor.labels.item.options"                                : "Elementos",
         "editor.labels.ean_scanner.options"                         : "Escáner EAN",
         "editor.labels.general.options"                             : "Ajustes generales",
+        "editor.labels.shopping_mode.options"                         : "Lista de la compra",
+        "editor.labels.todo_mode.options"                             : "Lista de tareas",
+        "editor.labels.inventory_mode.options"                        : "Inventario",
         "editor.labels.input_row_position"                          : "Posición de la barra de entrada",
         "editor.labels.option_row_position"                         : "Posición de la barra de botones",
         "editor.labels.allow_dynamic_categories"                    : "Permitir categorías dinámicas",
@@ -1824,8 +1915,8 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search"            : "Mostrar elementos completados (ocultos) en la búsqueda",
         "editor.labels.capitalize_first_letter"                     : "Poner en mayúscula la primera letra",
         "editor.labels.show_descriptions"                           : "Mostrar descripciones",
-        "editor.labels.show_ean_brand"                              : "Mostrar marca",
-        "editor.labels.show_ean_quantity"                           : "Mostrar cantidad del paquete",
+        "editor.labels.show_ean_brand"                              : "Añadir la marca al nombre del producto",
+        "editor.labels.show_ean_quantity"                           : "Añadir la cantidad del envase al nombre",
         "editor.labels.ean_scanner_mac"                             : "Filtro de dirección MAC Bluetooth",
         "editor.labels.ean_database_entity"                         : "Lista de base de datos EAN",
         "editor.labels.ean_create_chip"                             : "Crear chip al escanear EAN",
@@ -1839,12 +1930,14 @@ const TRANSLATIONS = {
         "editor.labels.ean_transfer_mode"                           : "Modo de transferencia ISL",
         "editor.labels.ean_transfer_entity"                         : "Lista de transferencia ISL",
         "editor.labels.ean_transfer_target_entity"                  : "Lista de la compra de destino",
-        "editor.labels.ean_transfer_actions"                        : "Acciones transferidas",
+        "editor.labels.ean_transfer_actions"                        : "Acciones que se transferirán",
         "editor.labels.sync_transfer.options"                       : "Sincronización / Transferencia",
         "editor.labels.ean_transfer_remove_behavior"                : "Comportamiento en retiradas",
         "editor.labels.ean_transfer_default_minimum_stock"          : "Stock mínimo por defecto",
         "editor.labels.ean_transfer_non_ean"                        : "Retiradas sin EAN",
-        "editor.labels.todo_filter"                                 : "Filtro de tareas pendientes",
+        "editor.labels.todo_filter"                                 : "Filtro predeterminado",
+        "editor.labels.todo_default_action"                         : "Acción predeterminada",
+        "editor.labels.todo_action_behavior"                        : "Comportamiento del botón/casilla de acción",
         "editor.labels.show_todo_filter_menu"                       : "Mostrar menú de filtro de tareas pendientes",
         "editor.options.chips_position.auto"                        : "Automático Derecha / Abajo (según tamaño de pantalla)",
         "editor.options.chips_position.auto_panel"                  : "Automático Panel / Abajo (según tamaño de pantalla)",
@@ -1921,14 +2014,23 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"                       : "Próximos",
         "editor.options.todo_filter.dated"                          : "Con fecha",
         "editor.options.todo_filter.undated"                        : "Sin fecha",
+        "editor.options.todo_default_action.remove"                 : "Eliminar vencimiento",
+        "editor.options.todo_default_action.next"                   : "Establecer próximo vencimiento",
+        "editor.options.todo_default_action.now"                    : "Establecer vencimiento desde ahora",
+        "editor.options.todo_default_action.edit"                   : "Editar elemento",
+        "editor.options.todo_default_action.delete"                 : "Eliminar elemento",
+        "editor.options.todo_default_action.done"                   : "Cambiar estado completado",
+        "editor.options.todo_action_behavior.menu"                  : "Abrir menú (predeterminado)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Clic: menú / pulsación larga: acción predeterminada",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Clic: acción predeterminada / pulsación larga: menú",
         "editor.options.mode.shopping"                              : "Lista de la compra",
         "editor.options.mode.todo"                                  : "Lista de tareas pendientes",
         "editor.options.inputrow.top"                               : "Arriba",
         "editor.options.inputrow.bottom"                            : "Abajo",
         "editor.options.ean_transfer_mode.disabled"                 : "Desactivado",
-        "editor.options.ean_transfer_mode.send"                     : "Enviar escaneos",
-        "editor.options.ean_transfer_mode.receive"                  : "Recibir escaneos",
-        "editor.options.ean_transfer_mode.send_receive"             : "Enviar y recibir escaneos",
+        "editor.options.ean_transfer_mode.send"                     : "Enviar operaciones",
+        "editor.options.ean_transfer_mode.receive"                  : "Recibir operaciones",
+        "editor.options.ean_transfer_mode.send_receive"             : "Enviar y recibir operaciones",
         "editor.options.ean_transfer_actions.add"                   : "Solo adición",
         "editor.options.ean_transfer_actions.remove"                : "Solo retirada",
         "editor.options.ean_transfer_actions.both"                  : "Añadir y retirar",
@@ -1966,7 +2068,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"                      : "Mostrar botón de exportar PDF",
         "editor.labels.show_export_button"                          : "Mostrar botón de exportar HTML",
         "editor.labels.show_input_mask"                             : "Mostrar máscara de entrada",
-        "editor.labels.show_plus_minus"                             : "Mostrar botones Más / Menos (solo en modo 'Lista de la compra')",
+        "editor.labels.show_plus_minus"                             : "Mostrar botones más/menos",
         "editor.labels.acknowledge_deletion"                        : "Solicitar confirmación al eliminar elementos",
         "editor.labels.show_quantity_one"                           : "Mostrar cantidad 1",
         "editor.labels.sub_text"                                    : "Texto de sugerencia debajo del campo de entrada",
@@ -1991,7 +2093,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_info"                            : "Muestra la próxima fecha de vencimiento de todos los elementos de todas las categorías debajo del título en modo de tareas pendientes, siempre que haya un título configurado. Los elementos vencidos no se muestran aquí; se indican con un signo de exclamación a la derecha del nombre.",
         "editor.helpers.show_title_info_icon"                       : "Muestra un icono de calendario antes de la fecha de vencimiento como resaltado visual.",
         "editor.helpers.sort_mode"                                  : "Controla cómo se ordenan los elementos: alfabéticamente, manualmente mediante arrastrar y soltar, por fecha de vencimiento o sin ordenación adicional.",
-        "editor.helpers.todo_filter"                                : "Establece el filtro predeterminado para elementos de tareas pendientes. Este filtro solo se aplica en modo de tareas pendientes.",
+        "editor.helpers.todo_filter"                                : "Define qué tareas se muestran al cargar la tarjeta.",
+        "editor.helpers.todo_default_action"                        : "Selecciona la acción que se ejecuta directamente. Si no está disponible para un elemento, se abre el menú de acciones.",
+        "editor.helpers.todo_action_behavior"                       : "Define si la casilla abre el menú o ejecuta la acción predeterminada con un clic o una pulsación larga de unos 0,6 segundos.",
         "editor.helpers.show_todo_filter_menu"                      : "Muestra un botón de filtro en la barra de botones en modo de tareas pendientes. Los usuarios pueden cambiar temporalmente el filtro allí o recordarlo por lista en el navegador.",
         "editor.helpers.todo_warning_thresholds"                    : "Configuración de los umbrales de advertencia en modo de tareas pendientes. Los valores se especifican en minutos y determinan cuándo las tareas se marcan como 'próximas a vencer'.",
         "editor.helpers.todo_yellow_m"                              : "Umbral de advertencia para intervalos en meses, definido en minutos (Por defecto: 1440 = 24 horas)",
@@ -2002,8 +2106,8 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"                         : "Determina si la máscara de entrada (cantidad, elemento, botón) se muestra arriba o abajo de las entradas.",
         "editor.helpers.option_row_position"                        : "Determina si los botones (mensaje, limpiar, exportar) se muestran arriba o abajo.",
         "editor.helpers.allow_dynamic_categories"                   : "Las categorías dinámicas permiten asignar elementos a categorías que no están predefinidas, incluso desde fuera de la tarjeta (ej. mediante automatizaciones en el formato: '@Categoría@ Elemento'). Además, se pueden crear nuevas categorías al añadir elementos mediante la tarjeta. Estas categorías permanecen disponibles hasta que se elimina el último elemento de la categoría.",
-        "editor.helpers.show_message_button"                        : "Muestra (en modo 'Lista de la compra') un botón de mensaje que permite enviar la lista por correo electrónico, Telegram (usando 'notify') o similar. La entidad de notificación debe configurarse en la sección Notificaciones.",
-        "editor.helpers.show_clear_button"                          : "Muestra un botón para limpiar todos los elementos completados de la lista.",
+        "editor.helpers.show_message_button"                        : "Muestra en los modos Lista de la compra e Inventario un botón para enviar la lista mediante el servicio de notificación configurado.",
+        "editor.helpers.show_clear_button"                          : "Muestra en Lista de la compra y Lista de tareas un botón para eliminar todos los elementos completados. Se oculta en Inventario.",
         "editor.helpers.notify_entity"                              : "Entidad notify de Home Assistant para este canal, por ejemplo 'notify.mobile_app_xyz' o 'notify.telegram'. Usa las entidades ntfy en la sección ntfy para que Markdown funcione correctamente.",
         "editor.helpers.notify.options"                             : "Envía mediante cualquier entidad notify de Home Assistant. Los mensajes automáticos y el botón de envío manual se configuran por separado.",
         "editor.helpers.ntfy.options"                               : "Envía mediante la integración ntfy de Home Assistant usando ntfy.publish, como texto sin formato o Markdown.",
@@ -2031,43 +2135,53 @@ const TRANSLATIONS = {
         "editor.helpers.show_category_chips"                        : "Genera automáticamente chips basados en los elementos asignados a una categoría. Cada categoría se muestra como un chip desplegable, siempre que contenga al menos un elemento.",
         "editor.helpers.show_category_add_all"                      : "Muestra un chip 'Todos' dentro de los chips de categoría expandidos. Abre un diálogo de selección para añadir todos o algunos elementos de la categoría a la vez.",
         "editor.helpers.allow_filter"                               : "Permite filtrar los elementos de la lista mediante el campo de entrada.",
-        "editor.helpers.allow_suggestions"                          : "Muestra sugerencias debajo del campo de entrada cuando el texto coincide con un elemento asignado a una categoría. Al hacer clic en una sugerencia, se añade a la lista. También puedes navegar por las sugerencias con las flechas del teclado y confirmar con Enter.",
-        "editor.helpers.show_done_hidden_items_in_search"           : "Al filtrar elementos de la lista, esta opción asegura que los elementos completados (y ocultos) también se incluyan en los resultados de búsqueda.",
+        "editor.helpers.allow_suggestions"                          : "Muestra artículos coincidentes de las categorías configuradas. Si también se activa la base de datos EAN en las sugerencias, se incluyen sus productos y EAN.",
+        "editor.helpers.show_done_hidden_items_in_search"           : "Incluye elementos completados u ocultos en la búsqueda de Lista de la compra y Lista de tareas. Inventario usa su propia función de ocultación.",
         "editor.helpers.capitalize_first_letter"                    : "Si está activado, la primera letra del campo de entrada se pondrá automáticamente en mayúscula.",
-        "editor.helpers.show_descriptions"                          : "Muestra la descripción del elemento debajo de su nombre, si la lista de tareas seleccionada admite descripciones.",
-        "editor.helpers.show_ean_brand"                             : "Muestra la marca debajo del nombre del producto si está disponible.",
-        "editor.helpers.show_ean_quantity"                          : "Muestra la indicación de cantidad del producto EAN si está disponible.",
-        "editor.helpers.ean_scanner_mac"                            : "Filtro opcional para la dirección MAC Bluetooth. Si se especifica, solo se procesarán los escaneos de este dispositivo. Déjalo vacío para permitir cualquier escáner.",
+        "editor.helpers.show_descriptions"                          : "Muestra descripciones en Lista de la compra y Lista de tareas si la entidad las admite. No se muestran en Inventario.",
+        "editor.helpers.show_ean_brand"                             : "Añade la marca al crear el nombre del artículo si aún no forma parte del nombre del producto.",
+        "editor.helpers.show_ean_quantity"                          : "Añade la cantidad del envase al crear el nombre del artículo.",
+        "editor.helpers.ean_scanner_mac"                            : "Dirección MAC del escáner Bluetooth cuyos eventos procesará esta tarjeta. Ejemplo: AA:FC:87:59:04:38.",
         "editor.helpers.ean_database_entity"                        : "Lista de tareas opcional dedicada exclusivamente a esta función. Guarda de forma permanente los productos EAN aprendidos y sus categorías entre todos los dispositivos. No utilices esta lista para otras tareas. La lista de la compra predeterminada no es adecuada porque no admite descripciones. Para desactivar la función, vuelve a quitar la lista seleccionada de la configuración.",
         "editor.helpers.ean_create_chip"                            : "Crea un chip local tras añadir un producto reconocido por EAN, siempre que la creación de chips locales esté activada globalmente. Esto se aplica a escáneres Bluetooth, la cámara y códigos EAN introducidos manualmente.",
-        "editor.helpers.list_script_enabled"                        : "Notifica cambios realizados con éxito por esta tarjeta: elemento añadido, eliminado, cantidad cambiada o renombrado. Por defecto: Desactivado.",
+        "editor.helpers.list_script_enabled"                        : "Notifica cambios realizados por esta tarjeta. Información y variables de ejemplo: https://github.com/Nisbo/ha-shopping-list-improved/wiki/Card-Configuration",
         "editor.helpers.list_script_entity"                         : "Envía el nombre, la categoría, la cantidad, la entidad de lista y el modo al script seleccionado. Los cambios realizados fuera de esta tarjeta no se pueden notificar. El script EAN se puede usar en paralelo.",
-        "editor.helpers.ean_script_enabled"                         : "Llama al script de Home Assistant seleccionado con el estado y los datos del producto cuando ocurre un evento EAN.",
+        "editor.helpers.ean_script_enabled"                         : "Llama al script seleccionado con el estado y los datos del producto. Información y variables de ejemplo: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
         "editor.helpers.ean_remove_mode"                            : "Mantén pulsado el botón Añadir durante un segundo para activar el modo de retirada. Los escaneos EAN reducirán la cantidad de un elemento coincidente o lo eliminarán de la lista. Un clic normal en el botón o recargar la página finaliza el modo. El botón Añadir debe estar visible.",
-        "editor.helpers.ean_database_suggestions"                   : "Añade nombres de productos únicos de la base de datos EAN a las sugerencias de búsqueda normales. Los productos también se pueden buscar por su EAN. Varios EAN con el mismo nombre de producto se sugerirán una sola vez.",
-        "editor.helpers.show_ean_database_badge"                    : "Muestra un icono discreto de código de barras junto a los elementos con coincidencia exacta de nombre de producto. Al hacer clic, muestra todos los registros EAN asignados sin editarlos.",
-        "editor.helpers.ean_transfer_mode"                          : "Determina si esta tarjeta envía los escaneos EAN resueltos a través de una lista compartida de transferencia ISL, recibe escaneos para su propia lista de la compra o ambos. Por defecto: Desactivado.",
+        "editor.helpers.ean_database_suggestions"                   : "Añade productos y EAN de la base de datos a las sugerencias. También debe estar activado «Permitir sugerencias».",
+        "editor.helpers.show_ean_database_badge"                    : "Muestra un icono discreto de código de barras junto a los elementos con coincidencia exacta. Al hacer clic, muestra todos los registros EAN asignados.",
+        "editor.helpers.ean_transfer_mode"                          : "Determina si la tarjeta envía operaciones mediante una lista ISL compartida, las recibe para su propia lista o hace ambas cosas. Por defecto: desactivado.",
         "editor.helpers.ean_transfer_entity"                        : "Lista de tareas independiente reservada exclusivamente como cola de transferencia persistente ISL. No debe ser a la vez una lista de la compra ni una base de datos EAN, y debe admitir descripciones.",
-        "editor.helpers.ean_transfer_target_entity"                 : "Se utiliza solo en «Enviar escaneos» y «Enviar y recibir escaneos». En los demás modos, este ajuste se ignora.",
-        "editor.helpers.ean_transfer_actions"                       : "Determina si los escaneos de adición, los escaneos de retirada o ambas acciones se transfieren a la lista de la compra de destino. El modo de llenado de la base de datos siempre permanece local. Por defecto: Añadir y retirar.",
-        "editor.helpers.sync_transfer.options"                      : "Aquí defines la lista de transferencia compartida, el destino y el comportamiento en retiradas. Los ajustes no requeridos para el modo seleccionado se ignoran.",
+        "editor.helpers.ean_transfer_target_entity"                 : "Solo se utiliza al enviar operaciones. En los demás modos, este ajuste se ignora.",
+        "editor.helpers.ean_transfer_actions"                       : "Determina si se transfieren adiciones, retiradas o ambas acciones. El modo de llenado de la base de datos siempre permanece local.",
+        "editor.helpers.sync_transfer.options"                      : "Transfiere adiciones y retiradas entre tarjetas mediante una cola To-do independiente y persistente. Aquí se configuran la cola, la lista de destino y el comportamiento.",
         "editor.helpers.ean_transfer_remove_behavior"               : "1:1 transfiere cada cantidad realmente retirada. Stock mínimo transfiere solo cuando el stock restante alcanza o cae por debajo del umbral. Los valores del producto en la base de datos EAN anulan este valor por defecto. Por defecto: 1:1.",
         "editor.helpers.ean_transfer_default_minimum_stock"         : "Valor por defecto opcional de la tarjeta para el modo Stock mínimo. Sin un valor, los productos sin su propio mínimo no se transfieren automáticamente.",
         "editor.helpers.ean_transfer_non_ean"                       : "Comportamiento en retiradas de variantes de inventario sin EAN. «Usar stock mínimo» utiliza el valor de la variante manual o, en su defecto, el valor por defecto de la tarjeta. Solo se aplica mientras el envío de retiradas esté activado. Por defecto: No transferir.",
         "editor.helpers.ean_script_entity"                          : "El script puede proporcionar salida de voz, reproducir sonidos, enviar notificaciones o ejecutar acciones adicionales. La selección se conserva al desactivar la salida de script.",
         "editor.helpers.title_icon"                                 : "Muestra el icono seleccionado antes del título.",
         "editor.helpers.font.sizes"                                 : "Define los tamaños de fuente para la lista, categorías y chips.",
-        "editor.helpers.colors"                                     : "Define los ajustes de color para los chips.",
+        "editor.helpers.colors"                                     : "Configura los colores de chips y el CSS personalizado. El marcado de stock está en la sección Inventario.",
+        "editor.helpers.chip_colors"                                : "Selecciona los colores de los chips locales, estándar, globales, de platos y resaltados. El diálogo de color lo proporciona el navegador o el sistema operativo; en macOS, cambia a los controles RGB si es necesario.",
+        "editor.helpers.expert_color_settings"                      : "Permite colores CSS directos como red, #2196f3, #6464644D, rgb(...), rgba(...) o var(--primary-color). Solo un valor introducido realmente reemplaza al selector correspondiente. El color predeterminado gris es solo una indicación. Vacía el campo para volver a usar el selector o el valor de la tarjeta.",
+        "editor.helpers.chip_color_rgb"                             : "Color de los chips guardados localmente en este navegador.",
+        "editor.helpers.chip_color_default_rgb"                     : "Color de los chips estándar configurados en la tarjeta.",
+        "editor.helpers.chip_color_global_rgb"                      : "Color de los chips globales cargados desde un archivo de texto.",
+        "editor.helpers.chip_color_dish_rgb"                        : "Color de los chips de platos.",
+        "editor.helpers.highlight_color_rgb"                        : "Color de los chips resaltados.",
         "editor.helpers.category.options"                           : "Aquí puedes configurar las categorías utilizadas en la lista de la compra y de tareas pendientes. Puedes definir categorías locales (en la tarjeta) o cargar un archivo de texto con categorías globales. Para más información sobre la estructura de categorías, consulta la documentación.",
         "editor.helpers.export.options"                             : "Aquí puedes configurar las opciones de exportación.",
         "editor.helpers.message.options"                            : "Configura por separado el envío manual y automático para notify estándar, ntfy y correo. Está disponible en los modos Lista de la compra e Inventario.",
         "editor.helpers.dishes.options"                             : "Aquí puedes configurar platos utilizados en la lista de la compra. Esta función permite añadir varios elementos a la vez.",
         "editor.helpers.chips.options"                              : "Aquí puedes configurar las opciones de chips. Los chips son botones de selección rápida para añadir rápidamente elementos frecuentes a la lista.",
         "editor.helpers.item.options"                               : "Aquí puedes configurar los ajustes para los elementos de la lista.",
-        "editor.helpers.ean_scanner.options"                        : "Aquí puedes configurar el reconocimiento EAN y el escáner Bluetooth. Para procesar eventos de escaneo, también debes activar la función en las opciones de administración de la tarjeta en el dispositivo correspondiente.",
+        "editor.helpers.ean_scanner.options"                        : "Configura la entrada EAN, la cámara, la base de datos de productos y el escáner Bluetooth. El reconocimiento EAN funciona sin autorización del dispositivo. Solo los eventos entrantes del escáner deben activarse en las opciones de administración de cada dispositivo.",
         "editor.helpers.general.options"                            : "Aquí puedes configurar los ajustes generales de la tarjeta.",
-        "editor.helpers.entity"                                     : "Si no se selecciona ninguna entidad, se usará automáticamente la lista de la compra predeterminada de Home Assistant. Sin embargo, esta lista no cuenta con función de fechas de vencimiento y solo debe usarse en modo 'Lista de la compra', no en modo 'Lista de tareas pendientes'.",
-        "editor.helpers.mode"                                       : "Define cómo se utiliza la lista. En modo 'Lista de la compra', dispone de funciones ampliadas para la lista original, pero sin fechas de vencimiento. En modo 'Lista de tareas pendientes', se pueden establecer y gestionar fechas de vencimiento adicionales. Nota: La entidad original 'Shopping List' de Home Assistant no admite fechas de vencimiento. En modo de tareas pendientes tampoco hay entrada de cantidad, botones más/menos, botones de exportación ni botón para eliminar completados.",
+        "editor.helpers.shopping_mode.options"                        : "Ajustes exclusivos del modo Lista de la compra.",
+        "editor.helpers.todo_mode.options"                            : "Ajustes de tareas, vencimientos y avisos del modo Lista de tareas.",
+        "editor.helpers.inventory_mode.options"                       : "Ajustes de stock, modos de registro, variantes y stock mínimo del modo Inventario.",
+        "editor.helpers.entity"                                     : "Si no se selecciona una entidad, se usa la lista de la compra original de Home Assistant, adecuada solo para ese modo. Las entidades To-do creadas por el usuario aportan los campos necesarios para Lista de tareas e Inventario.",
+        "editor.helpers.mode"                                       : "Define cómo se utiliza la tarjeta. Lista de la compra ofrece cantidades, categorías y funciones de compra sin vencimientos. Lista de tareas gestiona tareas con vencimientos y no dispone de cantidad, botones más/menos ni exportación. Inventario gestiona existencias y conserva los artículos con stock 0. La lista de la compra original de Home Assistant no admite vencimientos.",
         "editor.helpers.highlight_words"                            : "Lista de palabras que deben destacarse en los chips (por fondo). Introduce como lista separada por comas o punto y coma, ej. 'Mantequilla,Plátanos,Harina'.",
         "editor.helpers.chips_with_cat_color"                       : "Si un chip está asignado como 'elemento' a una categoría y esa categoría tiene un color definido, el chip se mostrará en el color de la categoría. El orden de prioridad de color es: Destacado > Categoría > Global > Estándar > Navegador.",
         "editor.helpers.allow_filter_chips"                         : "Permite filtrar los chips mediante el campo de entrada.",
@@ -2086,17 +2200,17 @@ const TRANSLATIONS = {
         "editor.helpers.chips_width"                                : "Ancho del contenedor de chips en píxeles. Solo se aplica cuando se selecciona '(Auto) Modo panel'.",
         "editor.helpers.chips_position"                             : "Controla dónde se muestran los chips (auto: abajo en móviles, derecha en escritorio/tablet, o posiciones fijas).",
         "editor.helpers.quantity"                                   : "Determina si la cantidad se muestra al principio ('10x Mantequilla') o al final ('Mantequilla (10)'). Afecta solo a elementos nuevos.",
-        "editor.helpers.acknowledged"                               : "Controla cómo se muestran los elementos completados (marcados): visibles, ocultos o movidos al final.",
+        "editor.helpers.acknowledged"                               : "Controla en Lista de la compra y Lista de tareas si los elementos completados se muestran, se ocultan o se mueven al final. Inventario usa su propia función de ocultación.",
         "editor.helpers.chip_click"                                 : "Determina si los chips añaden elementos con un solo clic o con doble clic. Clics repetidos aumentan la cantidad en 1.",
-        "editor.helpers.show_quantity_box"                          : "Muestra la pequeña casilla de entrada de cantidad (arriba a la izquierda) o la oculta.",
+        "editor.helpers.show_quantity_box"                          : "Muestra el campo de cantidad en los modos Lista de la compra e Inventario. No está disponible en Lista de tareas.",
         "editor.helpers.show_submit_button"                         : "Muestra el botón de añadir. Si está oculto, pulsa Enter para añadir un elemento.",
         "editor.helpers.show_qrscan_button"                         : "Muestra el botón de escáner QR. Permite escanear uno o varios elementos a la vez mediante código QR. Para múltiples elementos, cada uno debe estar en una línea separada. Las cantidades se pueden especificar entre paréntesis, ej., 'Plátanos (6)'. Debes acceder a Home Assistant mediante conexión https://.",
-        "editor.helpers.show_export_button_pdf"                     : "Muestra el botón de exportar PDF abajo. Con la función de exportar a PDF, puedes descargar la lista de tareas actual como archivo PDF para uso sin conexión.",
-        "editor.helpers.show_export_button"                         : "Muestra el botón de exportar HTML abajo. Con la función de exportar a HTML, puedes descargar la lista de tareas actual como archivo HTML para uso sin conexión.",
+        "editor.helpers.show_export_button_pdf"                     : "Muestra el botón de exportación PDF en Lista de la compra e Inventario.",
+        "editor.helpers.show_export_button"                         : "Muestra el botón de exportación HTML en Lista de la compra e Inventario.",
         "editor.helpers.show_input_mask"                            : "Muestra la máscara de entrada completa (cantidad + texto + botón de añadir). Útil para restringir la entrada a chips predefinidos.",
-        "editor.helpers.show_plus_minus"                            : "Muestra los botones Más / Menos para aumentar / disminuir la cantidad. (No disponible en modo 'Lista de tareas pendientes').",
-        "editor.helpers.acknowledge_deletion"                       : "Activa un cuadro de diálogo de confirmación al eliminar elementos para evitar eliminaciones accidentales.",
-        "editor.helpers.show_quantity_one"                          : "Muestra también la cantidad '1'. Si está desactivado, la cantidad 1 se omite para elementos nuevos.",
+        "editor.helpers.show_plus_minus"                            : "Muestra botones para cambiar la cantidad en los modos Lista de la compra e Inventario. No están disponibles en el modo Lista de tareas.",
+        "editor.helpers.acknowledge_deletion"                       : "Muestra una confirmación antes de eliminar en Lista de la compra e Inventario. Lista de tareas usa siempre su propio diálogo de acciones.",
+        "editor.helpers.show_quantity_one"                          : "Muestra la cantidad 1 en el modo Lista de la compra. Si está desactivado, con cantidad 1 solo se muestra el nombre.",
         "editor.helpers.sub_text"                                   : "Texto mostrado debajo del campo de entrada para sugerencias o explicaciones. Se permite HTML. Usa un solo espacio para ocultar el campo.",
         "editor.helpers.chips"                                      : "Define los chips por defecto, ej. 'Leche,Huevos,Pan'.",
         "editor.helpers.chip_file"                                  : "Ejemplo: /local/chips.txt si el archivo se encuentra en la carpeta www. Se requiere un chip por línea.",
@@ -2110,9 +2224,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_exclamation_mark"                : "Muestra un signo de exclamación en el título en modo de tareas pendientes si contiene elementos vencidos en cualquier categoría.",
         "editor.helpers.show_cat_next_due"                          : "Si está activado, la próxima fecha de vencimiento se mostrará debajo del nombre de la categoría en modo de tareas pendientes. Así puedes ver de un vistazo cuándo vence el próximo elemento.",
         "editor.helpers.cat_double_sized_icon"                      : "Si se muestra la próxima fecha de vencimiento, esta opción permite agrandar el icono para que se integre mejor visualmente.",
-        "editor.helpers.show_cat_count"                             : "Si está activado, el número de elementos de cada categoría se muestra junto al nombre. En el modo inventario, cada variante o grupo visible cuenta una vez. En el modo de tareas, el recuento se muestra invertido; el número antes de '/' solo incluye las entradas que aún no han vencido.",
-        "editor.helpers.hide_cat_count_all_done"                    : "Si está activado, el recuento de elementos se ocultará para las categorías donde todos los elementos estén marcados como completados.",
-        "editor.helpers.show_cat_popup"                             : "Si está activado, aparecerá una ventana emergente al añadir un elemento nuevo para seleccionar una categoría para el elemento.",
+        "editor.helpers.show_cat_count"                             : "Muestra el recuento junto a cada categoría. En Inventario, cada variante o grupo visible cuenta una vez. En Lista de tareas, el número antes de '/' cuenta las entradas no vencidas o ya completadas.",
+        "editor.helpers.hide_cat_count_all_done"                    : "Oculta el contador cuando todos los elementos están completados en Lista de la compra y Lista de tareas. Se ignora en Inventario.",
+        "editor.helpers.show_cat_popup"                             : "Abre la selección de categoría al añadir. Si está desactivada, los artículos sin categoría conocida se colocan en General. Se conservan las asignaciones existentes.",
         "editor.helpers.longlived_token"                            : "Un token de acceso de larga duración para autenticación persistente con Home Assistant. Se puede crear en el perfil de usuario en 'Seguridad → Tokens de acceso de larga duración'. Advertencia: Trata este token con confidencialidad ya que otorga acceso total a tu sistema. Ten en cuenta también que si se usa HTTP en lugar de HTTPS, el token se transmite sin cifrar.",
         "editor.helpers.external_url"                               : "La URL (externa) de tu instalación de Home Assistant (ej. 'https://mi-ha.duckdns.org:8123'). Es necesaria si usas la función de exportación para sincronizar elementos posteriormente con Home Assistant. Si no introduces una URL aquí, se usará la URL desde la que se accedió al panel.",
         "editor.helpers.categories"                                 : "Las categorías permiten agrupar elementos automáticamente. Cada categoría comienza con - name: <NombreCategoría> y contiene una lista de palabras clave bajo items. Ejemplo: - name: Frutas items: - Fresas - Ciruelas - Peras - Plátanos. Opcionalmente, cada categoría puede tener un icono (ej. mdi:apple) y un color de fondo bgcolor (ej. #247645). Cualquier elemento que coincida con una de las palabras clave se asignará automáticamente a esta categoría.",
@@ -2180,6 +2294,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                         : "Une fois",
         "ui.todo.due_label"                             : "Échéance",
         "ui.todo.select_action"                         : "Sélectionnez une action pour cet article :",
+        "ui.todo.actions"                               : "Actions de la tâche",
         "ui.todo.list.year"                             : "Année",
         "ui.todo.list.years"                            : "Années",
         "ui.todo.list.month"                            : "Mois",
@@ -2231,7 +2346,7 @@ const TRANSLATIONS = {
         "editor.labels.cat_double_sized_icon"           : "Afficher une icône plus grande ?",
         "editor.labels.show_cat_exclamation_mark"       : "Point d'exclamation pour les articles à échéance",
         "editor.labels.show_title_exclamation_mark"     : "Point d'exclamation pour les articles à échéance",
-        "editor.labels.show_cat_popup"                  : "Afficher la pop-up des catégories ?",
+        "editor.labels.show_cat_popup"                  : "Afficher le choix de catégorie lors de l’ajout",
         "editor.labels.category_merge_mode"             : "Mode de fusion des catégories",
         "editor.labels.category_display"               : "Affichage des catégories",
         "editor.labels.dishes"                          : "Plats",
@@ -2239,6 +2354,13 @@ const TRANSLATIONS = {
         "editor.labels.mode"                            : "Mode",
         "editor.labels.font.sizes"                      : "Tailles de police",
         "editor.labels.colors"                          : "Paramètres de couleur",
+        "editor.labels.chip_colors"                     : "Couleurs des chips",
+        "editor.labels.expert_color_settings"           : "Paramètres avancés",
+        "editor.labels.chip_color_rgb"                  : "Chips locaux (navigateur)",
+        "editor.labels.chip_color_default_rgb"          : "Chips standards",
+        "editor.labels.chip_color_global_rgb"           : "Chips globaux (fichier texte)",
+        "editor.labels.chip_color_dish_rgb"             : "Chips de plats",
+        "editor.labels.highlight_color_rgb"             : "Chips mis en évidence",
         "editor.labels.category.options"                : "Catégories",
         "editor.labels.export.options"                  : "Options d'exportation",
         "editor.labels.message.options"                 : "Notifications",
@@ -2263,6 +2385,9 @@ const TRANSLATIONS = {
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Articles",
         "editor.labels.general.options"                 : "Paramètres généraux",
+        "editor.labels.shopping_mode.options"          : "Liste de courses",
+        "editor.labels.todo_mode.options"              : "Liste de tâches",
+        "editor.labels.inventory_mode.options"         : "Inventaire",
         "editor.labels.input_row_position"              : "Position de la ligne de saisie",
         "editor.labels.option_row_position"             : "Position de la ligne de boutons",
         "editor.labels.allow_dynamic_categories"        : "Autoriser les catégories dynamiques",
@@ -2286,7 +2411,9 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Afficher les articles terminés masqués dans la recherche",
         "editor.labels.capitalize_first_letter"         : "Mettre automatiquement la première lettre en majuscule",
         "editor.labels.show_descriptions"               : "Afficher les descriptions",
-        "editor.labels.todo_filter"                     : "Filtre de tâches",
+        "editor.labels.todo_filter"                     : "Filtre par défaut",
+        "editor.labels.todo_default_action"             : "Action par défaut",
+        "editor.labels.todo_action_behavior"            : "Comportement du bouton/de la case d’action",
         "editor.labels.show_todo_filter_menu"           : "Afficher le menu de filtre des tâches",
         "editor.labels.debug_mode"                      : "Mode débogage",
 
@@ -2319,6 +2446,15 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"           : "À venir",
         "editor.options.todo_filter.dated"              : "Avec échéance",
         "editor.options.todo_filter.undated"            : "Sans échéance",
+        "editor.options.todo_default_action.remove"     : "Supprimer l’échéance",
+        "editor.options.todo_default_action.next"       : "Définir la prochaine échéance",
+        "editor.options.todo_default_action.now"        : "Définir l’échéance à partir de maintenant",
+        "editor.options.todo_default_action.edit"       : "Modifier l’entrée",
+        "editor.options.todo_default_action.delete"     : "Supprimer l’entrée",
+        "editor.options.todo_default_action.done"       : "Basculer l’état terminé",
+        "editor.options.todo_action_behavior.menu"      : "Ouvrir le menu (par défaut)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Clic : menu / appui long : action par défaut",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Clic : action par défaut / appui long : menu",
         "editor.defaults.sub_text"                      : "Astuce : Utilisez les chips pour rajouter rapidement des articles.",
 
         "editor.options.category_merge.local_only"                          : "[1] Uniquement locales (par défaut)",
@@ -2400,7 +2536,7 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "Afficher le bouton Export PDF",
         "editor.labels.show_export_button"              : "Afficher le bouton Export HTML",
         "editor.labels.show_input_mask"                 : "Afficher le masque de saisie",
-        "editor.labels.show_plus_minus"                 : "Afficher les boutons Plus / Moins (mode « Liste de courses » uniquement)",
+        "editor.labels.show_plus_minus"                 : "Afficher les boutons plus/moins",
         "editor.labels.acknowledge_deletion"            : "Demander confirmation avant suppression",
         "editor.labels.show_quantity_one"               : "Afficher la quantité 1",
         "editor.labels.sub_text"                        : "Texte d'indication sous le champ de saisie",
@@ -2425,7 +2561,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_info"                : "Affiche la prochaine date d'échéance de tous les articles, toutes catégories confondues sous le titre (en mode liste de choses à faire), si un titre est défini. Les articles expirés ne sont pas affichés ici ; ils sont indiqués par un point d'exclamation à droite du nom.",
         "editor.helpers.show_title_info_icon"           : "Affiche une icône de calendrier avant la date d'échéance pour la mettre en évidence visuellement.",
         "editor.helpers.sort_mode"                      : "Définit comment les articles sont triés : alphabétiquement, par échéance, manuellement par glisser-déposer ou sans tri supplémentaire.",
-        "editor.helpers.todo_filter"                    : "Définit le filtre par défaut des tâches. Ce filtre ne s'applique qu'en mode liste de choses à faire.",
+        "editor.helpers.todo_filter"                    : "Définit les tâches affichées par défaut au chargement.",
+        "editor.helpers.todo_default_action"            : "Sélectionne l’action exécutée directement. Si elle n’est pas disponible pour une entrée, le menu d’actions s’ouvre.",
+        "editor.helpers.todo_action_behavior"           : "Définit si la case ouvre le menu ou exécute l’action par défaut par clic ou appui long d’environ 0,6 seconde.",
         "editor.helpers.show_todo_filter_menu"          : "Affiche un bouton de filtre dans la ligne de boutons en mode liste de choses à faire. Les utilisateurs peuvent changer temporairement le filtre ou le mémoriser par liste dans le navigateur.",
         "editor.helpers.dishes_confirm_add"             : "Si activé, un clic sur un plat ouvre une fenêtre de sélection. Si désactivé, tous les articles du plat sont ajoutés immédiatement.",
         "editor.helpers.debug_mode"                     : "Écrit des messages de diagnostic supplémentaires dans la console du navigateur. Doit normalement rester désactivé.",
@@ -2438,8 +2576,8 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"             : "Détermine si le masque de saisie (quantité, article, bouton) est affiché au-dessus ou en dessous des entrées.",
         "editor.helpers.option_row_position"            : "Détermine si la ligne de boutons est affichée en haut ou en bas.",
         "editor.helpers.allow_dynamic_categories"       : "Les catégories dynamiques permettent d'attribuer des articles à des catégories qui ne sont pas prédéfinies, même depuis l'extérieur de la carte (ex. via des automatisations au format : « @Catégorie@ Article »). De plus, de nouvelles catégories peuvent être créées lors de l'ajout d'articles via la carte. Celles-ci restent disponibles jusqu'à ce que le dernier article de la catégorie soit supprimé.",
-        "editor.helpers.show_message_button"            : "Affiche (en mode liste de courses) un bouton de message qui permet d'envoyer la liste par e-mail, Telegram (via « notify »), etc. L'entité notify doit être configurée dans la section Notifications.",
-        "editor.helpers.show_clear_button"              : "Affiche un bouton permettant d'effacer tous les articles terminés.",
+        "editor.helpers.show_message_button"            : "Affiche en modes liste de courses et inventaire un bouton pour envoyer la liste avec le service de notification configuré.",
+        "editor.helpers.show_clear_button"              : "Affiche en modes liste de courses et liste de tâches un bouton pour supprimer les entrées terminées. Il est masqué en mode inventaire.",
         "editor.helpers.notify_entity"                  : "Entité notify Home Assistant pour ce canal, par exemple 'notify.mobile_app_xyz' ou 'notify.telegram'. Utilisez les entités ntfy dans la section ntfy pour gérer correctement Markdown.",
         "editor.helpers.notify.options"                 : "Envoi via une entité notify Home Assistant. Les messages automatiques et le bouton d'envoi manuel se configurent séparément.",
         "editor.helpers.ntfy.options"                   : "Envoi via l'intégration ntfy de Home Assistant avec ntfy.publish, en texte brut ou Markdown.",
@@ -2468,12 +2606,19 @@ const TRANSLATIONS = {
         "editor.helpers.show_category_add_all"          : "Affiche un chip « Tous » dans les chips de catégorie ouverts. Il ouvre une fenêtre de sélection permettant d'ajouter tous les articles de la catégorie ou seulement ceux sélectionnés.",
         "editor.helpers.allow_filter"                   : "Permet de filtrer les articles de la liste via le champ de saisie.",
         "editor.helpers.allow_suggestions"              : "Affiche des suggestions sous le champ de saisie lorsque le texte correspond à un article configuré dans une catégorie.",
-        "editor.helpers.show_done_hidden_items_in_search": "Lorsque le filtrage est actif, les articles terminés et masqués peuvent également être inclus dans les résultats de recherche.",
+        "editor.helpers.show_done_hidden_items_in_search": "Inclut les entrées terminées ou masquées dans la recherche en modes liste de courses et liste de tâches. L’inventaire utilise sa propre fonction.",
         "editor.helpers.capitalize_first_letter"        : "Si activé, la première lettre dans le champ de saisie sera automatiquement mise en majuscule.",
-        "editor.helpers.show_descriptions"              : "Affiche la description d'un article sous son nom si la liste de choses à faire sélectionnée prend en charge les descriptions.",
+        "editor.helpers.show_descriptions"              : "Affiche les descriptions en modes liste de courses et liste de tâches si l’entité les prend en charge. Elles ne sont pas affichées en inventaire.",
         "editor.helpers.title_icon"                     : "Affiche l'icône sélectionnée avant le titre.",
         "editor.helpers.font.sizes"                     : "Définit la taille de la police pour la liste, les catégories et les chips.",
-        "editor.helpers.colors"                         : "Définit les paramètres de couleur pour les chips.",
+        "editor.helpers.colors"                         : "Configure les couleurs des chips et le CSS personnalisé. Le marquage du stock se trouve dans la section Inventaire.",
+        "editor.helpers.chip_colors"                    : "Sélectionne les couleurs des chips locaux, standards, globaux, de plats et mis en évidence. Le sélecteur de couleur est fourni par le navigateur ou le système d'exploitation ; sous macOS, passez aux curseurs RVB si nécessaire.",
+        "editor.helpers.expert_color_settings"          : "Accepte des couleurs CSS directes telles que red, #2196f3, #6464644D, rgb(...), rgba(...) ou var(--primary-color). Seule une valeur réellement saisie remplace le sélecteur correspondant. La couleur par défaut grisée n'est qu'une indication. Videz le champ pour réutiliser le sélecteur ou la valeur par défaut de la carte.",
+        "editor.helpers.chip_color_rgb"                 : "Couleur des chips enregistrés localement dans ce navigateur.",
+        "editor.helpers.chip_color_default_rgb"         : "Couleur des chips standards configurés sur la carte.",
+        "editor.helpers.chip_color_global_rgb"          : "Couleur des chips globaux chargés depuis un fichier texte.",
+        "editor.helpers.chip_color_dish_rgb"            : "Couleur des chips de plats.",
+        "editor.helpers.highlight_color_rgb"            : "Couleur des chips mis en évidence.",
         "editor.helpers.category.options"               : "Vous pouvez configurer ici les catégories utilisées dans la liste de courses ou liste de choses à faire. Vous pouvez définir des catégories locales (dans la carte) ou charger un fichier texte avec des catégories globales. Consultez la documentation pour plus d'informations sur leur structure.",
         "editor.helpers.export.options"                 : "Ici, vous pouvez configurer les options d'exportation.",
         "editor.helpers.message.options"                : "Configure séparément l'envoi manuel et automatique pour notify standard, ntfy et e-mail. Disponible en modes liste de courses et inventaire.",
@@ -2481,7 +2626,14 @@ const TRANSLATIONS = {
         "editor.helpers.chips.options"                  : "Configurez ici les options des chips. Ce sont des boutons de sélection rapide permettant d'ajouter facilement les articles fréquemment utilisés.",
         "editor.helpers.item.options"                   : "Configurez ici les paramètres des articles de la liste.",
         "editor.helpers.general.options"                : "Configurez ici les paramètres généraux de la carte.",
-        "editor.helpers.entity"                         : "Si aucune entité n'est sélectionnée, la liste de courses par défaut de Home Assistant sera utilisée. Celle-ci n'ayant pas de fonction d'échéance, elle ne doit être utilisée qu'en mode liste de courses et non liste de choses à faire.",
+        "editor.helpers.shopping_mode.options"          : "Paramètres réservés au mode liste de courses.",
+        "editor.helpers.todo_mode.options"              : "Paramètres des tâches, échéances et alertes du mode liste de tâches.",
+        "editor.helpers.inventory_mode.options"         : "Paramètres des stocks, modes de saisie, variantes et stocks minimums du mode inventaire.",
+        "editor.helpers.inventory_mark_above_minimum"  : "Marquage des articles dont le stock dépasse le minimum effectif.",
+        "editor.helpers.inventory_mark_at_minimum"     : "Marquage des articles dont le stock correspond au minimum effectif.",
+        "editor.helpers.inventory_mark_below_minimum"  : "Marquage des articles dont le stock est inférieur au minimum effectif.",
+        "editor.helpers.inventory_mark_zero"           : "Marquage des articles dont le stock est nul. Ce réglage est prioritaire.",
+        "editor.helpers.entity"                         : "Sans entité sélectionnée, la liste de courses originale de Home Assistant est utilisée et convient uniquement à ce mode. Les entités To-do créées par l’utilisateur fournissent les champs requis pour les modes tâches et inventaire.",
         "editor.helpers.mode"                           : "Définit l'utilisation de la carte. Le mode « liste de courses » gère les articles et leurs quantités sans échéances. Le mode « liste de choses à faire » gère les tâches et leurs échéances. Le mode « inventaire » suit les stocks dans une liste de tâches : les articles restent présents lorsque le stock atteint 0 et peuvent être ajoutés ou retirés. La liste de courses originale de Home Assistant ne prend pas en charge les échéances.",
         "editor.helpers.highlight_words"                : "Liste des mots à mettre en évidence dans les chips (arrière-plan). Entrez sous forme de liste séparée par des virgules ou points-virgules, ex. « Beurre,Bananes,Farine ».",
         "editor.helpers.chips_with_cat_color"           : "Si un chip est assigné comme « article » à une catégorie et que cette dernière a une couleur définie, le chip s'affichera de cette couleur. L'ordre de priorité est : Mise en évidence > Catégorie > Global > Standard > Navigateur.",
@@ -2501,17 +2653,17 @@ const TRANSLATIONS = {
         "editor.helpers.chips_width"                    : "Largeur du conteneur de chips en pixels. S'applique uniquement lorsque le « (Auto) Panel Mode » est sélectionné.",
         "editor.helpers.chips_position"                 : "Contrôle l'endroit où les chips s'affichent (auto : en bas sur mobile, à droite sur bureau/tablette, ou positions fixes).",
         "editor.helpers.quantity"                       : "Détermine si la quantité est affichée au début (« 10x Beurre ») ou à la fin (« Beurre (10) »). N'affecte que les nouvelles entrées.",
-        "editor.helpers.acknowledged"                   : "Contrôle la façon dont les articles terminés (cochés) s'affichent : visibles, masqués ou déplacés à la fin.",
+        "editor.helpers.acknowledged"                   : "Contrôle l’affichage des entrées terminées en modes liste de courses et liste de tâches. L’inventaire utilise sa propre fonction de masquage.",
         "editor.helpers.chip_click"                     : "Détermine si les chips ajoutent des articles sur un simple ou double-clic. Des clics répétés augmentent la quantité de 1.",
-        "editor.helpers.show_quantity_box"              : "Affiche ou masque le petit champ de saisie de quantité.",
+        "editor.helpers.show_quantity_box"              : "Affiche le champ de quantité en modes liste de courses et inventaire. Il n’est pas disponible en mode liste de tâches.",
         "editor.helpers.show_submit_button"             : "Affiche le bouton Ajouter. S'il est masqué, appuyez sur Entrée pour ajouter un article.",
         "editor.helpers.show_qrscan_button"             : "Affiche le bouton de scan QR. Permet de scanner un ou plusieurs articles via un QR code. Nécessite un accès HTTPS à Home Assistant.",
-        "editor.helpers.show_export_button_pdf"         : "Affiche le bouton d'exportation PDF. Permet de télécharger la liste actuelle sous forme de fichier PDF pour un usage hors ligne.",
-        "editor.helpers.show_export_button"             : "Affiche le bouton d'exportation HTML. Permet de télécharger la liste actuelle sous forme de fichier HTML pour un usage hors ligne.",
+        "editor.helpers.show_export_button_pdf"         : "Affiche le bouton d’exportation PDF en modes liste de courses et inventaire.",
+        "editor.helpers.show_export_button"             : "Affiche le bouton d’exportation HTML en modes liste de courses et inventaire.",
         "editor.helpers.show_input_mask"                : "Affiche le masque de saisie complet (quantité + texte + bouton d'ajout). Utile pour restreindre la saisie aux chips prédéfinis.",
-        "editor.helpers.show_plus_minus"                : "Affiche les boutons Plus / Moins pour ajuster la quantité. Indisponible en mode liste de choses à faire.",
-        "editor.helpers.acknowledge_deletion"           : "Active une boîte de confirmation lors de la suppression d'articles afin d'éviter les suppressions accidentelles.",
-        "editor.helpers.show_quantity_one"              : "Affiche également la quantité « 1 ». Si désactivé, la quantité 1 est omise pour les nouveaux articles.",
+        "editor.helpers.show_plus_minus"                : "Affiche les boutons de quantité en modes liste de courses et inventaire. Ils ne sont pas disponibles en mode liste de tâches.",
+        "editor.helpers.acknowledge_deletion"           : "Affiche une confirmation avant la suppression en modes liste de courses et inventaire. Le mode liste de tâches utilise toujours sa fenêtre d’actions.",
+        "editor.helpers.show_quantity_one"              : "Affiche la quantité 1 en mode liste de courses. Sinon, seul le nom est affiché lorsque la quantité vaut 1.",
         "editor.helpers.sub_text"                       : "Texte affiché sous le champ de saisie pour des astuces ou explications. Le HTML est autorisé. Utilisez un espace simple pour masquer le champ.",
         "editor.helpers.chips"                          : "Définit les chips par défaut, ex. « Lait,Œufs,Pain ».",
         "editor.helpers.chip_file"                      : "Exemple : /local/chips.txt si le fichier se trouve dans le dossier www. Un chip par ligne est requis.",
@@ -2524,9 +2676,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_exclamation_mark"    : "Affiche un point d'exclamation dans le titre en mode liste de choses à faire s'il y a des articles à échéance dans l'une des catégories.",
         "editor.helpers.show_cat_next_due"              : "Si cette option est activée, la prochaine date d'échéance sera affichée sous le nom de la catégorie en mode liste de choses à faire.",
         "editor.helpers.cat_double_sized_icon"          : "Si la prochaine date d'échéance est affichée, cette option permet d'agrandir l'icône pour qu'elle s'intègre mieux visuellement.",
-        "editor.helpers.show_cat_count"                 : "Si cette option est activée, le nombre d'articles de chaque catégorie sera affiché à côté de son nom.",
-        "editor.helpers.hide_cat_count_all_done"        : "Masque le compteur d'articles pour les catégories où tous les articles sont terminés.",
-        "editor.helpers.show_cat_popup"                 : "Si cette option est activée, une pop-up apparaîtra lors de l'ajout d'un nouvel article, vous permettant de sélectionner une catégorie pour cet article.",
+        "editor.helpers.show_cat_count"                 : "Affiche le compteur à côté de chaque catégorie. En inventaire, chaque variante ou groupe visible compte une fois. En liste de tâches, le nombre avant « / » compte les entrées non échues ou déjà terminées.",
+        "editor.helpers.hide_cat_count_all_done"        : "Masque le compteur lorsque toutes les entrées sont terminées en modes liste de courses et liste de tâches. Ce réglage est ignoré en inventaire.",
+        "editor.helpers.show_cat_popup"                 : "Ouvre le choix de catégorie lors de l’ajout. Si cette option est désactivée, les articles sans catégorie connue sont placés dans Général. Les affectations existantes sont conservées.",
         "editor.helpers.longlived_token"                : "Un jeton d'accès de longue durée pour l'authentification avec Home Assistant. Gardez ce jeton confidentiel car il accorde un accès important à votre système.",
         "editor.helpers.external_url"                   : "L'URL externe de votre installation Home Assistant. Requise si vous utilisez l'exportation pour synchroniser les articles plus tard avec Home Assistant.",
         "editor.helpers.categories"                     : "Les catégories vous permettent de regrouper automatiquement les articles. Chaque catégorie commence par - name: <NomCatégorie> et contient une liste de mots-clés sous « items ».",
@@ -2755,13 +2907,24 @@ class HaShoppingListImproved extends HTMLElement {
 		this._catFontSize           = config.cat_font_size   || 16; // Standard: 16px
         this._chipFontSize          = config.chip_font_size  || 12; // Standard: 12px
         this._titleFontSize         = config.title_font_size || 16; // Standard: 16px
-        this._chipColor             = config.chip_color      || "rgba(100,100,100,0.3)";
-        this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
-		this._chipGlobalColor		= config.chip_color_global || "rgba(100,100,100,0.3)";
-		this._chipColorDish 		= config.chip_color_dish || "#745E3D";
+        const configuredCssColor = (value) =>
+            typeof value === "string" && value.trim() ? value.trim() : "";
+        const configuredRgbColor = (value) => {
+            if (!Array.isArray(value) || value.length !== 3) return "";
+            const channels = value.map(Number);
+            if (channels.some(channel => !Number.isFinite(channel) || channel < 0 || channel > 255)) return "";
+            return `rgb(${channels.map(channel => Math.round(channel)).join(", ")})`;
+        };
+        const configuredColor = (cssValue, rgbValue, fallback) =>
+            configuredCssColor(cssValue) || configuredRgbColor(rgbValue) || fallback;
+
+        this._chipColor             = configuredColor(config.chip_color, config.chip_color_rgb, "rgba(100,100,100,0.3)");
+        this._chipColorDefault      = configuredColor(config.chip_color_default, config.chip_color_default_rgb, "rgba(100,100,255,0.3)");
+		this._chipGlobalColor		= configuredColor(config.chip_color_global, config.chip_color_global_rgb, "rgba(100,100,100,0.3)");
+		this._chipColorDish 		= configuredColor(config.chip_color_dish, config.chip_color_dish_rgb, "#745E3D");
         this._chipMergeMode         = ["combined", "standard_first", "browser_first", "global_combined", "global_only"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._chipsWithCatColor     = (config.chips_with_cat_color === false) ? false : true;
-        this._highlightColor        = config.highlight_color || "#D9534F";
+        this._highlightColor        = configuredColor(config.highlight_color, config.highlight_color_rgb, "#D9534F");
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
         this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true);
@@ -2979,6 +3142,12 @@ class HaShoppingListImproved extends HTMLElement {
         this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
         this._todoYellowH           = config.todo_yellow_h || 10;   // Hours   10 Minutes
         this._todoYellowS           = config.todo_yellow_s || 120;  // Date only 2 hours
+        this._todoDefaultAction = ["remove", "next", "now", "edit", "delete", "done"].includes(config.todo_default_action)
+            ? config.todo_default_action
+            : "done";
+        this._todoActionBehavior = ["menu", "click_menu_long_default", "click_default_long_menu"].includes(config.todo_action_behavior)
+            ? config.todo_action_behavior
+            : "menu";
 
         // Hide Quantity Selection, bottom buttons in To-Do Mode
         if (this._mode === "todo") {
@@ -3214,7 +3383,7 @@ class HaShoppingListImproved extends HTMLElement {
                                 mode: "dropdown",
                                 options: [
                                     { value: "shopping", label: translate("editor.options.mode.shopping") },
-                                    { value: "todo",     label: translate("editor.options.mode.todo") },
+                                    { value: "todo", label: translate("editor.options.mode.todo") },
                                     { value: "inventory", label: translate("editor.options.mode.inventory") }
                                 ]
                             }
@@ -3223,53 +3392,129 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "title", selector: { text: {} }, default: ""},
                     { name: "title_icon", selector: { icon: {} }, default: ""},
-                    { name: "show_title_info", selector: { boolean: {} }, default: true },
-                    { name: "show_title_info_icon", selector: { boolean: {} }, default: true },
-                    { name: "show_title_exclamation_mark", selector: { boolean: {} }, default: true },
+                    { name: "sub_text", selector: { text: {} }, default: " "},
                     {
                         name: "input_row_position",
-                        selector: {
-                            select: {
-                                mode: "dropdown",
-                                options: [
-                                    { value: "top", label: translate("editor.options.inputrow.top") },
-                                    { value: "bottom", label: translate("editor.options.inputrow.bottom") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "top", label: translate("editor.options.inputrow.top") },
+                            { value: "bottom", label: translate("editor.options.inputrow.bottom") }
+                        ] } },
                         default: "top"
                     },
                     {
                         name: "option_row_position",
-                        selector: {
-                            select: {
-                                mode: "dropdown",
-                                options: [
-                                    { value: "top", label: translate("editor.options.inputrow.top") },
-                                    { value: "bottom", label: translate("editor.options.inputrow.bottom") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "top", label: translate("editor.options.inputrow.top") },
+                            { value: "bottom", label: translate("editor.options.inputrow.bottom") }
+                        ] } },
                         default: "bottom"
                     },
-                    { name: "show_quantity_box", selector: { boolean: {} }, default: true },
                     { name: "show_input_mask", selector: { boolean: {} }, default: true },
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
                     { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
                     { name: "show_admin_button", selector: { boolean: {} }, default: true },
-                    { name: "show_message_button", selector: { boolean: {} }, default: false },
-                    { name: "show_clear_button", selector: { boolean: {} }, default: true },
-                    { name: "sub_text", selector: { text: {} }, default: " "},
                     { name: "bubble_card", selector: { boolean: {} }, default: false },
                     { name: "debug_mode", selector: { boolean: {} }, default: false }
                 ]
             },
 
-            // Item Options
+            // Shopping List Mode
             {
                 type: 'expandable',
-                label: 'item.options',
-                icon: 'mdi:format-list-checks',
+                label: 'shopping_mode.options',
+                icon: 'mdi:cart-outline',
+                schema: [
+                    { name: "show_quantity_one", selector: { boolean: {} }, default: false },
+                    { name: "ean_remove_mode", selector: { boolean: {} }, default: false },
+                    {
+                        type: 'expandable',
+                        label: 'dishes.options',
+                        icon: 'mdi:food-fork-drink',
+                        schema: [
+                            { name: "dishes_confirm_add", selector: { boolean: {} }, default: true },
+                            {
+                                name: "dishes",
+                                required: false,
+                                selector: {
+                                    object: {
+                                        properties: {
+                                            "category1": { type: "string", name: "Only a placeholder" },
+                                            "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            // To-do Mode
+            {
+                type: 'expandable',
+                label: 'todo_mode.options',
+                icon: 'mdi:calendar-check-outline',
+                schema: [
+                    { name: "show_title_info", selector: { boolean: {} }, default: true },
+                    { name: "show_title_info_icon", selector: { boolean: {} }, default: true },
+                    { name: "show_title_exclamation_mark", selector: { boolean: {} }, default: true },
+                    {
+                        name: "todo_filter",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "all", label: translate("editor.options.todo_filter.all") },
+                            { value: "today", label: translate("editor.options.todo_filter.today") },
+                            { value: "overdue", label: translate("editor.options.todo_filter.overdue") },
+                            { value: "overdue_include_today", label: translate("editor.options.todo_filter.overdue_include_today") },
+                            { value: "upcoming", label: translate("editor.options.todo_filter.upcoming") },
+                            { value: "dated", label: translate("editor.options.todo_filter.dated") },
+                            { value: "undated", label: translate("editor.options.todo_filter.undated") }
+                        ] } },
+                        default: "all"
+                    },
+                    { name: "show_todo_filter_menu", selector: { boolean: {} }, default: false },
+                    { name: "show_cat_next_due", selector: { boolean: {} }, default: true },
+                    { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
+                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
+                    {
+                        name: "todo_default_action",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "remove", label: translate("editor.options.todo_default_action.remove") },
+                            { value: "next", label: translate("editor.options.todo_default_action.next") },
+                            { value: "now", label: translate("editor.options.todo_default_action.now") },
+                            { value: "edit", label: translate("editor.options.todo_default_action.edit") },
+                            { value: "delete", label: translate("editor.options.todo_default_action.delete") },
+                            { value: "done", label: translate("editor.options.todo_default_action.done") }
+                        ] } },
+                        default: "done"
+                    },
+                    {
+                        name: "todo_action_behavior",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "menu", label: translate("editor.options.todo_action_behavior.menu") },
+                            { value: "click_menu_long_default", label: translate("editor.options.todo_action_behavior.click_menu_long_default") },
+                            { value: "click_default_long_menu", label: translate("editor.options.todo_action_behavior.click_default_long_menu") }
+                        ] } },
+                        default: "menu"
+                    },
+                    {
+                        type: 'expandable',
+                        label: 'todo_warning_thresholds',
+                        icon: 'mdi:alarm-light',
+                        schema: [
+                            { name: "todo_yellow_m", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 1440 },
+                            { name: "todo_yellow_d", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 120 },
+                            { name: "todo_yellow_h", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 10 },
+                            { name: "todo_yellow_s", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 120 }
+                        ]
+                    }
+                ]
+            },
+
+            // Inventory Mode
+            {
+                type: 'expandable',
+                label: 'inventory_mode.options',
+                icon: 'mdi:warehouse',
                 schema: [
                     {
                         name: "inventory_default_action",
@@ -3282,106 +3527,97 @@ class HaShoppingListImproved extends HTMLElement {
                         ] } },
                         default: "none"
                     },
-                    {
-                        name: "inventory_mode_timeout",
-                        selector: { number: { min: 0, max: 3600, step: 5, mode: "box" } },
-                        default: 0
-                    },
-                    {
-                        name: "sort_mode",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "alpha",  label: translate("editor.options.sort_mode.alpha") },
-                                    { value: "manual", label: translate("editor.options.sort_mode.manual") },
-                                    { value: "due",    label: translate("editor.options.sort_mode.due") },
-                                    { value: "none",   label: translate("editor.options.sort_mode.none") }
-                                ]
-                            }
-                        },
-                        default: "alpha"
-                    },
-                    {
-                        name: "todo_filter",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "all",                   label: translate("editor.options.todo_filter.all") },
-                                    { value: "today",                 label: translate("editor.options.todo_filter.today") },
-                                    { value: "overdue",               label: translate("editor.options.todo_filter.overdue") },
-                                    { value: "overdue_include_today", label: translate("editor.options.todo_filter.overdue_include_today") },
-                                    { value: "upcoming",              label: translate("editor.options.todo_filter.upcoming") },
-                                    { value: "dated",                 label: translate("editor.options.todo_filter.dated") },
-                                    { value: "undated",               label: translate("editor.options.todo_filter.undated") }
-                                ]
-                            }
-                        },
-                        default: "all"
-                    },
-                    { name: "show_todo_filter_menu", selector: { boolean: {} }, default: false },
-                    {
-                        name: "quantity",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "beginning", label: translate("editor.options.quantity.beginning") },
-                                    { value: "end", label: translate("editor.options.quantity.end") }
-                                ]
-                            }
-                        },
-                        default: "end"
-                    },
-                    {
-                        name: "acknowledged",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "show", label: translate("editor.options.acknowledged.show") },
-                                    { value: "hide", label: translate("editor.options.acknowledged.hide") },
-                                    { value: "end", label: translate("editor.options.acknowledged.end") }
-                                ]
-                            }
-                        },
-                        default: "show"
-                    },
-                    { name: "acknowledge_deletion", selector: { boolean: {} }, default: true },
-                    { name: "show_plus_minus", selector: { boolean: {} }, default: true },
-                    { name: "show_quantity_one", selector: { boolean: {} }, default: false },
-                    { name: "allow_filter", selector: { boolean: {} }, default: false },
-                    { name: "allow_suggestions", selector: { boolean: {} }, default: false },
-                    { name: "show_done_hidden_items_in_search", selector: { boolean: {} }, default: true },
-                    { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
-                    { name: "show_descriptions", selector: { boolean: {} }, default: false },
+                    { name: "inventory_mode_timeout", selector: { number: { min: 0, max: 3600, step: 5, mode: "box" } }, default: 0 },
                     { name: "inventory_group_variants", selector: { boolean: {} }, default: true },
                     { name: "inventory_show_product_details", selector: { boolean: {} }, default: true },
                     { name: "inventory_show_category_minimum_status", selector: { boolean: {} }, default: true },
                     {
                         type: 'expandable',
-                        label: 'todo_warning_thresholds',
-                        icon: 'mdi:alarm-light',
+                        label: 'inventory_stock_marking',
+                        icon: 'mdi:palette-swatch-outline',
                         schema: [
                             {
-                                name: "todo_yellow_m",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 1440
+                                name: "inventory_mark_above_minimum",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
+                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
+                                ] } },
+                                default: "none"
                             },
                             {
-                                name: "todo_yellow_d",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 120
+                                name: "inventory_mark_at_minimum",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
+                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
+                                ] } },
+                                default: "none"
                             },
                             {
-                                name: "todo_yellow_h",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 10
+                                name: "inventory_mark_below_minimum",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
+                                ] } },
+                                default: "orange"
                             },
                             {
-                                name: "todo_yellow_s",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 120
+                                name: "inventory_mark_zero",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
+                                ] } },
+                                default: "red"
                             }
                         ]
                     }
+                ]
+            },
+
+            // Shared Item Options
+            {
+                type: 'expandable',
+                label: 'item.options',
+                icon: 'mdi:format-list-checks',
+                schema: [
+                    {
+                        name: "sort_mode",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "alpha", label: translate("editor.options.sort_mode.alpha") },
+                            { value: "manual", label: translate("editor.options.sort_mode.manual") },
+                            { value: "due", label: translate("editor.options.sort_mode.due") },
+                            { value: "none", label: translate("editor.options.sort_mode.none") }
+                        ] } },
+                        default: "alpha"
+                    },
+                    {
+                        name: "quantity",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "beginning", label: translate("editor.options.quantity.beginning") },
+                            { value: "end", label: translate("editor.options.quantity.end") }
+                        ] } },
+                        default: "end"
+                    },
+                    { name: "show_quantity_box", selector: { boolean: {} }, default: true },
+                    { name: "show_plus_minus", selector: { boolean: {} }, default: true },
+                    {
+                        name: "acknowledged",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "show", label: translate("editor.options.acknowledged.show") },
+                            { value: "hide", label: translate("editor.options.acknowledged.hide") },
+                            { value: "end", label: translate("editor.options.acknowledged.end") }
+                        ] } },
+                        default: "show"
+                    },
+                    { name: "acknowledge_deletion", selector: { boolean: {} }, default: true },
+                    { name: "show_clear_button", selector: { boolean: {} }, default: true },
+                    { name: "allow_filter", selector: { boolean: {} }, default: false },
+                    { name: "allow_suggestions", selector: { boolean: {} }, default: false },
+                    { name: "show_done_hidden_items_in_search", selector: { boolean: {} }, default: true },
+                    { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
+                    { name: "show_descriptions", selector: { boolean: {} }, default: false }
                 ]
             },
 
@@ -3391,15 +3627,9 @@ class HaShoppingListImproved extends HTMLElement {
                 label: 'ean_scanner.options',
                 icon: 'mdi:barcode-scan',
                 schema: [
-                    {
-                        name: "ean_file",
-                        selector: { text: {} },
-                        default: ""
-                    },
                     { name: "show_ean_brand", selector: { boolean: {} }, default: false },
                     { name: "show_ean_quantity", selector: { boolean: {} }, default: false },
                     { name: "ean_create_chip", selector: { boolean: {} }, default: false },
-                    { name: "ean_remove_mode", selector: { boolean: {} }, default: false },
                     { name: "ean_database_suggestions", selector: { boolean: {} }, default: false },
                     { name: "show_ean_database_badge", selector: { boolean: {} }, default: false },
                     { name: "ean_script_enabled", selector: { boolean: {} }, default: false },
@@ -3426,6 +3656,11 @@ class HaShoppingListImproved extends HTMLElement {
                             }
                         }
                     },
+                    {
+                        name: "ean_file",
+                        selector: { text: {} },
+                        default: ""
+                    },
                 ]
             },
 
@@ -3445,6 +3680,7 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "ean_transfer_mode",
                         selector: {
                             select: {
+                                mode: "dropdown",
                                 options: [
                                     { value: "disabled", label: translate("editor.options.ean_transfer_mode.disabled") },
                                     { value: "send", label: translate("editor.options.ean_transfer_mode.send") },
@@ -3477,6 +3713,7 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "ean_transfer_actions",
                         selector: {
                             select: {
+                                mode: "dropdown",
                                 options: [
                                     { value: "add", label: translate("editor.options.ean_transfer_actions.add") },
                                     { value: "remove", label: translate("editor.options.ean_transfer_actions.remove") },
@@ -3490,6 +3727,7 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "ean_transfer_remove_behavior",
                         selector: {
                             select: {
+                                mode: "dropdown",
                                 options: [
                                     { value: "one_to_one", label: translate("editor.options.ean_transfer_remove_behavior.one_to_one") },
                                     { value: "minimum", label: translate("editor.options.ean_transfer_remove_behavior.minimum") },
@@ -3508,6 +3746,7 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "ean_transfer_non_ean",
                         selector: {
                             select: {
+                                mode: "dropdown",
                                 options: [
                                     { value: "one_to_one", label: translate("editor.options.ean_transfer_non_ean.one_to_one") },
                                     { value: "minimum", label: translate("editor.options.ean_transfer_non_ean.minimum") },
@@ -3570,6 +3809,7 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "chip_merge",
                         selector: {
                             select: {
+                                mode: "dropdown",
                                 options: [
                                     { value: "combined", label: translate("editor.options.chip_merge.combined") },
                                     { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
@@ -3612,9 +3852,6 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_cat_popup", selector: { boolean: {} }, default: true },
                     { name: "show_cat_count", selector: { boolean: {} }, default: true },
                     { name: "hide_cat_count_all_done", selector: { boolean: {} }, default: false },
-                    { name: "show_cat_next_due", selector: { boolean: {} }, default: true },
-                    { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
-                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
                     { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },    
                     {
                         name: "category_display",
@@ -3702,28 +3939,6 @@ class HaShoppingListImproved extends HTMLElement {
                 ]
             },
 
-            // Dishes Options
-            {
-                type: 'expandable',
-                label: 'dishes.options',
-                icon: 'mdi:food-fork-drink',
-                schema: [
-                    { name: "dishes_confirm_add", selector: { boolean: {} }, default: true },
-                    {
-                        name: "dishes",
-                        required: false,
-                        selector: {
-                            object: {
-                                properties: {
-                                    "category1": { type: "string", name: "Only a placeholder" },
-                                    "items1": { type: "text", name: "to let HA fall back to yaml mode" }
-                                }
-                            }
-                        }
-                    }
-                ]
-            },
-
             // Font Sizes
             {
                 type: 'expandable',
@@ -3761,70 +3976,67 @@ class HaShoppingListImproved extends HTMLElement {
                 schema: [
                     {
                         type: 'expandable',
-                        label: 'inventory_stock_marking',
-                        icon: 'mdi:palette-swatch-outline',
+                        label: 'chip_colors',
+                        icon: 'mdi:palette-outline',
                         schema: [
                             {
-                                name: "inventory_mark_above_minimum",
-                                selector: { select: { options: [
-                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
-                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
-                                ] } },
-                                default: "none"
+                                name: "chip_color_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
                             },
                             {
-                                name: "inventory_mark_at_minimum",
-                                selector: { select: { options: [
-                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
-                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
-                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
-                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
-                                ] } },
-                                default: "none"
+                                name: "chip_color_default_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
                             },
                             {
-                                name: "inventory_mark_below_minimum",
-                                selector: { select: { options: [
-                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
-                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
-                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
-                                ] } },
-                                default: "orange"
+                                name: "chip_color_global_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
                             },
                             {
-                                name: "inventory_mark_zero",
-                                selector: { select: { options: [
-                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
-                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
-                                ] } },
-                                default: "red"
+                                name: "chip_color_dish_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                name: "highlight_color_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                type: 'expandable',
+                                label: 'expert_color_settings',
+                                icon: 'mdi:code-tags',
+                                schema: [
+                                    {
+                                        name: "chip_color",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,100,0.3)"
+                                    },
+                                    {
+                                        name: "chip_color_default",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,255,0.3)"
+                                    },
+                                    {
+                                        name: "chip_color_global",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,100,0.3)"
+                                    },
+                                    {
+                                        name: "chip_color_dish",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,100,0.3)"
+                                    },
+                                    {
+                                        name: "highlight_color",
+                                        selector: { text: {} },
+                                        default: "red"
+                                    }
+                                ]
                             }
                         ]
-                    },
-                    {
-                        name: "chip_color",
-                        selector: { text: {} },
-                        default: "rgba(100,100,100,0.3)"
-                    },
-                    {
-                        name: "chip_color_default",
-                        selector: { text: {} },
-                        default: "rgba(100,100,255,0.3)"  
-                    },
-                    {
-                        name: "chip_color_global",
-                        selector: { text: {} },
-                        default: "rgba(100,100,100,0.3)"
-                    },                    
-                    {
-                        name: "highlight_color",
-                        selector: { text: {} },
-                        default: "red"
-                    },
-                    {
-                        name: "chip_color_dish",
-                        selector: { text: {} },
-                        default: "rgba(100,100,100,0.3)"
                     },
                     {
                         name: "own_css",
@@ -3868,6 +4080,7 @@ class HaShoppingListImproved extends HTMLElement {
                 label: 'message.options',
                 icon: 'mdi:message-badge',
                 schema: [
+                    { name: "show_message_button", selector: { boolean: {} }, default: false },
                     {
                         type: 'expandable',
                         label: 'notify.options',
@@ -13783,14 +13996,20 @@ async _checkEAN(text, options = {}) {
             : item.complete ? '\u2714' : '\u2610';
         completeBtn.title = this._mode === "inventory"
             ? translate(item.complete ? "ui.inventory.unhide" : "ui.inventory.hide")
-            : translate("editor.labels.complete_btn");
+            : this._mode === "todo"
+                ? translate("ui.todo.actions")
+                : translate("editor.labels.complete_btn");
         completeBtn.setAttribute('aria-label', completeBtn.title);
         completeBtn.style.cursor = 'pointer';
         completeBtn.style.border = 'none';
         completeBtn.style.background = 'transparent';
         completeBtn.style.fontSize = '16px';
         completeBtn.style.marginRight = '8px';
-        completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
+        if (this._mode === "todo") {
+            this._bindTodoActionControl(completeBtn, item);
+        } else {
+            completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
+        }
 
         // Name Span (Container)
         const nameSpan = document.createElement('div');
@@ -16245,7 +16464,94 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    // ToDo Mode edit popup
+    _isTodoActionAvailable(item, action) {
+        const interval = this._getInterval(item?.name);
+        if (action === "now") return Boolean(interval);
+        if (action === "next" || action === "remove") {
+            return Boolean(interval && item?.due);
+        }
+        return ["edit", "delete", "done"].includes(action);
+    }
+
+    async _runConfiguredTodoAction(item, openMenu) {
+        if (openMenu) {
+            await this._confirmToDoPopup(item);
+            return;
+        }
+
+        const action = this._todoDefaultAction || "done";
+        if (!this._isTodoActionAvailable(item, action)) {
+            await this._confirmToDoPopup(item);
+            return;
+        }
+
+        await this._executeTodoAction(item, action, { fromMenu: false });
+    }
+
+    _bindTodoActionControl(button, item) {
+        let longPressTimer = null;
+        let suppressNextClick = false;
+        let processing = false;
+
+        const clearLongPressTimer = () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        };
+
+        button.addEventListener("pointerdown", (event) => {
+            if (event.button !== undefined && event.button !== 0) return;
+            if (this._todoActionBehavior === "menu") return;
+
+            clearLongPressTimer();
+            longPressTimer = setTimeout(async () => {
+                longPressTimer = null;
+                if (processing) return;
+                processing = true;
+                suppressNextClick = true;
+                setTimeout(() => { suppressNextClick = false; }, 1200);
+                try {
+                    const openMenu = this._todoActionBehavior === "click_default_long_menu";
+                    await this._runConfiguredTodoAction(item, openMenu);
+                } finally {
+                    processing = false;
+                }
+            }, 600);
+        });
+
+        for (const eventName of ["pointerup", "pointercancel", "pointerleave"]) {
+            button.addEventListener(eventName, () => {
+                clearLongPressTimer();
+                if (suppressNextClick) {
+                    setTimeout(() => { suppressNextClick = false; }, 800);
+                }
+            });
+        }
+
+        button.addEventListener("contextmenu", (event) => {
+            if (this._todoActionBehavior !== "menu") event.preventDefault();
+        });
+
+        button.addEventListener("click", async (event) => {
+            if (suppressNextClick) {
+                event.preventDefault();
+                suppressNextClick = false;
+                return;
+            }
+            if (processing) return;
+
+            processing = true;
+            try {
+                const openMenu = this._todoActionBehavior !== "click_default_long_menu";
+                await this._runConfiguredTodoAction(item, openMenu);
+            } finally {
+                processing = false;
+            }
+        });
+    }
+
+    // To-do mode action popup
     async _confirmToDoPopup(item) {
         // Overlay
         const overlay = document.createElement('div');
@@ -16291,9 +16597,6 @@ async _checkEAN(text, options = {}) {
         popup.appendChild(subMsg);
 
         // Radio Buttons
-        let interval = this._getInterval(item.name); // "2D", "1M", "3H"
-        let disabled = !interval;
-
         if(debugMode) console.debug("ITEM: ", item);
 
         let completedStatusSwitch = null;
@@ -16304,13 +16607,20 @@ async _checkEAN(text, options = {}) {
         }
 
         const options = [
-            { id: 'remove_due',   label: translate("ui.todo.remove_due"),   value: 'remove', disabled: disabled },
-            { id: 'next_due',     label: translate("ui.todo.next_due"),     value: 'next',   disabled: disabled, checked: !disabled },
-            { id: 'next_due_now', label: translate("ui.todo.next_due_now"), value: 'now',    disabled: disabled },
+            { id: 'remove_due',   label: translate("ui.todo.remove_due"),   value: 'remove', disabled: !this._isTodoActionAvailable(item, "remove") },
+            { id: 'next_due',     label: translate("ui.todo.next_due"),     value: 'next',   disabled: !this._isTodoActionAvailable(item, "next") },
+            { id: 'next_due_now', label: translate("ui.todo.next_due_now"), value: 'now',    disabled: !this._isTodoActionAvailable(item, "now") },
             { id: 'edit',         label: translate("ui.todo.edit"),         value: 'edit' },
-            { id: 'delete',       label: translate("ui.todo.delete"),       value: 'delete', checked: disabled },
+            { id: 'delete',       label: translate("ui.todo.delete"),       value: 'delete' },
             { id: 'done',         label: completedStatusSwitch,             value: 'done' },
         ];
+
+        const configuredDefault = options.find(option =>
+            option.value === this._todoDefaultAction && !option.disabled
+        );
+        const fallbackDefault = options.find(option => option.value === "next" && !option.disabled)
+            || options.find(option => option.value === "delete");
+        (configuredDefault || fallbackDefault).checked = true;
 
         const radioContainer = document.createElement('div');
         radioContainer.style.display = 'flex';
@@ -16369,206 +16679,8 @@ async _checkEAN(text, options = {}) {
 
         yesBtn.addEventListener('click', async () => {
             const selected = popup.querySelector('input[name="todo_action"]:checked')?.value || 'next';
-
-            let dueDate = null;
-            let dueDateTime = null;
-            let currentDue = item.due ? item.due : null; // ISO or YYYY-MM-DD
-            //let interval = this._getInterval(item.name); // "2D", "1M", "3H"
-
-            const isDateOnlyString = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s);
-
-            // Parse Interval like "2D", "3H", "1M"
-            function parseShortInterval(str) {
-                if (!str || typeof str !== 'string') return null;
-                const m = str.trim().match(/^(\d+)\s*([HDMhdm])$/);
-                if (!m) return null;
-                return { value: parseInt(m[1], 10), unit: m[2].toUpperCase() }; // unit in 'H'|'D'|'M'
-            }
-
-            // add interval to a JS Date object (mutates copy)
-            function addIntervalToDate(dateObj, value, unit) {
-                const d = new Date(dateObj.getTime());
-                if (unit === 'H') {
-                    d.setHours(d.getHours() + value);
-                } else if (unit === 'D') {
-                    d.setDate(d.getDate() + value);
-                } else if (unit === 'M') {
-                    d.setMonth(d.getMonth() + value);
-                }
-                return d;
-            }
-
-            // Format: YYYY-MM-DD
-            function formatDateOnly(d) {
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${y}-${m}-${day}`;
-            }
-
-            // Format: YYYY-MM-DD HH:MM:SS (local, without TZ)
-            function formatDateTime(d) {
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const hh = String(d.getHours()).padStart(2, '0');
-                const mm = String(d.getMinutes()).padStart(2, '0');
-                const ss = String(d.getSeconds()).padStart(2, '0');
-                return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
-            }
-
-            const parsed = parseShortInterval(interval); // {value, unit} or null
-
-            // rules
-            // if currentDue exists and date-only (YYYY-MM-DD)
-            const currentDueIsDateOnly = currentDue && isDateOnlyString(currentDue);
-
-            // if Intervall H is used and currentDue is date-only -> fallback to 1D
-            let effectiveInterval = parsed;
-            if (parsed) {
-                if (currentDueIsDateOnly && parsed.unit === 'H') {
-                    // use 1 day instead
-                    effectiveInterval = { value: 1, unit: 'D' };
-                }
-            }
-
-            const now = new Date();
-
-            if (selected === 'remove') {
-                // leave dueDate / dueDateTime null
-                dueDate = null;
-                dueDateTime = null;
-            } else if (selected === 'done') {
-                await this._toggleComplete(item, true);
-
-                document.body.removeChild(overlay);
-                return;
-            } else if (selected === 'next') {
-                // current due + interval
-                if (effectiveInterval && currentDue) {
-                    if (currentDueIsDateOnly) {
-                        // parse date-only into local midnight
-                        const [y, mm, dd] = currentDue.split('-').map(n => parseInt(n, 10));
-                        const base = new Date(y, mm - 1, dd, 0, 0, 0);
-                        let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
-
-                        while (next <= now) {
-                            next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
-                        }
-
-                        // if (D or M) use due_date
-                        if (effectiveInterval.unit === 'D' || effectiveInterval.unit === 'M') {
-                            dueDate = formatDateOnly(next);
-                        } else {
-                            // fallback: if H (shouldn't happen due to above), set datetime
-                            dueDateTime = formatDateTime(next);
-                        }
-                    } else {
-                        // currentDue has time (ISO)
-                        // create Date from ISO (handles offsets)
-                        const base = new Date(currentDue);
-                        let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
-
-                        while (next <= now) {
-                            next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
-                        }
-
-                        // set due_datetime
-                        dueDateTime = formatDateTime(next);
-                    }
-                } else {
-                    // no Intervall or no currentDue -> do nothing
-                }
-            } else if (selected === 'now') {
-                // now + Intervall
-                if (effectiveInterval) {
-                    const next = addIntervalToDate(now, effectiveInterval.value, effectiveInterval.unit);
-                    dueDateTime = formatDateTime(next);
-                }
-            } else if (selected === 'delete') {
-                // Delete Item
-                await this._removeItem(item);
-
-                document.body.removeChild(overlay);
-                return;
-            } else if (selected === 'edit') {
-                // Edit Item
-                await this._handleEditItem(item);
-
-                document.body.removeChild(overlay);
-                return;
-            }
-
-            // ServiceData
-            let serviceData = {
-                item: item.id,
-            };
-
-            if (dueDateTime) {
-                // "YYYY-MM-DD HH:MM:SS"
-                serviceData.due_datetime = dueDateTime;
-            } else if (dueDate) {
-                serviceData.due_date = dueDate;
-            }
-
-            try {
-                // as there is no option to set the due to an empty value we have to remove and readd the item
-                if(selected === 'remove') {
-                    const removeMsg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "remove_item",
-                        target: { entity_id: this._entity },
-                        service_data: {
-                            item: item.id
-                        }
-                    };
-
-                    if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", removeMsg);
-
-                    await this._hass.connection.sendMessagePromise(removeMsg);
-
-                    // Add the item again as a new item without due date
-                    // Service Data
-                    const serviceData = {
-                        item: item.name,
-                    };
-
-                    if (this._supportsTodoDescription() && item.description) {
-                        serviceData.description = item.description;
-                    }
-
-                    const addMsg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "add_item",
-                        target: { entity_id: this._entity },
-                        service_data: serviceData,
-                    };
-                    if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
-                    await this._hass.connection.sendMessagePromise(addMsg);
-                    await this._refresh();
-                    await this._notifyOnChange();
-                } else {
-                    const msg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "update_item",
-                        target: { entity_id: this._entity },
-                        service_data: serviceData,
-                    };
-
-                    if(debugMode) console.debug("[ha-shopping-list-improved] Sending toggleComplete WS message:", msg);
-
-                    await this._hass.connection.sendMessagePromise(msg);
-                    await this._refresh();
-                    await this._notifyOnChange();
-                }
-            } catch (err) {
-                console.error("[ha-shopping-list-improved] Update ToDo failed", err);
-            }
-
-            document.body.removeChild(overlay);
+            await this._executeTodoAction(item, selected, { fromMenu: true });
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
         });
 
         noBtn.addEventListener('click', () => {
@@ -16587,6 +16699,137 @@ async _checkEAN(text, options = {}) {
         popup.appendChild(btnContainer);
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
+    }
+
+    async _executeTodoAction(item, action, { fromMenu = false } = {}) {
+        if (!this._entity) return false;
+
+        if (action === "done") {
+            await this._toggleComplete(item, true);
+            return true;
+        }
+        if (action === "edit") {
+            await this._handleEditItem(item);
+            return true;
+        }
+        if (action === "delete") {
+            await this._removeItem(item, fromMenu);
+            return true;
+        }
+
+        const interval = this._getInterval(item.name);
+        const currentDue = item.due || null;
+        if (!interval || (action !== "now" && !currentDue)) return false;
+
+        const parseShortInterval = (value) => {
+            if (!value || typeof value !== "string") return null;
+            const match = value.trim().match(/^(\d+)\s*([HDMhdm])$/);
+            if (!match) return null;
+            return { value: parseInt(match[1], 10), unit: match[2].toUpperCase() };
+        };
+        const addIntervalToDate = (date, value, unit) => {
+            const result = new Date(date.getTime());
+            if (unit === "H") result.setHours(result.getHours() + value);
+            else if (unit === "D") result.setDate(result.getDate() + value);
+            else if (unit === "M") result.setMonth(result.getMonth() + value);
+            return result;
+        };
+        const formatDateOnly = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        };
+        const formatDateTime = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            const seconds = String(date.getSeconds()).padStart(2, "0");
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+
+        const parsed = parseShortInterval(interval);
+        if (!parsed) return false;
+
+        const isDateOnly = typeof currentDue === "string" && /^\d{4}-\d{2}-\d{2}$/.test(currentDue);
+        const effectiveInterval = isDateOnly && parsed.unit === "H"
+            ? { value: 1, unit: "D" }
+            : parsed;
+        const now = new Date();
+        let dueDate = null;
+        let dueDateTime = null;
+
+        if (action === "next") {
+            let base;
+            if (isDateOnly) {
+                const [year, month, day] = currentDue.split("-").map(Number);
+                base = new Date(year, month - 1, day, 0, 0, 0);
+            } else {
+                base = new Date(currentDue);
+            }
+            if (Number.isNaN(base.getTime())) return false;
+
+            let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+            while (next <= now) {
+                next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
+            }
+
+            if (isDateOnly && ["D", "M"].includes(effectiveInterval.unit)) {
+                dueDate = formatDateOnly(next);
+            } else {
+                dueDateTime = formatDateTime(next);
+            }
+        } else if (action === "now") {
+            const next = addIntervalToDate(now, effectiveInterval.value, effectiveInterval.unit);
+            dueDateTime = formatDateTime(next);
+        } else if (action !== "remove") {
+            return false;
+        }
+
+        try {
+            if (action === "remove") {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "remove_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: item.id }
+                });
+
+                const serviceData = { item: item.name };
+                if (this._supportsTodoDescription() && item.description) {
+                    serviceData.description = item.description;
+                }
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "add_item",
+                    target: { entity_id: this._entity },
+                    service_data: serviceData
+                });
+            } else {
+                const serviceData = { item: item.id };
+                if (dueDateTime) serviceData.due_datetime = dueDateTime;
+                else if (dueDate) serviceData.due_date = dueDate;
+
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: serviceData
+                });
+            }
+
+            await this._refresh();
+            await this._notifyOnChange();
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Update To-do failed", error);
+            return false;
+        }
     }
 
     async _toggleComplete(item, toggleInToDoMode = false) {
@@ -16642,7 +16885,7 @@ async _checkEAN(text, options = {}) {
         }
     }
 
-    async _removeItem(item) {
+    async _removeItem(item, returnToTodoMenu = true) {
         if (!this._entity) return;
 
 		const itemNameOnly = this._getNameOnly(item.name);
@@ -16657,7 +16900,7 @@ async _checkEAN(text, options = {}) {
         // show confirmation except when acknowledgeDeletion=false AND not todo
         if (this._mode === "todo" || this._acknowledgeDeletion) {
             if (!(await this.confirmPopup(msgRemove))) {
-                if (this._mode === "todo") await this._confirmToDoPopup(item);
+                if (this._mode === "todo" && returnToTodoMenu) await this._confirmToDoPopup(item);
                 return;
             }
         }
