@@ -1,5 +1,6 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-10.6";
+const version = "3.2.0-BETA-11.5";
+const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -10,14 +11,16 @@ const version = "3.2.0-BETA-10.6";
 const TRANSLATIONS = {
     de: {
         "card.description"                              : "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
-		
+
 		"ui.common.yes"                  				: "Ja",
 		"ui.common.no"                  				: "Nein",
 		"ui.common.ok"                  				: "OK",
 		"ui.common.cancel"                  			: "Abbrechen",
         "ui.common.all"                                 : "Alle",
 		"ui.common.edit_item"                  			: "Artikel bearbeiten",
-        "ui.common.add_item"                  			: "Artikel hinzufügen",
+		"ui.common.add_item"                  			: "Artikel hinzufügen",
+		"ui.shopping.offer_only"                       : "Nur kaufen, wenn im Angebot",
+		"ui.shopping.offer_badge"                      : "Angebot",
         "ui.common.description"                         : "Beschreibung",
         "ui.common.no_cat"                  			: "Keine",
 		"ui.common.delete"                  			: "Löschen",
@@ -93,12 +96,12 @@ const TRANSLATIONS = {
         "ui.ean.database_quantity"                       : "Produktmenge",
         "ui.ean.database_category"                       : "Kategorie",
         "ui.ean.database_save"                           : "Speichern",
-        "ui.ean.database_reload_off"                     : "Von Open Food Facts aktualisieren",
-        "ui.ean.database_loading_off"                    : "Open Food Facts wird abgefragt...",
-        "ui.ean.database_apply_off"                      : "Von OFF übernehmen und speichern",
-        "ui.ean.database_off_preview"                    : "Neue Daten von Open Food Facts",
+        "ui.ean.database_reload_off"                     : "Von Open Facts aktualisieren",
+        "ui.ean.database_loading_off"                    : "Open Facts wird abgefragt...",
+        "ui.ean.database_apply_off"                      : "Von Open Facts übernehmen und speichern",
+        "ui.ean.database_off_preview"                    : "Neue Daten von Open Facts",
         "ui.ean.database_off_name_preserved"             : "Dein gespeicherter Artikelname bleibt erhalten. Originaler Produktname, Marke, Produktmenge und Bild werden aktualisiert und direkt gespeichert.",
-        "ui.ean.database_off_not_found"                  : "Open Food Facts hat für diese EAN keine Produktdaten geliefert.",
+        "ui.ean.database_off_not_found"                  : "Open Facts hat für diese EAN keine Produktdaten geliefert.",
         "ui.ean.database_delete_confirm"                 : "Diesen EAN-Datenbankeintrag wirklich löschen?",
         "ui.ean.database_delete_failed"                  : "Der EAN-Datenbankeintrag konnte nicht gelöscht werden.",
         "ui.ean.database_name_required"                  : "Bitte gib einen Produktnamen ein.",
@@ -136,8 +139,8 @@ const TRANSLATIONS = {
         "ui.ean.brand_in_name"                         : "Die Marke „{brand}“ ist bereits im Artikelnamen enthalten und wird nicht zusätzlich angehängt.",
         "ui.ean.database_entries_title"                : "EAN-Einträge für {name}",
         "ui.ean.database_entries_badge"                : "{count} EAN-Einträge anzeigen",
-        "ui.ean.database_entry_refresh"                : "Produktdaten von Open Food Facts aktualisieren",
-        "ui.ean.database_entry_open_off"               : "Produkt bei Open Food Facts öffnen",
+        "ui.ean.database_entry_refresh"                : "Produktdaten von Open Facts aktualisieren",
+        "ui.ean.database_entry_open_off"               : "Produkt bei Open Facts öffnen",
         "ui.ean.database_entry_edit"                   : "EAN-Produkt bearbeiten",
         "ui.ean.database_entry_updated"                : "Produktdaten wurden aktualisiert.",
         "ui.ean.database_transfer_title"               : "Sync / Transfer",
@@ -329,8 +332,8 @@ const TRANSLATIONS = {
         "ui.todo.filter.undated"                        : "Ohne Fälligkeit",
         "ui.todo.filter.remember"                       : "Für diese Liste merken",
         "ui.todo.filter.reset"                          : "Gespeicherten Filter zurücksetzen",
-        "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.", 
-		
+        "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.",
+
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
         "editor.labels.show_message_button"             : "Nachrichten-Button anzeigen",
@@ -404,6 +407,7 @@ const TRANSLATIONS = {
         "editor.labels.option_row_position"             : "Position der Buttonleiste",
         "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
         "editor.labels.show_admin_button"               : "Admin-Button anzeigen",
+        "editor.labels.admin_button_admin_only"         : "Admin-Button nur für Administratoren",
         "editor.labels.notify_on_change"                : "Bei Änderungen benachrichtigen",
         "editor.labels.notify_on_change_all"            : "Immer die komplette Liste schicken",
         "editor.labels.notify_on_change_time"           : "Zeit bevor eine Benachrichtigung verschickt wird",
@@ -447,7 +451,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_default_action"             : "Standardaktion",
         "editor.labels.todo_action_behavior"            : "Verhalten von Aktionsbutton/Checkbox",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
-        
+
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom"          : "Immer unten",
@@ -562,7 +566,7 @@ const TRANSLATIONS = {
         "editor.options.ean_transfer_non_ean.minimum"  : "Mindestbestand verwenden",
         "editor.options.ean_transfer_non_ean.ask"       : "Immer nachfragen",
         "editor.options.ean_transfer_non_ean.off"       : "Nicht übertragen (Standard)",
-		
+
         "editor.labels.entity"                          : "To-do-Liste (Entität)",
         "editor.helpers.mode"                           : "Legt fest, wie die Karte verwendet wird. „Einkaufsliste“ bietet Artikelmengen, Kategorien und Einkaufsfunktionen ohne Fälligkeiten. „To-do-Liste“ verwaltet Aufgaben mit Fälligkeiten; dort gibt es keine Anzahleingabe, Plus-/Minus-Buttons oder Export-Buttons. „Inventar“ verwaltet Bestände in einer To-do-Liste: Artikel bleiben auch bei Bestand 0 erhalten und können ein- oder ausgelagert werden. Die originale Home-Assistant-Einkaufsliste unterstützt keine Fälligkeiten.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
@@ -594,6 +598,7 @@ const TRANSLATIONS = {
 		"editor.labels.show_plus_minus"                 : "Plus-/Minus-Buttons anzeigen",
         "editor.labels.acknowledge_deletion"            : "Löschbestätigung anzeigen",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
+        "editor.labels.shopping_offer_only_enabled"     : "Angebotskennzeichnung verwenden",
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
         "editor.labels.longlived_token"                 : "Langlebiger Zugriffstoken (für den Zugriff via Export-Datei)",
@@ -651,6 +656,7 @@ const TRANSLATIONS = {
         "editor.helpers.email_on_done"                  : "Sendet per E-Mail auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wird.",
         "editor.helpers.email_delay"                    : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
         "editor.helpers.show_admin_button"              : "Zeigt den Admin-Button für Browserdaten, dynamische Kategorien, EAN-Datenbank, Verarbeitung und Warteschlangen an.",
+        "editor.helpers.admin_button_admin_only"        : "Blendet den Admin-Button für Benutzer ohne Home-Assistant-Administratorrechte aus. Bereits konfigurierte Scanner-, EAN- und Warteschlangenfunktionen arbeiten weiter; nur der Zugriff über diesen Button wird eingeschränkt. Standard: Aus.",
         "editor.helpers.notify_on_change"               : "Sendet eine Benachrichtigung über die konfigurierte Notify-Entität, sobald ein Artikel hinzugefügt, bearbeitet oder entfernt wurde.",
         "editor.helpers.notify_on_change_all"           : "Standardmäßig wird nur der hinzugefügte, bearbeitete oder entfernte Artikel in der Benachrichtigung erwähnt. Wenn diese Option aktiviert ist, wird zusätzlich die komplette Liste gesendet.",
         "editor.helpers.notify_on_change_time"          : "Legt fest (in Sekunden), wie lange gewartet wird, bevor eine Benachrichtigung (komplette Liste) gesendet wird. Dies ist nützlich, wenn mehrere Änderungen in kurzer Zeit vorgenommen werden, um zu vermeiden, dass zu viele Benachrichtigungen gesendet werden. Um diese Funktion zu deaktivieren '0' (Null) eingeben.",
@@ -658,8 +664,8 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Sendet auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wurde. Achtung, dies kann zu vielen Benachrichtigungen führen, wenn viele Artikel während des Einkaufs als erledigt markiert werden.",
         "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
         "editor.helpers.show_category_add_all"          : "Zeigt in aufgeklappten Kategorie-Chips einen 'Alle'-Chip an. Damit können alle Artikel der Kategorie über ein Auswahlfenster hinzugefügt werden.",
-        "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld.",
-        "editor.helpers.allow_suggestions"              : "Zeigt passende Artikel aus den konfigurierten Kategorien unter dem Eingabefeld an. Wenn zusätzlich „EAN-Datenbank in Suchvorschlägen verwenden“ aktiviert ist, werden auch Produkte und EANs aus der EAN-Datenbank berücksichtigt.",
+        "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld. Bei EAN-Artikeln werden auch der originale Produktname und die Marke durchsucht.",
+        "editor.helpers.allow_suggestions"              : "Zeigt passende Artikel aus den konfigurierten Kategorien unter dem Eingabefeld an. Wenn zusätzlich „EAN-Datenbank in Suchvorschlägen verwenden“ aktiviert ist, werden auch gespeicherte Produktnamen, originale Produktnamen, Marken und EANs berücksichtigt.",
         "editor.helpers.show_done_hidden_items_in_search": "Bezieht im Einkaufslisten- und To-do-Modus erledigte oder ausgeblendete Einträge in die Suchergebnisse ein. Das Inventar verwendet eine eigene Ausblenden-Funktion.",
         "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
         "editor.helpers.show_descriptions"              : "Zeigt im Einkaufslisten- und To-do-Modus die Beschreibung unterhalb des Eintrags an, sofern die ausgewählte To-do-Liste Beschreibungen unterstützt. Im Inventarmodus werden Beschreibungen nicht angezeigt.",
@@ -672,7 +678,7 @@ const TRANSLATIONS = {
         "editor.helpers.list_script_entity"             : "Sendet Namen, Kategorie, Anzahl, Listenentität und Modus an das ausgewählte Skript. Änderungen außerhalb dieser Karte werden systembedingt nicht gemeldet. Das EAN-Skript kann parallel verwendet werden.",
         "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf. Weitere Informationen und Beispielvariablen: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
         "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
-        "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um Produktnamen und EANs aus der EAN-Datenbank. Dafür muss zusätzlich „Vorschläge anzeigen“ aktiviert sein. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
+        "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um gespeicherte Produktnamen, originale Produktnamen, Marken und EANs aus der EAN-Datenbank. Dafür muss zusätzlich „Vorschläge anzeigen“ aktiviert sein. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
         "editor.helpers.show_ean_database_badge"         : "Zeigt neben Artikeln mit exakt passendem Produktnamen ein dezentes Barcode-Symbol. Ein Klick zeigt alle zugeordneten EAN-Datensätze an.",
         "editor.helpers.ean_transfer_mode"               : "Legt fest, ob diese Karte Buchungen über eine gemeinsame ISL-Transfer-Liste sendet, für ihre eigene Liste empfängt oder beides ausführt. Standard: Deaktiviert.",
         "editor.helpers.ean_transfer_entity"             : "Separate To-do-Liste, die ausschließlich als dauerhafte ISL-Transfer-Warteschlange verwendet wird. Sie darf nicht gleichzeitig Einkaufsliste oder EAN-Datenbank sein und muss Beschreibungen unterstützen.",
@@ -734,6 +740,7 @@ const TRANSLATIONS = {
 		"editor.helpers.show_plus_minus"                : "Zeigt im Einkaufslisten- und Inventarmodus Plus-/Minus-Buttons zum Ändern der Menge an. Im To-do-Modus sind sie nicht verfügbar.",
         "editor.helpers.acknowledge_deletion"           : "Zeigt im Einkaufslisten- und Inventarmodus vor dem Löschen eines Artikels eine Bestätigung an. Im To-do-Modus wird das Aktionsfenster unabhängig von dieser Einstellung verwendet.",
         "editor.helpers.show_quantity_one"              : "Zeigt im Einkaufslistenmodus auch die Anzahl 1 an. Andernfalls wird bei Menge 1 nur der Artikelname dargestellt.",
+        "editor.helpers.shopping_offer_only_enabled"    : "Zeigt im Einkaufslistenmodus die Option „Nur kaufen, wenn im Angebot“ im Artikel-Editor und ein Angebots-Badge in der Liste an. Vorhandene Kennzeichnungen bleiben beim Deaktivieren gespeichert. Standard: Ein.",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
         "editor.helpers.ean_file"                       : "Beispiel: /local/ean.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Eintrag im Format 'EAN Name' stehen, z. B. '1234567890123 Test-Artikel'. Unterstützt werden die EAN-Formate EAN-8, UPC (12), EAN-13 und GS1-14.",
@@ -766,7 +773,9 @@ const TRANSLATIONS = {
 		"ui.common.cancel"                  			: "Cancel",
         "ui.common.all"                                 : "All",
 		"ui.common.edit_item"							: "Edit item",
-        "ui.common.add_item"                  			: "Add item",
+		"ui.common.add_item"                  			: "Add item",
+		"ui.shopping.offer_only"                       : "Buy only when on sale",
+		"ui.shopping.offer_badge"                      : "On sale",
         "ui.common.description"                         : "Description",
         "ui.common.no_cat"                  			: "none",
 		"ui.common.delete"                  			: "Delete",
@@ -842,12 +851,12 @@ const TRANSLATIONS = {
         "ui.ean.database_quantity"                       : "Package quantity",
         "ui.ean.database_category"                       : "Category",
         "ui.ean.database_save"                           : "Save",
-        "ui.ean.database_reload_off"                     : "Update from Open Food Facts",
-        "ui.ean.database_loading_off"                    : "Loading data from Open Food Facts...",
-        "ui.ean.database_apply_off"                      : "Apply OFF data and save",
-        "ui.ean.database_off_preview"                    : "New data from Open Food Facts",
+        "ui.ean.database_reload_off"                     : "Update from Open Facts",
+        "ui.ean.database_loading_off"                    : "Loading data from Open Facts...",
+        "ui.ean.database_apply_off"                      : "Apply Open Facts data and save",
+        "ui.ean.database_off_preview"                    : "New data from Open Facts",
         "ui.ean.database_off_name_preserved"             : "Your saved item name is preserved. The original product name, brand, package quantity, and image are updated and saved immediately.",
-        "ui.ean.database_off_not_found"                  : "Open Food Facts did not return product data for this EAN.",
+        "ui.ean.database_off_not_found"                  : "Open Facts did not return product data for this EAN.",
         "ui.ean.database_delete_confirm"                 : "Delete this EAN database entry?",
         "ui.ean.database_delete_failed"                  : "The EAN database entry could not be deleted.",
         "ui.ean.database_name_required"                  : "Please enter a product name.",
@@ -885,8 +894,8 @@ const TRANSLATIONS = {
         "ui.ean.brand_in_name"                         : "The brand “{brand}” is already included in the product name and will not be appended again.",
         "ui.ean.database_entries_title"                : "EAN entries for {name}",
         "ui.ean.database_entries_badge"                : "Show {count} EAN entries",
-        "ui.ean.database_entry_refresh"                : "Update product data from Open Food Facts",
-        "ui.ean.database_entry_open_off"               : "Open product on Open Food Facts",
+        "ui.ean.database_entry_refresh"                : "Update product data from Open Facts",
+        "ui.ean.database_entry_open_off"               : "Open product on Open Facts",
         "ui.ean.database_entry_edit"                   : "Edit EAN product",
         "ui.ean.database_entry_updated"                : "Product data was updated.",
         "ui.ean.database_transfer_title"               : "Sync / Transfer",
@@ -1078,7 +1087,7 @@ const TRANSLATIONS = {
         "ui.todo.filter.undated"                        : "Undated",
         "ui.todo.filter.remember"                       : "Remember for this list",
         "ui.todo.filter.reset"                          : "Reset saved filter",
-        "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.", 
+        "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.",
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
@@ -1153,6 +1162,7 @@ const TRANSLATIONS = {
         "editor.labels.option_row_position"             : "Button row position",
         "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
         "editor.labels.show_admin_button"               : "Show admin options button",
+        "editor.labels.admin_button_admin_only"         : "Show admin button to administrators only",
         "editor.labels.notify_on_change"                : "Notify on change",
         "editor.labels.notify_on_change_all"            : "Send always full list",
         "editor.labels.notify_on_change_time"           : "Time before sending notifications",
@@ -1342,6 +1352,7 @@ const TRANSLATIONS = {
 		"editor.labels.show_plus_minus"                 : "Show plus/minus buttons",
         "editor.labels.acknowledge_deletion"            : "Ask for confirmation when deleting items",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
+        "editor.labels.shopping_offer_only_enabled"     : "Enable offer-only marking",
         "editor.labels.sub_text"                        : "Hint text below the input field",
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
         "editor.labels.longlived_token"                 : "Long-Lived Access Token (for access via export file)",
@@ -1398,7 +1409,8 @@ const TRANSLATIONS = {
         "editor.helpers.email_include_manual"           : "Send the full list by email when the message button on the card is pressed.",
         "editor.helpers.email_on_done"                  : "Also send an email when an item is marked completed.",
         "editor.helpers.email_delay"                    : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
-        "editor.helpers.show_admin_button"              : "Shows the admin button for browser data, dynamic categories, the EAN database, processing, and queues.", 
+        "editor.helpers.show_admin_button"              : "Shows the admin button for browser data, dynamic categories, the EAN database, processing, and queues.",
+        "editor.helpers.admin_button_admin_only"        : "Hides the admin button from users without Home Assistant administrator rights. Configured scanner, EAN, and queue functions continue to work; only access through this button is restricted. Default: Off.",
         "editor.helpers.notify_on_change"               : "Sends a notification via the configured notify entity whenever an item is added, edited, or removed.",
         "editor.helpers.notify_on_change_all"           : "Sends also the entire list with each notification, rather than just the changed item.",
         "editor.helpers.notify_on_change_time"          : "Defines (in seconds) how long to wait before sending a notification (entire list). This is useful when multiple changes are made in a short time to avoid sending too many notifications. Enter '0' (zero) to disable this feature.",
@@ -1406,8 +1418,8 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Also sends a notification when an item is marked as completed. Note: This may result in a large number of notifications if many items are marked as completed during shopping.",
         "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
         "editor.helpers.show_category_add_all"          : "Shows an 'All' chip inside expanded category chips. It opens a selection dialog so all or selected category items can be added at once.",
-        "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field.",
-        "editor.helpers.allow_suggestions"              : "Shows matching items from configured categories below the input. When Use EAN database in search suggestions is also enabled, EAN database products and EANs are included.",
+        "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field. For EAN items, the original product name and brand are searched as well.",
+        "editor.helpers.allow_suggestions"              : "Shows matching items from configured categories below the input. When Use EAN database in search suggestions is also enabled, saved product names, original product names, brands and EANs are included.",
         "editor.helpers.show_done_hidden_items_in_search": "Includes completed or hidden entries in search results in Shopping List and To-do modes. Inventory uses its own hidden-item function.",
         "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
         "editor.helpers.show_descriptions"              : "Shows descriptions in Shopping List and To-do modes when supported by the selected entity. Descriptions are not shown in Inventory mode.",
@@ -1420,7 +1432,7 @@ const TRANSLATIONS = {
         "editor.helpers.list_script_entity"             : "Sends the name, category, quantity, list entity and mode to the selected script. Changes made outside this card cannot be reported. The EAN script can be used in parallel.",
         "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with status and product data for EAN events. Details and example variables: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
         "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
-        "editor.helpers.ean_database_suggestions"        : "Adds product names and EANs from the EAN database to normal search suggestions. Show suggestions must also be enabled. Multiple EANs with the same product name are suggested only once.",
+        "editor.helpers.ean_database_suggestions"        : "Adds saved product names, original product names, brands and EANs from the EAN database to normal search suggestions. Show suggestions must also be enabled. Multiple EANs with the same product name are suggested only once.",
         "editor.helpers.show_ean_database_badge"         : "Shows a discreet barcode icon next to items with an exact matching product name. Select it to view all assigned EAN records.",
         "editor.helpers.ean_transfer_mode"               : "Controls whether this card sends bookings through a shared ISL transfer list, receives bookings for its own list, or does both. Default: Disabled.",
         "editor.helpers.ean_transfer_entity"             : "Separate to-do list reserved exclusively as the persistent ISL transfer queue. It must not also be a shopping list or EAN database and must support descriptions.",
@@ -1483,6 +1495,7 @@ const TRANSLATIONS = {
 		"editor.helpers.show_plus_minus"                : "Shows plus/minus buttons for changing quantities in Shopping List and Inventory modes. They are not available in To-do mode.",
 		"editor.helpers.acknowledge_deletion"           : "Shows a confirmation before deleting an item in Shopping List and Inventory modes. To-do mode uses its action dialog independently of this setting.",
         "editor.helpers.show_quantity_one"              : "Shows quantity 1 in Shopping List mode. Otherwise only the item name is shown when the quantity is 1.",
+        "editor.helpers.shopping_offer_only_enabled"    : "Shows the “Buy only when on sale” option in the Shopping List item editor and an on-sale badge in the list. Existing markings remain stored while disabled. Default: On.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
@@ -1493,7 +1506,7 @@ const TRANSLATIONS = {
 		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
         "editor.helpers.debug_mode"                     : "Writes additional diagnostic messages to the browser console. Should stay disabled during normal use.",
         "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the category while in To-Do mode if there are due items in that category.",
-        "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",       
+        "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",
         "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
         "editor.helpers.cat_double_sized_icon"          : "If the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
         "editor.helpers.show_cat_count"                 : "Shows the entry count next to each category. In Inventory mode, every displayed variant or group counts once. In To-do mode, the number before '/' counts entries that are not overdue or are already completed.",
@@ -1514,6 +1527,8 @@ const TRANSLATIONS = {
         "ui.common.all"                                             : "Todos",
         "ui.common.edit_item"                                       : "Editar elemento",
         "ui.common.add_item"                                        : "Añadir elemento",
+        "ui.shopping.offer_only"                                    : "Comprar solo si está en oferta",
+        "ui.shopping.offer_badge"                                   : "Oferta",
         "ui.common.description"                                     : "Descripción",
         "ui.common.no_cat"                                          : "Ninguna",
         "ui.common.delete"                                          : "Eliminar",
@@ -1587,12 +1602,12 @@ const TRANSLATIONS = {
         "ui.ean.database_quantity"                                  : "Cantidad del paquete",
         "ui.ean.database_category"                                  : "Categoría",
         "ui.ean.database_save"                                      : "Guardar",
-        "ui.ean.database_reload_off"                                : "Actualizar desde Open Food Facts",
-        "ui.ean.database_loading_off"                               : "Cargando datos de Open Food Facts...",
-        "ui.ean.database_apply_off"                                 : "Aplicar datos de Open Food Facts",
-        "ui.ean.database_off_preview"                               : "Vista previa de Open Food Facts",
+        "ui.ean.database_reload_off"                                : "Actualizar desde Open Facts",
+        "ui.ean.database_loading_off"                               : "Cargando datos de Open Facts...",
+        "ui.ean.database_apply_off"                                 : "Aplicar datos de Open Facts",
+        "ui.ean.database_off_preview"                               : "Vista previa de Open Facts",
         "ui.ean.database_off_name_preserved"                        : "Se conservó el nombre existente del producto.",
-        "ui.ean.database_off_not_found"                             : "No se encontró el producto en Open Food Facts.",
+        "ui.ean.database_off_not_found"                             : "No se encontró el producto en Open Facts.",
         "ui.ean.database_delete_confirm"                            : "¿Eliminar esta entrada EAN de la base de datos?",
         "ui.ean.database_delete_failed"                             : "No se pudo eliminar la entrada de la base de datos.",
         "ui.ean.database_name_required"                             : "Se requiere un nombre de producto.",
@@ -1631,7 +1646,7 @@ const TRANSLATIONS = {
         "ui.ean.database_entries_title"                             : "Entradas EAN de {name}",
         "ui.ean.database_entries_badge"                             : "Mostrar {count} entradas EAN",
         "ui.ean.database_entry_refresh"                             : "Actualizar datos",
-        "ui.ean.database_entry_open_off"                            : "Abrir en Open Food Facts",
+        "ui.ean.database_entry_open_off"                            : "Abrir en Open Facts",
         "ui.ean.database_entry_edit"                                : "Editar entrada de la base de datos",
         "ui.ean.database_entry_updated"                             : "Entrada de la base de datos guardada.",
         "ui.ean.database_transfer_title"                            : "Sincronización / Transferencia",
@@ -1896,6 +1911,7 @@ const TRANSLATIONS = {
         "editor.labels.option_row_position"                         : "Posición de la barra de botones",
         "editor.labels.allow_dynamic_categories"                    : "Permitir categorías dinámicas",
         "editor.labels.show_admin_button"                           : "Mostrar botón de opciones de administración",
+        "editor.labels.admin_button_admin_only"                     : "Mostrar el botón de administración solo a administradores",
         "editor.labels.notify_on_change"                            : "Notificar al cambiar",
         "editor.labels.notify_on_change_all"                        : "Enviar siempre la lista completa",
         "editor.labels.notify_on_change_time"                       : "Tiempo antes de enviar notificaciones",
@@ -2071,6 +2087,7 @@ const TRANSLATIONS = {
         "editor.labels.show_plus_minus"                             : "Mostrar botones más/menos",
         "editor.labels.acknowledge_deletion"                        : "Solicitar confirmación al eliminar elementos",
         "editor.labels.show_quantity_one"                           : "Mostrar cantidad 1",
+        "editor.labels.shopping_offer_only_enabled"                 : "Usar la marca «solo en oferta»",
         "editor.labels.sub_text"                                    : "Texto de sugerencia debajo del campo de entrada",
         "editor.labels.chips"                                       : "Chips por defecto (separados por coma o punto y coma)",
         "editor.labels.longlived_token"                             : "Token de acceso de larga duración (para acceso mediante archivo de exportación)",
@@ -2127,6 +2144,7 @@ const TRANSLATIONS = {
         "editor.helpers.email_on_done"                              : "También envía un correo al marcar un elemento como completado.",
         "editor.helpers.email_delay"                                : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
         "editor.helpers.show_admin_button"                          : "Muestra un botón de opciones de administración, que abre un diálogo para copiar chips del navegador, categorías dinámicas y elementos asignados manualmente.",
+        "editor.helpers.admin_button_admin_only"                    : "Oculta el botón de administración a los usuarios sin permisos de administrador de Home Assistant. Las funciones configuradas de escáner, EAN y cola siguen funcionando; solo se restringe el acceso mediante este botón. Predeterminado: desactivado.",
         "editor.helpers.notify_on_change"                           : "Envía una notificación mediante la entidad configurada cada vez que se añade, edita o elimina un elemento.",
         "editor.helpers.notify_on_change_all"                       : "Envía también la lista completa con cada notificación, en lugar de solo el elemento modificado.",
         "editor.helpers.notify_on_change_time"                      : "Define (en segundos) cuánto tiempo esperar antes de enviar una notificación (lista completa). Esto es útil cuando se realizan varios cambios en poco tiempo para evitar enviar demasiadas notificaciones. Introduce '0' (cero) para desactivar esta función.",
@@ -2134,8 +2152,8 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                             : "También envía una notificación cuando un elemento se marca como completado. Nota: Esto puede generar muchas notificaciones si se completan muchos elementos durante la compra.",
         "editor.helpers.show_category_chips"                        : "Genera automáticamente chips basados en los elementos asignados a una categoría. Cada categoría se muestra como un chip desplegable, siempre que contenga al menos un elemento.",
         "editor.helpers.show_category_add_all"                      : "Muestra un chip 'Todos' dentro de los chips de categoría expandidos. Abre un diálogo de selección para añadir todos o algunos elementos de la categoría a la vez.",
-        "editor.helpers.allow_filter"                               : "Permite filtrar los elementos de la lista mediante el campo de entrada.",
-        "editor.helpers.allow_suggestions"                          : "Muestra artículos coincidentes de las categorías configuradas. Si también se activa la base de datos EAN en las sugerencias, se incluyen sus productos y EAN.",
+        "editor.helpers.allow_filter"                               : "Permite filtrar los elementos de la lista mediante el campo de entrada. Para artículos EAN también se buscan el nombre original del producto y la marca.",
+        "editor.helpers.allow_suggestions"                          : "Muestra artículos coincidentes de las categorías configuradas. Si también se activa la base de datos EAN en las sugerencias, se incluyen nombres guardados y originales, marcas y EAN.",
         "editor.helpers.show_done_hidden_items_in_search"           : "Incluye elementos completados u ocultos en la búsqueda de Lista de la compra y Lista de tareas. Inventario usa su propia función de ocultación.",
         "editor.helpers.capitalize_first_letter"                    : "Si está activado, la primera letra del campo de entrada se pondrá automáticamente en mayúscula.",
         "editor.helpers.show_descriptions"                          : "Muestra descripciones en Lista de la compra y Lista de tareas si la entidad las admite. No se muestran en Inventario.",
@@ -2148,7 +2166,7 @@ const TRANSLATIONS = {
         "editor.helpers.list_script_entity"                         : "Envía el nombre, la categoría, la cantidad, la entidad de lista y el modo al script seleccionado. Los cambios realizados fuera de esta tarjeta no se pueden notificar. El script EAN se puede usar en paralelo.",
         "editor.helpers.ean_script_enabled"                         : "Llama al script seleccionado con el estado y los datos del producto. Información y variables de ejemplo: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
         "editor.helpers.ean_remove_mode"                            : "Mantén pulsado el botón Añadir durante un segundo para activar el modo de retirada. Los escaneos EAN reducirán la cantidad de un elemento coincidente o lo eliminarán de la lista. Un clic normal en el botón o recargar la página finaliza el modo. El botón Añadir debe estar visible.",
-        "editor.helpers.ean_database_suggestions"                   : "Añade productos y EAN de la base de datos a las sugerencias. También debe estar activado «Permitir sugerencias».",
+        "editor.helpers.ean_database_suggestions"                   : "Añade nombres guardados y originales, marcas y EAN de la base de datos a las sugerencias. También debe estar activado «Permitir sugerencias».",
         "editor.helpers.show_ean_database_badge"                    : "Muestra un icono discreto de código de barras junto a los elementos con coincidencia exacta. Al hacer clic, muestra todos los registros EAN asignados.",
         "editor.helpers.ean_transfer_mode"                          : "Determina si la tarjeta envía operaciones mediante una lista ISL compartida, las recibe para su propia lista o hace ambas cosas. Por defecto: desactivado.",
         "editor.helpers.ean_transfer_entity"                        : "Lista de tareas independiente reservada exclusivamente como cola de transferencia persistente ISL. No debe ser a la vez una lista de la compra ni una base de datos EAN, y debe admitir descripciones.",
@@ -2211,6 +2229,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_plus_minus"                            : "Muestra botones para cambiar la cantidad en los modos Lista de la compra e Inventario. No están disponibles en el modo Lista de tareas.",
         "editor.helpers.acknowledge_deletion"                       : "Muestra una confirmación antes de eliminar en Lista de la compra e Inventario. Lista de tareas usa siempre su propio diálogo de acciones.",
         "editor.helpers.show_quantity_one"                          : "Muestra la cantidad 1 en el modo Lista de la compra. Si está desactivado, con cantidad 1 solo se muestra el nombre.",
+        "editor.helpers.shopping_offer_only_enabled"                : "Muestra la opción «Comprar solo si está en oferta» en el editor de artículos de la lista de la compra y una etiqueta de oferta en la lista. Las marcas existentes se conservan al desactivarla. Predeterminado: activado.",
         "editor.helpers.sub_text"                                   : "Texto mostrado debajo del campo de entrada para sugerencias o explicaciones. Se permite HTML. Usa un solo espacio para ocultar el campo.",
         "editor.helpers.chips"                                      : "Define los chips por defecto, ej. 'Leche,Huevos,Pan'.",
         "editor.helpers.chip_file"                                  : "Ejemplo: /local/chips.txt si el archivo se encuentra en la carpeta www. Se requiere un chip por línea.",
@@ -2244,7 +2263,9 @@ const TRANSLATIONS = {
         "ui.common.all"                                 : "Tous",
         "ui.common.description"                         : "Description",
         "ui.common.edit_item"                           : "Modifier l'article",
-        "ui.common.add_item"                            : "Ajouter un article",
+		"ui.common.add_item"                            : "Ajouter un article",
+		"ui.shopping.offer_only"                       : "Acheter seulement en promotion",
+		"ui.shopping.offer_badge"                      : "Promotion",
         "ui.common.no_cat"                              : "Aucune",
         "ui.common.delete"                              : "Supprimer",
         "ui.common.sync_to_ha"                          : "Envoyer les modifications à Home Assistant",
@@ -2392,6 +2413,7 @@ const TRANSLATIONS = {
         "editor.labels.option_row_position"             : "Position de la ligne de boutons",
         "editor.labels.allow_dynamic_categories"        : "Autoriser les catégories dynamiques",
         "editor.labels.show_admin_button"               : "Afficher le bouton des options d'administration",
+        "editor.labels.admin_button_admin_only"         : "Afficher le bouton d’administration uniquement aux administrateurs",
         "editor.labels.notify_on_change"                : "Notifier en cas de modification",
         "editor.labels.notify_on_change_all"            : "Toujours envoyer la liste complète",
         "editor.labels.notify_on_change_time"           : "Délai avant d'envoyer les notifications",
@@ -2539,6 +2561,7 @@ const TRANSLATIONS = {
         "editor.labels.show_plus_minus"                 : "Afficher les boutons plus/moins",
         "editor.labels.acknowledge_deletion"            : "Demander confirmation avant suppression",
         "editor.labels.show_quantity_one"               : "Afficher la quantité 1",
+        "editor.labels.shopping_offer_only_enabled"     : "Utiliser le marquage « promotion uniquement »",
         "editor.labels.sub_text"                        : "Texte d'indication sous le champ de saisie",
         "editor.labels.chips"                           : "Chips par défaut (séparés par des virgules ou points-virgules)",
         "editor.labels.longlived_token"                 : "Jeton d'accès longue durée (pour l'accès via l'exportation)",
@@ -2597,6 +2620,7 @@ const TRANSLATIONS = {
         "editor.helpers.email_on_done"                  : "Envoie aussi un e-mail lorsqu'un article est marqué comme terminé.",
         "editor.helpers.email_delay"                    : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
         "editor.helpers.show_admin_button"              : "Affiche un bouton d'options d'administration, ouvrant un dialogue pour copier les chips du navigateur, les catégories dynamiques et les articles assignés manuellement.",
+        "editor.helpers.admin_button_admin_only"        : "Masque le bouton d’administration pour les utilisateurs sans droits d’administrateur Home Assistant. Les fonctions configurées de scanner, EAN et de file d’attente continuent de fonctionner ; seul l’accès par ce bouton est limité. Par défaut : désactivé.",
         "editor.helpers.notify_on_change"               : "Envoie une notification via l'entité notify configurée chaque fois qu'un article est ajouté, modifié ou supprimé.",
         "editor.helpers.notify_on_change_all"           : "Envoie systématiquement la liste complète à chaque notification, plutôt que le seul article modifié.",
         "editor.helpers.notify_on_change_time"          : "Définit (en secondes) le temps d'attente avant l'envoi d'une notification (liste complète). Utile lors de modifications multiples en peu de temps pour éviter les spams. Entrez « 0 » (zéro) pour désactiver cette fonction.",
@@ -2604,7 +2628,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Envoie également une notification lorsqu'un article est marqué comme terminé. Attention : cela peut générer beaucoup de notifications si de nombreux articles sont cochés lors des courses.",
         "editor.helpers.show_category_chips"            : "Génère automatiquement des chips à partir des articles assignés à une catégorie. Chaque catégorie est affichée comme un chip extensible si elle contient au moins un article.",
         "editor.helpers.show_category_add_all"          : "Affiche un chip « Tous » dans les chips de catégorie ouverts. Il ouvre une fenêtre de sélection permettant d'ajouter tous les articles de la catégorie ou seulement ceux sélectionnés.",
-        "editor.helpers.allow_filter"                   : "Permet de filtrer les articles de la liste via le champ de saisie.",
+        "editor.helpers.allow_filter"                   : "Permet de filtrer les articles de la liste via le champ de saisie. Pour les articles EAN, le nom d’origine du produit et la marque sont également recherchés.",
         "editor.helpers.allow_suggestions"              : "Affiche des suggestions sous le champ de saisie lorsque le texte correspond à un article configuré dans une catégorie.",
         "editor.helpers.show_done_hidden_items_in_search": "Inclut les entrées terminées ou masquées dans la recherche en modes liste de courses et liste de tâches. L’inventaire utilise sa propre fonction.",
         "editor.helpers.capitalize_first_letter"        : "Si activé, la première lettre dans le champ de saisie sera automatiquement mise en majuscule.",
@@ -2664,6 +2688,7 @@ const TRANSLATIONS = {
         "editor.helpers.show_plus_minus"                : "Affiche les boutons de quantité en modes liste de courses et inventaire. Ils ne sont pas disponibles en mode liste de tâches.",
         "editor.helpers.acknowledge_deletion"           : "Affiche une confirmation avant la suppression en modes liste de courses et inventaire. Le mode liste de tâches utilise toujours sa fenêtre d’actions.",
         "editor.helpers.show_quantity_one"              : "Affiche la quantité 1 en mode liste de courses. Sinon, seul le nom est affiché lorsque la quantité vaut 1.",
+        "editor.helpers.shopping_offer_only_enabled"    : "Affiche l’option « Acheter uniquement en promotion » dans l’éditeur d’article de la liste de courses et un badge de promotion dans la liste. Les marquages existants restent enregistrés lorsque l’option est désactivée. Par défaut : activé.",
         "editor.helpers.sub_text"                       : "Texte affiché sous le champ de saisie pour des astuces ou explications. Le HTML est autorisé. Utilisez un espace simple pour masquer le champ.",
         "editor.helpers.chips"                          : "Définit les chips par défaut, ex. « Lait,Œufs,Pain ».",
         "editor.helpers.chip_file"                      : "Exemple : /local/chips.txt si le fichier se trouve dans le dossier www. Un chip par ligne est requis.",
@@ -2683,7 +2708,7 @@ const TRANSLATIONS = {
         "editor.helpers.external_url"                   : "L'URL externe de votre installation Home Assistant. Requise si vous utilisez l'exportation pour synchroniser les articles plus tard avec Home Assistant.",
         "editor.helpers.categories"                     : "Les catégories vous permettent de regrouper automatiquement les articles. Chaque catégorie commence par - name: <NomCatégorie> et contient une liste de mots-clés sous « items ».",
         "editor.helpers.dishes"                         : "Avec les plats, vous pouvez ajouter plusieurs articles en une seule fois. Chaque plat commence par - name: <Plat> et contient une liste d'articles sous « items ». Chaque plat peut en option avoir une couleur de fond (bgcolor)."
-    }    
+    }
 };
 
 let debugMode = false;
@@ -2705,7 +2730,7 @@ function detectLanguage() {
     return lang;
 }
 
-// translate-Function 
+// translate-Function
 function translate(key) {
     const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
@@ -2810,6 +2835,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._inventoryModeResetDeadline = null;
 
         this._refreshDebounceTimer = null;
+        this._refreshRequestId = 0;
+        this._refreshFailureCount = 0;
         this._dragSortActive = false;
         this._pendingRefreshAfterDrag = false;
 
@@ -2870,7 +2897,7 @@ class HaShoppingListImproved extends HTMLElement {
             });
         }
     }
-    
+
 	setConfig(config){
 	    this._config = config || {};
 
@@ -2900,6 +2927,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showInputMask         = (config.show_input_mask === false) ? false : true;
         this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
+        this._shoppingOfferOnlyEnabled = config.shopping_offer_only_enabled !== false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
         this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel", "none"].includes(config.chips_position) ? config.chips_position : "auto";
 		this._chipWidth             = (["full", "auto_panel"].includes(this._chipPosition) && typeof config.chips_width === "number") ? `${config.chips_width}px` : "300px";
@@ -2935,6 +2963,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._showAdminButton       = (config.show_admin_button === false) ? false : true;
+        this._adminButtonAdminOnly  = config.admin_button_admin_only === true;
         this._showMessageButton     = (config.show_message_button === true) ? true : false;
         this._showClearButton       = (config.show_clear_button === false) ? false : true;
         this._longLivedToken        = config.longlived_token || "";
@@ -3004,7 +3033,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showDescriptions      = (config.show_descriptions === true) ? true : false;
         this._ownCss                = (config.own_css || "").toString();
         debugMode                   = config.debug_mode === true;
-        
+
         const allowedModes = [
             // 1 Cat
             "local_only", "standard_only", // old
@@ -3173,14 +3202,14 @@ class HaShoppingListImproved extends HTMLElement {
         } else {
             this._defaultChips = [];
         }
-        
+
         // parse categories
 		if (config.categories) {
 			this._categories = this._parseCategories(config.categories);
 		} else {
 			this._categories = [];
 		}
-		
+
 		// parse dishes _parseDishes(dishesArray)
 		if (config.dishes) {
 			this._dishes = this._parseDishes(config.dishes);
@@ -3191,7 +3220,7 @@ class HaShoppingListImproved extends HTMLElement {
         // load Global Chips
         this._globalChips = [];
         this._loadGlobalChipsFromFile();
-		
+
 		// load Global Categories
 		this._globalCategories = [];
         this._loadGlobalCategoriesFromFile();
@@ -3246,7 +3275,7 @@ class HaShoppingListImproved extends HTMLElement {
             console.warn("[ha-shopping-list-improved] Unable to load global chips:", err);
         }
     }
-	
+
     // Local EAN
     async _loadLocalEANFromFile() {
         if (!this._eanFile || !this._eanFile.trim()) {
@@ -3413,6 +3442,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
                     { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
                     { name: "show_admin_button", selector: { boolean: {} }, default: true },
+                    { name: "admin_button_admin_only", selector: { boolean: {} }, default: false },
                     { name: "bubble_card", selector: { boolean: {} }, default: false },
                     { name: "debug_mode", selector: { boolean: {} }, default: false }
                 ]
@@ -3425,6 +3455,7 @@ class HaShoppingListImproved extends HTMLElement {
                 icon: 'mdi:cart-outline',
                 schema: [
                     { name: "show_quantity_one", selector: { boolean: {} }, default: false },
+                    { name: "shopping_offer_only_enabled", selector: { boolean: {} }, default: true },
                     { name: "ean_remove_mode", selector: { boolean: {} }, default: false },
                     {
                         type: 'expandable',
@@ -3852,7 +3883,7 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_cat_popup", selector: { boolean: {} }, default: true },
                     { name: "show_cat_count", selector: { boolean: {} }, default: true },
                     { name: "hide_cat_count_all_done", selector: { boolean: {} }, default: false },
-                    { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },    
+                    { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },
                     {
                         name: "category_display",
                         label: translate("editor.labels.category_display"),
@@ -4058,7 +4089,7 @@ class HaShoppingListImproved extends HTMLElement {
                 type: 'expandable',
                 label: 'export.options',
                 icon: 'mdi:file-export',
-                schema: [           
+                schema: [
                     { name: "show_export_button_pdf", selector: { boolean: {} }, default: false },
                     { name: "show_export_button", selector: { boolean: {} }, default: false },
                     {
@@ -4462,6 +4493,9 @@ class HaShoppingListImproved extends HTMLElement {
             clearTimeout(this._refreshDebounceTimer);
             this._refreshDebounceTimer = null;
         }
+        // Ignore responses from refresh requests that started before the card
+        // left the dashboard view.
+        this._refreshRequestId += 1;
 
         if (this._eanLongPressTimer) {
             clearTimeout(this._eanLongPressTimer);
@@ -5835,6 +5869,25 @@ class HaShoppingListImproved extends HTMLElement {
         return key ? [...(this._eanDatabaseByName?.get(key) || [])] : [];
     }
 
+    _matchesSearchValues(values, query) {
+        const searchWords = this._removeDiacritics(String(query || '').trim().toLocaleLowerCase())
+            .split(/\s+/)
+            .filter(Boolean);
+        if (!searchWords.length) return true;
+
+        const normalizedValues = (Array.isArray(values) ? values : [values])
+            .filter(value => value !== null && value !== undefined && String(value).trim())
+            .map(value => this._removeDiacritics(String(value).toLocaleLowerCase()));
+
+        return searchWords.every(word => normalizedValues.some(value => value.includes(word)));
+    }
+
+    _getEanDatabaseSearchValuesByName(name) {
+        return this._getEanDatabaseEntriesByName(name)
+            .flatMap(product => [product.originalName, product.brand])
+            .filter(Boolean);
+    }
+
     _setEanDatabaseItems(items) {
         const database = new Map();
         const invalidItems = [];
@@ -6604,7 +6657,7 @@ class HaShoppingListImproved extends HTMLElement {
                     reloadIcon.setAttribute('icon', 'mdi:loading');
                     offStatus.textContent = translate("ui.ean.database_loading_off");
                     offStatus.style.color = 'var(--secondary-text-color, #666)';
-                    const offProduct = await this._checkEAN(record.ean, { openFoodFactsOnly: true });
+                    const offProduct = await this._checkEAN(record.ean, { openFactsOnly: true });
                     reloadBtn.disabled = false;
                     reloadIcon.setAttribute('icon', 'mdi:refresh');
 
@@ -6757,13 +6810,17 @@ class HaShoppingListImproved extends HTMLElement {
                 content.appendChild(productList);
 
                 const updateProducts = () => {
-                    const query = String(search.value || '').trim().toLocaleLowerCase();
+                    const query = String(search.value || '').trim();
                     const products = [...(this._eanDatabase?.values() || [])]
                         .filter(product => {
                             if (!query) return true;
-                            return [product.name, product.brand, product.category]
-                                .filter(Boolean)
-                                .some(value => String(value).toLocaleLowerCase().includes(query));
+                            return this._matchesSearchValues([
+                                product.name,
+                                product.originalName,
+                                product.brand,
+                                product.category,
+                                product.ean
+                            ], query);
                         })
                         .sort((a, b) => {
                             if (sort.value === 'category') {
@@ -7176,6 +7233,10 @@ class HaShoppingListImproved extends HTMLElement {
             this._activeEanScanProcessedQuantity = null;
             this._eanQueuePopupStatusEl = null;
             this._eanQueueProcessing = false;
+            // Scan processing can finish after the service event refresh has
+            // already rendered with the temporary EAN filter still active.
+            // Refresh once more after the input has been cleared.
+            this._scheduleRefresh(300, "ean_queue_finished", this._entity);
         }
     }
 
@@ -7251,6 +7312,7 @@ class HaShoppingListImproved extends HTMLElement {
             mode: this._mode,
             ean: ean || "",
             is_ean: Boolean(ean) || (variant && !variant.legacy ? Boolean(variant.ean) : products.length > 0),
+            offer_only: this._mode === "shopping" && this._isOfferOnly(rawName),
             action: status
         };
         if (previousItem) {
@@ -7306,6 +7368,14 @@ class HaShoppingListImproved extends HTMLElement {
                         if (oldName !== newName) await this._runListScript("item_renamed", next, previous);
                         if (this._mode !== "todo" && this._getQuantity(previous.summary) !== this._getQuantity(next.summary)) {
                             await this._runListScript("quantity_changed", next, previous);
+                        }
+                        if (
+                            this._mode === "shopping" &&
+                            this._isOfferOnly(previous.summary) !== this._isOfferOnly(next.summary)
+                        ) {
+                            await this._runListScript("offer_only_changed", next, previous, {
+                                previous_offer_only: this._isOfferOnly(previous.summary)
+                            });
                         }
                     }
                 }
@@ -7525,6 +7595,8 @@ class HaShoppingListImproved extends HTMLElement {
         const style = document.createElement('style');
         // _chipPosition = "auto" | "bottom" | "right" | "auto_panel"
         const containerClass = `list-history-container ${this._chipPosition}`;
+        const showAdminButton = this._showAdminButton &&
+            (!this._adminButtonAdminOnly || this._hass.user?.is_admin === true);
 
         style.textContent = `
             :host { font-family: var(--font-family, Roboto, Noto, sans-serif); display:block; }
@@ -7636,7 +7708,7 @@ class HaShoppingListImproved extends HTMLElement {
                     flex-wrap: nowrap;
                 }
             }
-			
+
 			/* Auto Panel: Chips right if size > 700px, otherwise bottom */
 			@media (min-width: 700px) {
 				.list-history-container.auto_panel {
@@ -7919,7 +7991,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                         <div id="optionRowRight" style="display:flex; justify-content:flex-end; align-items:center; gap:6px;">
                             ${this._showMessageButton   ? `<button id="msgBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2709;&#xFE0F;</button> ` : ``}
-                            ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
+                            ${showAdminButton           ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
                             ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button>`  : ``}
                             ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button>` : ``}
                             ${this._showClearButton     ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
@@ -8012,7 +8084,7 @@ class HaShoppingListImproved extends HTMLElement {
 		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
         if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
         if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
-        if (this._showAdminButton)     this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
+        if (showAdminButton)           this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
         if (this._showMessageButton)   this._shadow.getElementById('msgBtn').addEventListener('click', () => this._notifyButtonPressed());
         if (this._mode === "todo" && this._showTodoFilterMenu) {
             this._shadow.getElementById('todoFilterBtn')?.addEventListener('click', () => this._openTodoFilterPopup());
@@ -8066,7 +8138,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._updateEanScanModeUi();
 
         this._renderHistory();
-		
+
         // Bubble Card WorkAround
         if(this._bubbleCardMode){
             this._onBubbleResize();
@@ -8883,9 +8955,9 @@ async _checkEAN(text, options = {}) {
         };
     }
 
-    const openFoodFactsOnly = options?.openFoodFactsOnly === true;
+    const openFactsOnly = options?.openFactsOnly === true;
 
-    if (!openFoodFactsOnly) {
+    if (!openFactsOnly) {
         // ---------------------------------------------------------
         // 1. Check the configured Home Assistant EAN database
         // ---------------------------------------------------------
@@ -8930,14 +9002,14 @@ async _checkEAN(text, options = {}) {
     }
 
     // ---------------------------------------------------------
-    // 3. Open Food Facts
+    // 3. Universal Open Facts lookup (food, pet food, beauty and products)
     // Internet lookup currently only for EAN-13
     // ---------------------------------------------------------
 
     const eanRegexOnline = /^\d{13}$/;
 
     if (!eanRegexOnline.test(text)) {
-        if (openFoodFactsOnly) return null;
+        if (openFactsOnly) return null;
         return {
             name: text,
             originalName: null,
@@ -8955,7 +9027,8 @@ async _checkEAN(text, options = {}) {
         "quantity",
         "product_quantity",
         "product_quantity_unit",
-        "image_front_thumb_url"
+        "image_front_thumb_url",
+        "product_type"
     ];
 
     const lang = detectLanguage();
@@ -8966,8 +9039,8 @@ async _checkEAN(text, options = {}) {
     }
 
     const url =
-        `https://world.openfoodfacts.org/api/v2/product/${text}.json` +
-        `?fields=${encodeURIComponent(fields.join(","))}`;
+        `https://world.openfoodfacts.org/api/v3/product/${text}.json` +
+        `?product_type=all&fields=${encodeURIComponent(fields.join(","))}`;
 
     try {
 
@@ -8979,13 +9052,13 @@ async _checkEAN(text, options = {}) {
         });
 
         if (!response.ok) {
-            console.error(`[EAN] Open Food Facts HTTP error: ${response.status}`);
+            console.error(`[EAN] Open Facts HTTP error: ${response.status}`);
             return null;
         }
 
         const data = await response.json();
 
-        if (data.status !== 1 || !data.product) {
+        if (!data.product) {
             return null;
         }
 
@@ -9095,8 +9168,9 @@ async _checkEAN(text, options = {}) {
             p.image_front_thumb_url || null;
 
         if (debugMode) {
-            console.log("[EAN] Open Food Facts product:", {
+            console.log("[EAN] Open Facts product:", {
                 ean: text,
+                productType: p.product_type || null,
                 name: cleanName,
                 brand,
                 quantity,
@@ -9116,7 +9190,7 @@ async _checkEAN(text, options = {}) {
     } catch (error) {
 
         console.error(
-            "[EAN] Error while requesting Open Food Facts:",
+            "[EAN] Error while requesting Open Facts:",
             error
         );
 
@@ -9130,9 +9204,9 @@ async _checkEAN(text, options = {}) {
 			if (debugMode) console.warn("[ha-shopping-list-improved][DEBUG] Scan ignored to avoid duplicates");
 			return;
 		}
-		
+
 		await this._stopScan();
-		
+
 		this._addingBusyQR = true;
 
 		if (debugMode) console.log(`Scan result: ${decodedText}`, decodedResult);
@@ -9247,7 +9321,7 @@ async _checkEAN(text, options = {}) {
                 this._stopScan().catch(err => {
                     console.error("Error during scanner cleanup:", err);
                 });
-            }; 
+            };
 
 			wrapperDiv.appendChild(closeButton);
 		}
@@ -9331,15 +9405,15 @@ async _checkEAN(text, options = {}) {
                 scanFileLink.style.fontSize = "20px";
                 scanFileLink.style.fontWeight = "bold";
             }
-            
+
             const scanFileSpan = document.getElementById("html5-qrcode-anchor-scan-type-change");
             if (scanFileSpan) {
                 scanFileSpan.style.fontSize = "20px";
-                scanFileSpan.style.fontWeight = "bold"; 
+                scanFileSpan.style.fontWeight = "bold";
                 scanFileSpan.className = "qr-close-btn";
                 scanFileSpan.style.textDecoration = "none";
                 scanFileSpan.style.display = "inline-flex";
-                scanFileSpan.style.alignItems = "center"; 
+                scanFileSpan.style.alignItems = "center";
                 scanFileSpan.style.justifyContent = "center";
                 scanFileSpan.style.height = "36px";
                 scanFileSpan.style.padding = "0 16px";
@@ -9445,6 +9519,21 @@ async _checkEAN(text, options = {}) {
 		if (!this._hass) return;
         if(debugMode) console.debug("[ha-shopping-list-improved] _refresh() called");
 
+        const requestId = ++this._refreshRequestId;
+        const requestedEntity = this._entity;
+
+        const retryLatestRefresh = (reason) => {
+            if (requestId !== this._refreshRequestId || requestedEntity !== this._entity) return;
+            this._refreshFailureCount += 1;
+            if (this._refreshFailureCount <= 3) {
+                this._scheduleRefresh(
+                    250 * this._refreshFailureCount,
+                    reason,
+                    requestedEntity
+                );
+            }
+        };
+
         try {
             const msg = {
                 type: "call_service",
@@ -9457,16 +9546,23 @@ async _checkEAN(text, options = {}) {
 
             const wsResponse = await this._hass.connection.sendMessagePromise(msg);
 
+            // A newer refresh has already started. Its result is authoritative,
+            // regardless of the order in which Home Assistant answers.
+            if (requestId !== this._refreshRequestId || requestedEntity !== this._entity) return false;
+
             if (debugMode) console.debug("[ha-shopping-list-improved] Raw WS response:", wsResponse);
 
             const entityData = wsResponse.response?.[this._entity];
 
             if (!entityData || !Array.isArray(entityData.items)) {
                 console.warn("[ha-shopping-list-improved] No valid todo items found in entity:", this._entity);
-                this._items = [];
-                this._renderList();
-                return;
+                // Keep the last valid list visible. A short-lived invalid
+                // response must not replace it with an empty card.
+                retryLatestRefresh("invalid_todo_response");
+                return false;
             }
+
+            this._refreshFailureCount = 0;
 
             if (debugMode) console.debug("[ha-shopping-list-improved] Extracted todo items:", entityData.items);
 
@@ -9505,8 +9601,12 @@ async _checkEAN(text, options = {}) {
             this._addDynamicCategories(this._items);
 
             this._renderList();
+            return true;
         } catch (err) {
+            if (requestId !== this._refreshRequestId || requestedEntity !== this._entity) return false;
             console.error("[ha-shopping-list-improved]: unable to load items via API", err);
+            retryLatestRefresh("todo_refresh_error");
+            return false;
         }
     }
 
@@ -11227,7 +11327,16 @@ async _checkEAN(text, options = {}) {
         if(this._allowFilter && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
             // show also done items when filtering (if enabled) in this._showDoneItemsInSearch
             showHidden = this._showDoneItemsInSearch;
-            itemsToRender = itemsToRender.filter(i => i.name && i.name.trim().toLowerCase().includes(this._inputEl.value.trim().toLowerCase()));
+            const query = this._inputEl.value.trim();
+            itemsToRender = itemsToRender.filter(item => {
+                if (!item.name) return false;
+                const productName = this._getNameOnly(item.name);
+                return this._matchesSearchValues([
+                    item.name,
+                    productName,
+                    ...this._getEanDatabaseSearchValuesByName(productName)
+                ], query);
+            });
         }
 
         if (!showHidden) {
@@ -11314,7 +11423,7 @@ async _checkEAN(text, options = {}) {
             if (categoryFromName) return false;
 
             // Check if in any category config
-            return !this._categories.some(c => 
+            return !this._categories.some(c =>
                 c.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())
             );
         });
@@ -11335,7 +11444,7 @@ async _checkEAN(text, options = {}) {
                 }).length;
 
                 const futureItemsWithDue = uncategorized
-                    .filter(i => !i.complete) 
+                    .filter(i => !i.complete)
                     .filter(i => i.due)
                     .map(i => ({
                         dueDate: new Date(i.due),
@@ -11368,7 +11477,7 @@ async _checkEAN(text, options = {}) {
             } else {
                 done = uncategorized.filter(i => i.complete).length;
             }
-            
+
             if(debugMode) console.log("WithOutCategory - Nearest Due Date (formatted):", nearestDueDate);
 
             const storageKey = `${this._entity}_category_no_category`;
@@ -11545,11 +11654,11 @@ async _checkEAN(text, options = {}) {
                     }).length;
 
                     const futureItemsWithDue = catItems
-                        .filter(i => !i.complete) 
+                        .filter(i => !i.complete)
                         .filter(i => i.due)
-                        .map(i => ({ 
-                            dueDate: new Date(i.due), 
-                            dueString: i.due 
+                        .map(i => ({
+                            dueDate: new Date(i.due),
+                            dueString: i.due
                         }))
                         .filter(d => d.dueDate > now);
 
@@ -11653,7 +11762,7 @@ async _checkEAN(text, options = {}) {
                 }
 
                 textContainer.appendChild(firstRow);
-                
+
                 if (this._mode === "todo" && nearestDueDate &&  this._showCatNextDue) {
                     const smallerFontSize = getSmallerFontSize(this._catFontSize, 0.8, 14);
 
@@ -11784,14 +11893,14 @@ async _checkEAN(text, options = {}) {
 
     // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
     _getCategory(name) {
-        name = this._removeSortIndex(name);
+        name = this._removeSortIndex(this._stripOfferOnlyMarker(name));
         const match = name.match(/^@(.+?)@\s*/);
         return match ? match[1] : null;
     }
 
     // Extract Quantity, e.g. "@Obst@ 2× Apfel" -> 2, "Apfel (3)" -> 3
     _getQuantity(name) {
-        name = this._removeSortIndex(name);
+        name = this._removeSortIndex(this._stripOfferOnlyMarker(name));
         const nameWithoutCat = name.replace(/^@.+?@\s*/, '');
         const match = nameWithoutCat.match(/^(\d+)×\s*/) || nameWithoutCat.match(/\((\d+)\)$/);
         return match ? parseInt(match[1], 10) : 1;
@@ -11799,12 +11908,29 @@ async _checkEAN(text, options = {}) {
 
     // Extract the name without category and quantity
     _getNameOnly(name) {
-        let n = this._removeSortIndex(name);         // Sort Index
+        let n = this._removeSortIndex(this._stripOfferOnlyMarker(name)); // Metadata + sort index
         n = n.replace(/^@.+?@\s*/, '');              // Category
         n = n.replace(/^(\d+)×\s*/, '');             // Quantity beginning
         n = n.replace(/\s*\(\d+\)$/, '');            // Quantity end
         n = n.replace(/\s*\{\{.*?\}\}\s*$/, '');     // Intervall {{…}}
         return n.trim();
+    }
+
+    _isOfferOnly(name) {
+        return String(name || '').toLocaleUpperCase().includes(SHOPPING_OFFER_ONLY_MARKER);
+    }
+
+    _stripOfferOnlyMarker(name) {
+        return String(name || '')
+            .replace(/\s*\[\[ISL:OFFER_ONLY\]\]\s*/gi, ' ')
+            .trim();
+    }
+
+    _setOfferOnlyMarker(name, enabled) {
+        const cleanName = this._stripOfferOnlyMarker(name);
+        return enabled && cleanName
+            ? `${cleanName} ${SHOPPING_OFFER_ONLY_MARKER}`
+            : cleanName;
     }
 
     // Intervall (e. g. "23D" from {{23D}})
@@ -11830,7 +11956,11 @@ async _checkEAN(text, options = {}) {
 
     _preserveSortIndex(originalName, newName) {
         const sortIndex = this._getSortIndex(originalName);
-        return sortIndex ? this._applySortIndex(newName, sortIndex) : newName;
+        const withMetadata = this._setOfferOnlyMarker(
+            newName,
+            this._isOfferOnly(originalName) || this._isOfferOnly(newName)
+        );
+        return sortIndex ? this._applySortIndex(withMetadata, sortIndex) : withMetadata;
     }
 
     _isListFilterActive() {
@@ -12014,7 +12144,7 @@ async _checkEAN(text, options = {}) {
 
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
-    }   
+    }
 
     _parseTodoDueDate(due) {
         if (!due) return null;
@@ -12145,7 +12275,7 @@ async _checkEAN(text, options = {}) {
         if(debugMode) console.log("User locale for due date formatting:", userLocale);
         if(debugMode) console.log("User locale (hass) for due date formatting:", this._hass?.language);
         if(debugMode) console.log("User locale (navigator) for due date formatting:", navigator.language);
-        
+
         const uses12HourFormat = (locale) => {
             const dtf = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
             return dtf.resolvedOptions().hour12;
@@ -12181,7 +12311,7 @@ async _checkEAN(text, options = {}) {
      * available and fall back to a native `<textarea>` otherwise. The fallback
      * is styled with Home Assistant theme variables so it follows the active
      * theme as closely as possible and avoids hard-coded light/dark colors.
-     */ 
+     */
     _createDescriptionTextarea(value = "") {
         const label = translate("ui.common.description");
 
@@ -12883,6 +13013,23 @@ async _checkEAN(text, options = {}) {
                 inventoryGroupMinimumControls.appendChild(groupMinimumHelp);
             }
 
+            // Shopping-list-only metadata. It belongs to the visible list entry,
+            // not to an EAN product or inventory variant.
+            const supportsOfferOnly = this._mode === "shopping" && this._shoppingOfferOnlyEnabled && !isDatabaseEanPopup;
+            let offerOnlyContainer = null;
+            let offerOnlyInput = null;
+            if (supportsOfferOnly) {
+                offerOnlyContainer = document.createElement('label');
+                offerOnlyContainer.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;margin:-2px 0 12px;text-align:left;cursor:pointer;';
+                offerOnlyInput = document.createElement('input');
+                offerOnlyInput.type = 'checkbox';
+                offerOnlyInput.checked = this._isOfferOnly(currentName);
+                const offerOnlyText = document.createElement('span');
+                offerOnlyText.textContent = translate("ui.shopping.offer_only");
+                offerOnlyContainer.appendChild(offerOnlyInput);
+                offerOnlyContainer.appendChild(offerOnlyText);
+            }
+
             // Description Input, only if supported by the selected todo entity
             const supportsDescription = this._mode !== "inventory" && this._supportsTodoDescription();
             let descriptionContainer = null;
@@ -13158,10 +13305,11 @@ async _checkEAN(text, options = {}) {
             if (eanMinimumControls) popup.appendChild(eanMinimumControls);
             if (inventoryGroupControls) popup.appendChild(inventoryGroupControls);
             if (inventoryGroupMinimumControls) popup.appendChild(inventoryGroupMinimumControls);
+            if (offerOnlyContainer) popup.appendChild(offerOnlyContainer);
             if (descriptionContainer) popup.appendChild(descriptionContainer);
             popup.appendChild(catContainer);
             if(this._allowDynamicCats) popup.appendChild(dynamicCategory);
-            
+
             // TooDo Mode
             let intervalInput;
             let intervalUnitSelect;
@@ -13358,13 +13506,13 @@ async _checkEAN(text, options = {}) {
 							dueTimeInput.value = obj.time;
 							intervalInput.value = obj.intervalInput || '';
 							intervalUnitSelect.value = obj.intervalUnitSelect || '';
-							
+
 							if (obj.selectedCategory !== undefined) {
 								// select the chip - optically
 								selectCategoryChip(obj.selectedCategory);
 								selectedCategory = obj.selectedCategory;
-							}							
-							
+							}
+
 							if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded due date/time from localStorage:", obj);
 						} else {
 							alert('Saved data in localStorage is invalid');
@@ -13511,6 +13659,11 @@ async _checkEAN(text, options = {}) {
                 }
 
                 let result = { name: finalName };
+
+                if (offerOnlyInput) {
+                    result.offer_only = offerOnlyInput.checked;
+                    result.name = this._setOfferOnlyMarker(result.name, offerOnlyInput.checked);
+                }
 
                 if (hasEditableQuantity) {
                     result.previous_quantity = qty;
@@ -13820,7 +13973,7 @@ async _checkEAN(text, options = {}) {
                 refreshBtn.appendChild(refreshIcon);
 
                 const offLink = document.createElement('a');
-                offLink.href = `https://world.openfoodfacts.org/product/${encodeURIComponent(product.ean)}`;
+                offLink.href = `https://world.openfoodfacts.org/product/${encodeURIComponent(product.ean)}?product_type=all`;
                 offLink.target = '_blank';
                 offLink.rel = 'noopener noreferrer';
                 offLink.title = translate("ui.ean.database_entry_open_off");
@@ -13857,7 +14010,7 @@ async _checkEAN(text, options = {}) {
                     actionStatus.style.color = 'var(--secondary-text-color, #666)';
                     actionStatus.style.display = 'block';
 
-                    const offProduct = await this._checkEAN(product.ean, { openFoodFactsOnly: true });
+                    const offProduct = await this._checkEAN(product.ean, { openFactsOnly: true });
                     if (!offProduct) {
                         refreshBtn.disabled = false;
                         refreshIcon.setAttribute('icon', 'mdi:refresh');
@@ -14249,6 +14402,21 @@ async _checkEAN(text, options = {}) {
             nameDiv.textContent = displayName;
             nameDiv.style.minWidth = '0';
             nameRow.appendChild(nameDiv);
+            if (this._mode === "shopping" && this._shoppingOfferOnlyEnabled && this._isOfferOnly(item.name)) {
+                const offerBadge = document.createElement('span');
+                offerBadge.title = translate("ui.shopping.offer_only");
+                offerBadge.setAttribute('aria-label', offerBadge.title);
+                offerBadge.style.cssText = 'display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:10px;background:var(--warning-color,#e0a526);color:#111;font-size:10px;font-weight:600;line-height:1.5;white-space:nowrap;';
+                const offerIcon = document.createElement('ha-icon');
+                offerIcon.setAttribute('icon', 'mdi:tag-outline');
+                offerIcon.style.cssText = 'display:inline-flex;width:12px;height:12px;flex:0 0 12px;';
+                offerIcon.style.setProperty('--mdc-icon-size', '12px');
+                const offerText = document.createElement('span');
+                offerText.textContent = translate("ui.shopping.offer_badge");
+                offerBadge.appendChild(offerIcon);
+                offerBadge.appendChild(offerText);
+                nameRow.appendChild(offerBadge);
+            }
             this._appendEanDatabaseBadge(nameRow, nameOnly);
             nameSpan.appendChild(nameRow);
 
@@ -14625,6 +14793,7 @@ async _checkEAN(text, options = {}) {
         let previousQuantity = null;
         let correctedQuantity = null;
         let manualMinimumStock = undefined;
+        let offerOnly = undefined;
 
         if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
             newName = updatedItem.name || '';
@@ -14647,6 +14816,9 @@ async _checkEAN(text, options = {}) {
             if (Object.prototype.hasOwnProperty.call(updatedItem, "manual_minimum_stock")) {
                 manualMinimumStock = updatedItem.manual_minimum_stock;
             }
+            if (Object.prototype.hasOwnProperty.call(updatedItem, "offer_only")) {
+                offerOnly = updatedItem.offer_only === true;
+            }
         } else if (typeof updatedItem === 'string') {
             newName = updatedItem;
         }
@@ -14659,6 +14831,9 @@ async _checkEAN(text, options = {}) {
         }
 
         newName = this._preserveSortIndex(item.name, newName);
+        if (this._mode === "shopping" && offerOnly !== undefined) {
+            newName = this._setOfferOnlyMarker(newName, offerOnly);
+        }
 
         const previousBaseName = this._getNameOnly(item.name);
         const previousCategory = this._getCategory(item.name) || "none";
@@ -14869,6 +15044,9 @@ async _checkEAN(text, options = {}) {
                 existing.fromEanDatabase = true;
                 existing.eanCount = products.length;
                 existing.eans = products.map(product => String(product.ean || '')).filter(Boolean);
+                existing.searchValues = products
+                    .flatMap(product => [product.originalName, product.brand])
+                    .filter(Boolean);
                 continue;
             }
 
@@ -14878,7 +15056,10 @@ async _checkEAN(text, options = {}) {
                 category: product.category || '',
                 fromEanDatabase: true,
                 eanCount: products.length,
-                eans: products.map(entry => String(entry.ean || '')).filter(Boolean)
+                eans: products.map(entry => String(entry.ean || '')).filter(Boolean),
+                searchValues: products
+                    .flatMap(entry => [entry.originalName, entry.brand])
+                    .filter(Boolean)
             });
         }
 
@@ -14894,13 +15075,14 @@ async _checkEAN(text, options = {}) {
         }
 
         const allItems = this._getAllCategoryItems();
-        const searchWords = this._removeDiacritics(trimmed.toLowerCase()).split(/\s+/).filter(w => w.length > 0);
         const matches = allItems.filter(item => {
-            const normalized = this._removeDiacritics(item.name.toLowerCase());
             const eans = Array.isArray(item.eans) ? item.eans : [];
-            const matchesQuery = searchWords.every(word =>
-                normalized.includes(word) || eans.some(ean => ean.includes(word))
-            );
+            const searchValues = Array.isArray(item.searchValues) ? item.searchValues : [];
+            const matchesQuery = this._matchesSearchValues([
+                item.name,
+                ...searchValues,
+                ...eans
+            ], trimmed);
             if (matchesQuery) {
                 item.matchedEan = eans.find(ean => ean.includes(trimmed)) || null;
             }
@@ -16052,6 +16234,8 @@ async _checkEAN(text, options = {}) {
                     this._inputEl.value = '';
                     this._qtyEl.value = '';
                     this._hideSuggestions();
+                    if (this._allowFilter) this._renderList();
+                    if (this._allowFilterChips) this._renderHistory();
                     return true;
                 }
 
@@ -16179,6 +16363,7 @@ async _checkEAN(text, options = {}) {
             let dueDateTime = null;
             let description = undefined;
             let interval = null;
+            let offerOnly = false;
             let eanProductNameForDatabase = inputName;
             if (!existing && !assignedCategory && this._showCatPopUp) {
                 if (this._activeEanScanQueueItem) {
@@ -16207,6 +16392,9 @@ async _checkEAN(text, options = {}) {
 
                     if (Object.prototype.hasOwnProperty.call(updatedItem, "description")) {
                         description = updatedItem.description;
+                    }
+                    if (Object.prototype.hasOwnProperty.call(updatedItem, "offer_only")) {
+                        offerOnly = updatedItem.offer_only === true;
                     }
                     // intervall
                     interval = this._getInterval(updatedItem.name);
@@ -16358,9 +16546,12 @@ async _checkEAN(text, options = {}) {
 						finalName = `${inputName} (${inputQty})`;
 					}
 				}
-				if (assignedCategory) {
+                if (assignedCategory) {
 					finalName = `@${assignedCategory}@ ${finalName}${interval || ''}`;
 				}
+                if (this._mode === "shopping") {
+                    finalName = this._setOfferOnlyMarker(finalName, offerOnly);
+                }
 
                 msgNameOnly = inputName;
                 msgTask = translate("ui.message.item_added");
@@ -16896,7 +17087,7 @@ async _checkEAN(text, options = {}) {
                 .replace("{name}", itemNameOnly)
                 .replace("{count}", String(item.inventoryVariants?.length || 0))
             : translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
-    
+
         // show confirmation except when acknowledgeDeletion=false AND not todo
         if (this._mode === "todo" || this._acknowledgeDeletion) {
             if (!(await this.confirmPopup(msgRemove))) {
@@ -16966,7 +17157,7 @@ async _checkEAN(text, options = {}) {
             console.error("[ha-shopping-list-improved] Clear completed failed", err);
         }
     }
-	
+
     async confirmPopup(message, okOnly = false) {
         return new Promise((resolve) => {
             // Overlay
@@ -17271,7 +17462,7 @@ async _checkEAN(text, options = {}) {
                 combined.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 break;
         }
-		
+
         combined.forEach(chipText => {
             if (this._chipPosition === 'none') return;
             const chip = document.createElement('div');
@@ -17338,22 +17529,22 @@ async _checkEAN(text, options = {}) {
                 chip.addEventListener('touchend', e => { clearTimeout(timer); });
             } else {
                 let timer;
-				chip.addEventListener('mousedown', e => { 
+				chip.addEventListener('mousedown', e => {
 					timer = setTimeout(async () => {
 						await this.confirmPopup(
 							translate("editor.labels.alert_cannot_delete_standard"),
 							true
 						);
-					}, 5000); 
+					}, 5000);
 				});
 
-				chip.addEventListener('touchstart', e => { 
+				chip.addEventListener('touchstart', e => {
 					timer = setTimeout(async () => {
 						await this.confirmPopup(
 							translate("editor.labels.alert_cannot_delete_standard"),
 							true
 						);
-					}, 5000); 
+					}, 5000);
 				});
 
                 chip.addEventListener('mouseup', e => { clearTimeout(timer); });
@@ -17363,7 +17554,7 @@ async _checkEAN(text, options = {}) {
 
             this._historyEl.appendChild(chip);
         });
-		
+
         // Add dishes with selectable items
         const dishes = this._dishes || [];
 
@@ -17667,13 +17858,13 @@ async _checkEAN(text, options = {}) {
         const msgHistory = translate("editor.labels.confirm_remove_history").replace("{item}", name);
 		if (!(await this.confirmPopup(msgHistory))) return;
         const idx = this._previous.findIndex(x=> x.toLowerCase()===name.toLowerCase());
-        if (idx!==-1){ 
-            this._previous.splice(idx,1); 
-            this._saveHistory(); 
-            this._renderHistory(); 
+        if (idx!==-1){
+            this._previous.splice(idx,1);
+            this._saveHistory();
+            this._renderHistory();
         }
     }
-    
+
     // Export function
     _exportOfflineList() {
         const now = new Date();
@@ -18163,17 +18354,17 @@ async _checkEAN(text, options = {}) {
         return 'ha-shopping-list-improved-history-' + entityId;
     }
 
-    _loadHistory(){ 
-        try{ 
-            const raw = localStorage.getItem(this._storageKey()); 
-            return raw ? JSON.parse(raw) : []; 
-        } catch(e) { 
-            return []; 
-        } 
+    _loadHistory(){
+        try{
+            const raw = localStorage.getItem(this._storageKey());
+            return raw ? JSON.parse(raw) : [];
+        } catch(e) {
+            return [];
+        }
     }
 
-    _saveHistory(){ 
-        try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){} 
+    _saveHistory(){
+        try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){}
     }
 
     async _notifyButtonPressed(){
@@ -18474,7 +18665,7 @@ function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
             const all = [...localCats, ...filterUnique(localCats, dynamicCats)];
             return sortByName(all);
         }
-        
+
         case "dynamic_local_sorted_total": {
             const all = [...dynamicCats, ...filterUnique(dynamicCats, localCats)];
             return sortByName(all);
@@ -18483,7 +18674,7 @@ function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
             const all = [...globalCats, ...filterUnique(globalCats, dynamicCats)];
             return sortByName(all);
         }
-        
+
         case "dynamic_global_sorted_total": {
             const all = [...dynamicCats, ...filterUnique(dynamicCats, globalCats)];
             return sortByName(all);
@@ -18616,9 +18807,9 @@ function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
 customElements.define('ha-shopping-list-improved', HaShoppingListImproved);
 
 window.customCards = window.customCards || [];
-window.customCards.push({ 
-	type: 'ha-shopping-list-improved', 
-	name: 'Improved Shopping List', 
-	preview: true, 
+window.customCards.push({
+	type: 'ha-shopping-list-improved',
+	name: 'Improved Shopping List',
+	preview: true,
 	description: translate("card.description")
 });
