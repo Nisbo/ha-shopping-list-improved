@@ -1,5 +1,6 @@
 /* Improved Shopping List Card */
-const version = "3.1.0";
+const version = "3.2.0";
+const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
  * @author Nisbo
@@ -10,14 +11,16 @@ const version = "3.1.0";
 const TRANSLATIONS = {
     de: {
         "card.description"                              : "Verbesserte Einkaufsliste mit alphabetischer Sortierung, Vorlagen zum Hinzufügen, Mengenangaben vorne oder hinten, anpassbare Chip-Position und plus/minus Buttons zur Mengenänderung.",
-		
+
 		"ui.common.yes"                  				: "Ja",
 		"ui.common.no"                  				: "Nein",
 		"ui.common.ok"                  				: "OK",
 		"ui.common.cancel"                  			: "Abbrechen",
         "ui.common.all"                                 : "Alle",
 		"ui.common.edit_item"                  			: "Artikel bearbeiten",
-        "ui.common.add_item"                  			: "Artikel hinzufügen",
+		"ui.common.add_item"                  			: "Artikel hinzufügen",
+		"ui.shopping.offer_only"                       : "Nur kaufen, wenn im Angebot",
+		"ui.shopping.offer_badge"                      : "Angebot",
         "ui.common.description"                         : "Beschreibung",
         "ui.common.no_cat"                  			: "Keine",
 		"ui.common.delete"                  			: "Löschen",
@@ -28,17 +31,27 @@ const TRANSLATIONS = {
         "ui.common.sync_without_category"               : "Ohne Kategorie",
         "ui.common.sync_offline_list"                   : "Offline-Einkaufsliste",
         "ui.common.sync_created"                        : "erstellt am",
+        "ui.category.hidden_notice_one"                : "1 Artikel wird nicht angezeigt, weil seine Kategorie auf dieser Karte nicht aktiviert ist. Aktiviere dynamische Kategorien, um ihn anzuzeigen.",
+        "ui.category.hidden_notice"                    : "{count} Artikel werden nicht angezeigt, weil ihre Kategorien auf dieser Karte nicht aktiviert sind. Aktiviere dynamische Kategorien, um sie anzuzeigen.",
+        "ui.category.hidden_details"                   : "Details",
+        "ui.category.hidden_title"                     : "Nicht angezeigte Artikel",
+        "ui.category.hidden_help"                      : "Aktiviere dynamische Kategorien oder bearbeite einen Artikel und weise ihm eine auf dieser Karte verfügbare Kategorie zu.",
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Schließen",
         "ui.common.dynamic_category"                    : "Neue (dynamische) Kategorie",
         "ui.common.loading_list"           				: "Lade Liste...",
+        "ui.qr.secure_context_required"                : "Der QR-Scanner benötigt eine sichere HTTPS-Verbindung. Öffne Home Assistant über HTTPS und versuche es erneut.",
+        "ui.qr.camera_unavailable"                      : "Auf die Kamera konnte nicht zugegriffen werden. Prüfe die Kameraberechtigung und die HTTPS-Verbindung.",
+        "ui.qr.library_load_failed"                    : "Der QR-Scanner konnte nicht geladen werden. Prüfe die Netzwerkverbindung und versuche es erneut.",
 
         "ui.message.quantity_increased"                 : "Anzahl erhöht",
         "ui.message.quantity_decreased"                 : "Anzahl verringert",
         "ui.message.edited"                             : "Artikel bearbeitet",
         "ui.message.item_added"                         : "Artikel hinzugefügt",
         "ui.message.item_removed"                       : "Artikel entfernt",
+        "ui.message.item_completed"                     : "Artikel als erledigt markiert",
+        "ui.message.item_reopened"                      : "Erledigt-Markierung entfernt",
         "ui.message.sent"                               : "Nachricht gesendet",
 
         "ui.admin.options"                              : "Admin Optionen",
@@ -52,6 +65,236 @@ const TRANSLATIONS = {
         "ui.admin.options.manual_assigned"              : "Manuell zugewiesene Artikel",
         "ui.admin.options.manual_assigned_copy"         : "Kopieren",
         "ui.admin.options.manual_assigned_include"      : "Inklusive bereits konfigurierte Artikel",
+        "ui.admin.options.process_ean_scans"             : "EAN-Scans auf diesem Gerät verarbeiten",
+        "ui.admin.options.process_ean_scans_help"        : "Wenn aktiviert, verarbeitet diese Karte auf diesem Gerät passende EAN-Scans. Während des Scannens muss die Karte sichtbar sein und darf nicht gleichzeitig in einem weiteren Tab oder Fenster geöffnet sein.",
+        "ui.admin.options.ean_scanner_mac"               : "Scanner-MAC:",
+        "ui.admin.options.ean_scanner_mac_missing"       : "Keine Scanner-MAC konfiguriert. Diese Karte ist für EAN-Scans aktiviert, kann aber keine Scans verarbeiten. Lege ean_scanner_mac in der YAML-Konfiguration der Karte fest.",
+        "ui.admin.options.ean_queue"                     : "EAN-Warteschlange",
+        "ui.admin.options.ean_queue_pending"             : "Offene Scans: {count}",
+        "ui.admin.options.ean_queue_shopping"            : "Einkaufsliste: {count}",
+        "ui.admin.options.ean_queue_database"            : "EAN-Datenbank: {count}",
+        "ui.admin.options.ean_queue_remove"              : "Entnahmen: {count}",
+        "ui.admin.options.ean_queue_process"             : "Abarbeiten",
+        "ui.admin.options.ean_queue_clear"               : "Leeren",
+        "ui.admin.options.ean_database_status"           : "EAN-Datenbank:",
+        "ui.admin.options.ean_database_products"         : "{count} Produkte",
+        "ui.admin.options.ean_database_invalid"          : "{count} ungültig",
+        "ui.ean.database_manager_title"                  : "EAN-Datenbank",
+        "ui.ean.database_search"                         : "Produkte durchsuchen...",
+        "ui.ean.database_sort"                           : "Sortierung",
+        "ui.ean.database_sort_name"                      : "Name",
+        "ui.ean.database_sort_category"                  : "Kategorie / Name",
+        "ui.ean.database_no_products"                    : "Keine passenden Produkte gefunden.",
+        "ui.ean.database_no_category"                    : "Ohne Kategorie",
+        "ui.ean.database_invalid_title"                  : "Ungültige Einträge",
+        "ui.ean.database_invalid_entry"                  : "Ungültiger Eintrag",
+        "ui.ean.database_edit_title"                     : "Artikel bearbeiten",
+        "ui.ean.database_name"                           : "Gespeicherter Produktname",
+        "ui.ean.database_original_name"                  : "Originaler Produktname",
+        "ui.ean.database_ean"                            : "EAN",
+        "ui.ean.database_brand"                          : "Marke",
+        "ui.ean.database_quantity"                       : "Produktmenge",
+        "ui.ean.database_category"                       : "Kategorie",
+        "ui.ean.database_save"                           : "Speichern",
+        "ui.ean.database_reload_off"                     : "Von Open Facts aktualisieren",
+        "ui.ean.database_loading_off"                    : "Open Facts wird abgefragt...",
+        "ui.ean.database_apply_off"                      : "Von Open Facts übernehmen und speichern",
+        "ui.ean.database_off_preview"                    : "Neue Daten von Open Facts",
+        "ui.ean.database_off_name_preserved"             : "Dein gespeicherter Artikelname bleibt erhalten. Originaler Produktname, Marke, Produktmenge und Bild werden aktualisiert und direkt gespeichert.",
+        "ui.ean.database_off_not_found"                  : "Open Facts hat für diese EAN keine Produktdaten geliefert.",
+        "ui.ean.database_delete_confirm"                 : "Diesen EAN-Datenbankeintrag wirklich löschen?",
+        "ui.ean.database_delete_failed"                  : "Der EAN-Datenbankeintrag konnte nicht gelöscht werden.",
+        "ui.ean.database_name_required"                  : "Bitte gib einen Produktnamen ein.",
+        "ui.ean.database_back"                           : "Zurück",
+        "ui.ean.database_fill_start"                     : "Befüllmodus starten",
+        "ui.ean.database_fill_active"                    : "EAN-Datenbank-Befüllmodus aktiv",
+        "ui.ean.database_fill_help"                      : "EANs werden ausschließlich in der EAN-Datenbank gespeichert und nicht zur Einkaufsliste hinzugefügt.",
+        "ui.ean.database_fill_end"                       : "Befüllmodus beenden",
+        "ui.ean.database_fill_existing"                  : "Diese EAN ist bereits in der EAN-Datenbank vorhanden. Beim Speichern wird der vorhandene Eintrag aktualisiert.",
+        "ui.ean.database_fill_new"                       : "Dieser Scan wird ausschließlich in der EAN-Datenbank gespeichert.",
+        "ui.ean.database_fill_save"                      : "In Datenbank speichern",
+        "ui.ean.remove_mode_active"                      : "Entnahme aktiv",
+        "ui.ean.remove_not_found"                        : "{name} ist nicht in der Einkaufsliste.",
+        "ui.ean.queue_status"                            : "{quantity}× gescannt · danach noch {count} Artikel",
+        "ui.ean.database_invalid"                        : "Die konfigurierte EAN-To-do-Liste enthält {count} ungültige Einträge. Diese Einträge werden ignoriert.",
+        "ui.ean.database_unavailable"                    : "Die konfigurierte EAN-To-do-Liste kann nicht verwendet werden: {reason}",
+        "ui.ean.database_reason_entity"                  : "Wähle eine andere To-do-Liste als die Einkaufsliste aus.",
+        "ui.ean.database_reason_description"             : "Die To-do-Liste unterstützt keine Beschreibungen.",
+        "ui.ean.database_reason_load"                    : "Die Einträge konnten nicht geladen werden.",
+        "ui.ean.database_reason_save"                    : "Der Produktdatensatz konnte nicht gespeichert werden.",
+        "ui.ean.lookup_failed_title"                     : "Produkt nicht gefunden",
+        "ui.ean.lookup_failed_text"                      : "Für die EAN {ean} konnten keine Produktdaten geladen werden.",
+        "ui.ean.lookup_retry"                            : "Erneut versuchen",
+        "ui.ean.lookup_manual"                           : "Manuell eintragen",
+        "ui.ean.lookup_later"                            : "Später",
+        "ui.ean.lookup_discard"                          : "Verwerfen",
+        "ui.ean.queue_summary"                           : "{count} EAN-Scans warten noch auf Bearbeitung.",
+        "ui.ean.queue_summary_one"                       : "1 EAN-Scan wartet noch auf Bearbeitung.",
+        "ui.ean.queue_process_now"                       : "Jetzt bearbeiten",
+        "ui.ean.queue_keep_later"                        : "Später",
+        "ui.ean.queue_admin_hint"                        : "Du kannst die Warteschlange später über die Admin-Optionen weiterbearbeiten.",
+        "ui.ean.add"                                    : "Hinzufügen",
+        "ui.ean.name_brand"                             : "Marke",
+        "ui.ean.name_quantity"                          : "Menge",
+        "ui.ean.brand_in_name"                         : "Die Marke „{brand}“ ist bereits im Artikelnamen enthalten und wird nicht zusätzlich angehängt.",
+        "ui.ean.database_entries_title"                : "EAN-Einträge für {name}",
+        "ui.ean.database_entries_badge"                : "{count} EAN-Einträge anzeigen",
+        "ui.ean.database_entry_refresh"                : "Produktdaten von Open Facts aktualisieren",
+        "ui.ean.database_entry_open_off"               : "Produkt bei Open Facts öffnen",
+        "ui.ean.database_entry_edit"                   : "EAN-Produkt bearbeiten",
+        "ui.ean.database_entry_updated"                : "Produktdaten wurden aktualisiert.",
+        "ui.ean.database_transfer_title"               : "Sync / Transfer",
+        "ui.ean.database_manual_only"                  : "Automatische Entnahmeübertragung ist nicht aktiv. Manuelles Senden an die Zielliste ist weiterhin möglich.",
+        "ui.ean.database_minimum_stock"                : "Mindestbestand (optional)",
+        "ui.ean.database_minimum_stock_help"           : "Leer lassen, um den Kartenstandard zu verwenden. Ein eingetragener Wert überschreibt den Standard für dieses Produkt.",
+        "ui.ean.database_transfer_disabled"            : "Keine automatische Übertragung für diesen Artikel",
+        "ui.ean.database_current_stock"                : "Bestand in dieser Liste",
+        "ui.ean.database_set_stock"                    : "Bestand korrigieren",
+        "ui.ean.database_stock_updated"                : "Der Bestand wurde ohne Übertragung geändert.",
+        "ui.ean.database_create_stock_confirm"         : "„{name}“ ist noch nicht in dieser Liste vorhanden. Soll der Artikel mit einem Bestand von {quantity} hinzugefügt werden?",
+        "ui.ean.database_manual_send_quantity"         : "Menge manuell übertragen (ohne Abzug)",
+        "ui.ean.database_manual_send"                  : "An Zielliste senden",
+        "ui.ean.database_manual_send_done"             : "Die Menge wurde an die Transferliste gesendet. Der lokale Bestand blieb unverändert.",
+        "ui.ean.database_transfer_unavailable"         : "Für das manuelle Senden ist eine gültige Sende-Konfiguration erforderlich.",
+        "ui.ean.database_number_invalid"               : "Bitte gib eine ganze Zahl ab 0 ein.",
+        "ui.ean.database_send_number_invalid"          : "Bitte gib eine ganze Zahl ab 1 ein.",
+        "ui.ean.transfer_choose_product"               : "Welche EAN soll für „{name}“ verwendet werden?",
+        "ui.ean.transfer_without_ean"                  : "Ohne EAN übertragen",
+        "ui.ean.transfer_non_ean_question"             : "Soll „{name}“ an die Ziel-Einkaufsliste übertragen werden?",
+        "ui.inventory.title"                            : "Inventar",
+        "ui.inventory.idle"                             : "Keine Buchung aktiv",
+        "ui.inventory.add"                              : "Einlagern",
+        "ui.inventory.remove"                           : "Entnehmen",
+        "ui.inventory.register"                         : "Erfassen",
+        "ui.inventory.correct"                          : "Korrigieren",
+        "ui.inventory.add_active"                       : "Einlagern-Modus aktiviert – Scans und EAN-Eingaben erhöhen den Bestand.",
+        "ui.inventory.remove_active"                    : "Entnehmen-Modus aktiviert – Scans und EAN-Eingaben verringern den Bestand.",
+        "ui.inventory.register_active"                  : "Erfassungsmodus aktiviert – Scans und EAN-Eingaben legen Artikel mit Bestand 0 an.",
+        "ui.inventory.correct_active"                   : "Korrekturmodus aktiviert – Scans und EAN-Eingaben öffnen die Bestandskorrektur.",
+        "ui.inventory.select_mode"                      : "Wähle zuerst einen Buchungsmodus.",
+        "ui.inventory.select_mode_button"               : "Zuerst Modus wählen",
+        "ui.inventory.registered"                       : "{name} mit Bestand 0 erfasst.",
+        "ui.inventory.already_registered"               : "{name} ist bereits im Inventar. Bestand bleibt {quantity}.",
+        "ui.inventory.register_database_required"       : "Für den Erfassungsmodus muss eine EAN-Datenbank ausgewählt sein.",
+        "ui.inventory.hidden"                           : "Ausgeblendete anzeigen",
+        "ui.inventory.hide"                             : "Artikel ausblenden",
+        "ui.inventory.unhide"                           : "Artikel einblenden",
+        "ui.inventory.filter.all"                      : "Alle",
+        "ui.inventory.filter.zero"                     : "Bestand 0",
+        "ui.inventory.filter.low"                      : "Bestand 0–1",
+        "ui.inventory.filter.minimum"                  : "≤ Mindestbestand",
+        "ui.inventory.filter.below_minimum"            : "< Mindestbestand",
+        "ui.inventory.stock_change"                    : "{name}: Bestand {before} → {after}",
+        "ui.inventory.undo"                            : "Rückgängig",
+        "ui.inventory.undo_done"                       : "{name}: Bestand {before} → {after} wiederhergestellt.",
+        "ui.inventory.undo_transfer_question"          : "Der lokale Bestand wird von {before} auf {after} zurückgesetzt. Die ursprüngliche Übertragung wurde möglicherweise bereits von „{target}“ verarbeitet. Wie soll diese Übertragung behandelt werden?",
+        "ui.inventory.undo_both"                       : "Bestand + Zielliste korrigieren",
+        "ui.inventory.undo_local"                      : "Nur Bestand korrigieren",
+        "ui.inventory.undo_cancel"                     : "Nicht rückgängig",
+        "ui.inventory.undo_failed"                     : "Die letzte Buchung konnte nicht rückgängig gemacht werden.",
+        "ui.inventory.undo_transfer_failed"            : "Der Bestand wurde wiederhergestellt, aber die Korrektur der Zielliste ist fehlgeschlagen.",
+        "ui.inventory.stock"                           : "Bestand",
+        "ui.inventory.quantity"                        : "Anzahl",
+        "ui.inventory.correction_transfer_question"    : "Der neue Bestand von „{name}“ liegt auf oder unter dem Mindestbestand. Soll 1 × an „{target}“ gesendet werden?",
+        "ui.inventory.no_stock"                        : "{name} hat keinen Bestand mehr.",
+        "ui.inventory.send_without_stock"              : "Kein Bestand mehr für „{name}“. Trotzdem 1 × an „{target}“ senden? Der Bestand bleibt bei 0.",
+        "ui.inventory.sent_without_stock"              : "1 × {name} an {target} gesendet. Bestand bleibt 0.",
+        "ui.inventory.send"                            : "Senden",
+        "ui.inventory.controls"                        : "Steuercodes",
+        "ui.inventory.controls_help"                   : "Scanne einen dieser QR-Codes mit dem konfigurierten Scanner, um den Buchungsmodus zu wechseln.",
+        "ui.inventory.database"                        : "EAN-Datenbank",
+        "ui.inventory.database_short"                  : "EAN-DB",
+        "ui.inventory.queue"                           : "Warteschlange",
+        "ui.inventory.queue_empty"                     : "Die Warteschlange ist leer.",
+        "ui.inventory.queue_clear_confirm"             : "Möchtest du wirklich alle Einträge aus der Warteschlange löschen?",
+        "ui.inventory.queue_mode.shopping"             : "Einkaufsliste",
+        "ui.inventory.queue_mode.database"             : "EAN-Datenbank",
+        "ui.inventory.queue_mode.add"                  : "Einlagern",
+        "ui.inventory.queue_mode.remove"               : "Entnehmen",
+        "ui.inventory.queue_mode.register"             : "Erfassen",
+        "ui.inventory.queue_mode.correct"              : "Korrigieren",
+        "ui.inventory.queue_mode.none"                 : "Ohne Modus",
+        "ui.inventory.group_variants"                  : "EAN-Varianten gruppieren",
+        "ui.inventory.product_details"                 : "Produktdetails anzeigen",
+        "ui.inventory.category_below_minimum"          : "{count} unter Minimum",
+        "ui.inventory.grouped_total"                   : "Gesamtbestand",
+        "ui.inventory.group_minimum"                   : "Gruppen-Mindestbestand (optional)",
+        "ui.inventory.group_minimum_help"              : "Gilt für den gemeinsamen Gesamtbestand aller Varianten. Leer lassen, um die einzelnen Produktwerte oder den Kartenstandard zu verwenden.",
+        "ui.inventory.group_minimum_conflict"          : "Die bestehende Gruppe „{target}“ hat den Mindestbestand {targetMinimum}, die verschobene Gruppe {sourceMinimum}. Welcher Gruppen-Mindestbestand soll nach dem Zusammenführen gelten?",
+        "ui.inventory.group_minimum_use_source"        : "{minimum} aus verschobener Gruppe",
+        "ui.inventory.group_minimum_use_target"        : "{minimum} aus bestehender Gruppe",
+        "ui.inventory.manage_variants"                 : "Teilbestände bearbeiten",
+        "ui.inventory.variants_title"                  : "Teilbestände für {name}",
+        "ui.inventory.without_ean"                     : "Ohne EAN",
+        "ui.inventory.variant_stock"                   : "Bestand: {stock}",
+        "ui.inventory.variant_minimum"                 : "Mindestbestand: {minimum}",
+        "ui.inventory.manual_minimum"                  : "Mindestbestand (optional)",
+        "ui.inventory.manual_minimum_default"          : "Leer = Kartenstandard: {minimum}",
+        "ui.inventory.manual_minimum_none"             : "Leer = kein Mindestbestand",
+        "ui.inventory.manual_minimum_save"             : "Mindestbestand speichern",
+        "ui.inventory.ean_minimum_edit"                : "EAN-Mindestbestand bearbeiten",
+        "ui.inventory.ean_minimum_database_source"     : "In der gemeinsamen EAN-Datenbank gespeichert",
+        "ui.inventory.ean_minimum_card_default"        : "Kartenstandard",
+        "ui.inventory.ean_minimum_not_set"             : "Kein Mindestbestand festgelegt",
+        "ui.inventory.ean_product_edit"                : "EAN-Artikel bearbeiten",
+        "ui.inventory.edit_ean_item"                   : "EAN-Artikel bearbeiten",
+        "ui.inventory.grouped_badge"                   : "[GRUPPIERT]",
+        "ui.inventory.group_member_badge"              : "[GRUPPENMITGLIED]",
+        "ui.inventory.choose_variant_add"              : "Welche Variante von „{name}“ soll eingelagert werden?",
+        "ui.inventory.choose_variant_remove"           : "Welche Variante von „{name}“ soll entnommen werden?",
+        "ui.inventory.choose_variant_correct"          : "Welche Variante von „{name}“ soll korrigiert werden?",
+        "ui.inventory.correction_title"                : "Bestand korrigieren",
+        "ui.inventory.correction_current"              : "Aktueller Bestand",
+        "ui.inventory.correction_new"                  : "Neuer Bestand",
+        "ui.inventory.correction_no_transfer"          : "Bestandskorrekturen lösen keine automatische Übertragung über ISL Sync / Transfer aus.",
+        "ui.inventory.correction_saved"                : "Der Bestand von {name} wurde von {before} auf {after} korrigiert.",
+        "ui.inventory.correction_manual_transfer"      : "Menge manuell übertragen (ohne Bestandsänderung)",
+        "ui.inventory.correction_manual_sent"          : "Die Menge wurde an die Zielliste gesendet. Der Bestand wurde nicht verändert.",
+        "ui.inventory.correction_save"                 : "Bestand speichern",
+        "ui.inventory.correction_edit"                 : "Artikel bearbeiten",
+        "ui.inventory.group_category_confirm"          : "„{name}“ enthält {count} getrennte Varianten. Die Kategorie wird für alle Varianten und zugehörigen EAN-Einträge geändert. Möchtest Du fortfahren?",
+        "ui.inventory.group_delete_confirm"            : "„{name}“ enthält {count} getrennte Varianten. Sollen wirklich alle Varianten gelöscht werden?",
+        "ui.inventory.ean_category_confirm"            : "Diese EAN gehört zum gruppierten Artikel „{name}“. Die Kategorie wird für alle EAN-Varianten mit diesem Namen geändert. Die zentrale EAN-Datenbank kann auch von anderen Karten verwendet werden. Möchtest Du fortfahren?",
+        "ui.inventory.category_conflict"               : "Für „{name}“ sind unterschiedliche Kategorien gespeichert. Der Artikel kann erst gruppiert werden, nachdem eine gemeinsame Kategorie festgelegt wurde.",
+        "editor.labels.inventory_default_action"        : "Startmodus nach dem Laden",
+        "editor.labels.inventory_highlight_zero"        : "Artikel mit Bestand 0 rot markieren",
+        "editor.labels.inventory_group_variants"        : "EAN-Varianten gruppieren",
+        "editor.labels.inventory_show_product_details"  : "Produktdetails in der Inventarliste anzeigen",
+        "editor.labels.inventory_show_category_minimum_status": "Mindestbestandsstatus in Kategorien anzeigen",
+        "editor.labels.inventory_stock_marking"         : "Bestandskennzeichnung",
+        "editor.labels.inventory_mark_above_minimum"    : "Größer als Mindestbestand",
+        "editor.labels.inventory_mark_at_minimum"       : "Gleich Mindestbestand",
+        "editor.labels.inventory_mark_below_minimum"    : "Kleiner als Mindestbestand",
+        "editor.labels.inventory_mark_zero"             : "Bestand 0",
+        "editor.options.inventory_mark.none"             : "Keine Kennzeichnung",
+        "editor.options.inventory_mark.green"            : "Grün",
+        "editor.options.inventory_mark.orange"           : "Orange",
+        "editor.options.inventory_mark.red"              : "Rot",
+        "editor.labels.ean_transfer_grouped_as_name"    : "Gruppierte Artikel immer als Namen übertragen",
+        "editor.options.mode.inventory"                : "Inventar",
+        "editor.options.inventory_default_action.none"  : "Keine Buchung aktiv (Standard)",
+        "editor.options.inventory_default_action.add"   : "Einlagern",
+        "editor.options.inventory_default_action.remove": "Entnehmen",
+        "editor.options.inventory_default_action.register": "Erfassen",
+        "editor.options.inventory_default_action.correct": "Korrigieren",
+        "editor.helpers.inventory_default_action"       : "Legt fest, welcher Buchungsmodus beim Laden der Karte aktiv ist.",
+        "editor.labels.inventory_mode_timeout"          : "Buchungsmodus nach Inaktivität zurücksetzen (Sekunden)",
+        "editor.helpers.inventory_mode_timeout"         : "Setzt einen vorübergehend gewählten Buchungsmodus nach dieser Zeit ohne erfolgreiche Buchung auf den Startmodus zurück. Jede erfolgreiche Buchung startet den Countdown neu. 0 deaktiviert das automatische Zurücksetzen.",
+        "editor.helpers.inventory_highlight_zero"       : "Nur im Inventarmodus: Markiert Artikel mit Bestand 0 rot und zeigt einen schmalen roten Rand.",
+        "editor.helpers.inventory_group_variants"       : "Fasst getrennt gespeicherte EAN- und manuelle Bestände mit demselben Namen und derselben Kategorie optisch zusammen. Der Umschalter in der Karte kann die Ansicht vorübergehend ändern.",
+        "editor.helpers.inventory_show_product_details" : "Zeigt bei EAN-Artikeln den ursprünglichen Produktnamen, Marke, Produktmenge und EAN unter dem gespeicherten Artikelnamen. Der Umschalter in der Karte kann die Anzeige vorübergehend ändern.",
+        "editor.helpers.inventory_show_category_minimum_status": "Zeigt in Kategorieüberschriften an, wie viele Artikel oder Gruppen unter ihrem wirksamen Mindestbestand liegen.",
+        "editor.helpers.inventory_stock_marking"        : "Legt die farbliche Kennzeichnung im Verhältnis zum wirksamen Mindestbestand fest. Ohne festgelegten Mindestbestand gelten die drei Mindestbestandsstufen nicht. Bestand 0 wird separat und mit Vorrang behandelt.",
+        "editor.helpers.inventory_mark_above_minimum"  : "Kennzeichnung für Artikel mit einem Bestand über dem wirksamen Mindestbestand.",
+        "editor.helpers.inventory_mark_at_minimum"     : "Kennzeichnung für Artikel, deren Bestand genau dem wirksamen Mindestbestand entspricht.",
+        "editor.helpers.inventory_mark_below_minimum"  : "Kennzeichnung für Artikel mit einem Bestand unter dem wirksamen Mindestbestand.",
+        "editor.helpers.inventory_mark_zero"           : "Kennzeichnung für Artikel mit Bestand 0. Diese Einstellung hat Vorrang vor den Mindestbestandsstufen.",
+        "editor.helpers.ean_transfer_grouped_as_name"   : "Wenn aktiviert, überträgt die Karte Buchungen gruppierter Inventarartikel mit dem gemeinsamen Artikelnamen und der Kategorie. Die konkrete EAN sowie Marke, Produktmenge und Bild der gewählten Variante werden nicht an die Zielliste gesendet. Standard: Aus.",
+        "ui.ean.transfer_remove"                       : "Entnehmen",
+        "ui.ean.transfer_invalid_config"               : "Die ISL-Transfer-Konfiguration ist ungültig. Verwende eine separate To-do-Liste mit Beschreibungsunterstützung und wähle beim Senden eine andere Ziel-Einkaufsliste aus.",
+        "ui.ean.transfer_send_failed"                  : "Der Scan konnte nicht in der ISL-Transfer-Liste gespeichert werden.",
+        "ui.ean.transfer_receive_failed"               : "Ein Auftrag aus der ISL-Transfer-Liste konnte nicht verarbeitet werden. Der Eintrag bleibt zur Prüfung erhalten.",
+        "ui.ean.transfer_cleanup_failed"               : "Der Transfer wurde ausgeführt, aber das Löschen aus der ISL-Transfer-Liste konnte nicht bestätigt werden.",
 
         "ui.todo.general"                               : "Allgemein",
         "ui.todo.hours"                                 : "Stunden",
@@ -66,6 +309,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                         : "Einmalig",
         "ui.todo.due_label"                             : "Fällig",
         "ui.todo.select_action"                         : "Wähle eine Aktion für diesen Eintrag:",
+        "ui.todo.actions"                               : "To-do-Aktionen",
         "ui.todo.list.year"                             : "Jahr",
         "ui.todo.list.years"                            : "Jahre",
         "ui.todo.list.month"                            : "Monat",
@@ -88,12 +332,12 @@ const TRANSLATIONS = {
         "ui.todo.filter.undated"                        : "Ohne Fälligkeit",
         "ui.todo.filter.remember"                       : "Für diese Liste merken",
         "ui.todo.filter.reset"                          : "Gespeicherten Filter zurücksetzen",
-        "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.", 
-		
+        "ui.labels.alert_item_exists_todo"              : "Der Artikel '{item}' existiert bereits in der To-Do-Liste.",
+
         "editor.placeholders.quantity"                  : "Anzahl",
         "editor.placeholders.item"                      : "Artikel...",
         "editor.labels.show_message_button"             : "Nachrichten-Button anzeigen",
-        "editor.labels.show_clear_button"               : "'Erledigte löschen' Button anzeigen",
+        "editor.labels.show_clear_button"               : "Button „Erledigte löschen“ anzeigen",
         "editor.labels.notify_entity"                   : "Notify-Entität",
         "editor.labels.add_button"                      : "Hinzufügen",
         "editor.labels.clear_button"                    : "Erledigte löschen",
@@ -106,39 +350,77 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Chip '{item}' aus History löschen?",
         "editor.labels.chip_highlighted"                : "Hervorgehobener Chip",
         "editor.labels.chip_standard"                   : "Standard-Chip",
+		"editor.labels.category_color"                  : "Kategoriefarbe",
 		"editor.labels.chip_global"						: "Globaler Chip",
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
 		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
 		"editor.labels.categories"                   	: "Kategorien",
-        "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen ?",
-        "editor.labels.hide_cat_count_all_done"         : "Artikelanzahl ausblenden, wenn alle erledigt ?",
-        "editor.labels.show_cat_next_due"               : "Nächste Fälligkeit in Kategorie anzeigen ?",
-        "editor.labels.cat_double_sized_icon"           : "Größeres Icon anzeigen ?",
+        "editor.labels.show_cat_count"                  : "Artikelanzahl in Kategorien anzeigen",
+        "editor.labels.hide_cat_count_all_done"         : "Artikelanzahl ausblenden, wenn alle erledigt",
+        "editor.labels.show_cat_next_due"               : "Nächste Fälligkeit in Kategorien anzeigen",
+        "editor.labels.cat_double_sized_icon"           : "Größeres Symbol anzeigen",
         "editor.labels.show_cat_exclamation_mark"       : "Ausrufezeichen für fällige Einträge",
         "editor.labels.show_title_exclamation_mark"     : "Ausrufezeichen für fällige Einträge",
-        "editor.labels.show_cat_popup"                  : "PopUp für Kategorien anzeigen ?",
+        "editor.labels.show_cat_popup"                  : "Kategorieauswahl beim Hinzufügen anzeigen",
 		"editor.labels.category_merge_mode" 			: "Kategorie-Merge-Modus",
+        "editor.labels.category_display"              : "Kategorieanzeige",
 		"editor.labels.dishes" 							: "Gerichte",
         "editor.labels.dishes_confirm_add"              : "Gerichte vor dem Hinzufügen bestätigen",
         "editor.labels.mode"                            : "Modus",
         "editor.labels.font.sizes"                      : "Schriftgrößen",
         "editor.labels.colors"                          : "Farbeinstellungen",
+        "editor.labels.chip_colors"                     : "Chip-Farben",
+        "editor.labels.expert_color_settings"           : "Experteneinstellungen",
+        "editor.labels.chip_color_rgb"                  : "Lokale (Browser-)Chips",
+        "editor.labels.chip_color_default_rgb"          : "Standard-Chips",
+        "editor.labels.chip_color_global_rgb"           : "Globale (Textdatei-)Chips",
+        "editor.labels.chip_color_dish_rgb"             : "Gerichte-Chips",
+        "editor.labels.highlight_color_rgb"             : "Hervorgehobene Chips",
         "editor.labels.category.options"                : "Kategorien",
         "editor.labels.export.options"                  : "Export-Optionen",
         "editor.labels.message.options"                 : "Benachrichtigungen",
+        "editor.labels.notify.options"                  : "Standard-Notify",
+        "editor.labels.ntfy.options"                    : "ntfy",
+        "editor.labels.email.options"                   : "E-Mail",
+        "editor.labels.notify_change_mode"              : "Automatische Benachrichtigungen",
+        "editor.labels.notify_include_manual"           : "Beim manuellen Senden berücksichtigen",
+        "editor.labels.notify_delay"                    : "Verzögerung (Sekunden)",
+        "editor.labels.notify_format"                   : "Nachrichtenformat",
+        "editor.labels.ntfy_entity"                     : "ntfy-Notify-Entität",
+        "editor.labels.ntfy_change_mode"                : "Automatische Benachrichtigungen",
+        "editor.labels.ntfy_include_manual"             : "Beim manuellen Senden berücksichtigen",
+        "editor.labels.ntfy_on_done"                    : "Auch beim Erledigen benachrichtigen",
+        "editor.labels.ntfy_delay"                      : "Verzögerung (Sekunden)",
+        "editor.labels.ntfy_format"                     : "Nachrichtenformat",
+        "editor.labels.email_change_mode"               : "Automatische Benachrichtigungen",
+        "editor.labels.email_include_manual"            : "Beim manuellen Senden berücksichtigen",
+        "editor.labels.email_on_done"                   : "Auch beim Erledigen benachrichtigen",
+        "editor.labels.email_delay"                     : "Verzögerung (Sekunden)",
         "editor.labels.dishes.options"                  : "Gerichte",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Artikel",
+        "editor.labels.ean_scanner.options"             : "EAN Scanner",
         "editor.labels.general.options"                 : "Allgemeine Einstellungen",
+        "editor.labels.shopping_mode.options"           : "Einkaufsliste",
+        "editor.labels.todo_mode.options"               : "To-do-Liste",
+        "editor.labels.inventory_mode.options"          : "Inventar",
         "editor.labels.input_row_position"              : "Position der Eingabemaske",
         "editor.labels.option_row_position"             : "Position der Buttonleiste",
         "editor.labels.allow_dynamic_categories"        : "Dynamische Kategorien erlauben",
         "editor.labels.show_admin_button"               : "Admin-Button anzeigen",
+        "editor.labels.admin_button_admin_only"         : "Admin-Button nur für Administratoren",
         "editor.labels.notify_on_change"                : "Bei Änderungen benachrichtigen",
         "editor.labels.notify_on_change_all"            : "Immer die komplette Liste schicken",
         "editor.labels.notify_on_change_time"           : "Zeit bevor eine Benachrichtigung verschickt wird",
         "editor.labels.notify_entity_smtp"              : "Name des SMTP-Notify-Eintrags",
         "editor.labels.notify_on_done"                  : "Benachrichtigung auch beim 'als erledigt' markieren",
+        "editor.options.notification_mode.off"          : "Aus",
+        "editor.options.notification_mode.change"       : "Nur die Änderung",
+        "editor.options.notification_mode.full"         : "Vollständige Liste",
+        "editor.options.notification_mode.change_and_full": "Änderung und vollständige Liste",
+        "editor.options.notification_format.plain"      : "Klartext",
+        "editor.options.notification_format.html"       : "HTML",
+        "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Chips aus Kategorie-Items generieren",
         "editor.labels.show_category_add_all"           : "'Alle hinzufügen'-Chip anzeigen",
         "editor.labels.allow_filter"                    : "Filterung der Artikel erlauben",
@@ -146,9 +428,31 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
         "editor.labels.capitalize_first_letter"         : "Ersten Buchstaben automatisch groß schreiben",
         "editor.labels.show_descriptions"               : "Beschreibungen anzeigen",
-        "editor.labels.todo_filter"                     : "To-Do-Filter",
+        "editor.labels.show_ean_brand"                  : "Marke an den Produktnamen anhängen",
+        "editor.labels.show_ean_quantity"               : "Verpackungsmenge an den Produktnamen anhängen",
+        "editor.labels.ean_scanner_mac"                 : "Bluetooth-MAC-Adresse des EAN-Scanners",
+        "editor.labels.ean_database_entity"             : "To-do-Liste als EAN-Datenbank",
+        "editor.labels.ean_create_chip"                 : "Chips für gescannte Artikel erstellen",
+        "editor.labels.list_script_enabled"             : "Listenänderungen an Skript senden",
+        "editor.labels.list_script_entity"              : "Skript für Listenänderungen",
+        "editor.labels.ean_script_enabled"              : "EAN-Skript ausführen",
+        "editor.labels.ean_script_entity"               : "EAN-Skript",
+        "editor.labels.ean_remove_mode"                 : "Entnahmemodus durch langes Drücken aktivieren",
+        "editor.labels.ean_database_suggestions"        : "EAN-Datenbank in Suchvorschlägen verwenden",
+        "editor.labels.show_ean_database_badge"         : "EAN-Symbol bei zugeordneten Artikeln anzeigen",
+        "editor.labels.ean_transfer_mode"               : "ISL-Transfer-Modus",
+        "editor.labels.ean_transfer_entity"             : "ISL-Transfer-Liste",
+        "editor.labels.ean_transfer_target_entity"      : "Ziel-Einkaufsliste",
+        "editor.labels.ean_transfer_actions"            : "Zu übertragende Aktionen",
+        "editor.labels.sync_transfer.options"           : "Sync / Transfer",
+        "editor.labels.ean_transfer_remove_behavior"    : "Standardverhalten bei Entnahmen",
+        "editor.labels.ean_transfer_default_minimum_stock": "Standard-Mindestbestand",
+        "editor.labels.ean_transfer_non_ean"            : "Artikel ohne EAN-Zuordnung",
+        "editor.labels.todo_filter"                     : "Standardfilter",
+        "editor.labels.todo_default_action"             : "Standardaktion",
+        "editor.labels.todo_action_behavior"            : "Verhalten von Aktionsbutton/Checkbox",
         "editor.labels.show_todo_filter_menu"           : "To-Do-Filtermenü anzeigen",
-        
+
 		"editor.options.chips_position.auto"            : "Automatisch Rechts / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.auto_panel"      : "Automatisch Panel / Unten (abhängig von Bildschirmgröße)",
 		"editor.options.chips_position.bottom"          : "Immer unten",
@@ -219,10 +523,14 @@ const TRANSLATIONS = {
         "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamisch + Lokal + Global (komplett sortiert)",
         "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamisch + Global + Lokal (komplett sortiert)",
 
+        "editor.options.category_display.grouped"                           : "Gruppiert mit Überschriften (Standard)",
+        "editor.options.category_display.hidden_category_order"             : "Überschriften ausblenden – Kategorie-Reihenfolge beibehalten",
+        "editor.options.category_display.hidden_global_order"               : "Überschriften ausblenden – gesamte Liste sortieren",
+
         "editor.options.sort_mode.alpha"                : "Alphabetisch (A → Z)",
         "editor.options.sort_mode.manual"               : "Manuell per Drag-and-drop",
         "editor.options.sort_mode.none"                 : "Keine zusätzliche Sortierung",
-        "editor.options.sort_mode.due"                  : "Nach Fälligkeit (ToDo)",
+        "editor.options.sort_mode.due"                  : "Nach Fälligkeit (To-do)",
 
         "editor.options.todo_filter.all"                : "Alle",
         "editor.options.todo_filter.today"              : "Heute",
@@ -231,14 +539,37 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"           : "Zukünftig",
         "editor.options.todo_filter.dated"              : "Mit Fälligkeit",
         "editor.options.todo_filter.undated"            : "Ohne Fälligkeit",
+        "editor.options.todo_default_action.remove"     : "Fälligkeit entfernen",
+        "editor.options.todo_default_action.next"       : "Nächste Fälligkeit setzen",
+        "editor.options.todo_default_action.now"        : "Nächste Fälligkeit ab jetzt setzen",
+        "editor.options.todo_default_action.edit"       : "Eintrag bearbeiten",
+        "editor.options.todo_default_action.delete"     : "Eintrag löschen",
+        "editor.options.todo_default_action.done"       : "Erledigt-Status umschalten",
+        "editor.options.todo_action_behavior.menu"      : "Menü öffnen (Standard)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Einfachklick: Menü / Langklick: Standardaktion",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Einfachklick: Standardaktion / Langklick: Menü",
 
         "editor.options.mode.shopping"                  : "Einkaufsliste",
-        "editor.options.mode.todo"                      : "To-Do-Liste",
+        "editor.options.mode.todo"                      : "To-do-Liste",
         "editor.options.inputrow.top"                   : "Oben",
         "editor.options.inputrow.bottom"                : "Unten",
-		
-        "editor.labels.entity"                          : "To-Do-Liste (Entität)",
-        "editor.helpers.mode"                           : "Legt fest, wie die Liste verwendet wird. Im Modus „Einkaufsliste“ stehen erweiterte Funktionen zur originalen Einkaufsliste zur Verfügung, jedoch ohne Fälligkeiten. Im Modus „To-Do-Liste“ können zusätzlich Fälligkeitsdaten gesetzt und verwaltet werden, die Bedienung unterscheidet sich dabei leicht. Hinweis: Die originale Home Assistant Einkaufsliste mit der Entität 'Einkaufsliste' unterstützt keine Fälligkeiten. Zusätzlich gibt es im To-Do-Modus keine Anzahleingabe, keine Plus- und Minus-Buttons, keine Export-Buttons sowie keinen Button, um erledigte Einträge zu löschen.",
+        "editor.options.ean_transfer_mode.disabled"     : "Deaktiviert (Standard)",
+        "editor.options.ean_transfer_mode.send"         : "Buchungen senden",
+        "editor.options.ean_transfer_mode.receive"      : "Buchungen empfangen",
+        "editor.options.ean_transfer_mode.send_receive" : "Buchungen senden und empfangen",
+        "editor.options.ean_transfer_actions.add"       : "Nur Hinzufügen",
+        "editor.options.ean_transfer_actions.remove"    : "Nur Entfernen",
+        "editor.options.ean_transfer_actions.both"      : "Hinzufügen und Entfernen (Standard)",
+        "editor.options.ean_transfer_remove_behavior.one_to_one": "1:1 übertragen (Standard)",
+        "editor.options.ean_transfer_remove_behavior.minimum": "Mindestbestand",
+        "editor.options.ean_transfer_remove_behavior.off": "Keine automatische Übertragung",
+        "editor.options.ean_transfer_non_ean.one_to_one": "1:1 übertragen",
+        "editor.options.ean_transfer_non_ean.minimum"  : "Mindestbestand verwenden",
+        "editor.options.ean_transfer_non_ean.ask"       : "Immer nachfragen",
+        "editor.options.ean_transfer_non_ean.off"       : "Nicht übertragen (Standard)",
+
+        "editor.labels.entity"                          : "To-do-Liste (Entität)",
+        "editor.helpers.mode"                           : "Legt fest, wie die Karte verwendet wird. „Einkaufsliste“ bietet Artikelmengen, Kategorien und Einkaufsfunktionen ohne Fälligkeiten. „To-do-Liste“ verwaltet Aufgaben mit Fälligkeiten; dort gibt es keine Anzahleingabe, Plus-/Minus-Buttons oder Export-Buttons. „Inventar“ verwaltet Bestände in einer To-do-Liste: Artikel bleiben auch bei Bestand 0 erhalten und können ein- oder ausgelagert werden. Die originale Home-Assistant-Einkaufsliste unterstützt keine Fälligkeiten.",
         "editor.labels.highlight_words"                 : "Hervorgehobene Wörter",
         "editor.labels.chips_with_cat_color"            : "Farbe der Kategorien nutzen",
         "editor.labels.allow_filter_chips"              : "Filterung der Chips erlauben",
@@ -265,9 +596,10 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "PDF Export-Button anzeigen",
         "editor.labels.show_export_button"              : "HTML Export-Button anzeigen",
         "editor.labels.show_input_mask"                 : "Eingabe-Maske anzeigen",
-		"editor.labels.show_plus_minus"                 : "Plus / Minus Buttons anzeigen (Nur im Modus 'Einkaufsliste')",
+		"editor.labels.show_plus_minus"                 : "Plus-/Minus-Buttons anzeigen",
         "editor.labels.acknowledge_deletion"            : "Löschbestätigung anzeigen",
         "editor.labels.show_quantity_one"               : "Anzahl 1 anzeigen",
+        "editor.labels.shopping_offer_only_enabled"     : "Angebotskennzeichnung verwenden",
         "editor.labels.sub_text"                        : "Hinweistext unter der Eingabe",
         "editor.labels.chips"                           : "Standard-Chips (Komma oder Semikolon getrennt)",
         "editor.labels.longlived_token"                 : "Langlebiger Zugriffstoken (für den Zugriff via Export-Datei)",
@@ -275,7 +607,7 @@ const TRANSLATIONS = {
         "editor.labels.bubble_card"                     : "Bubble PopUp Card - Mode",
         "editor.labels.debug_mode"                      : "Debug-Modus",
         "editor.labels.chip_file"                       : "Path zur Textdatei mit den Globalen Chips",
-        "editor.labels.ean_file"                        : "Path zur Textdatei mit der lokalen EAN Liste",
+        "editor.labels.ean_file"                        : "Pfad zur Textdatei mit der lokalen EAN-Liste",
 		"editor.labels.category_file"                   : "Path zur Textdatei mit den Globalen Kategorien",
         "editor.labels.title"                           : "Titel",
         "editor.labels.title_icon"                      : "Titel-Icon",
@@ -283,17 +615,19 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_d"                   : "Warnschwelle für Intervalle in Tagen",
         "editor.labels.todo_yellow_h"                   : "Warnschwelle für Intervalle in Stunden",
         "editor.labels.todo_yellow_s"                   : "Warnschwelle für fällige Aufgaben ohne Zeitangabe",
-        "editor.labels.todo_warning_thresholds"         : "Warnschwellen für ToDo-Modus",
-        "editor.labels.show_title_info"                 : "Nächste Fälligkeit im ToDo-Modus anzeigen",
+        "editor.labels.todo_warning_thresholds"         : "Warnschwellen",
+        "editor.labels.show_title_info"                 : "Nächste Fälligkeit anzeigen",
         "editor.labels.show_title_info_icon"            : "Icon für nächste Fälligkeit anzeigen",
         "editor.labels.sort_mode"                       : "Sortierung",
 
-        "editor.helpers.show_title_info"                : "Zeigt im ToDo-Modus, sofern ein Titel angegeben wurde, die nächste Fälligkeit aller Einträge aller Kategorien unter dem Titel an. Abgelaufene Einträge werden hier nicht angezeigt, diese werden durch ein Ausrufezeichen rechts vom Namen angezeigt.",
+        "editor.helpers.show_title_info"                : "Zeigt unter dem Titel die nächste Fälligkeit aller Kategorien an. Überfällige Einträge werden dort nicht aufgeführt und stattdessen durch das Ausrufezeichen gekennzeichnet.",
         "editor.helpers.show_title_info_icon"           : "Zeigt vor dem Fälligkeitsdatum als optische Hervorhebung ein Kalender-Icon an.",
         "editor.helpers.sort_mode"                      : "Legt fest, wie Artikel sortiert werden: alphabetisch, manuell per Drag-and-drop, nach Fälligkeit oder ohne zusätzliche Sortierung.",
-        "editor.helpers.todo_filter"                    : "Legt den Standardfilter für To-Do-Einträge fest. Der Filter wirkt nur im To-Do-Modus.",
-        "editor.helpers.show_todo_filter_menu"          : "Zeigt im To-Do-Modus einen Filterbutton in der Buttonleiste an. Nutzer können den Filter dort temporär ändern oder pro Liste im Browser speichern.",
-        "editor.helpers.todo_warning_thresholds"        : "Konfiguration der Warnschwellen im ToDo-Modus. Die Werte sind in Minuten anzugeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
+        "editor.helpers.todo_filter"                    : "Legt fest, welche Aufgaben beim Laden standardmäßig angezeigt werden.",
+        "editor.helpers.todo_default_action"            : "Legt fest, welche Aktion je nach gewähltem Klickverhalten direkt ausgeführt wird. Ist sie für einen Eintrag nicht verfügbar, öffnet sich stattdessen das Aktionsmenü.",
+        "editor.helpers.todo_action_behavior"           : "Legt fest, ob die Checkbox das Aktionsmenü öffnet oder die Standardaktion per Einfach- beziehungsweise Langklick ausführt. Ein Langklick dauert etwa 0,6 Sekunden.",
+        "editor.helpers.show_todo_filter_menu"          : "Zeigt einen Filterbutton in der Buttonleiste an. Nutzer können den Filter dort vorübergehend ändern oder pro Liste im Browser speichern.",
+        "editor.helpers.todo_warning_thresholds"        : "Die Werte werden in Minuten angegeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
         "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
         "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
         "editor.helpers.todo_yellow_h"                  : "Warnschwelle für Intervalle in Stunden, definiert in Minuten (Standard: 10)",
@@ -302,10 +636,28 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
         "editor.helpers.option_row_position"            : "Legt fest, ob die Buttonleiste (Export, Nachricht, Admin-Optionen) oben oder unten angezeigt wird.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamische Kategorien ermöglichen es, von außerhalb der Karte (z. B. über Automationen im Format: ‘@Kategorie@ Artikel’) Artikel Kategorien zuzuordnen, die nicht definiert sind. Außerdem können beim Hinzufügen über die Karte neue Kategorien erstellt werden. Diese Kategorien bleiben bestehen, bis der letzte Artikel in der Kategorie entfernt wurde.",
-        "editor.helpers.show_message_button"            : "Zeigt im Modus 'Einkaufsliste' einen Nachrichten-Button an, über den die Liste z.B. per Email oder Telegram (über 'notify') gesendet werden kann. Dazu muss die Notify-Entität unter dem Punkt Benachrichtigungen konfiguriert werden.",
-        "editor.helpers.show_clear_button"              : "Zeigt einen Button an, um alle als erledigt markierten Artikel aus der Liste zu entfernen.",
-        "editor.helpers.notify_entity"                  : "Die Notify-Entität, die verwendet wird, um die Liste zu senden, wenn z.B. der Nachrichten-Button gedrückt wird. Beispiel: 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Die Benachrichtigungen enthalten HTML Formattierungen, um die Lesbarkeit zu verbessern. Stelle sicher, dass die verwendete Notify-Entität HTML-Formattierungen unterstützt. Benachrichtigungen über die SMTP Platform, sind in der Auswahl nicht vorhanden und müssen separat konfiguriert werden.",
-        "editor.helpers.show_admin_button"              : "Zeigt einen Admin-Button an, wodurch die Optionen zum Kopieren von Browser Chips / Artikeln / Kategorien genutzt werden können.",
+        "editor.helpers.show_message_button"            : "Zeigt im Einkaufslisten- und Inventarmodus einen Nachrichten-Button an, über den die Liste mit der konfigurierten Benachrichtigungsart gesendet werden kann.",
+        "editor.helpers.show_clear_button"              : "Zeigt im Einkaufslisten- und To-do-Modus einen Button an, um alle als erledigt markierten Einträge zu entfernen. Im Inventarmodus wird der Button ausgeblendet.",
+        "editor.helpers.notify_entity"                  : "Home-Assistant-Notify-Entität für diesen Versandweg, zum Beispiel 'notify.mobile_app_mein_telefon' oder 'notify.telegram'. Verwende eine ntfy-Entität im eigenen ntfy-Bereich, damit Markdown korrekt unterstützt wird.",
+        "editor.helpers.notify.options"                 : "Versand über eine beliebige Home-Assistant-Notify-Entität. Automatische Meldungen und der manuelle Nachrichten-Button können getrennt konfiguriert werden.",
+        "editor.helpers.ntfy.options"                   : "Versand über die Home-Assistant-Integration ntfy. Die Karte verwendet ntfy.publish und kann die Liste als Klartext oder Markdown senden.",
+        "editor.helpers.email.options"                  : "Versand als HTML-E-Mail über einen in Home Assistant eingerichteten SMTP-Notify-Dienst.",
+        "editor.helpers.notify_change_mode"             : "Legt fest, ob bei einer Änderung nur die Änderung, nur die vollständige Liste, beides oder nichts automatisch gesendet wird.",
+        "editor.helpers.notify_include_manual"          : "Sendet die vollständige Liste über diesen Kanal, wenn der Nachrichten-Button in der Karte gedrückt wird.",
+        "editor.helpers.notify_delay"                   : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
+        "editor.helpers.notify_format"                  : "Klartext entfernt HTML-Markierungen. HTML erhält die vorhandene Formatierung für kompatible Notify-Dienste.",
+        "editor.helpers.ntfy_entity"                    : "Notify-Entität eines Topics aus der Home-Assistant-Integration ntfy, zum Beispiel 'notify.einkaufsliste'.",
+        "editor.helpers.ntfy_change_mode"               : "Legt fest, ob bei einer Änderung nur die Änderung, nur die vollständige Liste, beides oder nichts automatisch gesendet wird.",
+        "editor.helpers.ntfy_include_manual"            : "Sendet die vollständige Liste an ntfy, wenn der Nachrichten-Button in der Karte gedrückt wird.",
+        "editor.helpers.ntfy_on_done"                   : "Sendet über ntfy auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wird.",
+        "editor.helpers.ntfy_delay"                     : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
+        "editor.helpers.ntfy_format"                    : "Markdown formatiert Kategorieüberschriften und erledigte Artikel passend für ntfy. Klartext entfernt alle Formatierungen.",
+        "editor.helpers.email_change_mode"              : "Legt fest, ob bei einer Änderung nur die Änderung, nur die vollständige Liste, beides oder nichts automatisch per E-Mail gesendet wird.",
+        "editor.helpers.email_include_manual"           : "Sendet die vollständige Liste per E-Mail, wenn der Nachrichten-Button in der Karte gedrückt wird.",
+        "editor.helpers.email_on_done"                  : "Sendet per E-Mail auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wird.",
+        "editor.helpers.email_delay"                    : "Wartet nach einer Änderung die angegebene Anzahl Sekunden. Weitere Änderungen in dieser Zeit starten den Countdown neu und werden gemeinsam gesendet. 0 sendet sofort.",
+        "editor.helpers.show_admin_button"              : "Zeigt den Admin-Button für Browserdaten, dynamische Kategorien, EAN-Datenbank, Verarbeitung und Warteschlangen an.",
+        "editor.helpers.admin_button_admin_only"        : "Blendet den Admin-Button für Benutzer ohne Home-Assistant-Administratorrechte aus. Bereits konfigurierte Scanner-, EAN- und Warteschlangenfunktionen arbeiten weiter; nur der Zugriff über diesen Button wird eingeschränkt. Standard: Aus.",
         "editor.helpers.notify_on_change"               : "Sendet eine Benachrichtigung über die konfigurierte Notify-Entität, sobald ein Artikel hinzugefügt, bearbeitet oder entfernt wurde.",
         "editor.helpers.notify_on_change_all"           : "Standardmäßig wird nur der hinzugefügte, bearbeitete oder entfernte Artikel in der Benachrichtigung erwähnt. Wenn diese Option aktiviert ist, wird zusätzlich die komplette Liste gesendet.",
         "editor.helpers.notify_on_change_time"          : "Legt fest (in Sekunden), wie lange gewartet wird, bevor eine Benachrichtigung (komplette Liste) gesendet wird. Dies ist nützlich, wenn mehrere Änderungen in kurzer Zeit vorgenommen werden, um zu vermeiden, dass zu viele Benachrichtigungen gesendet werden. Um diese Funktion zu deaktivieren '0' (Null) eingeben.",
@@ -313,22 +665,53 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Sendet auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wurde. Achtung, dies kann zu vielen Benachrichtigungen führen, wenn viele Artikel während des Einkaufs als erledigt markiert werden.",
         "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
         "editor.helpers.show_category_add_all"          : "Zeigt in aufgeklappten Kategorie-Chips einen 'Alle'-Chip an. Damit können alle Artikel der Kategorie über ein Auswahlfenster hinzugefügt werden.",
-        "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld.",
-        "editor.helpers.allow_suggestions"              : "Zeigt Vorschläge unter dem Eingabefeld an, wenn die Eingabe mit einem, einer Kategorie zugeordneten Artikel, übereinstimmt. Ein Klick auf den Vorschlag fügt diesen zur Liste hinzu. Alternativ kann man auch mit den Pfeiltasten durch die Vorschläge navigieren und mit Enter bestätigen.",
-        "editor.helpers.show_done_hidden_items_in_search": "Wenn die Filterfunktion aktiviert ist, werden auch erledigte (verborgene) Artikel in den Suchergebnissen angezeigt.",
+        "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld. Bei EAN-Artikeln werden auch der originale Produktname und die Marke durchsucht.",
+        "editor.helpers.allow_suggestions"              : "Zeigt passende Artikel aus den konfigurierten Kategorien unter dem Eingabefeld an. Wenn zusätzlich „EAN-Datenbank in Suchvorschlägen verwenden“ aktiviert ist, werden auch gespeicherte Produktnamen, originale Produktnamen, Marken und EANs berücksichtigt.",
+        "editor.helpers.show_done_hidden_items_in_search": "Bezieht im Einkaufslisten- und To-do-Modus erledigte oder ausgeblendete Einträge in die Suchergebnisse ein. Das Inventar verwendet eine eigene Ausblenden-Funktion.",
         "editor.helpers.capitalize_first_letter"        : "Wenn aktiviert, wird der erste Buchstabe im Eingabefeld automatisch groß schreiben",
-        "editor.helpers.show_descriptions"              : "Zeigt die Beschreibung eines Artikels unterhalb des Artikelnamens an, sofern die ausgewählte To-Do-Liste Beschreibungen unterstützt.",
+        "editor.helpers.show_descriptions"              : "Zeigt im Einkaufslisten- und To-do-Modus die Beschreibung unterhalb des Eintrags an, sofern die ausgewählte To-do-Liste Beschreibungen unterstützt. Im Inventarmodus werden Beschreibungen nicht angezeigt.",
+        "editor.helpers.show_ean_brand"                 : "Hängt die Marke beim Erzeugen des Artikelnamens an, sofern sie nicht bereits im Produktnamen enthalten ist.",
+        "editor.helpers.show_ean_quantity"              : "Hängt die Verpackungsmenge beim Erzeugen des Artikelnamens an.",
+        "editor.helpers.ean_scanner_mac"                : "MAC-Adresse des Bluetooth-Scanners, dessen Ereignisse diese Karte verarbeitet. Beispiel: AA:FC:87:59:04:38.",
+        "editor.helpers.ean_database_entity"            : "Optionale, ausschließlich für diese Funktion vorgesehene To-do-Liste. Sie speichert gelernte EAN-Produkte und Kategorien dauerhaft und geräteübergreifend. Verwende diese Liste nicht für andere Einträge. Die Standard-Einkaufsliste ist ungeeignet, da sie keine Beschreibungen unterstützt. Um die Funktion zu deaktivieren, entferne die ausgewählte Liste wieder aus der Konfiguration.",
+        "editor.helpers.ean_create_chip"                : "Erstellt nach dem Hinzufügen eines per EAN erkannten Artikels einen lokalen Chip, sofern die lokale Chip-Erstellung allgemein aktiviert ist. Dies gilt für Bluetooth-Scanner, Kamera und manuell eingegebene EANs.",
+        "editor.helpers.list_script_enabled"            : "Meldet erfolgreiche Änderungen durch diese Karte: Artikel hinzugefügt, entfernt, Anzahl geändert oder umbenannt. Weitere Informationen und Beispielvariablen: https://github.com/Nisbo/ha-shopping-list-improved/wiki/Card-Configuration",
+        "editor.helpers.list_script_entity"             : "Sendet Namen, Kategorie, Anzahl, Listenentität und Modus an das ausgewählte Skript. Änderungen außerhalb dieser Karte werden systembedingt nicht gemeldet. Das EAN-Skript kann parallel verwendet werden.",
+        "editor.helpers.ean_script_enabled"             : "Ruft bei EAN-Ereignissen das ausgewählte Home-Assistant-Skript mit Status und Produktdaten auf. Weitere Informationen und Beispielvariablen: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
+        "editor.helpers.ean_remove_mode"                 : "Halte den Hinzufügen-Button eine Sekunde gedrückt, um den Entnahmemodus zu aktivieren. EAN-Scans verringern dann die Menge eines passenden Artikels oder entfernen ihn aus der Liste. Ein normaler Klick auf den Button oder ein Neuladen der Seite beendet den Modus. Der Hinzufügen-Button muss sichtbar sein.",
+        "editor.helpers.ean_database_suggestions"        : "Ergänzt die normalen Suchvorschläge um gespeicherte Produktnamen, originale Produktnamen, Marken und EANs aus der EAN-Datenbank. Dafür muss zusätzlich „Vorschläge anzeigen“ aktiviert sein. Mehrere EANs mit demselben Produktnamen werden nur einmal vorgeschlagen.",
+        "editor.helpers.show_ean_database_badge"         : "Zeigt neben Artikeln mit exakt passendem Produktnamen ein dezentes Barcode-Symbol. Ein Klick zeigt alle zugeordneten EAN-Datensätze an.",
+        "editor.helpers.ean_transfer_mode"               : "Legt fest, ob diese Karte Buchungen über eine gemeinsame ISL-Transfer-Liste sendet, für ihre eigene Liste empfängt oder beides ausführt. Standard: Deaktiviert.",
+        "editor.helpers.ean_transfer_entity"             : "Separate To-do-Liste, die ausschließlich als dauerhafte ISL-Transfer-Warteschlange verwendet wird. Sie darf nicht gleichzeitig Einkaufsliste oder EAN-Datenbank sein und muss Beschreibungen unterstützen.",
+        "editor.helpers.ean_transfer_target_entity"      : "Wird nur bei „Buchungen senden“ und „Buchungen senden und empfangen“ verwendet. In den anderen Modi wird diese Einstellung ignoriert.",
+        "editor.helpers.ean_transfer_actions"            : "Bestimmt, ob Hinzufügen, Entfernen oder beide Aktionen an die Zielliste übertragen werden. Der Datenbank-Befüllmodus bleibt immer lokal. Standard: Hinzufügen und Entfernen.",
+        "editor.helpers.sync_transfer.options"           : "Überträgt Hinzufügungen und Entnahmen zwischen Einkaufslisten- oder Inventarkarten über eine separate, dauerhafte To-do-Warteschlange. Hier legst du Transferliste, Zielliste und Übertragungsverhalten fest. Einstellungen, die für den gewählten Modus nicht benötigt werden, werden ignoriert.",
+        "editor.helpers.ean_transfer_remove_behavior"    : "1:1 überträgt jede tatsächlich entnommene Menge. Mindestbestand überträgt nur, wenn der Restbestand den Grenzwert erreicht oder unterschreitet. Produktwerte in der EAN-Datenbank überschreiben diesen Standard. Standard: 1:1.",
+        "editor.helpers.ean_transfer_default_minimum_stock": "Optionaler Kartenstandard für den Modus Mindestbestand. Ohne Wert erfolgt für Produkte ohne eigenen Mindestbestand keine automatische Übertragung.",
+        "editor.helpers.ean_transfer_non_ean"            : "Verhalten bei Entnahmen von Inventarvarianten ohne EAN. „Mindestbestand verwenden“ nutzt den Wert der manuellen Variante oder ersatzweise den Kartenstandard. Diese Einstellung wirkt nur bei aktivem Senden von Entnahmen. Standard: Nicht übertragen.",
+        "editor.helpers.ean_script_entity"              : "Das Skript kann beispielsweise Sprachausgaben, Sounds, Benachrichtigungen oder weitere Aktionen ausführen. Die Auswahl bleibt gespeichert, wenn die Skriptausgabe deaktiviert wird.",
         "editor.helpers.title_icon"                     : "Zeigt vor dem Titel das ausgewählte Icon an.",
         "editor.helpers.font.sizes"                     : "Legt die Schriftgrößen für die Liste, Kategorien und Chips fest.",
-        "editor.helpers.colors"                         : "Legt die Farbeinstellungen für die Chips fest.",
-        "editor.helpers.category.options"               : "Hier kannst du Kategorien konfigurieren, die in der Einkaufs- und ToDo-liste verwendet werden. Du kannst lokale Kategorien (hier in der Karte) definieren oder eine Textdatei mit globalen Kategorien laden. Weitere Informationen zum Aufbau der Kategorien findest du in der Dokumentation.",
+        "editor.helpers.colors"                         : "Konfiguriert die Chip-Farben und eigenes CSS. Die Bestandskennzeichnung befindet sich im Bereich Inventar.",
+        "editor.helpers.chip_colors"                    : "Wählt die Farben für lokale, Standard-, globale, Gerichte- und hervorgehobene Chips aus. Der Farbdialog stammt vom Browser bzw. Betriebssystem; unter macOS ggf. zu den RGB-Reglern wechseln.",
+        "editor.helpers.expert_color_settings"          : "Erlaubt direkte CSS-Farbangaben wie red, #2196f3, #6464644D, rgb(...), rgba(...) oder var(--primary-color). Nur ein tatsächlich eingetragener Wert überschreibt den entsprechenden Colorpicker. Die grau dargestellte Standardfarbe ist lediglich ein Hinweis. Feld leeren, um wieder den Colorpicker oder den Kartenstandard zu verwenden.",
+        "editor.helpers.chip_color_rgb"                 : "Farbe der lokal in diesem Browser gespeicherten Chips.",
+        "editor.helpers.chip_color_default_rgb"         : "Farbe der in der Kartenkonfiguration eingetragenen Standard-Chips.",
+        "editor.helpers.chip_color_global_rgb"          : "Farbe der aus einer Textdatei geladenen globalen Chips.",
+        "editor.helpers.chip_color_dish_rgb"            : "Farbe der Gerichte-Chips.",
+        "editor.helpers.highlight_color_rgb"            : "Farbe für hervorgehobene Chips.",
+        "editor.helpers.category.options"               : "Konfiguriert Kategorien für Einkaufs-, To-do- und Inventarlisten. Du kannst lokale Kategorien definieren oder eine Textdatei mit globalen Kategorien laden.",
         "editor.helpers.export.options"                 : "Hier kannst du die Export-Optionen konfigurieren.",
-        "editor.helpers.message.options"                : "Hier kannst du einstellen, wie das Nachrichtensystem funktioniert und welche Notify-Entität verwendet wird, um die Liste zu senden. Das Nachrichtensystem funktioniert nur im Modus 'Einkaufsliste'.",
+        "editor.helpers.message.options"                : "Konfiguriert den manuellen und automatischen Versand der Liste getrennt für Standard-Notify, ntfy und E-Mail. Benachrichtigungen stehen im Einkaufslisten- und Inventarmodus zur Verfügung.",
         "editor.helpers.dishes.options"                 : "Hier kannst du Gerichte konfigurieren, die in der Einkaufsliste verwendet werden. Mit dieser Funktion kannst du mehrere Artikel auf einmal hinzufügen.",
         "editor.helpers.chips.options"                  : "Hier kannst du die Chip-Optionen konfigurieren. Chips sind Schnell-Auswahl-Buttons, mit denen du häufig verwendete Artikel schnell zur Liste hinzufügen kannst.",
         "editor.helpers.item.options"                   : "Hier kannst du die Einstellungen für die Artikel in der Liste konfigurieren.",
+        "editor.helpers.ean_scanner.options"            : "Konfiguriert EAN-Eingaben, Kamera-Scans, Produktdatenbank und Bluetooth-Scanner. Die EAN-Erkennung funktioniert ohne Gerätefreigabe. Nur eingehende Bluetooth-/Home-Assistant-Scannerereignisse müssen zusätzlich in den Admin-Optionen auf dem jeweiligen Gerät aktiviert werden.",
         "editor.helpers.general.options"                : "Hier kannst du allgemeine Einstellungen für die Karte konfigurieren.",
-        "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, wird automatisch die Standard-Einkaufsliste von Home Assistant verwendet. Diese hat allerdings keine Fälligkeits-Funktion und sollte somit nur im Modus 'Einkaufsliste' und nicht im Modus 'To-Do-Liste' verwendet werden.",
+        "editor.helpers.shopping_mode.options"          : "Einstellungen, die ausschließlich für den Einkaufslistenmodus gelten.",
+        "editor.helpers.todo_mode.options"              : "Einstellungen für Aufgaben, Fälligkeiten und Warnungen im To-do-Modus.",
+        "editor.helpers.inventory_mode.options"         : "Einstellungen für Bestände, Buchungsmodi, Produktvarianten und Mindestbestände im Inventarmodus.",
+        "editor.helpers.entity"                         : "Wenn keine Entität ausgewählt wurde, verwendet die Karte die originale Home-Assistant-Einkaufsliste. Sie eignet sich nur für den Einkaufslistenmodus. Selbst erstellte To-do-Entitäten unterstützen die benötigten Felder für To-do- und Inventarmodus.",
 		"editor.helpers.highlight_words"                : "Liste von Wörtern, die in Chips farblich (Hintergrund) hervorgehoben werden sollen. Kann als Komma oder Semikolon-Liste eingegeben werden, z.B. 'Butter,Bananen,Mehl'.",
         "editor.helpers.chips_with_cat_color"           : "Sofern ein Chip einer Kategorie als 'item' zugewiesen wurde und für die Kategorie eine Farbe angegeben wurde, wird der Chip in der Farbe der Kategorie angezeigt. Die Reihenfolge, wie die Farben vergeben werden: Highlight > Kategorie > Global > Standard > Browser.",
         "editor.helpers.allow_filter_chips"             : "Ermöglicht die Filterung der Chips über das Eingabefeld.",
@@ -347,32 +730,34 @@ const TRANSLATIONS = {
         "editor.helpers.chips_width"                    : "Breite der Chip-Box in Pixeln. Nur für '(Auto) Panel Mode'.",
         "editor.helpers.chips_position"                 : "Legt fest, wo die Chips angezeigt werden (Auto: abhängig von der Bildschirmgröße).",
         "editor.helpers.quantity"                       : "Legt fest, ob die Anzahl vor ('10x Butter') oder hinter ('Butter (10)') steht.",
-        "editor.helpers.acknowledged"                   : "Steuert, ob erledigte Artikel angezeigt werden.",
+        "editor.helpers.acknowledged"                   : "Steuert im Einkaufslisten- und To-do-Modus, ob erledigte Einträge angezeigt, ausgeblendet oder ans Ende verschoben werden. Das Inventar verwendet eine eigene Ausblenden-Funktion.",
         "editor.helpers.chip_click"                     : "Bestimmt, ob Chips per Klick oder Doppelklick hinzugefügt werden.",
-        "editor.helpers.show_quantity_box"              : "Zeigt das Eingabefeld für die Anzahl (oben links) an.",
+        "editor.helpers.show_quantity_box"              : "Zeigt im Einkaufslisten- und Inventarmodus das Eingabefeld für die Anzahl an. Im To-do-Modus ist es nicht verfügbar.",
         "editor.helpers.show_submit_button"             : "Zeigt den Hinzufügen-Button an oder nicht.",
 		"editor.helpers.show_qrscan_button"   			: "Zeigt den QR-Scanner-Button an. Damit können ein oder mehrere Artikel gleichzeitig per QR-Code gescannt werden. Bei mehreren Artikeln müssen diese jeweils in einer neuen Zeile stehen. Mengenangaben können in Klammern angegeben werden, z. B. 'Bananen (6)'. Funktioniert nur, wenn man über https:// auf Home Assistant zugreift.",
-        "editor.helpers.show_export_button_pdf"         : "Zeigt den PDF Export-Button unten an. Mit der PDF-Export-Funktion kannst du die aktuelle Einkaufsliste als PDF-Datei herunterladen und offline verwenden.",
-        "editor.helpers.show_export_button"             : "Zeigt den HTML Export-Button unten an. Mit der HTML-Export-Funktion kannst du die aktuelle Einkaufsliste als HTML-Datei herunterladen und offline verwenden.",
+        "editor.helpers.show_export_button_pdf"         : "Zeigt im Einkaufslisten- und Inventarmodus den PDF-Export-Button an, um die aktuelle Liste als PDF-Datei herunterzuladen.",
+        "editor.helpers.show_export_button"             : "Zeigt im Einkaufslisten- und Inventarmodus den HTML-Export-Button an, um die aktuelle Liste als HTML-Datei herunterzuladen.",
         "editor.helpers.show_input_mask"                : "Zeigt die komplette Eingabemaske an oder nicht.",
-		"editor.helpers.show_plus_minus"                : "Zeigt die Plus / Minus Buttons zum Erhöhen oder Verringern der Anzahl an oder nicht. Im Modus 'To-Do-Liste' sind diese Buttons nicht verfügbar.",
-        "editor.helpers.acknowledge_deletion"           : "Zeigt ein Bestätigung-Popup an, bevor ein Artikel gelöscht wird.",
-        "editor.helpers.show_quantity_one"              : "Zeigt auch Anzahl 1 an (sonst nur Name).",
+		"editor.helpers.show_plus_minus"                : "Zeigt im Einkaufslisten- und Inventarmodus Plus-/Minus-Buttons zum Ändern der Menge an. Im To-do-Modus sind sie nicht verfügbar.",
+        "editor.helpers.acknowledge_deletion"           : "Zeigt im Einkaufslisten- und Inventarmodus vor dem Löschen eines Artikels eine Bestätigung an. Im To-do-Modus wird das Aktionsfenster unabhängig von dieser Einstellung verwendet.",
+        "editor.helpers.show_quantity_one"              : "Zeigt im Einkaufslistenmodus auch die Anzahl 1 an. Andernfalls wird bei Menge 1 nur der Artikelname dargestellt.",
+        "editor.helpers.shopping_offer_only_enabled"    : "Zeigt im Einkaufslistenmodus die Option „Nur kaufen, wenn im Angebot“ im Artikel-Editor und ein Angebots-Badge in der Liste an. Vorhandene Kennzeichnungen bleiben beim Deaktivieren gespeichert. Standard: Ein.",
         "editor.helpers.sub_text"                       : "Text unter dem Eingabefeld zur Erklärung oder Tipps.",
         "editor.helpers.chips"                          : "Definiert Standard-Chips, z.B. 'Milch,Eier,Brot'.",
         "editor.helpers.ean_file"                       : "Beispiel: /local/ean.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Eintrag im Format 'EAN Name' stehen, z. B. '1234567890123 Test-Artikel'. Unterstützt werden die EAN-Formate EAN-8, UPC (12), EAN-13 und GS1-14.",
         "editor.helpers.chip_file"                      : "Beispiel: /local/chips.txt, wenn die Datei im www-Ordner liegt. Pro Zeile muss ein Chip eingetragen werden.",
         "editor.helpers.category_file"                  : "Beispiel: /local/categories.txt, wenn die Datei im www-Ordner liegt. Für den Aufbau der Datei, bitte in die Dokumentation gucken.",
 		"editor.helpers.category_merge_mode"            : "Wähle, wie lokale, globale und dynamische Kategorien zusammengeführt werden sollen. 'local_only' zeigt nur die lokal definierten Kategorien, 'global_only' nur die globalen Kategorien und 'dynamic_only' nur die dynamischen Kategorien. Die anderen Optionen kombinieren zwei oder alle drei Varianten auf unterschiedliche Weise. Die Priorität, in der Kategorien zusammengeführt werden, entspricht der Reihenfolge der Begriffe von links nach rechts.",
+        "editor.helpers.category_display"               : "Legt fest, ob Kategorieüberschriften angezeigt werden. Kategorien bleiben auch bei verborgenen Überschriften für Zuordnung, Sortierung, Vorschläge und Chips aktiv. Ohne Überschriften sind deren Kategorie-Farben in der Liste nicht sichtbar.",
         "editor.helpers.bubble_card"                    : "Aktiviere diese Option, wenn Du die Karte in der Bubble PopUp Card verwenden möchtest. In der Bubble Card müssen `background_update: true` und `close_by_clicking_outside: false` gesetzt sein, damit die Karte korrekt funktioniert.",
         "editor.helpers.debug_mode"                     : "Schreibt zusätzliche Diagnosemeldungen in die Browser-Konsole. Sollte im normalen Betrieb deaktiviert bleiben.",
-        "editor.helpers.show_cat_exclamation_mark"      : "Zeigt im To-Do Mode im Titel und in der Kategorie ein Ausrufezeichen an, sofern es in der Kategorie fällige Einträge gibt.",
-        "editor.helpers.show_title_exclamation_mark"    : "Zeigt im To-Do Mode im Titel ein Ausrufezeichen an, sofern es in einer Kategorie fällige Einträge gibt.",
-        "editor.helpers.show_cat_count"                 : "Wenn diese Option aktiviert ist, wird die Anzahl der Artikel in jeder Kategorie neben dem Kategorienamen angezeigt. Im ToDo Modus wird die Anzahl ivertiert angezeigt. Die Anzahl vor dem '/' umfasst somit nur die noch nicht fälligen Einträge. (Beispiel: 3/5 bedeutet, dass von 5 Einträgen 3 noch nicht fällig sind.) So kann man z.B. bei (5/5) einfach sehen, dass aktuell keine Einträge zu erledigen sind.",
-        "editor.helpers.hide_cat_count_all_done"        : "Wenn diese Option aktiviert ist, wird die Artikelanzahl in der Kategorie ausgeblendet, sobald alle Einträge in der Kategorie als erledigt markiert wurden.",
-        "editor.helpers.show_cat_next_due"              : "Wenn diese Option aktiviert ist, wird im To-Do Modus das nächste Fälligkeitsdatum unter dem Kategorienamen angezeigt. So kann man auf einen Blick sehen, wann der nächste Eintrag in dieser Kategorie fällig ist.",
+        "editor.helpers.show_cat_exclamation_mark"      : "Zeigt an der Kategorie ein Ausrufezeichen an, wenn sie fällige Einträge enthält. Das Ausrufezeichen im Titel wird separat eingestellt.",
+        "editor.helpers.show_title_exclamation_mark"    : "Zeigt im Titel ein Ausrufezeichen an, wenn mindestens eine Kategorie fällige Einträge enthält.",
+        "editor.helpers.show_cat_count"                 : "Zeigt die Anzahl der Einträge neben dem Kategorienamen an. Im Inventarmodus zählt jede dargestellte Variante oder Gruppe einmal. Im To-do-Modus umfasst die Zahl vor dem '/' die nicht überfälligen oder bereits erledigten Einträge.",
+        "editor.helpers.hide_cat_count_all_done"        : "Blendet im Einkaufslisten- und To-do-Modus den Kategoriezähler aus, sobald alle Einträge der Kategorie erledigt sind. Im Inventarmodus wird diese Einstellung ignoriert.",
+        "editor.helpers.show_cat_next_due"              : "Zeigt das nächste Fälligkeitsdatum unter dem Kategorienamen an.",
         "editor.helpers.cat_double_sized_icon"          : "Wenn die nächste Fälligkeit angezeigt wird, kann mit dieser Option das Icon vergrößert werden, damit es optisch besser passt.",
-        "editor.helpers.show_cat_popup"                 : "Wenn diese Option aktiviert ist, erscheint beim Hinzufügen eines neuen Artikels ein Pop-up, in dem man eine Kategorie auswählen kann.",
+        "editor.helpers.show_cat_popup"                 : "Öffnet beim Hinzufügen eines neuen Artikels die Kategorieauswahl. Ist sie deaktiviert, werden Artikel ohne bereits bekannte Kategorie unter „Allgemein“ eingeordnet. Bekannte Zuordnungen aus Kategorien oder der EAN-Datenbank bleiben erhalten.",
         "editor.helpers.longlived_token"                : "Ein Zugriffstoken zur dauerhaften Authentifizierung bei Home Assistant. Er kann im Benutzerprofil unter ‚Sicherheit → Langlebige Zugriffstoken‘ erstellt werden. Achtung: Behandle diesen Token vertraulich, da er vollen Zugriff auf dein System ermöglicht. Beachte außerdem, dass er bei Verwendung von HTTP statt HTTPS unverschlüsselt übertragen wird und somit unsicher ist.",
         "editor.helpers.external_url"                   : "Die (externe) URL deiner Home Assistant-Installation (z. B. 'https://mein-ha.duckdns.org:8123'). Wird benötigt, wenn du die Export-Funktion verwendest, um später die Artikel mit Home Assistant synchronisieren zu können. Wenn du hier keine URL angibst, wird die URL verwendet, über die das Dashboard beim Export aufgerufen wird.",
 		"editor.helpers.categories"                     : "Mit Kategorien kannst du Artikel automatisch gruppieren. Jede Kategorie beginnt mit - name: <Kategoriename> und enthält darunter eine Liste von Stichwörtern unter items. Beispiel: - name: Obst items: - Erdbeeren - Pflaumen - Birnen - Bananen. Optional kann jede Kategorie ein icon (z.B. mdi:apple) und eine Hintergrundfarbe bgcolor (z.B. #247645) haben. Jeder Artikel, der eines der Stichwörter enthält, wird automatisch dieser Kategorie zugeordnet. Beim Erstellen einer neuen Karte wird eine Standardvorlage hinzugefügt, an der man sich orientieren kann.",
@@ -389,7 +774,9 @@ const TRANSLATIONS = {
 		"ui.common.cancel"                  			: "Cancel",
         "ui.common.all"                                 : "All",
 		"ui.common.edit_item"							: "Edit item",
-        "ui.common.add_item"                  			: "Add item",
+		"ui.common.add_item"                  			: "Add item",
+		"ui.shopping.offer_only"                       : "Buy only when on sale",
+		"ui.shopping.offer_badge"                      : "On sale",
         "ui.common.description"                         : "Description",
         "ui.common.no_cat"                  			: "none",
 		"ui.common.delete"                  			: "Delete",
@@ -400,17 +787,27 @@ const TRANSLATIONS = {
         "ui.common.sync_without_category"               : "Without category",
         "ui.common.sync_offline_list"                   : "Offline shopping list",
         "ui.common.sync_created"                        : "created on",
+        "ui.category.hidden_notice_one"                : "1 item is hidden because its category is not enabled on this card. Enable dynamic categories to show it.",
+        "ui.category.hidden_notice"                    : "{count} items are hidden because their categories are not enabled on this card. Enable dynamic categories to show them.",
+        "ui.category.hidden_details"                   : "Details",
+        "ui.category.hidden_title"                     : "Hidden items",
+        "ui.category.hidden_help"                      : "Enable dynamic categories or edit an item and assign a category available on this card.",
         "ui.common.export"                              : "HTML Export",
         "ui.common.export_pdf"                          : "PDF Export",
 		"ui.common.close"                          		: "Close",
         "ui.common.dynamic_category"                    : "New (dynamic) Category",
         "ui.common.loading_list"           				: "Loading list...",
+        "ui.qr.secure_context_required"                : "The QR scanner requires a secure HTTPS connection. Open Home Assistant over HTTPS and try again.",
+        "ui.qr.camera_unavailable"                      : "The camera could not be accessed. Check the camera permission and HTTPS connection.",
+        "ui.qr.library_load_failed"                    : "The QR scanner could not be loaded. Check the network connection and try again.",
 
         "ui.message.quantity_increased"                 : "Quantity increased",
         "ui.message.quantity_decreased"                 : "Quantity decreased",
         "ui.message.edited"                             : "Item edited",
         "ui.message.item_added"                         : "Item added",
         "ui.message.item_removed"                       : "Item removed",
+        "ui.message.item_completed"                     : "Item marked completed",
+        "ui.message.item_reopened"                      : "Completed status removed",
         "ui.message.sent"                               : "Message sent",
 
         "ui.admin.options"                              : "Admin Options",
@@ -424,6 +821,236 @@ const TRANSLATIONS = {
         "ui.admin.options.manual_assigned"              : "Manually Assigned Items",
         "ui.admin.options.manual_assigned_copy"         : "Copy",
         "ui.admin.options.manual_assigned_include"      : "Include already configured items",
+        "ui.admin.options.process_ean_scans"             : "Process EAN scans on this device",
+        "ui.admin.options.process_ean_scans_help"        : "When enabled, this card processes matching EAN scans on this device. The card must be visible while scanning and must not be open in another tab or window at the same time.",
+        "ui.admin.options.ean_scanner_mac"               : "Scanner MAC:",
+        "ui.admin.options.ean_scanner_mac_missing"       : "No scanner MAC is configured. This card is enabled for EAN scans but cannot process them. Set ean_scanner_mac in the card's YAML configuration.",
+        "ui.admin.options.ean_queue"                     : "EAN scan queue",
+        "ui.admin.options.ean_queue_pending"             : "Pending scans: {count}",
+        "ui.admin.options.ean_queue_shopping"            : "Shopping list: {count}",
+        "ui.admin.options.ean_queue_database"            : "EAN database: {count}",
+        "ui.admin.options.ean_queue_remove"              : "Removals: {count}",
+        "ui.admin.options.ean_queue_process"             : "Process",
+        "ui.admin.options.ean_queue_clear"               : "Clear",
+        "ui.admin.options.ean_database_status"           : "EAN database:",
+        "ui.admin.options.ean_database_products"         : "{count} products",
+        "ui.admin.options.ean_database_invalid"          : "{count} invalid",
+        "ui.ean.database_manager_title"                  : "EAN database",
+        "ui.ean.database_search"                         : "Search products...",
+        "ui.ean.database_sort"                           : "Sort by",
+        "ui.ean.database_sort_name"                      : "Name",
+        "ui.ean.database_sort_category"                  : "Category / name",
+        "ui.ean.database_no_products"                    : "No matching products found.",
+        "ui.ean.database_no_category"                    : "No category",
+        "ui.ean.database_invalid_title"                  : "Invalid entries",
+        "ui.ean.database_invalid_entry"                  : "Invalid entry",
+        "ui.ean.database_edit_title"                     : "Edit item",
+        "ui.ean.database_name"                           : "Saved product name",
+        "ui.ean.database_original_name"                  : "Original product name",
+        "ui.ean.database_ean"                            : "EAN",
+        "ui.ean.database_brand"                          : "Brand",
+        "ui.ean.database_quantity"                       : "Package quantity",
+        "ui.ean.database_category"                       : "Category",
+        "ui.ean.database_save"                           : "Save",
+        "ui.ean.database_reload_off"                     : "Update from Open Facts",
+        "ui.ean.database_loading_off"                    : "Loading data from Open Facts...",
+        "ui.ean.database_apply_off"                      : "Apply Open Facts data and save",
+        "ui.ean.database_off_preview"                    : "New data from Open Facts",
+        "ui.ean.database_off_name_preserved"             : "Your saved item name is preserved. The original product name, brand, package quantity, and image are updated and saved immediately.",
+        "ui.ean.database_off_not_found"                  : "Open Facts did not return product data for this EAN.",
+        "ui.ean.database_delete_confirm"                 : "Delete this EAN database entry?",
+        "ui.ean.database_delete_failed"                  : "The EAN database entry could not be deleted.",
+        "ui.ean.database_name_required"                  : "Please enter a product name.",
+        "ui.ean.database_back"                           : "Back",
+        "ui.ean.database_fill_start"                     : "Start fill mode",
+        "ui.ean.database_fill_active"                    : "EAN database fill mode active",
+        "ui.ean.database_fill_help"                      : "EANs are saved only to the EAN database and are not added to the shopping list.",
+        "ui.ean.database_fill_end"                       : "End fill mode",
+        "ui.ean.database_fill_existing"                  : "This EAN already exists in the EAN database. Saving updates the existing entry.",
+        "ui.ean.database_fill_new"                       : "This scan is saved only to the EAN database.",
+        "ui.ean.database_fill_save"                      : "Save to database",
+        "ui.ean.remove_mode_active"                      : "Removal active",
+        "ui.ean.remove_not_found"                        : "{name} is not on the shopping list.",
+        "ui.ean.queue_status"                            : "Scanned {quantity}× · {count} more items waiting",
+        "ui.ean.database_invalid"                        : "The configured EAN to-do list contains {count} invalid entries. These entries are ignored.",
+        "ui.ean.database_unavailable"                    : "The configured EAN to-do list cannot be used: {reason}",
+        "ui.ean.database_reason_entity"                  : "Select a different to-do list than the shopping list.",
+        "ui.ean.database_reason_description"             : "The to-do list does not support descriptions.",
+        "ui.ean.database_reason_load"                    : "The entries could not be loaded.",
+        "ui.ean.database_reason_save"                    : "The product record could not be saved.",
+        "ui.ean.lookup_failed_title"                     : "Product not found",
+        "ui.ean.lookup_failed_text"                      : "No product data could be loaded for EAN {ean}.",
+        "ui.ean.lookup_retry"                            : "Try again",
+        "ui.ean.lookup_manual"                           : "Enter manually",
+        "ui.ean.lookup_later"                            : "Later",
+        "ui.ean.lookup_discard"                          : "Discard",
+        "ui.ean.queue_summary"                           : "{count} EAN scans are still waiting to be processed.",
+        "ui.ean.queue_summary_one"                       : "1 EAN scan is still waiting to be processed.",
+        "ui.ean.queue_process_now"                       : "Process now",
+        "ui.ean.queue_keep_later"                        : "Later",
+        "ui.ean.queue_admin_hint"                        : "You can continue processing the queue later from the Admin Options.",
+        "ui.ean.add"                                    : "Add",
+        "ui.ean.name_brand"                             : "Brand",
+        "ui.ean.name_quantity"                          : "Quantity",
+        "ui.ean.brand_in_name"                         : "The brand “{brand}” is already included in the product name and will not be appended again.",
+        "ui.ean.database_entries_title"                : "EAN entries for {name}",
+        "ui.ean.database_entries_badge"                : "Show {count} EAN entries",
+        "ui.ean.database_entry_refresh"                : "Update product data from Open Facts",
+        "ui.ean.database_entry_open_off"               : "Open product on Open Facts",
+        "ui.ean.database_entry_edit"                   : "Edit EAN product",
+        "ui.ean.database_entry_updated"                : "Product data was updated.",
+        "ui.ean.database_transfer_title"               : "Sync / Transfer",
+        "ui.ean.database_manual_only"                  : "Automatic removal transfer is not active. Manual sending to the target list remains available.",
+        "ui.ean.database_minimum_stock"                : "Minimum stock (optional)",
+        "ui.ean.database_minimum_stock_help"           : "Leave empty to use the card default. A value entered here overrides the default for this product.",
+        "ui.ean.database_transfer_disabled"            : "Disable automatic transfer for this product",
+        "ui.ean.database_current_stock"                : "Stock in this list",
+        "ui.ean.database_set_stock"                    : "Correct stock",
+        "ui.ean.database_stock_updated"                : "Stock was changed without creating a transfer.",
+        "ui.ean.database_create_stock_confirm"         : "“{name}” is not yet in this list. Add the item with a stock of {quantity}?",
+        "ui.ean.database_manual_send_quantity"         : "Quantity to transfer manually (without deduction)",
+        "ui.ean.database_manual_send"                  : "Send to target list",
+        "ui.ean.database_manual_send_done"             : "The quantity was sent to the transfer list. Local stock was not changed.",
+        "ui.ean.database_transfer_unavailable"         : "Manual sending requires a valid send configuration.",
+        "ui.ean.database_number_invalid"               : "Enter a whole number of 0 or more.",
+        "ui.ean.database_send_number_invalid"          : "Enter a whole number of 1 or more.",
+        "ui.ean.transfer_choose_product"               : "Which EAN should be used for “{name}”?",
+        "ui.ean.transfer_without_ean"                  : "Transfer without EAN",
+        "ui.ean.transfer_non_ean_question"             : "Transfer “{name}” to the target shopping list?",
+        "ui.inventory.title"                            : "Inventory",
+        "ui.inventory.idle"                             : "No booking mode active",
+        "ui.inventory.add"                              : "Stock in",
+        "ui.inventory.remove"                           : "Stock out",
+        "ui.inventory.register"                         : "Register",
+        "ui.inventory.correct"                          : "Correct",
+        "ui.inventory.add_active"                       : "Stock-in mode active – scans and EAN entries increase stock.",
+        "ui.inventory.remove_active"                    : "Stock-out mode active – scans and EAN entries reduce stock.",
+        "ui.inventory.register_active"                  : "Registration mode active – scans and EAN entries create items with stock 0.",
+        "ui.inventory.correct_active"                   : "Correction mode active – scans and EAN entries open stock correction.",
+        "ui.inventory.select_mode"                      : "Select a booking mode first.",
+        "ui.inventory.select_mode_button"               : "Select mode first",
+        "ui.inventory.registered"                       : "Registered {name} with stock 0.",
+        "ui.inventory.already_registered"               : "{name} already exists in inventory. Stock remains {quantity}.",
+        "ui.inventory.register_database_required"       : "Registration mode requires a configured EAN database.",
+        "ui.inventory.hidden"                           : "Show hidden items",
+        "ui.inventory.hide"                             : "Hide item",
+        "ui.inventory.unhide"                           : "Show item",
+        "ui.inventory.filter.all"                      : "All",
+        "ui.inventory.filter.zero"                     : "Stock 0",
+        "ui.inventory.filter.low"                      : "Stock 0–1",
+        "ui.inventory.filter.minimum"                  : "≤ minimum stock",
+        "ui.inventory.filter.below_minimum"            : "< minimum stock",
+        "ui.inventory.stock_change"                    : "{name}: stock {before} → {after}",
+        "ui.inventory.undo"                            : "Undo",
+        "ui.inventory.undo_done"                       : "{name}: restored stock {before} → {after}.",
+        "ui.inventory.undo_transfer_question"          : "Local stock will be reset from {before} to {after}. The original transfer may already have been processed by “{target}”. How should this transfer be handled?",
+        "ui.inventory.undo_both"                       : "Correct stock + target list",
+        "ui.inventory.undo_local"                      : "Correct stock only",
+        "ui.inventory.undo_cancel"                     : "Do not undo",
+        "ui.inventory.undo_failed"                     : "The last booking could not be undone.",
+        "ui.inventory.undo_transfer_failed"            : "Stock was restored, but correcting the target list failed.",
+        "ui.inventory.stock"                           : "Stock",
+        "ui.inventory.quantity"                        : "Quantity",
+        "ui.inventory.correction_transfer_question"    : "The new stock for “{name}” is at or below the minimum stock. Send 1 × to “{target}”?",
+        "ui.inventory.no_stock"                        : "{name} is already out of stock.",
+        "ui.inventory.send_without_stock"              : "No stock left for “{name}”. Send 1 × to “{target}” anyway? Stock remains at 0.",
+        "ui.inventory.sent_without_stock"              : "Sent 1 × {name} to {target}. Stock remains at 0.",
+        "ui.inventory.send"                            : "Send",
+        "ui.inventory.controls"                        : "Control codes",
+        "ui.inventory.controls_help"                   : "Scan one of these QR codes with the configured scanner to change the booking mode.",
+        "ui.inventory.database"                        : "EAN database",
+        "ui.inventory.database_short"                  : "EAN DB",
+        "ui.inventory.queue"                           : "Scan queue",
+        "ui.inventory.queue_empty"                     : "The scan queue is empty.",
+        "ui.inventory.queue_clear_confirm"             : "Do you really want to delete all entries from the scan queue?",
+        "ui.inventory.queue_mode.shopping"             : "Shopping list",
+        "ui.inventory.queue_mode.database"             : "EAN database",
+        "ui.inventory.queue_mode.add"                  : "Stock in",
+        "ui.inventory.queue_mode.remove"               : "Stock out",
+        "ui.inventory.queue_mode.register"             : "Register",
+        "ui.inventory.queue_mode.correct"              : "Correct",
+        "ui.inventory.queue_mode.none"                 : "No mode",
+        "ui.inventory.group_variants"                  : "Group EAN variants",
+        "ui.inventory.product_details"                 : "Show product details",
+        "ui.inventory.category_below_minimum"          : "{count} below minimum",
+        "ui.inventory.grouped_total"                   : "Total stock",
+        "ui.inventory.group_minimum"                   : "Group minimum stock (optional)",
+        "ui.inventory.group_minimum_help"              : "Applies to the combined stock of all variants. Leave empty to use the individual product values or the card default.",
+        "ui.inventory.group_minimum_conflict"          : "The existing group “{target}” uses minimum stock {targetMinimum}, while the moved group uses {sourceMinimum}. Which group minimum should be kept after merging?",
+        "ui.inventory.group_minimum_use_source"        : "{minimum} from moved group",
+        "ui.inventory.group_minimum_use_target"        : "{minimum} from existing group",
+        "ui.inventory.manage_variants"                 : "Manage variant stock",
+        "ui.inventory.variants_title"                  : "Stock variants for {name}",
+        "ui.inventory.without_ean"                     : "Without EAN",
+        "ui.inventory.variant_stock"                   : "Stock: {stock}",
+        "ui.inventory.variant_minimum"                 : "Minimum stock: {minimum}",
+        "ui.inventory.manual_minimum"                  : "Minimum stock (optional)",
+        "ui.inventory.manual_minimum_default"          : "Empty = card default: {minimum}",
+        "ui.inventory.manual_minimum_none"             : "Empty = no minimum stock",
+        "ui.inventory.manual_minimum_save"             : "Save minimum stock",
+        "ui.inventory.ean_minimum_edit"                : "Edit EAN minimum stock",
+        "ui.inventory.ean_minimum_database_source"     : "Stored in the shared EAN database",
+        "ui.inventory.ean_minimum_card_default"        : "Card default",
+        "ui.inventory.ean_minimum_not_set"             : "No minimum stock configured",
+        "ui.inventory.ean_product_edit"                : "Edit EAN product",
+        "ui.inventory.edit_ean_item"                   : "Edit EAN item",
+        "ui.inventory.grouped_badge"                   : "[GROUPED]",
+        "ui.inventory.group_member_badge"              : "[GROUP MEMBER]",
+        "ui.inventory.choose_variant_add"              : "Which variant of “{name}” should be stocked?",
+        "ui.inventory.choose_variant_remove"           : "Which variant of “{name}” should be removed?",
+        "ui.inventory.choose_variant_correct"          : "Which variant of “{name}” should be corrected?",
+        "ui.inventory.correction_title"                : "Correct stock",
+        "ui.inventory.correction_current"              : "Current stock",
+        "ui.inventory.correction_new"                  : "New stock",
+        "ui.inventory.correction_no_transfer"          : "Stock corrections do not trigger an automatic ISL Sync / Transfer.",
+        "ui.inventory.correction_saved"                : "Stock for {name} was corrected from {before} to {after}.",
+        "ui.inventory.correction_manual_transfer"      : "Quantity to transfer manually (without changing stock)",
+        "ui.inventory.correction_manual_sent"          : "The quantity was sent to the target list. Stock was not changed.",
+        "ui.inventory.correction_save"                 : "Save stock",
+        "ui.inventory.correction_edit"                 : "Edit item",
+        "ui.inventory.group_category_confirm"          : "“{name}” contains {count} separate variants. The category will be changed for all variants and related EAN records. Do you want to continue?",
+        "ui.inventory.group_delete_confirm"            : "“{name}” contains {count} separate variants. Delete all variants?",
+        "ui.inventory.ean_category_confirm"            : "This EAN belongs to the grouped item “{name}”. The category will be changed for every EAN variant using this name. The central EAN database may also be used by other cards. Do you want to continue?",
+        "ui.inventory.category_conflict"               : "Different categories are stored for “{name}”. The item cannot be grouped until one common category is selected.",
+        "editor.labels.inventory_default_action"        : "Mode after loading",
+        "editor.labels.inventory_highlight_zero"        : "Mark zero stock in red",
+        "editor.labels.inventory_group_variants"        : "Group EAN variants",
+        "editor.labels.inventory_show_product_details"  : "Show product details in the inventory list",
+        "editor.labels.inventory_show_category_minimum_status": "Show minimum-stock status in categories",
+        "editor.labels.inventory_stock_marking"         : "Stock highlighting",
+        "editor.labels.inventory_mark_above_minimum"    : "Above minimum stock",
+        "editor.labels.inventory_mark_at_minimum"       : "Equal to minimum stock",
+        "editor.labels.inventory_mark_below_minimum"    : "Below minimum stock",
+        "editor.labels.inventory_mark_zero"             : "Stock 0",
+        "editor.options.inventory_mark.none"             : "No highlighting",
+        "editor.options.inventory_mark.green"            : "Green",
+        "editor.options.inventory_mark.orange"           : "Orange",
+        "editor.options.inventory_mark.red"              : "Red",
+        "editor.labels.ean_transfer_grouped_as_name"    : "Always transfer grouped items by name",
+        "editor.options.mode.inventory"                : "Inventory",
+        "editor.options.inventory_default_action.none"  : "No booking active (default)",
+        "editor.options.inventory_default_action.add"   : "Stock in",
+        "editor.options.inventory_default_action.remove": "Stock out",
+        "editor.options.inventory_default_action.register": "Register",
+        "editor.options.inventory_default_action.correct": "Correct",
+        "editor.helpers.inventory_default_action"       : "Sets the booking mode used whenever the card loads.",
+        "editor.labels.inventory_mode_timeout"          : "Reset booking mode after inactivity (seconds)",
+        "editor.helpers.inventory_mode_timeout"         : "Resets a temporarily selected booking mode to the configured start mode after this period without a successful booking. Each successful booking restarts the countdown. 0 disables automatic reset.",
+        "editor.helpers.inventory_highlight_zero"       : "Inventory mode only: Marks zero-stock items in red and adds a narrow red border.",
+        "editor.helpers.inventory_group_variants"       : "Visually combines separately stored EAN and manual stock variants with the same name and category. The card switch can temporarily change the view.",
+        "editor.helpers.inventory_show_product_details" : "Shows the original product name, brand, package quantity, and EAN below the saved item name. The card switch can temporarily change the display.",
+        "editor.helpers.inventory_show_category_minimum_status": "Shows how many items or groups in each category are below their effective minimum stock.",
+        "editor.helpers.inventory_stock_marking"        : "Controls highlighting relative to the effective minimum stock. The three minimum-stock levels do not apply when no minimum is configured. Stock 0 is handled separately and takes priority.",
+        "editor.helpers.inventory_mark_above_minimum"  : "Highlight used when stock is above the effective minimum.",
+        "editor.helpers.inventory_mark_at_minimum"     : "Highlight used when stock exactly matches the effective minimum.",
+        "editor.helpers.inventory_mark_below_minimum"  : "Highlight used when stock is below the effective minimum.",
+        "editor.helpers.inventory_mark_zero"           : "Highlight used at stock 0. This setting takes priority over the minimum-stock levels.",
+        "editor.helpers.ean_transfer_grouped_as_name"   : "When enabled, bookings for grouped inventory items use the shared item name and category. The selected variant's EAN, brand, package quantity, and image are not sent to the target list. Default: Off.",
+        "ui.ean.transfer_remove"                       : "Remove",
+        "ui.ean.transfer_invalid_config"               : "The ISL transfer configuration is invalid. Use a separate to-do list with description support and select a different target shopping list when sending.",
+        "ui.ean.transfer_send_failed"                  : "The scan could not be saved to the ISL transfer list.",
+        "ui.ean.transfer_receive_failed"               : "An ISL transfer could not be processed. The entry remains available for review.",
+        "ui.ean.transfer_cleanup_failed"               : "The transfer was completed, but removal from the ISL transfer list could not be confirmed.",
 
         "ui.todo.general"                               : "General",
         "ui.todo.hours"                                 : "Hours",
@@ -438,6 +1065,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                         : "One-time",
         "ui.todo.due_label"                             : "Due",
         "ui.todo.select_action"                         : "Select an action for this item:",
+        "ui.todo.actions"                               : "To-do actions",
         "ui.todo.list.year"                             : "Year",
         "ui.todo.list.years"                            : "Years",
         "ui.todo.list.month"                            : "Month",
@@ -460,7 +1088,7 @@ const TRANSLATIONS = {
         "ui.todo.filter.undated"                        : "Undated",
         "ui.todo.filter.remember"                       : "Remember for this list",
         "ui.todo.filter.reset"                          : "Reset saved filter",
-        "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.", 
+        "ui.labels.alert_item_exists_todo"              : "The item '{item}' already exists in the To-Do list.",
 
         "editor.placeholders.quantity"                  : "Quantity",
         "editor.placeholders.item"                      : "Item...",
@@ -478,39 +1106,77 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Delete chip '{item}' from history?",
         "editor.labels.chip_highlighted"                : "Highlighted Chip",
         "editor.labels.chip_standard"                   : "Standard chip",
+		"editor.labels.category_color"                  : "Category color",
 		"editor.labels.chip_global"						: "Global Chip",
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
 		"editor.labels.categories"                   	: "Categories",
-        "editor.labels.show_cat_count"                  : "Show item count in categories ?",
-        "editor.labels.hide_cat_count_all_done"         : "Hide item count when all items are done ?",
-        "editor.labels.show_cat_next_due"               : "Show next due in category ?",
+        "editor.labels.show_cat_count"                  : "Show item count in categories",
+        "editor.labels.hide_cat_count_all_done"         : "Hide item count when all items are done",
+        "editor.labels.show_cat_next_due"               : "Show next due date in categories",
         "editor.labels.cat_double_sized_icon"           : "Show bigger Icon ?",
         "editor.labels.show_cat_exclamation_mark"       : "Show an exclamation mark for due items",
         "editor.labels.show_title_exclamation_mark"     : "Show an exclamation mark for due items",
-        "editor.labels.show_cat_popup"                  : "Show Category PopUp?",
+        "editor.labels.show_cat_popup"                  : "Show category selection when adding",
 		"editor.labels.category_merge_mode" 			: "Category merge mode",
+        "editor.labels.category_display"              : "Category display",
 		"editor.labels.dishes" 							: "Dishes",
         "editor.labels.dishes_confirm_add"              : "Confirm dishes before adding",
         "editor.labels.mode"                            : "Mode",
         "editor.labels.font.sizes"                      : "Font sizes",
         "editor.labels.colors"                          : "Color settings",
+        "editor.labels.chip_colors"                     : "Chip colors",
+        "editor.labels.expert_color_settings"           : "Expert settings",
+        "editor.labels.chip_color_rgb"                  : "Local (browser) chips",
+        "editor.labels.chip_color_default_rgb"          : "Standard chips",
+        "editor.labels.chip_color_global_rgb"           : "Global (text file) chips",
+        "editor.labels.chip_color_dish_rgb"             : "Dish chips",
+        "editor.labels.highlight_color_rgb"             : "Highlighted chips",
         "editor.labels.category.options"                : "Categories",
         "editor.labels.export.options"                  : "Export options",
         "editor.labels.message.options"                 : "Notifications",
+        "editor.labels.notify.options"                  : "Standard notify",
+        "editor.labels.ntfy.options"                    : "ntfy",
+        "editor.labels.email.options"                   : "Email",
+        "editor.labels.notify_change_mode"              : "Automatic notifications",
+        "editor.labels.notify_include_manual"           : "Include when sending manually",
+        "editor.labels.notify_delay"                    : "Delay (seconds)",
+        "editor.labels.notify_format"                   : "Message format",
+        "editor.labels.ntfy_entity"                     : "ntfy notify entity",
+        "editor.labels.ntfy_change_mode"                : "Automatic notifications",
+        "editor.labels.ntfy_include_manual"             : "Include when sending manually",
+        "editor.labels.ntfy_on_done"                    : "Notify when marking an item completed",
+        "editor.labels.ntfy_delay"                      : "Delay (seconds)",
+        "editor.labels.ntfy_format"                     : "Message format",
+        "editor.labels.email_change_mode"               : "Automatic notifications",
+        "editor.labels.email_include_manual"            : "Include when sending manually",
+        "editor.labels.email_on_done"                   : "Notify when marking an item completed",
+        "editor.labels.email_delay"                     : "Delay (seconds)",
         "editor.labels.dishes.options"                  : "Dishes",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Items",
+        "editor.labels.ean_scanner.options"             : "EAN Scanner",
         "editor.labels.general.options"                 : "General settings",
+        "editor.labels.shopping_mode.options"          : "Shopping List",
+        "editor.labels.todo_mode.options"              : "To-do List",
+        "editor.labels.inventory_mode.options"         : "Inventory",
         "editor.labels.input_row_position"              : "Input row position",
         "editor.labels.option_row_position"             : "Button row position",
         "editor.labels.allow_dynamic_categories"        : "Allow dynamic Categories",
         "editor.labels.show_admin_button"               : "Show admin options button",
+        "editor.labels.admin_button_admin_only"         : "Show admin button to administrators only",
         "editor.labels.notify_on_change"                : "Notify on change",
         "editor.labels.notify_on_change_all"            : "Send always full list",
         "editor.labels.notify_on_change_time"           : "Time before sending notifications",
         "editor.labels.notify_entity_smtp"              : "Name of your SMTP-Notify-Entity",
         "editor.labels.notify_on_done"                  : "Notify also when item is marked as done",
+        "editor.options.notification_mode.off"          : "Off",
+        "editor.options.notification_mode.change"       : "Change only",
+        "editor.options.notification_mode.full"         : "Full list",
+        "editor.options.notification_mode.change_and_full": "Change and full list",
+        "editor.options.notification_format.plain"      : "Plain text",
+        "editor.options.notification_format.html"       : "HTML",
+        "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Generate chips from categorie items",
         "editor.labels.show_category_add_all"           : "Show 'Add all' chip",
         "editor.labels.allow_filter"                    : "Allow filtering items",
@@ -518,7 +1184,29 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
         "editor.labels.capitalize_first_letter"         : "Capitalize first letter of items",
         "editor.labels.show_descriptions"               : "Show descriptions",
-        "editor.labels.todo_filter"                     : "To-do filter",
+        "editor.labels.show_ean_brand"                  : "Append brand to the product name",
+        "editor.labels.show_ean_quantity"               : "Append package quantity to the product name",
+        "editor.labels.ean_scanner_mac"                 : "Bluetooth MAC address of the EAN scanner",
+        "editor.labels.ean_database_entity"             : "To-do list used as EAN database",
+        "editor.labels.ean_create_chip"                 : "Create chips for scanned products",
+        "editor.labels.list_script_enabled"             : "Send list changes to a script",
+        "editor.labels.list_script_entity"              : "List changes script",
+        "editor.labels.ean_script_enabled"              : "Run EAN script",
+        "editor.labels.ean_script_entity"               : "EAN script",
+        "editor.labels.ean_remove_mode"                 : "Enable removal mode by long press",
+        "editor.labels.ean_database_suggestions"        : "Use EAN database in search suggestions",
+        "editor.labels.show_ean_database_badge"         : "Show EAN icon for assigned items",
+        "editor.labels.ean_transfer_mode"               : "ISL transfer mode",
+        "editor.labels.ean_transfer_entity"             : "ISL transfer list",
+        "editor.labels.ean_transfer_target_entity"      : "Target shopping list",
+        "editor.labels.ean_transfer_actions"            : "Actions to transfer",
+        "editor.labels.sync_transfer.options"           : "Sync / Transfer",
+        "editor.labels.ean_transfer_remove_behavior"    : "Default removal behavior",
+        "editor.labels.ean_transfer_default_minimum_stock": "Default minimum stock",
+        "editor.labels.ean_transfer_non_ean"            : "Items without an EAN assignment",
+        "editor.labels.todo_filter"                     : "Default filter",
+        "editor.labels.todo_default_action"             : "Default action",
+        "editor.labels.todo_action_behavior"            : "Action button/checkbox behavior",
         "editor.labels.show_todo_filter_menu"           : "Show To-do filter menu",
 
 		"editor.options.chips_position.auto"            : "Automatic Right / Bottom (depends on screen size)",
@@ -591,6 +1279,10 @@ const TRANSLATIONS = {
         "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamic + Local + Global (fully sorted)",
         "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamic + Global + Local (fully sorted)",
 
+        "editor.options.category_display.grouped"                           : "Grouped with headers (default)",
+        "editor.options.category_display.hidden_category_order"             : "Hide headers – preserve category order",
+        "editor.options.category_display.hidden_global_order"               : "Hide headers – sort the complete list",
+
         "editor.options.sort_mode.alpha"                : "Alphabetical (A → Z)",
         "editor.options.sort_mode.manual"               : "Manual drag-and-drop",
         "editor.options.sort_mode.none"                 : "No additional sorting",
@@ -603,11 +1295,34 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"           : "Upcoming",
         "editor.options.todo_filter.dated"              : "Dated",
         "editor.options.todo_filter.undated"            : "Undated",
+        "editor.options.todo_default_action.remove"     : "Remove due date",
+        "editor.options.todo_default_action.next"       : "Set next due date",
+        "editor.options.todo_default_action.now"        : "Set next due date from now",
+        "editor.options.todo_default_action.edit"       : "Edit item",
+        "editor.options.todo_default_action.delete"     : "Delete item",
+        "editor.options.todo_default_action.done"       : "Toggle completed status",
+        "editor.options.todo_action_behavior.menu"      : "Open menu (default)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Click: menu / long press: default action",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Click: default action / long press: menu",
 
         "editor.options.mode.shopping"                  : "Shopping list",
         "editor.options.mode.todo"                      : "To-do list",
         "editor.options.inputrow.top"                   : "Top",
         "editor.options.inputrow.bottom"                : "Bottom",
+        "editor.options.ean_transfer_mode.disabled"     : "Disabled (default)",
+        "editor.options.ean_transfer_mode.send"         : "Send bookings",
+        "editor.options.ean_transfer_mode.receive"      : "Receive bookings",
+        "editor.options.ean_transfer_mode.send_receive" : "Send and receive bookings",
+        "editor.options.ean_transfer_actions.add"       : "Add only",
+        "editor.options.ean_transfer_actions.remove"    : "Remove only",
+        "editor.options.ean_transfer_actions.both"      : "Add and remove (default)",
+        "editor.options.ean_transfer_remove_behavior.one_to_one": "Transfer 1:1 (default)",
+        "editor.options.ean_transfer_remove_behavior.minimum": "Minimum stock",
+        "editor.options.ean_transfer_remove_behavior.off": "No automatic transfer",
+        "editor.options.ean_transfer_non_ean.one_to_one": "Transfer 1:1",
+        "editor.options.ean_transfer_non_ean.minimum"  : "Use minimum stock",
+        "editor.options.ean_transfer_non_ean.ask"       : "Always ask",
+        "editor.options.ean_transfer_non_ean.off"       : "Do not transfer (default)",
 
         "editor.labels.entity"                          : "To-Do-List (Entity)",
         "editor.labels.highlight_words"                 : "Highlight words",
@@ -636,9 +1351,10 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "Show PDF Export button",
         "editor.labels.show_export_button"              : "Show HTML Export button",
         "editor.labels.show_input_mask"                 : "Show input mask",
-		"editor.labels.show_plus_minus"                 : "Show Plus / Minus Buttons (Only in 'Shopping List' mode)",
+		"editor.labels.show_plus_minus"                 : "Show plus/minus buttons",
         "editor.labels.acknowledge_deletion"            : "Ask for confirmation when deleting items",
         "editor.labels.show_quantity_one"               : "Show quantity 1",
+        "editor.labels.shopping_offer_only_enabled"     : "Enable offer-only marking",
         "editor.labels.sub_text"                        : "Hint text below the input field",
         "editor.labels.chips"                           : "Default chips (comma or semicolon separated)",
         "editor.labels.longlived_token"                 : "Long-Lived Access Token (for access via export file)",
@@ -654,7 +1370,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_d"                   : "Warning threshold for intervals in days",
         "editor.labels.todo_yellow_h"                   : "Warning threshold for intervals in hours",
         "editor.labels.todo_yellow_s"                   : "Warning threshold for due dates without time",
-        "editor.labels.todo_warning_thresholds"         : "Warning thresholds for ToDo mode",
+        "editor.labels.todo_warning_thresholds"         : "Warning thresholds",
         "editor.labels.show_title_info"                 : "Show next due date in ToDo mode",
         "editor.labels.show_title_info_icon"            : "Show icon for next due date",
         "editor.labels.sort_mode"                       : "Sort mode",
@@ -662,7 +1378,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_info"                : "Displays the next due date of all items from all categories under the title when in ToDo mode, provided a title is set. Expired items are not shown here; they are indicated by an exclamation mark to the right of the name.",
         "editor.helpers.show_title_info_icon"           : "Displays a calendar icon before the due date as a visual highlight.",
         "editor.helpers.sort_mode"                      : "Controls how items are sorted: alphabetically, manually via drag-and-drop, by due date, or without additional sorting.",
-        "editor.helpers.todo_filter"                    : "Sets the default filter for To-do items. This filter only applies in To-do mode.",
+        "editor.helpers.todo_filter"                    : "Sets which tasks are shown by default when the card loads.",
+        "editor.helpers.todo_default_action"            : "Selects the action executed directly by the configured click behavior. If it is unavailable for an item, the action menu opens instead.",
+        "editor.helpers.todo_action_behavior"           : "Controls whether the checkbox opens the action menu or executes the default action on click or long press. A long press takes about 0.6 seconds.",
         "editor.helpers.show_todo_filter_menu"          : "Shows a filter button in the button row while in To-do mode. Users can temporarily change the filter there or remember it per list in the browser.",
         "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
         "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
@@ -673,10 +1391,28 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
         "editor.helpers.option_row_position"            : "Determines whether the buttons (message, clear, export) are displayed top or bottom.",
         "editor.helpers.allow_dynamic_categories"       : "Dynamic categories make it possible to assign items to categories that are not predefined, even from outside the card (e.g. through automations in the format: ‘@Category@ Item’). Additionally, new categories can be created when adding items through the card. These categories remain available until the last item in the category has been removed.",
-        "editor.helpers.show_message_button"            : "Displays (in Shopping List Mode) a message button that allows sending the list via email, Telegram (using 'notify'), or similar. The notify entity must be configured under the Notifications section.",
-        "editor.helpers.show_clear_button"              : "Displays a button to clear all completed items from the list.",
-        "editor.helpers.notify_entity"                  : "The notify entity used e.g. to send the list when the message button is pressed. This entity must be configured in Home Assistant beforehand (e.g. 'notify.mobile_app_xyz' or 'notify.telegram'). Notifications include HTML formatting to improve readability. Make sure the configured notify entity supports HTML formatting. Notifications via SMTP platform are not included here; for SMTP, use the 'notify_entity_smtp' option.",
-        "editor.helpers.show_admin_button"              : "Displays an admin options button, which opens a dialog to copy browser chips, dynamic categories, and manually assigned items.", 
+        "editor.helpers.show_message_button"            : "Shows a message button in Shopping List and Inventory modes for sending the list with the configured notification service.",
+        "editor.helpers.show_clear_button"              : "Shows a button in Shopping List and To-do modes for removing all completed entries. It is hidden in Inventory mode.",
+        "editor.helpers.notify_entity"                  : "Home Assistant notify entity for this channel, for example 'notify.mobile_app_xyz' or 'notify.telegram'. Use an ntfy entity in the dedicated ntfy section so Markdown is handled correctly.",
+        "editor.helpers.notify.options"                 : "Send through any Home Assistant notify entity. Automatic messages and the manual message button can be configured separately.",
+        "editor.helpers.ntfy.options"                   : "Send through the Home Assistant ntfy integration. The card uses ntfy.publish and can send the list as plain text or Markdown.",
+        "editor.helpers.email.options"                  : "Send an HTML email through an SMTP notify service configured in Home Assistant.",
+        "editor.helpers.notify_change_mode"             : "Choose whether an item change automatically sends only the change, only the full list, both, or nothing.",
+        "editor.helpers.notify_include_manual"          : "Send the full list through this channel when the message button on the card is pressed.",
+        "editor.helpers.notify_delay"                   : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
+        "editor.helpers.notify_format"                  : "Plain text removes HTML tags. HTML keeps the existing formatting for compatible notify services.",
+        "editor.helpers.ntfy_entity"                    : "Notify entity of a topic from the Home Assistant ntfy integration, for example 'notify.shopping_list'.",
+        "editor.helpers.ntfy_change_mode"               : "Choose whether an item change automatically sends only the change, only the full list, both, or nothing.",
+        "editor.helpers.ntfy_include_manual"            : "Send the full list to ntfy when the message button on the card is pressed.",
+        "editor.helpers.ntfy_on_done"                   : "Also send an ntfy notification when an item is marked completed.",
+        "editor.helpers.ntfy_delay"                     : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
+        "editor.helpers.ntfy_format"                    : "Markdown formats category headings and completed items for ntfy. Plain text removes all formatting.",
+        "editor.helpers.email_change_mode"              : "Choose whether an item change automatically sends only the change, only the full list, both, or nothing by email.",
+        "editor.helpers.email_include_manual"           : "Send the full list by email when the message button on the card is pressed.",
+        "editor.helpers.email_on_done"                  : "Also send an email when an item is marked completed.",
+        "editor.helpers.email_delay"                    : "Wait this many seconds after a change. Further changes restart the countdown and are sent together. 0 sends immediately.",
+        "editor.helpers.show_admin_button"              : "Shows the admin button for browser data, dynamic categories, the EAN database, processing, and queues.",
+        "editor.helpers.admin_button_admin_only"        : "Hides the admin button from users without Home Assistant administrator rights. Configured scanner, EAN, and queue functions continue to work; only access through this button is restricted. Default: Off.",
         "editor.helpers.notify_on_change"               : "Sends a notification via the configured notify entity whenever an item is added, edited, or removed.",
         "editor.helpers.notify_on_change_all"           : "Sends also the entire list with each notification, rather than just the changed item.",
         "editor.helpers.notify_on_change_time"          : "Defines (in seconds) how long to wait before sending a notification (entire list). This is useful when multiple changes are made in a short time to avoid sending too many notifications. Enter '0' (zero) to disable this feature.",
@@ -684,23 +1420,54 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Also sends a notification when an item is marked as completed. Note: This may result in a large number of notifications if many items are marked as completed during shopping.",
         "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
         "editor.helpers.show_category_add_all"          : "Shows an 'All' chip inside expanded category chips. It opens a selection dialog so all or selected category items can be added at once.",
-        "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field.",
-        "editor.helpers.allow_suggestions"              : "Shows suggestions below the input field when the entered text matches an item assigned to a category. Clicking a suggestion adds it to the list. Alternatively, you can navigate through the suggestions using the arrow keys and confirm with Enter.",
-        "editor.helpers.show_done_hidden_items_in_search": "When filtering items in the list, this option ensures that completed (and hidden) items are also included in the search results.",
+        "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field. For EAN items, the original product name and brand are searched as well.",
+        "editor.helpers.allow_suggestions"              : "Shows matching items from configured categories below the input. When Use EAN database in search suggestions is also enabled, saved product names, original product names, brands and EANs are included.",
+        "editor.helpers.show_done_hidden_items_in_search": "Includes completed or hidden entries in search results in Shopping List and To-do modes. Inventory uses its own hidden-item function.",
         "editor.helpers.capitalize_first_letter"        : "If enabled, the first letter in the input field will be automatically capitalized.",
-        "editor.helpers.show_descriptions"              : "Shows the item description below the item name, if the selected To-do list supports descriptions.",
+        "editor.helpers.show_descriptions"              : "Shows descriptions in Shopping List and To-do modes when supported by the selected entity. Descriptions are not shown in Inventory mode.",
+        "editor.helpers.show_ean_brand"                 : "Appends the brand when creating the item name unless it is already part of the product name.",
+        "editor.helpers.show_ean_quantity"              : "Appends the package quantity when creating the item name.",
+        "editor.helpers.ean_scanner_mac"                : "MAC address of the Bluetooth scanner whose events this card processes. Example: AA:FC:87:59:04:38.",
+        "editor.helpers.ean_database_entity"            : "Optional to-do list reserved exclusively for this feature. It stores learned EAN products and categories permanently across devices. Do not use this list for other entries. The standard Shopping List is unsuitable because it does not support descriptions. To disable the feature, remove the selected list from the configuration.",
+        "editor.helpers.ean_create_chip"                : "Creates a local chip after adding a product recognized by EAN, provided that local chip creation is enabled globally. This applies to Bluetooth scanners, the camera, and manually entered EANs.",
+        "editor.helpers.list_script_enabled"            : "Reports successful changes made by this card: item added, removed, quantity changed, or renamed. Details and example variables: https://github.com/Nisbo/ha-shopping-list-improved/wiki/Card-Configuration",
+        "editor.helpers.list_script_entity"             : "Sends the name, category, quantity, list entity and mode to the selected script. Changes made outside this card cannot be reported. The EAN script can be used in parallel.",
+        "editor.helpers.ean_script_enabled"             : "Calls the selected Home Assistant script with status and product data for EAN events. Details and example variables: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
+        "editor.helpers.ean_remove_mode"                 : "Hold the Add button for one second to activate removal mode. EAN scans then reduce the quantity of a matching item or remove it from the list. A normal click on the button or reloading the page ends the mode. The Add button must be visible.",
+        "editor.helpers.ean_database_suggestions"        : "Adds saved product names, original product names, brands and EANs from the EAN database to normal search suggestions. Show suggestions must also be enabled. Multiple EANs with the same product name are suggested only once.",
+        "editor.helpers.show_ean_database_badge"         : "Shows a discreet barcode icon next to items with an exact matching product name. Select it to view all assigned EAN records.",
+        "editor.helpers.ean_transfer_mode"               : "Controls whether this card sends bookings through a shared ISL transfer list, receives bookings for its own list, or does both. Default: Disabled.",
+        "editor.helpers.ean_transfer_entity"             : "Separate to-do list reserved exclusively as the persistent ISL transfer queue. It must not also be a shopping list or EAN database and must support descriptions.",
+        "editor.helpers.ean_transfer_target_entity"      : "Used only by Send bookings and Send and receive bookings. This setting is ignored in the other modes.",
+        "editor.helpers.ean_transfer_actions"            : "Controls whether additions, removals, or both are transferred to the target list. Database fill mode always remains local. Default: Add and remove.",
+        "editor.helpers.sync_transfer.options"           : "Transfers additions and removals between Shopping List or Inventory cards through a separate persistent to-do queue. Configure the transfer list, target list, and transfer behavior here. Settings not required by the selected mode are ignored.",
+        "editor.helpers.ean_transfer_remove_behavior"    : "1:1 transfers every quantity actually removed. Minimum stock transfers only when the remaining stock reaches or falls below the threshold. Product values in the EAN database override this default. Default: 1:1.",
+        "editor.helpers.ean_transfer_default_minimum_stock": "Optional card default for Minimum stock mode. Without a value, products without their own minimum do not transfer automatically.",
+        "editor.helpers.ean_transfer_non_ean"            : "Controls removals for inventory variants without an EAN. Use minimum stock takes the manual variant value or falls back to the card default. This applies only while removal transfers are enabled. Default: Do not transfer.",
+        "editor.helpers.ean_script_entity"              : "The script can provide speech output, play sounds, send notifications, or run additional actions. The selection is retained when script output is disabled.",
         "editor.helpers.title_icon"                     : "Displays the selected icon before the title.",
         "editor.helpers.font.sizes"                     : "Defines the font sizes for the list, categories, and chips.",
-        "editor.helpers.colors"                         : "Defines the color settings for the chips.",
-        "editor.helpers.category.options"               : "Here you can configure categories used in the shopping and to-do list. You can define local categories (here in the card) or load a text file with global categories. For more information on the structure of the categories, please refer to the documentation.",
+        "editor.helpers.colors"                         : "Configures chip colors and custom CSS. Stock highlighting is located in the Inventory section.",
+        "editor.helpers.chip_colors"                    : "Selects the colors for local, standard, global, dish, and highlighted chips. The color dialog is provided by the browser or operating system; on macOS, switch to the RGB sliders if necessary.",
+        "editor.helpers.expert_color_settings"          : "Allows direct CSS colors such as red, #2196f3, #6464644D, rgb(...), rgba(...), or var(--primary-color). Only a value actually entered overrides the corresponding color picker. The gray default color is only a hint. Clear the field to use the color picker or card default again.",
+        "editor.helpers.chip_color_rgb"                 : "Color of chips stored locally in this browser.",
+        "editor.helpers.chip_color_default_rgb"         : "Color of standard chips configured on the card.",
+        "editor.helpers.chip_color_global_rgb"          : "Color of global chips loaded from a text file.",
+        "editor.helpers.chip_color_dish_rgb"            : "Color of dish chips.",
+        "editor.helpers.highlight_color_rgb"            : "Color of highlighted chips.",
+        "editor.helpers.category.options"               : "Configures categories for Shopping List, To-do, and Inventory modes. You can define local categories or load global categories from a text file.",
         "editor.helpers.export.options"                 : "Here you can configure the export options.",
-        "editor.helpers.message.options"                : "Here you can configure how the message system works and which notify entity is used to send the list. The notification system only works in 'Shopping List' mode.",
+        "editor.helpers.message.options"                : "Configure manual and automatic list delivery separately for standard notify, ntfy, and email. Notifications are available in Shopping List and Inventory modes.",
         "editor.helpers.dishes.options"                 : "Here you can configure dishes used in the shopping list. This feature allows you to add multiple items at once.",
         "editor.helpers.chips.options"                  : "Here you can configure the chip options. Chips are quick-selection buttons that allow you to quickly add frequently used items to the list.",
         "editor.helpers.item.options"                   : "Here you can configure the settings for the items in the list.",
+        "editor.helpers.ean_scanner.options"            : "Configures manual EAN input, camera scans, the product database, and Bluetooth scanners. EAN recognition works without device authorization. Only incoming Bluetooth/Home Assistant scanner events must be enabled in the card's admin options on each device.",
         "editor.helpers.general.options"                : "Here you can configure general settings for the card.",
-        "editor.helpers.entity"                         : "If no Entity is selected, Home Assistant's default shopping list will be used automatically. However, this list does not have a due date function and should therefore only be used in 'Shopping List' mode, not in 'To-Do List' mode.",
-        "editor.helpers.mode"                           : "Defines how the list is used. In 'Shopping List' mode, extended functions for the original shopping list are available, but without due dates. In 'To-Do List' mode, due dates can additionally be set and managed, with slightly different handling. Note: The original Home Assistant shopping list entity 'Shopping List' does not support due dates. In To-Do mode, there is also no quantity input, no plus or minus buttons, no export buttons, and no button to delete completed entries.",
+        "editor.helpers.shopping_mode.options"          : "Settings used only in Shopping List mode.",
+        "editor.helpers.todo_mode.options"              : "Settings for tasks, due dates, and warnings in To-do mode.",
+        "editor.helpers.inventory_mode.options"         : "Settings for stock, booking modes, product variants, and minimum stock in Inventory mode.",
+        "editor.helpers.entity"                         : "If no entity is selected, the original Home Assistant shopping list is used. It is suitable only for Shopping List mode. User-created To-do entities provide the fields required by To-do and Inventory modes.",
+        "editor.helpers.mode"                           : "Sets how the card is used. Shopping List provides quantities, categories, and shopping features without due dates. To-do List manages tasks with due dates and has no quantity input, plus/minus buttons, or export buttons. Inventory tracks stock in a to-do list and retains items at stock 0. The original Home Assistant shopping list does not support due dates.",
         "editor.helpers.highlight_words"                : "List of words that should be highlighted in chips (by background). Enter as comma- or semicolon-separated list, e.g. 'Butter,Bananas,Flour'.",
 		"editor.helpers.chips_with_cat_color"           : "If a chip is assigned as an 'item' to a category and that category has a color defined, the chip will be displayed in the category's color. The order of color priority is: Highlight > Category > Global > Standard > Browser.",
         "editor.helpers.allow_filter_chips"             : "Allows filtering of chips via the input field.",
@@ -719,37 +1486,774 @@ const TRANSLATIONS = {
 		"editor.helpers.chips_width"                    : "Width of the chip container in pixels. Only applies when '(Auto) Panel Mode' is selected.",
 		"editor.helpers.chips_position"                 : "Controls where chips are displayed (auto: bottom on phones, right on desktop/tablet, or use fixed positions).",
 		"editor.helpers.quantity"                       : "Determines whether quantity is shown at the start ('10× Butter') or at the end ('Butter (10)'). Affects new entries only.",
-		"editor.helpers.acknowledged"                   : "Controls how completed (checked) items are displayed: shown, hidden, or moved to the end.",
+		"editor.helpers.acknowledged"                   : "Controls whether completed entries are shown, hidden, or moved to the end in Shopping List and To-do modes. Inventory uses its own hidden-item function.",
 		"editor.helpers.chip_click"                     : "Determines whether chips add items on single-click or double-click. Repeated clicks increase quantity by 1.",
-		"editor.helpers.show_quantity_box"              : "Shows the small quantity input box (top left) or hides it.",
+		"editor.helpers.show_quantity_box"              : "Shows the quantity input in Shopping List and Inventory modes. It is not available in To-do mode.",
 		"editor.helpers.show_submit_button"             : "Shows the Add button. If hidden, press Enter to add an item.",
 		"editor.helpers.show_qrscan_button"   			: "Displays the QR scanner button. Allows scanning one or multiple items at once via QR code. For multiple items, each item must be on a separate line. Quantities can be specified in parentheses, e.g., 'Bananas (6)'. You must access Home Assistant via a https:// connection.",
-        "editor.helpers.show_export_button_pdf"         : "Shows the PDF Export button on the bottom. With the PDF-Export function, you can download the current todo list as an PDF file for offline use.",
-        "editor.helpers.show_export_button"             : "Shows the HTML Export button on the bottom. With the HTML-Export function, you can download the current todo list as an HTML file for offline use.",
+        "editor.helpers.show_export_button_pdf"         : "Shows the PDF export button in Shopping List and Inventory modes to download the current list as a PDF file.",
+        "editor.helpers.show_export_button"             : "Shows the HTML export button in Shopping List and Inventory modes to download the current list as an HTML file.",
 		"editor.helpers.show_input_mask"                : "Shows the full input mask (quantity + text + add button). Useful to restrict input to predefined chips.",
-		"editor.helpers.show_plus_minus"                : "Shows the Plus / Minus Buttons to increase / decrease the quantity. (Not available in 'To-Do List' mode).",
-		"editor.helpers.acknowledge_deletion"           : "Enables a confirmation dialog when deleting items to prevent accidental deletions.",
-        "editor.helpers.show_quantity_one"              : "Also display quantity '1'. If disabled, quantity 1 is omitted for new items.",
+		"editor.helpers.show_plus_minus"                : "Shows plus/minus buttons for changing quantities in Shopping List and Inventory modes. They are not available in To-do mode.",
+		"editor.helpers.acknowledge_deletion"           : "Shows a confirmation before deleting an item in Shopping List and Inventory modes. To-do mode uses its action dialog independently of this setting.",
+        "editor.helpers.show_quantity_one"              : "Shows quantity 1 in Shopping List mode. Otherwise only the item name is shown when the quantity is 1.",
+        "editor.helpers.shopping_offer_only_enabled"    : "Shows the “Buy only when on sale” option in the Shopping List item editor and an on-sale badge in the list. Existing markings remain stored while disabled. Default: On.",
 		"editor.helpers.sub_text"                       : "Text shown below the input field for tips or explanations. HTML is allowed. Use a single space to hide the field.",
 		"editor.helpers.chips"                          : "Defines default chips, e.g. 'Milk,Eggs,Bread'.",
         "editor.helpers.chip_file"                      : "Example: /local/chips.txt if the file is located in the www folder. One chip per line is required.",
         "editor.helpers.ean_file"                       : "Example: /local/ean.txt, if the file is located in the www folder. Each line must contain an entry in the format 'EAN Name', e.g. '1234567890123 Test Item'. Supports EAN formats EAN-8, UPC (12), EAN-13, and GS1-14.",
         "editor.helpers.category_file"                  : "Example: /local/categories.txt if the file is located in the www folder. For file format, refer to the documentation.",
         "editor.helpers.category_merge_mode"            : "Choose how local, global and dynamic categories should be merged. 'local_only' shows only the locally defined categories, 'global_only' shows only the global categories, and 'dynamic_only' shows only the dynamic categories. All other options combine two or all three types in different ways. The priority in which categories are merged follows the order in which they appear from left to right.",
+        "editor.helpers.category_display"               : "Controls whether category headers are shown. Categories remain active for assignment, sorting, suggestions and chips when headers are hidden. Their category colors are not visible in the list without the headers.",
 		"editor.helpers.bubble_card"                    : "Enable this option if you want to use the card in the Bubble PopUp Card. In the Bubble Card, `background_update: true` and `close_by_clicking_outside: false` must be set for the card to function correctly.",
         "editor.helpers.debug_mode"                     : "Writes additional diagnostic messages to the browser console. Should stay disabled during normal use.",
         "editor.helpers.show_cat_exclamation_mark"      : "Shows an exclamation mark in the category while in To-Do mode if there are due items in that category.",
-        "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",       
+        "editor.helpers.show_title_exclamation_mark"    : "Shows an exclamation mark in the title while in To-Do mode if there are due items in any category.",
         "editor.helpers.show_cat_next_due"              : "If this option is enabled, the next due date will be displayed under the category name in To-Do mode. This way, you can see at a glance when the next item in this category is due.",
         "editor.helpers.cat_double_sized_icon"          : "If the next due date is displayed, this option allows enlarging the icon so that it fits better visually.",
-        "editor.helpers.show_cat_count"                 : "If this option is enabled, the number of items in each category will be displayed next to the category name. In To-Do mode, the count is shown inverted. Thus, the number before the '/' only includes the entries that are not yet due. (Example: 3/5 means that out of 5 entries, 3 are not yet due.) This way, for example, at (5/5) you can easily see that there are currently no entries to be done.",
-        "editor.helpers.hide_cat_count_all_done"        : "If this option is enabled, the item count will be hidden for categories where all items are marked as completed.",
-        "editor.helpers.show_cat_popup"                 : "If this option is enabled, a pop-up will appear when adding a new item, allowing you to select a category for the item.",
+        "editor.helpers.show_cat_count"                 : "Shows the entry count next to each category. In Inventory mode, every displayed variant or group counts once. In To-do mode, the number before '/' counts entries that are not overdue or are already completed.",
+        "editor.helpers.hide_cat_count_all_done"        : "Hides the category count when all entries are completed in Shopping List and To-do modes. This setting is ignored in Inventory mode.",
+        "editor.helpers.show_cat_popup"                 : "Opens category selection when a new item is added. When disabled, items without a known category are placed under General. Existing assignments from categories or the EAN database are preserved.",
         "editor.helpers.longlived_token"                : "A long-lived access token for persistent authentication with Home Assistant. It can be created in the user profile under 'Security → Long-Lived Access Tokens'. Warning: Treat this token confidentially as it grants full access to your system. Also note that if HTTP is used instead of HTTPS, the token is transmitted unencrypted and is therefore insecure.",
         "editor.helpers.external_url"                   : "The (external) URL of your Home Assistant installation (e.g. 'https://my-ha.duckdns.org:8123'). This is required if you use the export function to synchronize items later with Home Assistant. If you do not provide a URL here, the URL from which the dashboard was accessed during export will be used.",
 		"editor.helpers.categories"                     : "Categories allow you to automatically group items. Each category starts with - name: <CategoryName> and contains a list of keywords under items. Example: - name: Fruits items: - Strawberries - Plums - Pears - Bananas. Optionally, each category can have an icon (e.g., mdi:apple) and a background color bgcolor (e.g., #247645). Any item that matches one of the keywords will be automatically assigned to this category. When creating a new card, a default template is added for reference.",
 		"editor.helpers.dishes"							: "With dishes you can add multiple items at once. Each dish starts with - name: <Dish> and contains a list of items under 'items'. Example: - name: McDonalds items: - Cheeseburger - BigMac (2) - Fries - Hamburger (4). Each dish can optionally have a background color (bgcolor, e.g. #247645). For more information about the structure, please check the documentation.",
         "editor.helpers.dishes_confirm_add"             : "When enabled, clicking a dish opens a selection dialog. When disabled, all dish items are added immediately."
+    },
+    es: {
+        "card.description"                                          : "Lista de la compra mejorada con ordenación alfabética, plantillas para añadir artículos, cantidad al inicio o al final, posición personalizable de chips y botones más/menos para ajustar la cantidad.",
+        "ui.common.yes"                                             : "Sí",
+        "ui.common.no"                                              : "No",
+        "ui.common.ok"                                              : "Aceptar",
+        "ui.common.cancel"                                          : "Cancelar",
+        "ui.common.all"                                             : "Todos",
+        "ui.common.edit_item"                                       : "Editar elemento",
+        "ui.common.add_item"                                        : "Añadir elemento",
+        "ui.shopping.offer_only"                                    : "Comprar solo si está en oferta",
+        "ui.shopping.offer_badge"                                   : "Oferta",
+        "ui.common.description"                                     : "Descripción",
+        "ui.common.no_cat"                                          : "Ninguna",
+        "ui.common.delete"                                          : "Eliminar",
+        "ui.common.sync_to_ha"                                      : "Enviar cambios a Home Assistant",
+        "ui.common.sync"                                            : "Sincronizando...",
+        "ui.common.sync_finished"                                   : "¡Sincronización completada!",
+        "ui.common.sync_error"                                      : "Error durante la sincronización:",
+        "ui.common.sync_without_category"                           : "Sin categoría",
+        "ui.common.sync_offline_list"                               : "Lista de la compra sin conexión",
+        "ui.common.sync_created"                                    : "creado el",
+        "ui.category.hidden_notice_one"                             : "1 elemento no se muestra porque su categoría no está habilitada en esta tarjeta. Activa las categorías dinámicas para mostrarlo.",
+        "ui.category.hidden_notice"                                 : "{count} elementos no se muestran porque sus categorías no están habilitadas en esta tarjeta. Activa las categorías dinámicas para mostrarlos.",
+        "ui.category.hidden_details"                                : "Detalles",
+        "ui.category.hidden_title"                                  : "Elementos no visibles",
+        "ui.category.hidden_help"                                   : "Activa las categorías dinámicas o edita un elemento para asignarle una categoría disponible en esta tarjeta.",
+        "ui.common.export"                                          : "Exportar HTML",
+        "ui.common.export_pdf"                                      : "Exportar PDF",
+        "ui.common.close"                                           : "Cerrar",
+        "ui.common.dynamic_category"                                : "Nueva categoría (dinámica)",
+        "ui.common.loading_list"                                    : "Cargando lista...",
+        "ui.qr.secure_context_required"                             : "El escáner QR requiere una conexión HTTPS segura. Abre Home Assistant a través de HTTPS y vuelve a intentarlo.",
+        "ui.qr.camera_unavailable"                                  : "No se pudo acceder a la cámara. Comprueba los permisos de la cámara y la conexión HTTPS.",
+        "ui.qr.library_load_failed"                                 : "No se pudo cargar el escáner QR. Comprueba la conexión de red y vuelve a intentarlo.",
+        "ui.message.quantity_increased"                             : "Cantidad aumentada",
+        "ui.message.quantity_decreased"                             : "Cantidad disminuida",
+        "ui.message.edited"                                         : "Elemento editado",
+        "ui.message.item_added"                                     : "Elemento añadido",
+        "ui.message.item_removed"                                   : "Elemento eliminado",
+        "ui.message.item_completed"                                 : "Elemento marcado como completado",
+        "ui.message.item_reopened"                                  : "Estado completado eliminado",
+        "ui.message.sent"                                           : "Mensaje enviado",
+        "ui.admin.options"                                          : "Opciones de administración",
+        "ui.admin.options.browser_chips"                            : "Chips del navegador",
+        "ui.admin.options.browser_chips_copy"                       : "Copiar",
+        "ui.admin.options.browser_chips_delete"                     : "Eliminar chips del navegador",
+        "ui.admin.options.browser_chips_delete_con"                 : "¿Seguro que quieres eliminar todos los chips del navegador?",
+        "ui.admin.options.dynamic_categories"                       : "Categorías dinámicas",
+        "ui.admin.options.dynamic_categories_copy"                  : "Copiar",
+        "ui.admin.options.dynamic_categories_include"               : "Incluir elementos",
+        "ui.admin.options.manual_assigned"                          : "Elementos asignados manualmente",
+        "ui.admin.options.manual_assigned_copy"                     : "Copiar",
+        "ui.admin.options.manual_assigned_include"                  : "Incluir elementos ya configurados",
+        "ui.admin.options.process_ean_scans"                        : "Procesar escaneos EAN en este dispositivo",
+        "ui.admin.options.process_ean_scans_help"                   : "Si está activado, esta tarjeta procesará los escaneos EAN coincidentes en este dispositivo. La tarjeta debe estar visible mientras se escanea y no debe abrirse simultáneamente en otra pestaña o ventana.",
+        "ui.admin.options.ean_scanner_mac"                          : "MAC del escáner:",
+        "ui.admin.options.ean_scanner_mac_missing"                  : "El filtro MAC Bluetooth no está disponible en este dispositivo.",
+        "ui.admin.options.ean_queue"                                : "Cola de escaneo EAN",
+        "ui.admin.options.ean_queue_pending"                        : "Escaneos pendientes: {count}",
+        "ui.admin.options.ean_queue_shopping"                       : "Lista de la compra: {count}",
+        "ui.admin.options.ean_queue_database"                       : "Base de datos EAN: {count}",
+        "ui.admin.options.ean_queue_remove"                         : "Retiradas: {count}",
+        "ui.admin.options.ean_queue_process"                        : "Procesar cola",
+        "ui.admin.options.ean_queue_clear"                          : "Vaciar cola",
+        "ui.admin.options.ean_database_status"                      : "Base de datos EAN",
+        "ui.admin.options.ean_database_products"                    : "{count} productos",
+        "ui.admin.options.ean_database_invalid"                     : "{count} no válidos",
+        "ui.ean.database_manager_title"                             : "Gestor de base de datos EAN",
+        "ui.ean.database_search"                                    : "Buscar productos...",
+        "ui.ean.database_sort"                                      : "Ordenar por",
+        "ui.ean.database_sort_name"                                 : "Nombre",
+        "ui.ean.database_sort_category"                             : "Categoría / nombre",
+        "ui.ean.database_no_products"                               : "No se encontraron productos en la base de datos.",
+        "ui.ean.database_no_category"                               : "Sin categoría asignada",
+        "ui.ean.database_invalid_title"                             : "Entradas de base de datos no válidas",
+        "ui.ean.database_invalid_entry"                             : "Entrada no válida en la base de datos EAN.",
+        "ui.ean.database_edit_title"                                : "Editar entrada EAN",
+        "ui.ean.database_name"                                      : "Nombre del producto",
+        "ui.ean.database_original_name"                             : "Nombre original",
+        "ui.ean.database_ean"                                       : "EAN",
+        "ui.ean.database_brand"                                     : "Marca",
+        "ui.ean.database_quantity"                                  : "Cantidad del paquete",
+        "ui.ean.database_category"                                  : "Categoría",
+        "ui.ean.database_save"                                      : "Guardar",
+        "ui.ean.database_reload_off"                                : "Actualizar desde Open Facts",
+        "ui.ean.database_loading_off"                               : "Cargando datos de Open Facts...",
+        "ui.ean.database_apply_off"                                 : "Aplicar datos de Open Facts",
+        "ui.ean.database_off_preview"                               : "Vista previa de Open Facts",
+        "ui.ean.database_off_name_preserved"                        : "Se conservó el nombre existente del producto.",
+        "ui.ean.database_off_not_found"                             : "No se encontró el producto en Open Facts.",
+        "ui.ean.database_delete_confirm"                            : "¿Eliminar esta entrada EAN de la base de datos?",
+        "ui.ean.database_delete_failed"                             : "No se pudo eliminar la entrada de la base de datos.",
+        "ui.ean.database_name_required"                             : "Se requiere un nombre de producto.",
+        "ui.ean.database_back"                                      : "Volver a la vista general",
+        "ui.ean.database_fill_start"                                : "Iniciar llenado",
+        "ui.ean.database_fill_active"                               : "Modo de llenado de base de datos activo – los escaneos no modifican la lista de la compra.",
+        "ui.ean.database_fill_help"                                 : "Escanea productos sucesivamente para añadirlos a la base de datos central de EAN.",
+        "ui.ean.database_fill_end"                                  : "Finalizar llenado",
+        "ui.ean.database_fill_existing"                             : "¡El producto ya existe en la base de datos!",
+        "ui.ean.database_fill_new"                                  : "Nuevo producto añadido a la base de datos.",
+        "ui.ean.database_fill_save"                                 : "Guardar y siguiente",
+        "ui.ean.remove_mode_active"                                 : "Retirada activa",
+        "ui.ean.remove_not_found"                                   : "{name} no está en la lista de la compra.",
+        "ui.ean.queue_status"                                       : "Escaneado {quantity}× · {count} elementos más en espera",
+        "ui.ean.database_invalid"                                   : "La lista de tareas de EAN configurada contiene {count} entradas no válidas. Estas entradas se ignorarán.",
+        "ui.ean.database_unavailable"                               : "No se puede usar la lista de tareas de EAN configurada: {reason}",
+        "ui.ean.database_reason_entity"                             : "Selecciona una lista de tareas diferente a la lista de la compra.",
+        "ui.ean.database_reason_description"                        : "La lista seleccionada no admite descripciones.",
+        "ui.ean.database_reason_load"                               : "No se pudieron cargar las entradas.",
+        "ui.ean.database_reason_save"                               : "No se pudo guardar el registro del producto.",
+        "ui.ean.lookup_failed_title"                                : "Producto no encontrado",
+        "ui.ean.lookup_failed_text"                                 : "No se pudieron cargar los datos del producto para el EAN {ean}.",
+        "ui.ean.lookup_retry"                                       : "Reintentar",
+        "ui.ean.lookup_manual"                                      : "Introducir manualmente",
+        "ui.ean.lookup_later"                                       : "Más tarde",
+        "ui.ean.lookup_discard"                                     : "Descartar",
+        "ui.ean.queue_summary"                                      : "Quedan {count} escaneos EAN pendientes de procesar.",
+        "ui.ean.queue_summary_one"                                  : "Queda 1 escaneo EAN pendiente de procesar.",
+        "ui.ean.queue_process_now"                                  : "Procesar ahora",
+        "ui.ean.queue_keep_later"                                   : "Más tarde",
+        "ui.ean.queue_admin_hint"                                   : "Puedes continuar procesando la cola más tarde desde las opciones de administración.",
+        "ui.ean.add"                                                : "Añadir a la lista",
+        "ui.ean.name_brand"                                         : "Marca",
+        "ui.ean.name_quantity"                                      : "Cantidad",
+        "ui.ean.brand_in_name"                                      : "La marca «{brand}» ya está incluida en el nombre del producto y no se volverá a añadir.",
+        "ui.ean.database_entries_title"                             : "Entradas EAN de {name}",
+        "ui.ean.database_entries_badge"                             : "Mostrar {count} entradas EAN",
+        "ui.ean.database_entry_refresh"                             : "Actualizar datos",
+        "ui.ean.database_entry_open_off"                            : "Abrir en Open Facts",
+        "ui.ean.database_entry_edit"                                : "Editar entrada de la base de datos",
+        "ui.ean.database_entry_updated"                             : "Entrada de la base de datos guardada.",
+        "ui.ean.database_transfer_title"                            : "Sincronización / Transferencia",
+        "ui.ean.database_manual_only"                               : "Solo añadir a la base de datos (sin transferencia)",
+        "ui.ean.database_minimum_stock"                             : "Stock mínimo",
+        "ui.ean.database_minimum_stock_help"                        : "Stock mínimo para reorden automática o transferencias.",
+        "ui.ean.database_transfer_disabled"                         : "Desactivar transferencia automática para este producto",
+        "ui.ean.database_current_stock"                             : "Stock actual:",
+        "ui.ean.database_set_stock"                                 : "Corregir stock",
+        "ui.ean.database_stock_updated"                             : "Se modificó el stock sin crear una transferencia.",
+        "ui.ean.database_create_stock_confirm"                      : "«{name}» aún no está en esta lista. ¿Añadir el elemento con un stock de {quantity}?",
+        "ui.ean.database_manual_send_quantity"                      : "Cantidad a enviar:",
+        "ui.ean.database_manual_send"                               : "Enviar a la lista de destino",
+        "ui.ean.database_manual_send_done"                          : "Elemento enviado a la lista de destino.",
+        "ui.ean.database_transfer_unavailable"                      : "El envío manual requiere una configuración de envío válida.",
+        "ui.ean.database_number_invalid"                            : "Por favor, introduce un número válido.",
+        "ui.ean.database_send_number_invalid"                       : "Introduce un número entero igual o superior a 1.",
+        "ui.ean.transfer_choose_product"                            : "¿Qué EAN debe usarse para «{name}»?",
+        "ui.ean.transfer_without_ean"                               : "Transferir sin EAN",
+        "ui.ean.transfer_non_ean_question"                          : "¿Transferir «{name}» a la lista de la compra de destino?",
+        "ui.inventory.title"                                        : "Inventario",
+        "ui.inventory.idle"                                         : "Ningún modo de registro activo",
+        "ui.inventory.add"                                          : "Entrada",
+        "ui.inventory.remove"                                       : "Salida",
+        "ui.inventory.register"                                     : "Registrar",
+        "ui.inventory.correct"                                      : "Corregir",
+        "ui.inventory.add_active"                                   : "Modo de entrada activo – los escaneos y entradas EAN aumentan el stock.",
+        "ui.inventory.remove_active"                                : "Modo de salida activo – los escaneos y entradas EAN reducen el stock.",
+        "ui.inventory.register_active"                              : "Modo de registro activo – los escaneos y entradas EAN crean elementos con stock 0.",
+        "ui.inventory.correct_active"                               : "Modo de corrección activo – los escaneos y entradas EAN abren la corrección de stock.",
+        "ui.inventory.select_mode"                                  : "Selecciona primero un modo de registro.",
+        "ui.inventory.select_mode_button"                           : "Seleccionar modo primero",
+        "ui.inventory.registered"                                   : "Se ha registrado {name} con stock 0.",
+        "ui.inventory.already_registered"                           : "{name} ya existe en el inventario. El stock se mantiene en {quantity}.",
+        "ui.inventory.register_database_required"                   : "El modo de registro requiere una base de datos EAN configurada.",
+        "ui.inventory.hidden"                                       : "Mostrar elementos ocultos",
+        "ui.inventory.hide"                                         : "Ocultar elemento",
+        "ui.inventory.unhide"                                       : "Mostrar elemento",
+        "ui.inventory.filter.all"                                   : "Todo",
+        "ui.inventory.filter.zero"                                  : "Stock 0",
+        "ui.inventory.filter.low"                                   : "Stock 0–1",
+        "ui.inventory.filter.minimum"                               : "≤ stock mínimo",
+        "ui.inventory.filter.below_minimum"                         : "< stock mínimo",
+        "ui.inventory.stock_change"                                 : "{name}: stock {before} → {after}",
+        "ui.inventory.undo"                                         : "Deshacer",
+        "ui.inventory.undo_done"                                    : "{name}: stock restaurado {before} → {after}.",
+        "ui.inventory.undo_transfer_question"                       : "El stock local se restablecerá de {before} a {after}. La transferencia original puede haber sido procesada por «{target}». ¿Cómo debe gestionarse esta transferencia?",
+        "ui.inventory.undo_both"                                    : "Corregir stock + lista de destino",
+        "ui.inventory.undo_local"                                   : "Solo corregir stock",
+        "ui.inventory.undo_cancel"                                  : "No deshacer",
+        "ui.inventory.undo_failed"                                  : "No se pudo deshacer el último movimiento.",
+        "ui.inventory.undo_transfer_failed"                         : "Se restauró el stock, pero falló la corrección en la lista de destino.",
+        "ui.inventory.stock"                                        : "Stock",
+        "ui.inventory.quantity"                                     : "Cantidad",
+        "ui.inventory.correction_transfer_question"                 : "El nuevo stock de «{name}» está en o por debajo del stock mínimo. ¿Enviar 1 × a «{target}»?",
+        "ui.inventory.no_stock"                                     : "{name} ya está agotado.",
+        "ui.inventory.send_without_stock"                           : "No queda stock de «{name}». ¿Enviar 1 × a «{target}» de todos modos? El stock se mantiene en 0.",
+        "ui.inventory.sent_without_stock"                           : "Se ha enviado 1 × {name} a {target}. El stock se mantiene en 0.",
+        "ui.inventory.send"                                         : "Enviar",
+        "ui.inventory.controls"                                     : "Códigos de control",
+        "ui.inventory.controls_help"                                : "Escanea uno de estos códigos QR con el escáner configurado para cambiar el modo de registro.",
+        "ui.inventory.database"                                     : "Base de datos EAN",
+        "ui.inventory.database_short"                               : "BD EAN",
+        "ui.inventory.queue"                                        : "Cola de escaneo",
+        "ui.inventory.queue_empty"                                  : "La cola de escaneo está vacía.",
+        "ui.inventory.queue_clear_confirm"                          : "¿Realmente deseas eliminar todas las entradas de la cola de escaneo?",
+        "ui.inventory.queue_mode.shopping"                          : "Lista de la compra",
+        "ui.inventory.queue_mode.database"                          : "Base de datos EAN",
+        "ui.inventory.queue_mode.add"                               : "Entrada de stock",
+        "ui.inventory.queue_mode.remove"                            : "Salida de stock",
+        "ui.inventory.queue_mode.register"                          : "Registrar",
+        "ui.inventory.queue_mode.correct"                           : "Corregir",
+        "ui.inventory.queue_mode.none"                              : "Sin modo",
+        "ui.inventory.group_variants"                               : "Agrupar variantes EAN",
+        "ui.inventory.product_details"                              : "Mostrar detalles del producto",
+        "ui.inventory.category_below_minimum"                       : "{count} por debajo del mínimo",
+        "ui.inventory.grouped_total"                                : "Stock total",
+        "ui.inventory.group_minimum"                                : "Stock mínimo del grupo (opcional)",
+        "ui.inventory.group_minimum_help"                           : "Se aplica al stock combinado de todas las variantes. Déjalo vacío para usar los valores individuales de los productos o el valor predeterminado de la tarjeta.",
+        "ui.inventory.group_minimum_conflict"                       : "El grupo existente «{target}» usa un stock mínimo de {targetMinimum}, mientras que el grupo movido usa {sourceMinimum}. ¿Qué stock mínimo del grupo debe conservarse después de fusionarlos?",
+        "ui.inventory.group_minimum_use_source"                     : "{minimum} del grupo movido",
+        "ui.inventory.group_minimum_use_target"                     : "{minimum} del grupo existente",
+        "ui.inventory.manage_variants"                              : "Gestionar stock de variantes",
+        "ui.inventory.variants_title"                               : "Variantes de stock de {name}",
+        "ui.inventory.without_ean"                                  : "Sin EAN",
+        "ui.inventory.variant_stock"                                : "Stock: {stock}",
+        "ui.inventory.variant_minimum"                              : "Stock mínimo: {minimum}",
+        "ui.inventory.manual_minimum"                               : "Stock mínimo (opcional)",
+        "ui.inventory.manual_minimum_default"                       : "Vacío = por defecto de la tarjeta: {minimum}",
+        "ui.inventory.manual_minimum_none"                          : "Vacío = sin stock mínimo",
+        "ui.inventory.manual_minimum_save"                          : "Guardar stock mínimo",
+        "ui.inventory.ean_minimum_edit"                             : "Editar stock mínimo EAN",
+        "ui.inventory.ean_minimum_database_source"                  : "Guardado en la base de datos central de EAN",
+        "ui.inventory.ean_minimum_card_default"                     : "Por defecto de la tarjeta",
+        "ui.inventory.ean_minimum_not_set"                          : "Sin stock mínimo configurado",
+        "ui.inventory.ean_product_edit"                             : "Editar producto EAN",
+        "ui.inventory.edit_ean_item"                                : "Editar elemento EAN",
+        "ui.inventory.grouped_badge"                                : "[AGRUPADO]",
+        "ui.inventory.group_member_badge"                           : "[MIEMBRO DEL GRUPO]",
+        "ui.inventory.choose_variant_add"                           : "¿Qué variante de «{name}» se debe reponer?",
+        "ui.inventory.choose_variant_remove"                        : "¿Qué variante de «{name}» se debe retirar?",
+        "ui.inventory.choose_variant_correct"                       : "¿Qué variante de «{name}» se debe corregir?",
+        "ui.inventory.correction_title"                             : "Corregir stock",
+        "ui.inventory.correction_current"                           : "Stock actual",
+        "ui.inventory.correction_new"                               : "Nuevo stock",
+        "ui.inventory.correction_no_transfer"                       : "Las correcciones de stock no activan una transferencia automática mediante ISL Sync / Transfer.",
+        "ui.inventory.correction_saved"                             : "El stock de {name} se corrigió de {before} a {after}.",
+        "ui.inventory.correction_manual_transfer"                   : "Cantidad a transferir manualmente (sin cambiar el stock)",
+        "ui.inventory.correction_manual_sent"                       : "La cantidad se envió a la lista de destino. El stock no se modificó.",
+        "ui.inventory.correction_save"                              : "Guardar stock",
+        "ui.inventory.correction_edit"                              : "Editar artículo",
+        "ui.inventory.group_category_confirm"                       : "«{name}» contiene {count} variantes independientes. La categoría se cambiará para todas las variantes y registros EAN asociados. ¿Deseas continuar?",
+        "ui.inventory.group_delete_confirm"                         : "«{name}» contiene {count} variantes independientes. ¿Eliminar todas las variantes?",
+        "ui.inventory.ean_category_confirm"                         : "Este EAN pertenece al elemento agrupado «{name}». La categoría se cambiará para todas las variantes EAN con este nombre. La base de datos central de EAN también puede ser utilizada por otras tarjetas. ¿Deseas continuar?",
+        "ui.inventory.category_conflict"                            : "Se han guardado diferentes categorías para «{name}». El elemento no se puede agrupar hasta que se seleccione una categoría común.",
+        "editor.labels.inventory_default_action"                    : "Modo de registro por defecto",
+        "editor.labels.inventory_highlight_zero"                    : "Destacar elementos con stock 0",
+        "editor.labels.inventory_group_variants"                    : "Agrupar variantes de EAN",
+        "editor.labels.inventory_show_product_details"              : "Mostrar detalles del producto en la lista de inventario",
+        "editor.labels.inventory_show_category_minimum_status"      : "Mostrar el estado del stock mínimo en las categorías",
+        "editor.labels.inventory_stock_marking"                    : "Marcado del stock",
+        "editor.labels.inventory_mark_above_minimum"               : "Por encima del stock mínimo",
+        "editor.labels.inventory_mark_at_minimum"                  : "Igual al stock mínimo",
+        "editor.labels.inventory_mark_below_minimum"               : "Por debajo del stock mínimo",
+        "editor.labels.inventory_mark_zero"                        : "Stock 0",
+        "editor.options.inventory_mark.none"                       : "Sin marcado",
+        "editor.options.inventory_mark.green"                      : "Verde",
+        "editor.options.inventory_mark.orange"                     : "Naranja",
+        "editor.options.inventory_mark.red"                        : "Rojo",
+        "editor.labels.ean_transfer_grouped_as_name"               : "Transferir siempre los artículos agrupados por nombre",
+        "editor.options.mode.inventory"                             : "Inventario",
+        "editor.options.inventory_default_action.none"              : "Ninguno",
+        "editor.options.inventory_default_action.add"               : "Entrada de stock",
+        "editor.options.inventory_default_action.remove"            : "Salida de stock",
+        "editor.options.inventory_default_action.register"          : "Registrar",
+        "editor.options.inventory_default_action.correct"           : "Corregir",
+        "editor.helpers.inventory_default_action"                   : "Modo de registro por defecto activado al abrir la tarjeta.",
+        "editor.labels.inventory_mode_timeout"                      : "Restablecer el modo tras inactividad (segundos)",
+        "editor.helpers.inventory_mode_timeout"                     : "Restablece un modo seleccionado temporalmente al modo inicial tras este periodo sin una operación correcta. Cada operación correcta reinicia la cuenta atrás. 0 desactiva el restablecimiento automático.",
+        "editor.helpers.inventory_highlight_zero"                   : "Destaca visualmente en la lista los elementos de inventario con stock 0.",
+        "editor.helpers.inventory_group_variants"                   : "Agrupa variantes de productos con el mismo nombre en una sola entrada en el inventario.",
+        "editor.helpers.inventory_show_product_details"             : "Muestra el nombre original del producto, la marca, la cantidad del envase y el EAN debajo del nombre guardado. El botón de la tarjeta puede cambiar temporalmente la visualización.",
+        "editor.helpers.inventory_show_category_minimum_status"     : "Muestra cuántos artículos o grupos de cada categoría están por debajo de su stock mínimo efectivo.",
+        "editor.helpers.inventory_stock_marking"                   : "Controla el marcado en relación con el stock mínimo efectivo. Los tres niveles no se aplican cuando no hay ningún mínimo configurado. El stock 0 se gestiona por separado y tiene prioridad.",
+        "editor.helpers.inventory_mark_above_minimum"             : "Marcado para artículos con stock superior al mínimo efectivo.",
+        "editor.helpers.inventory_mark_at_minimum"                : "Marcado para artículos cuyo stock coincide con el mínimo efectivo.",
+        "editor.helpers.inventory_mark_below_minimum"             : "Marcado para artículos con stock inferior al mínimo efectivo.",
+        "editor.helpers.inventory_mark_zero"                      : "Marcado para artículos con stock 0. Tiene prioridad sobre los niveles de stock mínimo.",
+        "editor.helpers.ean_transfer_grouped_as_name"              : "Cuando está activado, las operaciones de artículos agrupados usan el nombre compartido y la categoría. No se envían el EAN, la marca, la cantidad del paquete ni la imagen de la variante. Por defecto: desactivado.",
+        "ui.ean.transfer_remove"                                    : "Retirar",
+        "ui.ean.transfer_invalid_config"                            : "La configuración de transferencia ISL no es válida. Usa una lista de tareas independiente compatible con descripciones y selecciona una lista de la compra de destino diferente al enviar.",
+        "ui.ean.transfer_send_failed"                               : "No se pudo guardar el escaneo en la lista de transferencia ISL.",
+        "ui.ean.transfer_receive_failed"                            : "No se pudo procesar una transferencia ISL. La entrada queda disponible para su revisión.",
+        "ui.ean.transfer_cleanup_failed"                            : "Se completó la transferencia, pero no se pudo confirmar la eliminación de la lista de transferencia ISL.",
+        "ui.todo.general"                                           : "General",
+        "ui.todo.hours"                                             : "Horas",
+        "ui.todo.days"                                              : "Días",
+        "ui.todo.months"                                            : "Meses",
+        "ui.todo.due_every"                                         : "Vence cada:",
+        "ui.todo.remove_due"                                        : "Eliminar fecha de vencimiento",
+        "ui.todo.next_due"                                          : "Establecer próxima fecha de vencimiento",
+        "ui.todo.next_due_now"                                      : "Establecer próxima fecha de vencimiento a partir de ahora",
+        "ui.todo.edit"                                              : "Editar entrada",
+        "ui.todo.delete"                                            : "Eliminar entrada",
+        "ui.todo.interval_once"                                     : "Puntual",
+        "ui.todo.due_label"                                         : "Vencido",
+        "ui.todo.select_action"                                     : "Selecciona una acción para este elemento:",
+        "ui.todo.actions"                                           : "Acciones de tareas",
+        "ui.todo.list.year"                                         : "Año",
+        "ui.todo.list.years"                                        : "Años",
+        "ui.todo.list.month"                                        : "Mes",
+        "ui.todo.list.months"                                       : "Meses",
+        "ui.todo.list.day"                                          : "Día",
+        "ui.todo.list.days"                                         : "Días",
+        "ui.todo.list.hour"                                         : "Hora",
+        "ui.todo.list.hours"                                        : "Horas",
+        "ui.todo.list.minute"                                       : "Minuto",
+        "ui.todo.list.minutes"                                      : "Minutos",
+        "ui.todo.set.completed.true"                                : "Marcar como completado",
+        "ui.todo.set.completed.false"                               : "Desmarcar completado",
+        "ui.todo.filter"                                            : "Filtro",
+        "ui.todo.filter.all"                                        : "Todos",
+        "ui.todo.filter.today"                                      : "Hoy",
+        "ui.todo.filter.overdue"                                    : "Vencidos",
+        "ui.todo.filter.overdue_include_today"                      : "Vencidos (incluye hoy)",
+        "ui.todo.filter.upcoming"                                   : "Próximos",
+        "ui.todo.filter.dated"                                      : "Con fecha",
+        "ui.todo.filter.undated"                                    : "Sin fecha",
+        "ui.todo.filter.remember"                                   : "Recordar para esta lista",
+        "ui.todo.filter.reset"                                      : "Restablecer filtro guardado",
+        "ui.labels.alert_item_exists_todo"                          : "El elemento '{item}' ya existe en la lista de tareas pendientes.",
+        "editor.placeholders.quantity"                              : "Cantidad",
+        "editor.placeholders.item"                                  : "Elemento...",
+        "editor.labels.show_message_button"                         : "Mostrar botón de mensaje",
+        "editor.labels.show_clear_button"                           : "Mostrar botón de limpiar completados",
+        "editor.labels.notify_entity"                               : "Entidad de notificación",
+        "editor.labels.add_button"                                  : "Añadir",
+        "editor.labels.clear_button"                                : "Limpiar completados",
+        "editor.labels.no_items"                                    : "Sin elementos",
+        "editor.labels.complete_btn"                                : "Marcar como completado",
+        "editor.labels.plus_btn"                                    : "Aumentar cantidad",
+        "editor.labels.minus_btn"                                   : "Disminuir cantidad o eliminar",
+        "editor.labels.confirm_remove"                              : "¿Eliminar elemento: {item}?",
+        "editor.labels.confirm_clear_done"                          : "¿Eliminar todos los elementos completados?",
+        "editor.labels.confirm_remove_history"                      : "¿Eliminar el chip '{item}' del historial?",
+        "editor.labels.chip_highlighted"                            : "Chip destacado",
+        "editor.labels.chip_standard"                               : "Chip estándar",
+        "editor.labels.category_color"                              : "Color de categoría",
+        "editor.labels.chip_global"                                 : "Chip global",
+        "editor.labels.alert_cannot_delete_standard"                : "Este chip estándar no se puede eliminar",
+        "editor.labels.alert_no_valid_ean"                          : "¡No se encontró un EAN o producto válido!",
+        "editor.labels.categories"                                  : "Categorías",
+        "editor.labels.show_cat_count"                              : "¿Mostrar recuento de elementos en categorías?",
+        "editor.labels.hide_cat_count_all_done"                     : "¿Ocultar recuento de elementos cuando todos estén completados?",
+        "editor.labels.show_cat_next_due"                           : "¿Mostrar próximo vencimiento en categoría?",
+        "editor.labels.cat_double_sized_icon"                       : "¿Mostrar icono más grande?",
+        "editor.labels.show_cat_exclamation_mark"                   : "Mostrar signo de exclamación para elementos vencidos",
+        "editor.labels.show_title_exclamation_mark"                 : "Mostrar signo de exclamación para elementos vencidos en el título",
+        "editor.labels.show_cat_popup"                              : "Mostrar selección de categoría al añadir",
+        "editor.labels.category_merge_mode"                         : "Modo de combinación de categorías",
+        "editor.labels.category_display"                            : "Visualización de encabezados de categoría",
+        "editor.labels.dishes"                                      : "Platos",
+        "editor.labels.dishes_confirm_add"                          : "Confirmar platos antes de añadir",
+        "editor.labels.mode"                                        : "Modo",
+        "editor.labels.font.sizes"                                  : "Tamaños de fuente",
+        "editor.labels.colors"                                      : "Ajustes de color",
+        "editor.labels.chip_colors"                                 : "Colores de chips",
+        "editor.labels.expert_color_settings"                       : "Ajustes avanzados",
+        "editor.labels.chip_color_rgb"                              : "Chips locales (navegador)",
+        "editor.labels.chip_color_default_rgb"                      : "Chips estándar",
+        "editor.labels.chip_color_global_rgb"                       : "Chips globales (archivo de texto)",
+        "editor.labels.chip_color_dish_rgb"                         : "Chips de platos",
+        "editor.labels.highlight_color_rgb"                         : "Chips resaltados",
+        "editor.labels.category.options"                            : "Categorías",
+        "editor.labels.export.options"                              : "Opciones de exportación",
+        "editor.labels.message.options"                             : "Notificaciones",
+        "editor.labels.notify.options"                              : "Notificación estándar",
+        "editor.labels.ntfy.options"                                : "ntfy",
+        "editor.labels.email.options"                               : "Correo electrónico",
+        "editor.labels.notify_change_mode"                          : "Notificaciones automáticas",
+        "editor.labels.notify_include_manual"                       : "Incluir al enviar manualmente",
+        "editor.labels.notify_delay"                                : "Retraso (segundos)",
+        "editor.labels.notify_format"                               : "Formato del mensaje",
+        "editor.labels.ntfy_entity"                                 : "Entidad de notificación ntfy",
+        "editor.labels.ntfy_change_mode"                            : "Notificaciones automáticas",
+        "editor.labels.ntfy_include_manual"                         : "Incluir al enviar manualmente",
+        "editor.labels.ntfy_on_done"                                : "Notificar al marcar como completado",
+        "editor.labels.ntfy_delay"                                  : "Retraso (segundos)",
+        "editor.labels.ntfy_format"                                 : "Formato del mensaje",
+        "editor.labels.email_change_mode"                           : "Notificaciones automáticas",
+        "editor.labels.email_include_manual"                        : "Incluir al enviar manualmente",
+        "editor.labels.email_on_done"                               : "Notificar al marcar como completado",
+        "editor.labels.email_delay"                                 : "Retraso (segundos)",
+        "editor.labels.dishes.options"                              : "Platos",
+        "editor.labels.chips.options"                               : "Chips",
+        "editor.labels.item.options"                                : "Elementos",
+        "editor.labels.ean_scanner.options"                         : "Escáner EAN",
+        "editor.labels.general.options"                             : "Ajustes generales",
+        "editor.labels.shopping_mode.options"                         : "Lista de la compra",
+        "editor.labels.todo_mode.options"                             : "Lista de tareas",
+        "editor.labels.inventory_mode.options"                        : "Inventario",
+        "editor.labels.input_row_position"                          : "Posición de la barra de entrada",
+        "editor.labels.option_row_position"                         : "Posición de la barra de botones",
+        "editor.labels.allow_dynamic_categories"                    : "Permitir categorías dinámicas",
+        "editor.labels.show_admin_button"                           : "Mostrar botón de opciones de administración",
+        "editor.labels.admin_button_admin_only"                     : "Mostrar el botón de administración solo a administradores",
+        "editor.labels.notify_on_change"                            : "Notificar al cambiar",
+        "editor.labels.notify_on_change_all"                        : "Enviar siempre la lista completa",
+        "editor.labels.notify_on_change_time"                       : "Tiempo antes de enviar notificaciones",
+        "editor.labels.notify_entity_smtp"                          : "Nombre de tu entidad de notificación SMTP",
+        "editor.labels.notify_on_done"                              : "Notificar también al marcar como completado",
+        "editor.options.notification_mode.off"                      : "Desactivado",
+        "editor.options.notification_mode.change"                   : "Solo el cambio",
+        "editor.options.notification_mode.full"                     : "Lista completa",
+        "editor.options.notification_mode.change_and_full"          : "Cambio y lista completa",
+        "editor.options.notification_format.plain"                  : "Texto sin formato",
+        "editor.options.notification_format.html"                   : "HTML",
+        "editor.options.notification_format.markdown"               : "Markdown",
+        "editor.labels.show_category_chips"                         : "Generar chips a partir de elementos de categoría",
+        "editor.labels.show_category_add_all"                       : "Mostrar chip 'Añadir todos'",
+        "editor.labels.allow_filter"                                : "Permitir filtrar elementos",
+        "editor.labels.allow_suggestions"                           : "Permitir sugerencias",
+        "editor.labels.show_done_hidden_items_in_search"            : "Mostrar elementos completados (ocultos) en la búsqueda",
+        "editor.labels.capitalize_first_letter"                     : "Poner en mayúscula la primera letra",
+        "editor.labels.show_descriptions"                           : "Mostrar descripciones",
+        "editor.labels.show_ean_brand"                              : "Añadir la marca al nombre del producto",
+        "editor.labels.show_ean_quantity"                           : "Añadir la cantidad del envase al nombre",
+        "editor.labels.ean_scanner_mac"                             : "Filtro de dirección MAC Bluetooth",
+        "editor.labels.ean_database_entity"                         : "Lista de base de datos EAN",
+        "editor.labels.ean_create_chip"                             : "Crear chip al escanear EAN",
+        "editor.labels.list_script_enabled"                         : "Activar script de eventos de lista",
+        "editor.labels.list_script_entity"                          : "Script de eventos de lista",
+        "editor.labels.ean_script_enabled"                          : "Activar script de eventos EAN",
+        "editor.labels.ean_script_entity"                           : "Script de eventos EAN",
+        "editor.labels.ean_remove_mode"                             : "Modo de retirada por pulsación larga",
+        "editor.labels.ean_database_suggestions"                    : "Añadir productos EAN a sugerencias de búsqueda",
+        "editor.labels.show_ean_database_badge"                     : "Mostrar distintivo de base de datos EAN",
+        "editor.labels.ean_transfer_mode"                           : "Modo de transferencia ISL",
+        "editor.labels.ean_transfer_entity"                         : "Lista de transferencia ISL",
+        "editor.labels.ean_transfer_target_entity"                  : "Lista de la compra de destino",
+        "editor.labels.ean_transfer_actions"                        : "Acciones que se transferirán",
+        "editor.labels.sync_transfer.options"                       : "Sincronización / Transferencia",
+        "editor.labels.ean_transfer_remove_behavior"                : "Comportamiento en retiradas",
+        "editor.labels.ean_transfer_default_minimum_stock"          : "Stock mínimo por defecto",
+        "editor.labels.ean_transfer_non_ean"                        : "Retiradas sin EAN",
+        "editor.labels.todo_filter"                                 : "Filtro predeterminado",
+        "editor.labels.todo_default_action"                         : "Acción predeterminada",
+        "editor.labels.todo_action_behavior"                        : "Comportamiento del botón/casilla de acción",
+        "editor.labels.show_todo_filter_menu"                       : "Mostrar menú de filtro de tareas pendientes",
+        "editor.options.chips_position.auto"                        : "Automático Derecha / Abajo (según tamaño de pantalla)",
+        "editor.options.chips_position.auto_panel"                  : "Automático Panel / Abajo (según tamaño de pantalla)",
+        "editor.options.chips_position.bottom"                      : "Siempre abajo",
+        "editor.options.chips_position.right"                       : "Siempre a la derecha",
+        "editor.options.chips_position.full"                        : "Derecha, multicolumna (solo modo panel)",
+        "editor.options.chips_position.none"                        : "Sin chips (ocultar chips)",
+        "editor.options.chip_click.single"                          : "Clic",
+        "editor.options.chip_click.dblclick"                        : "Doble clic",
+        "editor.options.chip_merge.combined"                        : "Combinar chips estándar y del navegador (por defecto)",
+        "editor.options.chip_merge.standard_first"                  : "Chips estándar primero, luego del navegador",
+        "editor.options.chip_merge.browser_first"                   : "Chips del navegador primero, luego estándar",
+        "editor.options.chip_merge.global_only"                     : "Solo chips globales (desde archivo de texto)",
+        "editor.options.chip_merge.global_combined"                 : "Todos los chips combinados (globales, estándar, navegador)",
+        "editor.options.quantity.beginning"                         : "Cantidad al principio, ej. '10x Mantequilla'",
+        "editor.options.quantity.end"                               : "Cantidad al final, ej. 'Mantequilla (10)'",
+        "editor.options.acknowledged.show"                          : "Mostrar elementos completados",
+        "editor.options.acknowledged.hide"                          : "Ocultar elementos completados",
+        "editor.options.acknowledged.end"                           : "Mostrar elementos completados al final de la categoría",
+        "editor.defaults.sub_text"                                  : "Consejo: Usa los chips para volver a añadir elementos rápidamente.",
+        "editor.options.category_merge.local_only"                  : "[1] Solo categorías locales (por defecto)",
+        "editor.options.category_merge.global_only"                 : "[1] Solo categorías globales (desde archivo)",
+        "editor.options.category_merge.dynamic_only"                : "[1] Solo categorías dinámicas",
+        "editor.options.category_merge.local_only_sorted"           : "[1] Solo categorías locales (ordenadas)",
+        "editor.options.category_merge.global_only_sorted"          : "[1] Solo categorías globales (ordenadas)",
+        "editor.options.category_merge.dynamic_only_sorted"         : "[1] Solo categorías dinámicas (ordenadas)",
+        "editor.options.category_merge.local_global"                : "[2] Local → Global",
+        "editor.options.category_merge.local_dynamic"               : "[2] Local → Dinámica",
+        "editor.options.category_merge.global_dynamic"              : "[2] Global → Dinámica",
+        "editor.options.category_merge.global_local"                : "[2] Global → Local",
+        "editor.options.category_merge.dynamic_local"               : "[2] Dinámica → Local",
+        "editor.options.category_merge.dynamic_global"              : "[2] Dinámica → Global",
+        "editor.options.category_merge.local_global_sorted"         : "[2] Local → Global (ordenadas)",
+        "editor.options.category_merge.local_dynamic_sorted"        : "[2] Local → Dinámica (ordenadas)",
+        "editor.options.category_merge.global_dynamic_sorted"       : "[2] Global → Dinámica (ordenadas)",
+        "editor.options.category_merge.global_local_sorted"         : "[2] Global → Local (ordenadas)",
+        "editor.options.category_merge.dynamic_local_sorted"        : "[2] Dinámica → Local (ordenadas)",
+        "editor.options.category_merge.dynamic_global_sorted"       : "[2] Dinámica → Global (ordenadas)",
+        "editor.options.category_merge.local_global_sorted_total"   : "[2] Local + Global (totalmente ordenadas)",
+        "editor.options.category_merge.local_dynamic_sorted_total"  : "[2] Local + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.global_dynamic_sorted_total" : "[2] Global + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.global_local_sorted_total"   : "[2] Global + Local (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_local_sorted_total"  : "[2] Dinámica + Local (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_global_sorted_total" : "[2] Dinámica + Global (totalmente ordenadas)",
+        "editor.options.category_merge.local_global_dynamic"        : "[3] Local → Global → Dinámica",
+        "editor.options.category_merge.local_dynamic_global"        : "[3] Local → Dinámica → Global",
+        "editor.options.category_merge.global_local_dynamic"        : "[3] Global → Local → Dinámica",
+        "editor.options.category_merge.global_dynamic_local"        : "[3] Global → Dinámica → Local",
+        "editor.options.category_merge.dynamic_local_global"        : "[3] Dinámica → Local → Global",
+        "editor.options.category_merge.dynamic_global_local"        : "[3] Dinámica → Global → Local",
+        "editor.options.category_merge.local_global_dynamic_sorted" : "[3] Local → Global → Dinámica (ordenadas)",
+        "editor.options.category_merge.local_dynamic_global_sorted" : "[3] Local → Dinámica → Global (ordenadas)",
+        "editor.options.category_merge.global_local_dynamic_sorted" : "[3] Global → Local → Dinámica (ordenadas)",
+        "editor.options.category_merge.global_dynamic_local_sorted" : "[3] Global → Dinámica → Local (ordenadas)",
+        "editor.options.category_merge.dynamic_local_global_sorted" : "[3] Dinámica → Local → Global (ordenadas)",
+        "editor.options.category_merge.dynamic_global_local_sorted" : "[3] Dinámica → Global → Local (ordenadas)",
+        "editor.options.category_merge.local_global_dynamic_sorted_total": "[3] Local + Global + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.local_dynamic_global_sorted_total": "[3] Local + Dinámica + Global (totalmente ordenadas)",
+        "editor.options.category_merge.global_local_dynamic_sorted_total": "[3] Global + Local + Dinámica (totalmente ordenadas)",
+        "editor.options.category_merge.global_dynamic_local_sorted_total": "[3] Global + Dinámica + Local (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_local_global_sorted_total": "[3] Dinámica + Local + Global (totalmente ordenadas)",
+        "editor.options.category_merge.dynamic_global_local_sorted_total": "[3] Dinámica + Global + Local (totalmente ordenadas)",
+        "editor.options.category_display.grouped"                   : "Mostrar encabezados de categoría",
+        "editor.options.category_display.hidden_category_order"     : "Ocultar encabezados (ordenar por categoría)",
+        "editor.options.category_display.hidden_global_order"       : "Ocultar encabezados (orden global)",
+        "editor.options.sort_mode.alpha"                            : "Alfabético (A → Z)",
+        "editor.options.sort_mode.manual"                           : "Manual (arrastrar y soltar)",
+        "editor.options.sort_mode.none"                             : "Sin ordenación adicional",
+        "editor.options.sort_mode.due"                              : "Ordenar por fecha de vencimiento (Tareas)",
+        "editor.options.todo_filter.all"                            : "Todos",
+        "editor.options.todo_filter.today"                          : "Hoy",
+        "editor.options.todo_filter.overdue"                        : "Vencidos",
+        "editor.options.todo_filter.overdue_include_today"          : "Vencidos (incluye hoy)",
+        "editor.options.todo_filter.upcoming"                       : "Próximos",
+        "editor.options.todo_filter.dated"                          : "Con fecha",
+        "editor.options.todo_filter.undated"                        : "Sin fecha",
+        "editor.options.todo_default_action.remove"                 : "Eliminar vencimiento",
+        "editor.options.todo_default_action.next"                   : "Establecer próximo vencimiento",
+        "editor.options.todo_default_action.now"                    : "Establecer vencimiento desde ahora",
+        "editor.options.todo_default_action.edit"                   : "Editar elemento",
+        "editor.options.todo_default_action.delete"                 : "Eliminar elemento",
+        "editor.options.todo_default_action.done"                   : "Cambiar estado completado",
+        "editor.options.todo_action_behavior.menu"                  : "Abrir menú (predeterminado)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Clic: menú / pulsación larga: acción predeterminada",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Clic: acción predeterminada / pulsación larga: menú",
+        "editor.options.mode.shopping"                              : "Lista de la compra",
+        "editor.options.mode.todo"                                  : "Lista de tareas pendientes",
+        "editor.options.inputrow.top"                               : "Arriba",
+        "editor.options.inputrow.bottom"                            : "Abajo",
+        "editor.options.ean_transfer_mode.disabled"                 : "Desactivado",
+        "editor.options.ean_transfer_mode.send"                     : "Enviar operaciones",
+        "editor.options.ean_transfer_mode.receive"                  : "Recibir operaciones",
+        "editor.options.ean_transfer_mode.send_receive"             : "Enviar y recibir operaciones",
+        "editor.options.ean_transfer_actions.add"                   : "Solo adición",
+        "editor.options.ean_transfer_actions.remove"                : "Solo retirada",
+        "editor.options.ean_transfer_actions.both"                  : "Añadir y retirar",
+        "editor.options.ean_transfer_remove_behavior.one_to_one"    : "1:1 (cada retirada)",
+        "editor.options.ean_transfer_remove_behavior.minimum"       : "Stock mínimo",
+        "editor.options.ean_transfer_remove_behavior.off"           : "No transferir",
+        "editor.options.ean_transfer_non_ean.one_to_one"            : "1:1 (cada retirada)",
+        "editor.options.ean_transfer_non_ean.minimum"               : "Usar stock mínimo",
+        "editor.options.ean_transfer_non_ean.ask"                   : "Preguntar siempre",
+        "editor.options.ean_transfer_non_ean.off"                   : "No transferir",
+        "editor.labels.entity"                                      : "Lista de tareas pendientes (Entidad)",
+        "editor.labels.highlight_words"                             : "Palabras destacadas",
+        "editor.labels.chips_with_cat_color"                        : "Usar colores de categoría",
+        "editor.labels.allow_filter_chips"                          : "Permitir filtrar chips",
+        "editor.labels.highlight_color"                             : "Color de resaltado",
+        "editor.labels.chip_merge"                                  : "Combinar chips",
+        "editor.labels.local_chips"                                 : "¿Permitir chips locales?",
+        "editor.labels.chip_font_size"                              : "Tamaño de fuente de chips (px)",
+        "editor.labels.own_css"                                     : "Código CSS personalizado",
+        "editor.labels.chip_color"                                  : "Color de chips locales (navegador)",
+        "editor.labels.chip_color_global"                           : "Color de chips globales (archivo de texto)",
+        "editor.labels.chip_color_default"                          : "Color de chips estándar",
+        "editor.labels.chip_color_dish"                             : "Color de chips de platos",
+        "editor.labels.list_font_size"                              : "Tamaño de fuente de elementos (px)",
+        "editor.labels.title_font_size"                             : "Tamaño de fuente del título (px)",
+        "editor.labels.cat_font_size"                               : "Tamaño de fuente de categorías (px)",
+        "editor.labels.chips_width"                                 : "Ancho de chips - Solo para '(Auto) Modo panel'",
+        "editor.labels.chips_position"                              : "Posición de chips",
+        "editor.labels.quantity"                                    : "Posición de la cantidad del elemento",
+        "editor.labels.acknowledged"                                : "Elementos completados",
+        "editor.labels.chip_click"                                  : "Comportamiento del clic en chips",
+        "editor.labels.show_quantity_box"                           : "Mostrar casilla de cantidad",
+        "editor.labels.show_submit_button"                          : "Mostrar botón de añadir",
+        "editor.labels.show_qrscan_button"                          : "Mostrar botón de escáner QR (solo con https)",
+        "editor.labels.show_export_button_pdf"                      : "Mostrar botón de exportar PDF",
+        "editor.labels.show_export_button"                          : "Mostrar botón de exportar HTML",
+        "editor.labels.show_input_mask"                             : "Mostrar máscara de entrada",
+        "editor.labels.show_plus_minus"                             : "Mostrar botones más/menos",
+        "editor.labels.acknowledge_deletion"                        : "Solicitar confirmación al eliminar elementos",
+        "editor.labels.show_quantity_one"                           : "Mostrar cantidad 1",
+        "editor.labels.shopping_offer_only_enabled"                 : "Usar la marca «solo en oferta»",
+        "editor.labels.sub_text"                                    : "Texto de sugerencia debajo del campo de entrada",
+        "editor.labels.chips"                                       : "Chips por defecto (separados por coma o punto y coma)",
+        "editor.labels.longlived_token"                             : "Token de acceso de larga duración (para acceso mediante archivo de exportación)",
+        "editor.labels.external_url"                                : "URL (externa) de Home Assistant (para acceso mediante archivo de exportación)",
+        "editor.labels.bubble_card"                                 : "Modo Bubble PopUp Card",
+        "editor.labels.debug_mode"                                  : "Modo de depuración",
+        "editor.labels.chip_file"                                   : "Ruta al archivo de texto con los chips globales",
+        "editor.labels.ean_file"                                    : "Ruta al archivo de texto con la lista local de EAN",
+        "editor.labels.category_file"                               : "Ruta al archivo de texto con las categorías globales",
+        "editor.labels.title"                                       : "Título",
+        "editor.labels.title_icon"                                  : "Icono del título",
+        "editor.labels.todo_yellow_m"                               : "Umbral de advertencia para intervalos en meses",
+        "editor.labels.todo_yellow_d"                               : "Umbral de advertencia para intervalos en días",
+        "editor.labels.todo_yellow_h"                               : "Umbral de advertencia para intervalos en horas",
+        "editor.labels.todo_yellow_s"                               : "Umbral de advertencia para fechas de vencimiento sin hora",
+        "editor.labels.todo_warning_thresholds"                     : "Umbrales de advertencia para modo de tareas pendientes",
+        "editor.labels.show_title_info"                             : "Mostrar próxima fecha de vencimiento en modo de tareas pendientes",
+        "editor.labels.show_title_info_icon"                        : "Mostrar icono de próxima fecha de vencimiento",
+        "editor.labels.sort_mode"                                   : "Modo de ordenación",
+        "editor.helpers.show_title_info"                            : "Muestra la próxima fecha de vencimiento de todos los elementos de todas las categorías debajo del título en modo de tareas pendientes, siempre que haya un título configurado. Los elementos vencidos no se muestran aquí; se indican con un signo de exclamación a la derecha del nombre.",
+        "editor.helpers.show_title_info_icon"                       : "Muestra un icono de calendario antes de la fecha de vencimiento como resaltado visual.",
+        "editor.helpers.sort_mode"                                  : "Controla cómo se ordenan los elementos: alfabéticamente, manualmente mediante arrastrar y soltar, por fecha de vencimiento o sin ordenación adicional.",
+        "editor.helpers.todo_filter"                                : "Define qué tareas se muestran al cargar la tarjeta.",
+        "editor.helpers.todo_default_action"                        : "Selecciona la acción que se ejecuta directamente. Si no está disponible para un elemento, se abre el menú de acciones.",
+        "editor.helpers.todo_action_behavior"                       : "Define si la casilla abre el menú o ejecuta la acción predeterminada con un clic o una pulsación larga de unos 0,6 segundos.",
+        "editor.helpers.show_todo_filter_menu"                      : "Muestra un botón de filtro en la barra de botones en modo de tareas pendientes. Los usuarios pueden cambiar temporalmente el filtro allí o recordarlo por lista en el navegador.",
+        "editor.helpers.todo_warning_thresholds"                    : "Configuración de los umbrales de advertencia en modo de tareas pendientes. Los valores se especifican en minutos y determinan cuándo las tareas se marcan como 'próximas a vencer'.",
+        "editor.helpers.todo_yellow_m"                              : "Umbral de advertencia para intervalos en meses, definido en minutos (Por defecto: 1440 = 24 horas)",
+        "editor.helpers.todo_yellow_d"                              : "Umbral de advertencia para intervalos en días, definido en minutos (Por defecto: 120 = 2 horas)",
+        "editor.helpers.todo_yellow_h"                              : "Umbral de advertencia para intervalos en horas, definido en minutos (Por defecto: 10)",
+        "editor.helpers.todo_yellow_s"                              : "Umbral de advertencia para fechas de vencimiento sin hora, definido en minutos (Por defecto: 120 = 2 horas)",
+        "editor.helpers.title"                                      : "El título de la tarjeta. Déjalo vacío para ocultarlo",
+        "editor.helpers.input_row_position"                         : "Determina si la máscara de entrada (cantidad, elemento, botón) se muestra arriba o abajo de las entradas.",
+        "editor.helpers.option_row_position"                        : "Determina si los botones (mensaje, limpiar, exportar) se muestran arriba o abajo.",
+        "editor.helpers.allow_dynamic_categories"                   : "Las categorías dinámicas permiten asignar elementos a categorías que no están predefinidas, incluso desde fuera de la tarjeta (ej. mediante automatizaciones en el formato: '@Categoría@ Elemento'). Además, se pueden crear nuevas categorías al añadir elementos mediante la tarjeta. Estas categorías permanecen disponibles hasta que se elimina el último elemento de la categoría.",
+        "editor.helpers.show_message_button"                        : "Muestra en los modos Lista de la compra e Inventario un botón para enviar la lista mediante el servicio de notificación configurado.",
+        "editor.helpers.show_clear_button"                          : "Muestra en Lista de la compra y Lista de tareas un botón para eliminar todos los elementos completados. Se oculta en Inventario.",
+        "editor.helpers.notify_entity"                              : "Entidad notify de Home Assistant para este canal, por ejemplo 'notify.mobile_app_xyz' o 'notify.telegram'. Usa las entidades ntfy en la sección ntfy para que Markdown funcione correctamente.",
+        "editor.helpers.notify.options"                             : "Envía mediante cualquier entidad notify de Home Assistant. Los mensajes automáticos y el botón de envío manual se configuran por separado.",
+        "editor.helpers.ntfy.options"                               : "Envía mediante la integración ntfy de Home Assistant usando ntfy.publish, como texto sin formato o Markdown.",
+        "editor.helpers.email.options"                              : "Envía correos HTML mediante un servicio SMTP notify configurado en Home Assistant.",
+        "editor.helpers.notify_change_mode"                         : "Elige si un cambio envía automáticamente solo el cambio, solo la lista completa, ambos o nada.",
+        "editor.helpers.notify_include_manual"                      : "Envía la lista completa por este canal al pulsar el botón de mensaje de la tarjeta.",
+        "editor.helpers.notify_delay"                               : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
+        "editor.helpers.notify_format"                              : "Texto sin formato elimina las etiquetas HTML. HTML conserva el formato para servicios compatibles.",
+        "editor.helpers.ntfy_entity"                                : "Entidad notify de un tema de la integración ntfy, por ejemplo 'notify.lista_de_compras'.",
+        "editor.helpers.ntfy_change_mode"                           : "Elige si un cambio envía automáticamente solo el cambio, solo la lista completa, ambos o nada.",
+        "editor.helpers.ntfy_include_manual"                        : "Envía la lista completa a ntfy al pulsar el botón de mensaje.",
+        "editor.helpers.ntfy_on_done"                               : "También envía una notificación ntfy al marcar un elemento como completado.",
+        "editor.helpers.ntfy_delay"                                 : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
+        "editor.helpers.ntfy_format"                                : "Markdown da formato a categorías y elementos completados. Texto sin formato elimina todo el formato.",
+        "editor.helpers.email_change_mode"                          : "Elige si un cambio envía por correo solo el cambio, solo la lista completa, ambos o nada.",
+        "editor.helpers.email_include_manual"                       : "Envía la lista completa por correo al pulsar el botón de mensaje.",
+        "editor.helpers.email_on_done"                              : "También envía un correo al marcar un elemento como completado.",
+        "editor.helpers.email_delay"                                : "Espera estos segundos después de un cambio. Los cambios adicionales reinician la cuenta y se envían juntos. 0 envía inmediatamente.",
+        "editor.helpers.show_admin_button"                          : "Muestra un botón de opciones de administración, que abre un diálogo para copiar chips del navegador, categorías dinámicas y elementos asignados manualmente.",
+        "editor.helpers.admin_button_admin_only"                    : "Oculta el botón de administración a los usuarios sin permisos de administrador de Home Assistant. Las funciones configuradas de escáner, EAN y cola siguen funcionando; solo se restringe el acceso mediante este botón. Predeterminado: desactivado.",
+        "editor.helpers.notify_on_change"                           : "Envía una notificación mediante la entidad configurada cada vez que se añade, edita o elimina un elemento.",
+        "editor.helpers.notify_on_change_all"                       : "Envía también la lista completa con cada notificación, en lugar de solo el elemento modificado.",
+        "editor.helpers.notify_on_change_time"                      : "Define (en segundos) cuánto tiempo esperar antes de enviar una notificación (lista completa). Esto es útil cuando se realizan varios cambios en poco tiempo para evitar enviar demasiadas notificaciones. Introduce '0' (cero) para desactivar esta función.",
+        "editor.helpers.notify_entity_smtp"                         : "Nombre de la plataforma de notificación SMTP (de configuration.yaml) utilizada para enviar notificaciones por correo HTML. Importante: Aquí solo se refiere al nombre configurado como 'name: miNombre', ej. 'email_notification', no la entidad completa como 'notify.email_notification'.",
+        "editor.helpers.notify_on_done"                             : "También envía una notificación cuando un elemento se marca como completado. Nota: Esto puede generar muchas notificaciones si se completan muchos elementos durante la compra.",
+        "editor.helpers.show_category_chips"                        : "Genera automáticamente chips basados en los elementos asignados a una categoría. Cada categoría se muestra como un chip desplegable, siempre que contenga al menos un elemento.",
+        "editor.helpers.show_category_add_all"                      : "Muestra un chip 'Todos' dentro de los chips de categoría expandidos. Abre un diálogo de selección para añadir todos o algunos elementos de la categoría a la vez.",
+        "editor.helpers.allow_filter"                               : "Permite filtrar los elementos de la lista mediante el campo de entrada. Para artículos EAN también se buscan el nombre original del producto y la marca.",
+        "editor.helpers.allow_suggestions"                          : "Muestra artículos coincidentes de las categorías configuradas. Si también se activa la base de datos EAN en las sugerencias, se incluyen nombres guardados y originales, marcas y EAN.",
+        "editor.helpers.show_done_hidden_items_in_search"           : "Incluye elementos completados u ocultos en la búsqueda de Lista de la compra y Lista de tareas. Inventario usa su propia función de ocultación.",
+        "editor.helpers.capitalize_first_letter"                    : "Si está activado, la primera letra del campo de entrada se pondrá automáticamente en mayúscula.",
+        "editor.helpers.show_descriptions"                          : "Muestra descripciones en Lista de la compra y Lista de tareas si la entidad las admite. No se muestran en Inventario.",
+        "editor.helpers.show_ean_brand"                             : "Añade la marca al crear el nombre del artículo si aún no forma parte del nombre del producto.",
+        "editor.helpers.show_ean_quantity"                          : "Añade la cantidad del envase al crear el nombre del artículo.",
+        "editor.helpers.ean_scanner_mac"                            : "Dirección MAC del escáner Bluetooth cuyos eventos procesará esta tarjeta. Ejemplo: AA:FC:87:59:04:38.",
+        "editor.helpers.ean_database_entity"                        : "Lista de tareas opcional dedicada exclusivamente a esta función. Guarda de forma permanente los productos EAN aprendidos y sus categorías entre todos los dispositivos. No utilices esta lista para otras tareas. La lista de la compra predeterminada no es adecuada porque no admite descripciones. Para desactivar la función, vuelve a quitar la lista seleccionada de la configuración.",
+        "editor.helpers.ean_create_chip"                            : "Crea un chip local tras añadir un producto reconocido por EAN, siempre que la creación de chips locales esté activada globalmente. Esto se aplica a escáneres Bluetooth, la cámara y códigos EAN introducidos manualmente.",
+        "editor.helpers.list_script_enabled"                        : "Notifica cambios realizados por esta tarjeta. Información y variables de ejemplo: https://github.com/Nisbo/ha-shopping-list-improved/wiki/Card-Configuration",
+        "editor.helpers.list_script_entity"                         : "Envía el nombre, la categoría, la cantidad, la entidad de lista y el modo al script seleccionado. Los cambios realizados fuera de esta tarjeta no se pueden notificar. El script EAN se puede usar en paralelo.",
+        "editor.helpers.ean_script_enabled"                         : "Llama al script seleccionado con el estado y los datos del producto. Información y variables de ejemplo: https://github.com/Nisbo/ha-shopping-list-improved/wiki/EAN-Scanner",
+        "editor.helpers.ean_remove_mode"                            : "Mantén pulsado el botón Añadir durante un segundo para activar el modo de retirada. Los escaneos EAN reducirán la cantidad de un elemento coincidente o lo eliminarán de la lista. Un clic normal en el botón o recargar la página finaliza el modo. El botón Añadir debe estar visible.",
+        "editor.helpers.ean_database_suggestions"                   : "Añade nombres guardados y originales, marcas y EAN de la base de datos a las sugerencias. También debe estar activado «Permitir sugerencias».",
+        "editor.helpers.show_ean_database_badge"                    : "Muestra un icono discreto de código de barras junto a los elementos con coincidencia exacta. Al hacer clic, muestra todos los registros EAN asignados.",
+        "editor.helpers.ean_transfer_mode"                          : "Determina si la tarjeta envía operaciones mediante una lista ISL compartida, las recibe para su propia lista o hace ambas cosas. Por defecto: desactivado.",
+        "editor.helpers.ean_transfer_entity"                        : "Lista de tareas independiente reservada exclusivamente como cola de transferencia persistente ISL. No debe ser a la vez una lista de la compra ni una base de datos EAN, y debe admitir descripciones.",
+        "editor.helpers.ean_transfer_target_entity"                 : "Solo se utiliza al enviar operaciones. En los demás modos, este ajuste se ignora.",
+        "editor.helpers.ean_transfer_actions"                       : "Determina si se transfieren adiciones, retiradas o ambas acciones. El modo de llenado de la base de datos siempre permanece local.",
+        "editor.helpers.sync_transfer.options"                      : "Transfiere adiciones y retiradas entre tarjetas mediante una cola To-do independiente y persistente. Aquí se configuran la cola, la lista de destino y el comportamiento.",
+        "editor.helpers.ean_transfer_remove_behavior"               : "1:1 transfiere cada cantidad realmente retirada. Stock mínimo transfiere solo cuando el stock restante alcanza o cae por debajo del umbral. Los valores del producto en la base de datos EAN anulan este valor por defecto. Por defecto: 1:1.",
+        "editor.helpers.ean_transfer_default_minimum_stock"         : "Valor por defecto opcional de la tarjeta para el modo Stock mínimo. Sin un valor, los productos sin su propio mínimo no se transfieren automáticamente.",
+        "editor.helpers.ean_transfer_non_ean"                       : "Comportamiento en retiradas de variantes de inventario sin EAN. «Usar stock mínimo» utiliza el valor de la variante manual o, en su defecto, el valor por defecto de la tarjeta. Solo se aplica mientras el envío de retiradas esté activado. Por defecto: No transferir.",
+        "editor.helpers.ean_script_entity"                          : "El script puede proporcionar salida de voz, reproducir sonidos, enviar notificaciones o ejecutar acciones adicionales. La selección se conserva al desactivar la salida de script.",
+        "editor.helpers.title_icon"                                 : "Muestra el icono seleccionado antes del título.",
+        "editor.helpers.font.sizes"                                 : "Define los tamaños de fuente para la lista, categorías y chips.",
+        "editor.helpers.colors"                                     : "Configura los colores de chips y el CSS personalizado. El marcado de stock está en la sección Inventario.",
+        "editor.helpers.chip_colors"                                : "Selecciona los colores de los chips locales, estándar, globales, de platos y resaltados. El diálogo de color lo proporciona el navegador o el sistema operativo; en macOS, cambia a los controles RGB si es necesario.",
+        "editor.helpers.expert_color_settings"                      : "Permite colores CSS directos como red, #2196f3, #6464644D, rgb(...), rgba(...) o var(--primary-color). Solo un valor introducido realmente reemplaza al selector correspondiente. El color predeterminado gris es solo una indicación. Vacía el campo para volver a usar el selector o el valor de la tarjeta.",
+        "editor.helpers.chip_color_rgb"                             : "Color de los chips guardados localmente en este navegador.",
+        "editor.helpers.chip_color_default_rgb"                     : "Color de los chips estándar configurados en la tarjeta.",
+        "editor.helpers.chip_color_global_rgb"                      : "Color de los chips globales cargados desde un archivo de texto.",
+        "editor.helpers.chip_color_dish_rgb"                        : "Color de los chips de platos.",
+        "editor.helpers.highlight_color_rgb"                        : "Color de los chips resaltados.",
+        "editor.helpers.category.options"                           : "Aquí puedes configurar las categorías utilizadas en la lista de la compra y de tareas pendientes. Puedes definir categorías locales (en la tarjeta) o cargar un archivo de texto con categorías globales. Para más información sobre la estructura de categorías, consulta la documentación.",
+        "editor.helpers.export.options"                             : "Aquí puedes configurar las opciones de exportación.",
+        "editor.helpers.message.options"                            : "Configura por separado el envío manual y automático para notify estándar, ntfy y correo. Está disponible en los modos Lista de la compra e Inventario.",
+        "editor.helpers.dishes.options"                             : "Aquí puedes configurar platos utilizados en la lista de la compra. Esta función permite añadir varios elementos a la vez.",
+        "editor.helpers.chips.options"                              : "Aquí puedes configurar las opciones de chips. Los chips son botones de selección rápida para añadir rápidamente elementos frecuentes a la lista.",
+        "editor.helpers.item.options"                               : "Aquí puedes configurar los ajustes para los elementos de la lista.",
+        "editor.helpers.ean_scanner.options"                        : "Configura la entrada EAN, la cámara, la base de datos de productos y el escáner Bluetooth. El reconocimiento EAN funciona sin autorización del dispositivo. Solo los eventos entrantes del escáner deben activarse en las opciones de administración de cada dispositivo.",
+        "editor.helpers.general.options"                            : "Aquí puedes configurar los ajustes generales de la tarjeta.",
+        "editor.helpers.shopping_mode.options"                        : "Ajustes exclusivos del modo Lista de la compra.",
+        "editor.helpers.todo_mode.options"                            : "Ajustes de tareas, vencimientos y avisos del modo Lista de tareas.",
+        "editor.helpers.inventory_mode.options"                       : "Ajustes de stock, modos de registro, variantes y stock mínimo del modo Inventario.",
+        "editor.helpers.entity"                                     : "Si no se selecciona una entidad, se usa la lista de la compra original de Home Assistant, adecuada solo para ese modo. Las entidades To-do creadas por el usuario aportan los campos necesarios para Lista de tareas e Inventario.",
+        "editor.helpers.mode"                                       : "Define cómo se utiliza la tarjeta. Lista de la compra ofrece cantidades, categorías y funciones de compra sin vencimientos. Lista de tareas gestiona tareas con vencimientos y no dispone de cantidad, botones más/menos ni exportación. Inventario gestiona existencias y conserva los artículos con stock 0. La lista de la compra original de Home Assistant no admite vencimientos.",
+        "editor.helpers.highlight_words"                            : "Lista de palabras que deben destacarse en los chips (por fondo). Introduce como lista separada por comas o punto y coma, ej. 'Mantequilla,Plátanos,Harina'.",
+        "editor.helpers.chips_with_cat_color"                       : "Si un chip está asignado como 'elemento' a una categoría y esa categoría tiene un color definido, el chip se mostrará en el color de la categoría. El orden de prioridad de color es: Destacado > Categoría > Global > Estándar > Navegador.",
+        "editor.helpers.allow_filter_chips"                         : "Permite filtrar los chips mediante el campo de entrada.",
+        "editor.helpers.highlight_color"                            : "Código de color hexadecimal o rgba para palabras destacadas. Ejemplos: '#D9534F', 'rgba(255,0,0,0.5)', 'red'.",
+        "editor.helpers.chip_merge"                                 : "Determina cómo se combinan y muestran los chips globales, estándar y del navegador.",
+        "editor.helpers.list_font_size"                             : "Establece el tamaño de fuente para los elementos de la lista. Por defecto: 14px.",
+        "editor.helpers.title_font_size"                            : "Establece el tamaño de fuente para el título. Por defecto: 16px.",
+        "editor.helpers.cat_font_size"                              : "Establece el tamaño de fuente para las categorías en la lista. Por defecto: 16px.",
+        "editor.helpers.chip_font_size"                             : "Establece el tamaño de fuente para los chips de selección rápida. Por defecto: 12px.",
+        "editor.helpers.own_css"                                    : "Aquí puedes introducir tu propio código CSS para personalizar la tarjeta. Ejemplo: '.card { background: transparent; }'. Para CSS multilínea, usa el símbolo de barra vertical '|' en la primera línea sin código adicional. Si prefieres escribir el CSS en una sola línea, usa comillas dobles antes y después del código. Advertencia: Un CSS no válido puede provocar que la tarjeta no se muestre correctamente.",
+        "editor.helpers.chip_color"                                 : "Código de color hexadecimal o rgba para chips locales (navegador), ej. '#2196f3' o 'rgba(100,100,100,0.3)'.",
+        "editor.helpers.chip_color_global"                          : "Código de color hexadecimal o rgba para chips globales (archivo de texto), ej. '#2196f3' o 'rgba(100,100,100,0.3)'.",
+        "editor.helpers.chip_color_default"                         : "Código de color hexadecimal o rgba para chips estándar, ej. '#2196f3' o 'rgba(100,100,255,0.3)'.",
+        "editor.helpers.chip_color_dish"                            : "Código de color hexadecimal o rgba para chips de platos, ej. '#745E3D' o 'rgba(100,100,255,0.3)'.",
+        "editor.helpers.local_chips"                                : "Los chips locales se guardan únicamente en el navegador y no se sincronizan con otros dispositivos. Se perderán al borrar la caché del navegador.",
+        "editor.helpers.chips_width"                                : "Ancho del contenedor de chips en píxeles. Solo se aplica cuando se selecciona '(Auto) Modo panel'.",
+        "editor.helpers.chips_position"                             : "Controla dónde se muestran los chips (auto: abajo en móviles, derecha en escritorio/tablet, o posiciones fijas).",
+        "editor.helpers.quantity"                                   : "Determina si la cantidad se muestra al principio ('10x Mantequilla') o al final ('Mantequilla (10)'). Afecta solo a elementos nuevos.",
+        "editor.helpers.acknowledged"                               : "Controla en Lista de la compra y Lista de tareas si los elementos completados se muestran, se ocultan o se mueven al final. Inventario usa su propia función de ocultación.",
+        "editor.helpers.chip_click"                                 : "Determina si los chips añaden elementos con un solo clic o con doble clic. Clics repetidos aumentan la cantidad en 1.",
+        "editor.helpers.show_quantity_box"                          : "Muestra el campo de cantidad en los modos Lista de la compra e Inventario. No está disponible en Lista de tareas.",
+        "editor.helpers.show_submit_button"                         : "Muestra el botón de añadir. Si está oculto, pulsa Enter para añadir un elemento.",
+        "editor.helpers.show_qrscan_button"                         : "Muestra el botón de escáner QR. Permite escanear uno o varios elementos a la vez mediante código QR. Para múltiples elementos, cada uno debe estar en una línea separada. Las cantidades se pueden especificar entre paréntesis, ej., 'Plátanos (6)'. Debes acceder a Home Assistant mediante conexión https://.",
+        "editor.helpers.show_export_button_pdf"                     : "Muestra el botón de exportación PDF en Lista de la compra e Inventario.",
+        "editor.helpers.show_export_button"                         : "Muestra el botón de exportación HTML en Lista de la compra e Inventario.",
+        "editor.helpers.show_input_mask"                            : "Muestra la máscara de entrada completa (cantidad + texto + botón de añadir). Útil para restringir la entrada a chips predefinidos.",
+        "editor.helpers.show_plus_minus"                            : "Muestra botones para cambiar la cantidad en los modos Lista de la compra e Inventario. No están disponibles en el modo Lista de tareas.",
+        "editor.helpers.acknowledge_deletion"                       : "Muestra una confirmación antes de eliminar en Lista de la compra e Inventario. Lista de tareas usa siempre su propio diálogo de acciones.",
+        "editor.helpers.show_quantity_one"                          : "Muestra la cantidad 1 en el modo Lista de la compra. Si está desactivado, con cantidad 1 solo se muestra el nombre.",
+        "editor.helpers.shopping_offer_only_enabled"                : "Muestra la opción «Comprar solo si está en oferta» en el editor de artículos de la lista de la compra y una etiqueta de oferta en la lista. Las marcas existentes se conservan al desactivarla. Predeterminado: activado.",
+        "editor.helpers.sub_text"                                   : "Texto mostrado debajo del campo de entrada para sugerencias o explicaciones. Se permite HTML. Usa un solo espacio para ocultar el campo.",
+        "editor.helpers.chips"                                      : "Define los chips por defecto, ej. 'Leche,Huevos,Pan'.",
+        "editor.helpers.chip_file"                                  : "Ejemplo: /local/chips.txt si el archivo se encuentra en la carpeta www. Se requiere un chip por línea.",
+        "editor.helpers.ean_file"                                   : "Ejemplo: /local/ean.txt si el archivo se encuentra en la carpeta www. Cada línea debe contener una entrada en el formato 'EAN Nombre', ej. '1234567890123 Artículo de prueba'. Admite formatos EAN EAN-8, UPC (12), EAN-13 y GS1-14.",
+        "editor.helpers.category_file"                              : "Ejemplo: /local/categories.txt si el archivo se encuentra en la carpeta www. Para el formato del archivo, consulta la documentación.",
+        "editor.helpers.category_merge_mode"                        : "Elige cómo deben combinarse las categorías locales, globales y dinámicas. 'local_only' muestra solo las categorías locales, 'global_only' solo las globales y 'dynamic_only' solo las dinámicas. Todas las demás opciones combinan dos o los tres tipos de distintas formas. La prioridad de combinación sigue el orden en que aparecen de izquierda a derecha.",
+        "editor.helpers.category_display"                           : "Determina si se muestran los encabezados de categoría. Las categorías permanecen activas para asignación, ordenación, sugerencias y chips incluso si los encabezados están ocultos. Sin encabezados, sus colores de categoría no serán visibles en la lista.",
+        "editor.helpers.bubble_card"                                : "Activa esta opción si usas la tarjeta dentro de Bubble PopUp Card. En Bubble Card, `background_update: true` y `close_by_clicking_outside: false` deben estar activados para que la tarjeta funcione correctamente.",
+        "editor.helpers.debug_mode"                                 : "Escribe mensajes de diagnóstico adicionales en la consola del navegador. Debe permanecer desactivado en uso normal.",
+        "editor.helpers.show_cat_exclamation_mark"                  : "Muestra un signo de exclamación en la categoría en modo de tareas pendientes si contiene elementos vencidos.",
+        "editor.helpers.show_title_exclamation_mark"                : "Muestra un signo de exclamación en el título en modo de tareas pendientes si contiene elementos vencidos en cualquier categoría.",
+        "editor.helpers.show_cat_next_due"                          : "Si está activado, la próxima fecha de vencimiento se mostrará debajo del nombre de la categoría en modo de tareas pendientes. Así puedes ver de un vistazo cuándo vence el próximo elemento.",
+        "editor.helpers.cat_double_sized_icon"                      : "Si se muestra la próxima fecha de vencimiento, esta opción permite agrandar el icono para que se integre mejor visualmente.",
+        "editor.helpers.show_cat_count"                             : "Muestra el recuento junto a cada categoría. En Inventario, cada variante o grupo visible cuenta una vez. En Lista de tareas, el número antes de '/' cuenta las entradas no vencidas o ya completadas.",
+        "editor.helpers.hide_cat_count_all_done"                    : "Oculta el contador cuando todos los elementos están completados en Lista de la compra y Lista de tareas. Se ignora en Inventario.",
+        "editor.helpers.show_cat_popup"                             : "Abre la selección de categoría al añadir. Si está desactivada, los artículos sin categoría conocida se colocan en General. Se conservan las asignaciones existentes.",
+        "editor.helpers.longlived_token"                            : "Un token de acceso de larga duración para autenticación persistente con Home Assistant. Se puede crear en el perfil de usuario en 'Seguridad → Tokens de acceso de larga duración'. Advertencia: Trata este token con confidencialidad ya que otorga acceso total a tu sistema. Ten en cuenta también que si se usa HTTP en lugar de HTTPS, el token se transmite sin cifrar.",
+        "editor.helpers.external_url"                               : "La URL (externa) de tu instalación de Home Assistant (ej. 'https://mi-ha.duckdns.org:8123'). Es necesaria si usas la función de exportación para sincronizar elementos posteriormente con Home Assistant. Si no introduces una URL aquí, se usará la URL desde la que se accedió al panel.",
+        "editor.helpers.categories"                                 : "Las categorías permiten agrupar elementos automáticamente. Cada categoría comienza con - name: <NombreCategoría> y contiene una lista de palabras clave bajo items. Ejemplo: - name: Frutas items: - Fresas - Ciruelas - Peras - Plátanos. Opcionalmente, cada categoría puede tener un icono (ej. mdi:apple) y un color de fondo bgcolor (ej. #247645). Cualquier elemento que coincida con una de las palabras clave se asignará automáticamente a esta categoría.",
+        "editor.helpers.dishes"                                     : "Con los platos puedes añadir varios elementos a la vez. Cada plato comienza con - name: <Plato> y contiene una lista de elementos bajo 'items'. Ejemplo: - name: Hamburguesa items: - Pan - Carne (2) - Queso - Patatas (4). Cada plato puede tener opcionalmente un color de fondo (bgcolor, ej. #247645). Para más información, consulta la documentación.",
+        "editor.helpers.dishes_confirm_add"                         : "Si está activado, al hacer clic en un plato se abre un diálogo de selección. Si está desactivado, todos los elementos del plato se añaden inmediatamente."
     },
 
     fr: {
@@ -762,7 +2266,9 @@ const TRANSLATIONS = {
         "ui.common.all"                                 : "Tous",
         "ui.common.description"                         : "Description",
         "ui.common.edit_item"                           : "Modifier l'article",
-        "ui.common.add_item"                            : "Ajouter un article",
+		"ui.common.add_item"                            : "Ajouter un article",
+		"ui.shopping.offer_only"                       : "Acheter seulement en promotion",
+		"ui.shopping.offer_badge"                      : "Promotion",
         "ui.common.no_cat"                              : "Aucune",
         "ui.common.delete"                              : "Supprimer",
         "ui.common.sync_to_ha"                          : "Envoyer les modifications à Home Assistant",
@@ -783,6 +2289,8 @@ const TRANSLATIONS = {
         "ui.message.edited"                             : "Article modifié",
         "ui.message.item_added"                         : "Article ajouté",
         "ui.message.item_removed"                       : "Article supprimé",
+        "ui.message.item_completed"                     : "Article marqué comme terminé",
+        "ui.message.item_reopened"                      : "Statut terminé supprimé",
         "ui.message.sent"                               : "Message envoyé",
 
         "ui.admin.options"                              : "Options d'administration",
@@ -810,6 +2318,7 @@ const TRANSLATIONS = {
         "ui.todo.interval_once"                         : "Une fois",
         "ui.todo.due_label"                             : "Échéance",
         "ui.todo.select_action"                         : "Sélectionnez une action pour cet article :",
+        "ui.todo.actions"                               : "Actions de la tâche",
         "ui.todo.list.year"                             : "Année",
         "ui.todo.list.years"                            : "Années",
         "ui.todo.list.month"                            : "Mois",
@@ -851,6 +2360,7 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Supprimer le chip « {item} » de l'historique ?",
         "editor.labels.chip_highlighted"                : "Chip mis en évidence",
         "editor.labels.chip_standard"                   : "Chip standard",
+        "editor.labels.category_color"                  : "Couleur de catégorie",
         "editor.labels.chip_global"                     : "Chip global",
         "editor.labels.alert_cannot_delete_standard"    : "Ce chip standard ne peut pas être supprimé",
         "editor.labels.alert_no_valid_ean"              : "Aucun code EAN ou produit valide trouvé !",
@@ -861,29 +2371,65 @@ const TRANSLATIONS = {
         "editor.labels.cat_double_sized_icon"           : "Afficher une icône plus grande ?",
         "editor.labels.show_cat_exclamation_mark"       : "Point d'exclamation pour les articles à échéance",
         "editor.labels.show_title_exclamation_mark"     : "Point d'exclamation pour les articles à échéance",
-        "editor.labels.show_cat_popup"                  : "Afficher la pop-up des catégories ?",
+        "editor.labels.show_cat_popup"                  : "Afficher le choix de catégorie lors de l’ajout",
         "editor.labels.category_merge_mode"             : "Mode de fusion des catégories",
+        "editor.labels.category_display"               : "Affichage des catégories",
         "editor.labels.dishes"                          : "Plats",
         "editor.labels.dishes_confirm_add"              : "Confirmer les plats avant l'ajout",
         "editor.labels.mode"                            : "Mode",
         "editor.labels.font.sizes"                      : "Tailles de police",
         "editor.labels.colors"                          : "Paramètres de couleur",
+        "editor.labels.chip_colors"                     : "Couleurs des chips",
+        "editor.labels.expert_color_settings"           : "Paramètres avancés",
+        "editor.labels.chip_color_rgb"                  : "Chips locaux (navigateur)",
+        "editor.labels.chip_color_default_rgb"          : "Chips standards",
+        "editor.labels.chip_color_global_rgb"           : "Chips globaux (fichier texte)",
+        "editor.labels.chip_color_dish_rgb"             : "Chips de plats",
+        "editor.labels.highlight_color_rgb"             : "Chips mis en évidence",
         "editor.labels.category.options"                : "Catégories",
         "editor.labels.export.options"                  : "Options d'exportation",
         "editor.labels.message.options"                 : "Notifications",
+        "editor.labels.notify.options"                  : "Notification standard",
+        "editor.labels.ntfy.options"                    : "ntfy",
+        "editor.labels.email.options"                   : "E-mail",
+        "editor.labels.notify_change_mode"              : "Notifications automatiques",
+        "editor.labels.notify_include_manual"           : "Inclure lors de l'envoi manuel",
+        "editor.labels.notify_delay"                    : "Délai (secondes)",
+        "editor.labels.notify_format"                   : "Format du message",
+        "editor.labels.ntfy_entity"                     : "Entité de notification ntfy",
+        "editor.labels.ntfy_change_mode"                : "Notifications automatiques",
+        "editor.labels.ntfy_include_manual"             : "Inclure lors de l'envoi manuel",
+        "editor.labels.ntfy_on_done"                    : "Notifier lorsqu'un article est terminé",
+        "editor.labels.ntfy_delay"                      : "Délai (secondes)",
+        "editor.labels.ntfy_format"                     : "Format du message",
+        "editor.labels.email_change_mode"               : "Notifications automatiques",
+        "editor.labels.email_include_manual"            : "Inclure lors de l'envoi manuel",
+        "editor.labels.email_on_done"                   : "Notifier lorsqu'un article est terminé",
+        "editor.labels.email_delay"                     : "Délai (secondes)",
         "editor.labels.dishes.options"                  : "Plats",
         "editor.labels.chips.options"                   : "Chips",
         "editor.labels.item.options"                    : "Articles",
         "editor.labels.general.options"                 : "Paramètres généraux",
+        "editor.labels.shopping_mode.options"          : "Liste de courses",
+        "editor.labels.todo_mode.options"              : "Liste de tâches",
+        "editor.labels.inventory_mode.options"         : "Inventaire",
         "editor.labels.input_row_position"              : "Position de la ligne de saisie",
         "editor.labels.option_row_position"             : "Position de la ligne de boutons",
         "editor.labels.allow_dynamic_categories"        : "Autoriser les catégories dynamiques",
         "editor.labels.show_admin_button"               : "Afficher le bouton des options d'administration",
+        "editor.labels.admin_button_admin_only"         : "Afficher le bouton d’administration uniquement aux administrateurs",
         "editor.labels.notify_on_change"                : "Notifier en cas de modification",
         "editor.labels.notify_on_change_all"            : "Toujours envoyer la liste complète",
         "editor.labels.notify_on_change_time"           : "Délai avant d'envoyer les notifications",
         "editor.labels.notify_entity_smtp"              : "Nom de l'entité SMTP-Notify",
         "editor.labels.notify_on_done"                  : "Notifier également lorsqu'un article est marqué comme terminé",
+        "editor.options.notification_mode.off"          : "Désactivé",
+        "editor.options.notification_mode.change"       : "Modification uniquement",
+        "editor.options.notification_mode.full"         : "Liste complète",
+        "editor.options.notification_mode.change_and_full": "Modification et liste complète",
+        "editor.options.notification_format.plain"      : "Texte brut",
+        "editor.options.notification_format.html"       : "HTML",
+        "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Générer des chips à partir des articles de catégorie",
         "editor.labels.show_category_add_all"           : "Afficher le chip « Tout ajouter »",
         "editor.labels.allow_filter"                    : "Autoriser le filtrage des articles",
@@ -891,7 +2437,9 @@ const TRANSLATIONS = {
         "editor.labels.show_done_hidden_items_in_search": "Afficher les articles terminés masqués dans la recherche",
         "editor.labels.capitalize_first_letter"         : "Mettre automatiquement la première lettre en majuscule",
         "editor.labels.show_descriptions"               : "Afficher les descriptions",
-        "editor.labels.todo_filter"                     : "Filtre de tâches",
+        "editor.labels.todo_filter"                     : "Filtre par défaut",
+        "editor.labels.todo_default_action"             : "Action par défaut",
+        "editor.labels.todo_action_behavior"            : "Comportement du bouton/de la case d’action",
         "editor.labels.show_todo_filter_menu"           : "Afficher le menu de filtre des tâches",
         "editor.labels.debug_mode"                      : "Mode débogage",
 
@@ -924,6 +2472,15 @@ const TRANSLATIONS = {
         "editor.options.todo_filter.upcoming"           : "À venir",
         "editor.options.todo_filter.dated"              : "Avec échéance",
         "editor.options.todo_filter.undated"            : "Sans échéance",
+        "editor.options.todo_default_action.remove"     : "Supprimer l’échéance",
+        "editor.options.todo_default_action.next"       : "Définir la prochaine échéance",
+        "editor.options.todo_default_action.now"        : "Définir l’échéance à partir de maintenant",
+        "editor.options.todo_default_action.edit"       : "Modifier l’entrée",
+        "editor.options.todo_default_action.delete"     : "Supprimer l’entrée",
+        "editor.options.todo_default_action.done"       : "Basculer l’état terminé",
+        "editor.options.todo_action_behavior.menu"      : "Ouvrir le menu (par défaut)",
+        "editor.options.todo_action_behavior.click_menu_long_default": "Clic : menu / appui long : action par défaut",
+        "editor.options.todo_action_behavior.click_default_long_menu": "Clic : action par défaut / appui long : menu",
         "editor.defaults.sub_text"                      : "Astuce : Utilisez les chips pour rajouter rapidement des articles.",
 
         "editor.options.category_merge.local_only"                          : "[1] Uniquement locales (par défaut)",
@@ -969,6 +2526,10 @@ const TRANSLATIONS = {
         "editor.options.category_merge.dynamic_local_global_sorted_total"   : "[3] Dynamiques + Locales + Globales (entièrement triées)",
         "editor.options.category_merge.dynamic_global_local_sorted_total"   : "[3] Dynamiques + Globales + Locales (entièrement triées)",
 
+        "editor.options.category_display.grouped"                           : "Groupées avec en-têtes (par défaut)",
+        "editor.options.category_display.hidden_category_order"             : "Masquer les en-têtes – conserver l’ordre des catégories",
+        "editor.options.category_display.hidden_global_order"               : "Masquer les en-têtes – trier toute la liste",
+
         "editor.options.mode.shopping"                  : "Liste de courses",
         "editor.options.mode.todo"                      : "Liste de choses à faire",
         "editor.options.inputrow.top"                   : "En haut",
@@ -1001,9 +2562,10 @@ const TRANSLATIONS = {
         "editor.labels.show_export_button_pdf"          : "Afficher le bouton Export PDF",
         "editor.labels.show_export_button"              : "Afficher le bouton Export HTML",
         "editor.labels.show_input_mask"                 : "Afficher le masque de saisie",
-        "editor.labels.show_plus_minus"                 : "Afficher les boutons Plus / Moins (mode « Liste de courses » uniquement)",
+        "editor.labels.show_plus_minus"                 : "Afficher les boutons plus/moins",
         "editor.labels.acknowledge_deletion"            : "Demander confirmation avant suppression",
         "editor.labels.show_quantity_one"               : "Afficher la quantité 1",
+        "editor.labels.shopping_offer_only_enabled"     : "Utiliser le marquage « promotion uniquement »",
         "editor.labels.sub_text"                        : "Texte d'indication sous le champ de saisie",
         "editor.labels.chips"                           : "Chips par défaut (séparés par des virgules ou points-virgules)",
         "editor.labels.longlived_token"                 : "Jeton d'accès longue durée (pour l'accès via l'exportation)",
@@ -1026,7 +2588,9 @@ const TRANSLATIONS = {
         "editor.helpers.show_title_info"                : "Affiche la prochaine date d'échéance de tous les articles, toutes catégories confondues sous le titre (en mode liste de choses à faire), si un titre est défini. Les articles expirés ne sont pas affichés ici ; ils sont indiqués par un point d'exclamation à droite du nom.",
         "editor.helpers.show_title_info_icon"           : "Affiche une icône de calendrier avant la date d'échéance pour la mettre en évidence visuellement.",
         "editor.helpers.sort_mode"                      : "Définit comment les articles sont triés : alphabétiquement, par échéance, manuellement par glisser-déposer ou sans tri supplémentaire.",
-        "editor.helpers.todo_filter"                    : "Définit le filtre par défaut des tâches. Ce filtre ne s'applique qu'en mode liste de choses à faire.",
+        "editor.helpers.todo_filter"                    : "Définit les tâches affichées par défaut au chargement.",
+        "editor.helpers.todo_default_action"            : "Sélectionne l’action exécutée directement. Si elle n’est pas disponible pour une entrée, le menu d’actions s’ouvre.",
+        "editor.helpers.todo_action_behavior"           : "Définit si la case ouvre le menu ou exécute l’action par défaut par clic ou appui long d’environ 0,6 seconde.",
         "editor.helpers.show_todo_filter_menu"          : "Affiche un bouton de filtre dans la ligne de boutons en mode liste de choses à faire. Les utilisateurs peuvent changer temporairement le filtre ou le mémoriser par liste dans le navigateur.",
         "editor.helpers.dishes_confirm_add"             : "Si activé, un clic sur un plat ouvre une fenêtre de sélection. Si désactivé, tous les articles du plat sont ajoutés immédiatement.",
         "editor.helpers.debug_mode"                     : "Écrit des messages de diagnostic supplémentaires dans la console du navigateur. Doit normalement rester désactivé.",
@@ -1039,10 +2603,28 @@ const TRANSLATIONS = {
         "editor.helpers.input_row_position"             : "Détermine si le masque de saisie (quantité, article, bouton) est affiché au-dessus ou en dessous des entrées.",
         "editor.helpers.option_row_position"            : "Détermine si la ligne de boutons est affichée en haut ou en bas.",
         "editor.helpers.allow_dynamic_categories"       : "Les catégories dynamiques permettent d'attribuer des articles à des catégories qui ne sont pas prédéfinies, même depuis l'extérieur de la carte (ex. via des automatisations au format : « @Catégorie@ Article »). De plus, de nouvelles catégories peuvent être créées lors de l'ajout d'articles via la carte. Celles-ci restent disponibles jusqu'à ce que le dernier article de la catégorie soit supprimé.",
-        "editor.helpers.show_message_button"            : "Affiche (en mode liste de courses) un bouton de message qui permet d'envoyer la liste par e-mail, Telegram (via « notify »), etc. L'entité notify doit être configurée dans la section Notifications.",
-        "editor.helpers.show_clear_button"              : "Affiche un bouton permettant d'effacer tous les articles terminés.",
-        "editor.helpers.notify_entity"                  : "L'entité notify utilisée pour envoyer la liste lorsque le bouton de message est pressé. Cette entité doit être configurée dans Home Assistant (ex. « notify.mobile_app_xyz » ou « notify.telegram »). Les notifications incluent un formatage HTML pour améliorer la lisibilité. Assurez-vous que l'entité configurée le prend en charge. Les notifications SMTP ne sont pas incluses ici ; utilisez l'option 'notify_entity_smtp' pour le SMTP.",
+        "editor.helpers.show_message_button"            : "Affiche en modes liste de courses et inventaire un bouton pour envoyer la liste avec le service de notification configuré.",
+        "editor.helpers.show_clear_button"              : "Affiche en modes liste de courses et liste de tâches un bouton pour supprimer les entrées terminées. Il est masqué en mode inventaire.",
+        "editor.helpers.notify_entity"                  : "Entité notify Home Assistant pour ce canal, par exemple 'notify.mobile_app_xyz' ou 'notify.telegram'. Utilisez les entités ntfy dans la section ntfy pour gérer correctement Markdown.",
+        "editor.helpers.notify.options"                 : "Envoi via une entité notify Home Assistant. Les messages automatiques et le bouton d'envoi manuel se configurent séparément.",
+        "editor.helpers.ntfy.options"                   : "Envoi via l'intégration ntfy de Home Assistant avec ntfy.publish, en texte brut ou Markdown.",
+        "editor.helpers.email.options"                  : "Envoi d'un e-mail HTML via un service SMTP notify configuré dans Home Assistant.",
+        "editor.helpers.notify_change_mode"             : "Choisissez si une modification envoie uniquement la modification, uniquement la liste complète, les deux ou rien.",
+        "editor.helpers.notify_include_manual"          : "Envoie la liste complète par ce canal lorsque le bouton de message de la carte est pressé.",
+        "editor.helpers.notify_delay"                   : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
+        "editor.helpers.notify_format"                  : "Le texte brut supprime les balises HTML. HTML conserve le formatage pour les services compatibles.",
+        "editor.helpers.ntfy_entity"                    : "Entité notify d'un sujet de l'intégration ntfy, par exemple 'notify.liste_de_courses'.",
+        "editor.helpers.ntfy_change_mode"               : "Choisissez si une modification envoie uniquement la modification, uniquement la liste complète, les deux ou rien.",
+        "editor.helpers.ntfy_include_manual"            : "Envoie la liste complète à ntfy lorsque le bouton de message est pressé.",
+        "editor.helpers.ntfy_on_done"                   : "Envoie aussi une notification ntfy lorsqu'un article est marqué comme terminé.",
+        "editor.helpers.ntfy_delay"                     : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
+        "editor.helpers.ntfy_format"                    : "Markdown formate les catégories et les articles terminés. Le texte brut supprime tout formatage.",
+        "editor.helpers.email_change_mode"              : "Choisissez si une modification envoie par e-mail uniquement la modification, uniquement la liste complète, les deux ou rien.",
+        "editor.helpers.email_include_manual"           : "Envoie la liste complète par e-mail lorsque le bouton de message est pressé.",
+        "editor.helpers.email_on_done"                  : "Envoie aussi un e-mail lorsqu'un article est marqué comme terminé.",
+        "editor.helpers.email_delay"                    : "Attend ce nombre de secondes après une modification. Les modifications suivantes relancent le délai et sont envoyées ensemble. 0 envoie immédiatement.",
         "editor.helpers.show_admin_button"              : "Affiche un bouton d'options d'administration, ouvrant un dialogue pour copier les chips du navigateur, les catégories dynamiques et les articles assignés manuellement.",
+        "editor.helpers.admin_button_admin_only"        : "Masque le bouton d’administration pour les utilisateurs sans droits d’administrateur Home Assistant. Les fonctions configurées de scanner, EAN et de file d’attente continuent de fonctionner ; seul l’accès par ce bouton est limité. Par défaut : désactivé.",
         "editor.helpers.notify_on_change"               : "Envoie une notification via l'entité notify configurée chaque fois qu'un article est ajouté, modifié ou supprimé.",
         "editor.helpers.notify_on_change_all"           : "Envoie systématiquement la liste complète à chaque notification, plutôt que le seul article modifié.",
         "editor.helpers.notify_on_change_time"          : "Définit (en secondes) le temps d'attente avant l'envoi d'une notification (liste complète). Utile lors de modifications multiples en peu de temps pour éviter les spams. Entrez « 0 » (zéro) pour désactiver cette fonction.",
@@ -1050,23 +2632,37 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Envoie également une notification lorsqu'un article est marqué comme terminé. Attention : cela peut générer beaucoup de notifications si de nombreux articles sont cochés lors des courses.",
         "editor.helpers.show_category_chips"            : "Génère automatiquement des chips à partir des articles assignés à une catégorie. Chaque catégorie est affichée comme un chip extensible si elle contient au moins un article.",
         "editor.helpers.show_category_add_all"          : "Affiche un chip « Tous » dans les chips de catégorie ouverts. Il ouvre une fenêtre de sélection permettant d'ajouter tous les articles de la catégorie ou seulement ceux sélectionnés.",
-        "editor.helpers.allow_filter"                   : "Permet de filtrer les articles de la liste via le champ de saisie.",
+        "editor.helpers.allow_filter"                   : "Permet de filtrer les articles de la liste via le champ de saisie. Pour les articles EAN, le nom d’origine du produit et la marque sont également recherchés.",
         "editor.helpers.allow_suggestions"              : "Affiche des suggestions sous le champ de saisie lorsque le texte correspond à un article configuré dans une catégorie.",
-        "editor.helpers.show_done_hidden_items_in_search": "Lorsque le filtrage est actif, les articles terminés et masqués peuvent également être inclus dans les résultats de recherche.",
+        "editor.helpers.show_done_hidden_items_in_search": "Inclut les entrées terminées ou masquées dans la recherche en modes liste de courses et liste de tâches. L’inventaire utilise sa propre fonction.",
         "editor.helpers.capitalize_first_letter"        : "Si activé, la première lettre dans le champ de saisie sera automatiquement mise en majuscule.",
-        "editor.helpers.show_descriptions"              : "Affiche la description d'un article sous son nom si la liste de choses à faire sélectionnée prend en charge les descriptions.",
+        "editor.helpers.show_descriptions"              : "Affiche les descriptions en modes liste de courses et liste de tâches si l’entité les prend en charge. Elles ne sont pas affichées en inventaire.",
         "editor.helpers.title_icon"                     : "Affiche l'icône sélectionnée avant le titre.",
         "editor.helpers.font.sizes"                     : "Définit la taille de la police pour la liste, les catégories et les chips.",
-        "editor.helpers.colors"                         : "Définit les paramètres de couleur pour les chips.",
+        "editor.helpers.colors"                         : "Configure les couleurs des chips et le CSS personnalisé. Le marquage du stock se trouve dans la section Inventaire.",
+        "editor.helpers.chip_colors"                    : "Sélectionne les couleurs des chips locaux, standards, globaux, de plats et mis en évidence. Le sélecteur de couleur est fourni par le navigateur ou le système d'exploitation ; sous macOS, passez aux curseurs RVB si nécessaire.",
+        "editor.helpers.expert_color_settings"          : "Accepte des couleurs CSS directes telles que red, #2196f3, #6464644D, rgb(...), rgba(...) ou var(--primary-color). Seule une valeur réellement saisie remplace le sélecteur correspondant. La couleur par défaut grisée n'est qu'une indication. Videz le champ pour réutiliser le sélecteur ou la valeur par défaut de la carte.",
+        "editor.helpers.chip_color_rgb"                 : "Couleur des chips enregistrés localement dans ce navigateur.",
+        "editor.helpers.chip_color_default_rgb"         : "Couleur des chips standards configurés sur la carte.",
+        "editor.helpers.chip_color_global_rgb"          : "Couleur des chips globaux chargés depuis un fichier texte.",
+        "editor.helpers.chip_color_dish_rgb"            : "Couleur des chips de plats.",
+        "editor.helpers.highlight_color_rgb"            : "Couleur des chips mis en évidence.",
         "editor.helpers.category.options"               : "Vous pouvez configurer ici les catégories utilisées dans la liste de courses ou liste de choses à faire. Vous pouvez définir des catégories locales (dans la carte) ou charger un fichier texte avec des catégories globales. Consultez la documentation pour plus d'informations sur leur structure.",
         "editor.helpers.export.options"                 : "Ici, vous pouvez configurer les options d'exportation.",
-        "editor.helpers.message.options"                : "Configurez ici le fonctionnement du système de messages et l'entité notify utilisée. Ce système ne fonctionne qu'en mode liste de courses.",
+        "editor.helpers.message.options"                : "Configure séparément l'envoi manuel et automatique pour notify standard, ntfy et e-mail. Disponible en modes liste de courses et inventaire.",
         "editor.helpers.dishes.options"                 : "Configurez ici des plats utilisés dans la liste de courses. Cette fonction permet d'ajouter plusieurs articles à la fois.",
         "editor.helpers.chips.options"                  : "Configurez ici les options des chips. Ce sont des boutons de sélection rapide permettant d'ajouter facilement les articles fréquemment utilisés.",
         "editor.helpers.item.options"                   : "Configurez ici les paramètres des articles de la liste.",
         "editor.helpers.general.options"                : "Configurez ici les paramètres généraux de la carte.",
-        "editor.helpers.entity"                         : "Si aucune entité n'est sélectionnée, la liste de courses par défaut de Home Assistant sera utilisée. Celle-ci n'ayant pas de fonction d'échéance, elle ne doit être utilisée qu'en mode liste de courses et non liste de choses à faire.",
-        "editor.helpers.mode"                           : "Définit le fonctionnement de la liste. Le mode « liste de courses » offre des fonctions étendues à la liste de courses originale (sans dates d'échéance). Le mode « liste de choses à faire » permet en plus de définir et gérer des échéances, avec une utilisation légèrement différente. Note : l'entité par défaut « Liste de courses » de Home Assistant ne gère pas les échéances.",
+        "editor.helpers.shopping_mode.options"          : "Paramètres réservés au mode liste de courses.",
+        "editor.helpers.todo_mode.options"              : "Paramètres des tâches, échéances et alertes du mode liste de tâches.",
+        "editor.helpers.inventory_mode.options"         : "Paramètres des stocks, modes de saisie, variantes et stocks minimums du mode inventaire.",
+        "editor.helpers.inventory_mark_above_minimum"  : "Marquage des articles dont le stock dépasse le minimum effectif.",
+        "editor.helpers.inventory_mark_at_minimum"     : "Marquage des articles dont le stock correspond au minimum effectif.",
+        "editor.helpers.inventory_mark_below_minimum"  : "Marquage des articles dont le stock est inférieur au minimum effectif.",
+        "editor.helpers.inventory_mark_zero"           : "Marquage des articles dont le stock est nul. Ce réglage est prioritaire.",
+        "editor.helpers.entity"                         : "Sans entité sélectionnée, la liste de courses originale de Home Assistant est utilisée et convient uniquement à ce mode. Les entités To-do créées par l’utilisateur fournissent les champs requis pour les modes tâches et inventaire.",
+        "editor.helpers.mode"                           : "Définit l'utilisation de la carte. Le mode « liste de courses » gère les articles et leurs quantités sans échéances. Le mode « liste de choses à faire » gère les tâches et leurs échéances. Le mode « inventaire » suit les stocks dans une liste de tâches : les articles restent présents lorsque le stock atteint 0 et peuvent être ajoutés ou retirés. La liste de courses originale de Home Assistant ne prend pas en charge les échéances.",
         "editor.helpers.highlight_words"                : "Liste des mots à mettre en évidence dans les chips (arrière-plan). Entrez sous forme de liste séparée par des virgules ou points-virgules, ex. « Beurre,Bananes,Farine ».",
         "editor.helpers.chips_with_cat_color"           : "Si un chip est assigné comme « article » à une catégorie et que cette dernière a une couleur définie, le chip s'affichera de cette couleur. L'ordre de priorité est : Mise en évidence > Catégorie > Global > Standard > Navigateur.",
         "editor.helpers.allow_filter_chips"             : "Permet de filtrer les chips via le champ de saisie.",
@@ -1085,41 +2681,50 @@ const TRANSLATIONS = {
         "editor.helpers.chips_width"                    : "Largeur du conteneur de chips en pixels. S'applique uniquement lorsque le « (Auto) Panel Mode » est sélectionné.",
         "editor.helpers.chips_position"                 : "Contrôle l'endroit où les chips s'affichent (auto : en bas sur mobile, à droite sur bureau/tablette, ou positions fixes).",
         "editor.helpers.quantity"                       : "Détermine si la quantité est affichée au début (« 10x Beurre ») ou à la fin (« Beurre (10) »). N'affecte que les nouvelles entrées.",
-        "editor.helpers.acknowledged"                   : "Contrôle la façon dont les articles terminés (cochés) s'affichent : visibles, masqués ou déplacés à la fin.",
+        "editor.helpers.acknowledged"                   : "Contrôle l’affichage des entrées terminées en modes liste de courses et liste de tâches. L’inventaire utilise sa propre fonction de masquage.",
         "editor.helpers.chip_click"                     : "Détermine si les chips ajoutent des articles sur un simple ou double-clic. Des clics répétés augmentent la quantité de 1.",
-        "editor.helpers.show_quantity_box"              : "Affiche ou masque le petit champ de saisie de quantité.",
+        "editor.helpers.show_quantity_box"              : "Affiche le champ de quantité en modes liste de courses et inventaire. Il n’est pas disponible en mode liste de tâches.",
         "editor.helpers.show_submit_button"             : "Affiche le bouton Ajouter. S'il est masqué, appuyez sur Entrée pour ajouter un article.",
         "editor.helpers.show_qrscan_button"             : "Affiche le bouton de scan QR. Permet de scanner un ou plusieurs articles via un QR code. Nécessite un accès HTTPS à Home Assistant.",
-        "editor.helpers.show_export_button_pdf"         : "Affiche le bouton d'exportation PDF. Permet de télécharger la liste actuelle sous forme de fichier PDF pour un usage hors ligne.",
-        "editor.helpers.show_export_button"             : "Affiche le bouton d'exportation HTML. Permet de télécharger la liste actuelle sous forme de fichier HTML pour un usage hors ligne.",
+        "editor.helpers.show_export_button_pdf"         : "Affiche le bouton d’exportation PDF en modes liste de courses et inventaire.",
+        "editor.helpers.show_export_button"             : "Affiche le bouton d’exportation HTML en modes liste de courses et inventaire.",
         "editor.helpers.show_input_mask"                : "Affiche le masque de saisie complet (quantité + texte + bouton d'ajout). Utile pour restreindre la saisie aux chips prédéfinis.",
-        "editor.helpers.show_plus_minus"                : "Affiche les boutons Plus / Moins pour ajuster la quantité. Indisponible en mode liste de choses à faire.",
-        "editor.helpers.acknowledge_deletion"           : "Active une boîte de confirmation lors de la suppression d'articles afin d'éviter les suppressions accidentelles.",
-        "editor.helpers.show_quantity_one"              : "Affiche également la quantité « 1 ». Si désactivé, la quantité 1 est omise pour les nouveaux articles.",
+        "editor.helpers.show_plus_minus"                : "Affiche les boutons de quantité en modes liste de courses et inventaire. Ils ne sont pas disponibles en mode liste de tâches.",
+        "editor.helpers.acknowledge_deletion"           : "Affiche une confirmation avant la suppression en modes liste de courses et inventaire. Le mode liste de tâches utilise toujours sa fenêtre d’actions.",
+        "editor.helpers.show_quantity_one"              : "Affiche la quantité 1 en mode liste de courses. Sinon, seul le nom est affiché lorsque la quantité vaut 1.",
+        "editor.helpers.shopping_offer_only_enabled"    : "Affiche l’option « Acheter uniquement en promotion » dans l’éditeur d’article de la liste de courses et un badge de promotion dans la liste. Les marquages existants restent enregistrés lorsque l’option est désactivée. Par défaut : activé.",
         "editor.helpers.sub_text"                       : "Texte affiché sous le champ de saisie pour des astuces ou explications. Le HTML est autorisé. Utilisez un espace simple pour masquer le champ.",
         "editor.helpers.chips"                          : "Définit les chips par défaut, ex. « Lait,Œufs,Pain ».",
         "editor.helpers.chip_file"                      : "Exemple : /local/chips.txt si le fichier se trouve dans le dossier www. Un chip par ligne est requis.",
         "editor.helpers.ean_file"                       : "Exemple : /local/ean.txt si le fichier se trouve dans le dossier www. Chaque ligne doit contenir une entrée au format « EAN Nom ».",
         "editor.helpers.category_file"                  : "Exemple : /local/categories.txt si le fichier se trouve dans le dossier www. Pour le format du fichier, référez-vous à la documentation.",
         "editor.helpers.category_merge_mode"            : "Choisissez comment les catégories locales, globales et dynamiques doivent être fusionnées. « local_only » n'affiche que les locales, « global_only » que les globales, et « dynamic_only » que les dynamiques. Les autres options combinent deux ou trois types de différentes manières.",
+        "editor.helpers.category_display"               : "Définit si les en-têtes de catégorie sont affichés. Les catégories restent actives pour l’attribution, le tri, les suggestions et les chips lorsque les en-têtes sont masqués. Sans en-têtes, leurs couleurs ne sont plus visibles dans la liste.",
         "editor.helpers.bubble_card"                    : "Activez cette option si vous utilisez la carte dans la Bubble PopUp Card. Dans la Bubble Card, « background_update: true » et « close_by_clicking_outside: false » doivent être activés pour que la carte fonctionne correctement.",
         "editor.helpers.show_cat_exclamation_mark"      : "Affiche un point d'exclamation dans la catégorie en mode liste de choses à faire s'il y a des articles à échéance dans celle-ci.",
         "editor.helpers.show_title_exclamation_mark"    : "Affiche un point d'exclamation dans le titre en mode liste de choses à faire s'il y a des articles à échéance dans l'une des catégories.",
         "editor.helpers.show_cat_next_due"              : "Si cette option est activée, la prochaine date d'échéance sera affichée sous le nom de la catégorie en mode liste de choses à faire.",
         "editor.helpers.cat_double_sized_icon"          : "Si la prochaine date d'échéance est affichée, cette option permet d'agrandir l'icône pour qu'elle s'intègre mieux visuellement.",
-        "editor.helpers.show_cat_count"                 : "Si cette option est activée, le nombre d'articles de chaque catégorie sera affiché à côté de son nom.",
-        "editor.helpers.hide_cat_count_all_done"        : "Masque le compteur d'articles pour les catégories où tous les articles sont terminés.",
-        "editor.helpers.show_cat_popup"                 : "Si cette option est activée, une pop-up apparaîtra lors de l'ajout d'un nouvel article, vous permettant de sélectionner une catégorie pour cet article.",
+        "editor.helpers.show_cat_count"                 : "Affiche le compteur à côté de chaque catégorie. En inventaire, chaque variante ou groupe visible compte une fois. En liste de tâches, le nombre avant « / » compte les entrées non échues ou déjà terminées.",
+        "editor.helpers.hide_cat_count_all_done"        : "Masque le compteur lorsque toutes les entrées sont terminées en modes liste de courses et liste de tâches. Ce réglage est ignoré en inventaire.",
+        "editor.helpers.show_cat_popup"                 : "Ouvre le choix de catégorie lors de l’ajout. Si cette option est désactivée, les articles sans catégorie connue sont placés dans Général. Les affectations existantes sont conservées.",
         "editor.helpers.longlived_token"                : "Un jeton d'accès de longue durée pour l'authentification avec Home Assistant. Gardez ce jeton confidentiel car il accorde un accès important à votre système.",
         "editor.helpers.external_url"                   : "L'URL externe de votre installation Home Assistant. Requise si vous utilisez l'exportation pour synchroniser les articles plus tard avec Home Assistant.",
         "editor.helpers.categories"                     : "Les catégories vous permettent de regrouper automatiquement les articles. Chaque catégorie commence par - name: <NomCatégorie> et contient une liste de mots-clés sous « items ».",
         "editor.helpers.dishes"                         : "Avec les plats, vous pouvez ajouter plusieurs articles en une seule fois. Chaque plat commence par - name: <Plat> et contient une liste d'articles sous « items ». Chaque plat peut en option avoir une couleur de fond (bgcolor)."
-    }    
+    }
 };
 
 let debugMode = false;
 
 const TODO_FEATURE_SET_DESCRIPTION = 64;
+const EAN_SCAN_DEVICE_STORAGE_KEY = "ha-shopping-list-improved-process-ean-scans";
+const EAN_SCAN_QUEUE_STORAGE_KEY = "ha-shopping-list-improved-ean-scan-queue";
+const EAN_DATABASE_SCHEMA = 1;
+const EAN_TRANSFER_SCHEMA = 1;
+const INVENTORY_VARIANT_SCHEMA = 1;
+const INVENTORY_VARIANT_TYPE = "isl_inventory_variant";
+const EAN_TRANSFER_PROCESSED_STORAGE_KEY = "ha-shopping-list-improved-ean-transfer-processed";
 
 // Detect HA-Language via home-assistant element
 function detectLanguage() {
@@ -1129,10 +2734,12 @@ function detectLanguage() {
     return lang;
 }
 
-// translate-Function 
+// translate-Function
 function translate(key) {
     const lang = detectLanguage();
     if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) return TRANSLATIONS[lang][key];
+    const baseLang = lang.split('-')[0];
+    if (TRANSLATIONS[baseLang] && TRANSLATIONS[baseLang][key]) return TRANSLATIONS[baseLang][key];
     if (TRANSLATIONS["en"][key]) return TRANSLATIONS["en"][key]; // Fallback Englisch
     return key;
 }
@@ -1146,6 +2753,11 @@ function getSmallerFontSize(size, smallerby = 0.8, defaultSize = 14) {
 
 // determine the default Shopping List entity
 function getDefaultShoppingListEntity(hass) {
+    if (!hass?.states || typeof hass.states !== "object") {
+        if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] No Home Assistant states available for default entity detection.");
+        return null;
+    }
+
     // Filter all todo-entities
     const todoEntities = Object.values(hass.states).filter(s => s.entity_id.startsWith("todo."));
 
@@ -1191,10 +2803,44 @@ class HaShoppingListImproved extends HTMLElement {
             this._positionInputRow();
             this._positionOptionRow();
         };
+        this._onEanTransferVisibilityChange = () => {
+            if (document.visibilityState !== "hidden" && this._isEanTransferReceiving()) {
+                this._scheduleEanTransferStartupChecks();
+            }
+        };
 
         this._messageCache = "";
+        this._notificationTimers = new Map();
+        this._pendingNotificationChanges = new Map();
+
+        this._eanDatabase = new Map();
+        this._eanDatabaseByName = new Map();
+        this._eanDatabaseInvalidCount = 0;
+        this._eanDatabaseInvalidItems = [];
+        this._eanDatabaseError = null;
+        this._eanDatabaseWarningShown = false;
+        this._eanScanQueue = [];
+        this._eanQueueProcessing = false;
+        this._eanQueuePaused = false;
+        this._activeEanScanQueueItem = null;
+        this._eanQueuePopupStatusEl = null;
+        this._eanScanMode = "shopping";
+        this._eanLongPressTriggered = false;
+        this._eanLongPressTimer = null;
+        this._pendingSuggestionCategory = null;
+        this._pendingSuggestionEan = null;
+        this._eanTransferProcessing = false;
+        this._eanTransferRerunRequested = false;
+        this._eanTransferRerunTimer = null;
+        this._eanTransferRetryIds = new Map();
+        this._eanTransferSourceAppliedIds = new Map();
+        this._eanTransferStartupTimers = [];
+        this._inventoryModeResetTimer = null;
+        this._inventoryModeResetDeadline = null;
 
         this._refreshDebounceTimer = null;
+        this._refreshRequestId = 0;
+        this._refreshFailureCount = 0;
         this._dragSortActive = false;
         this._pendingRefreshAfterDrag = false;
 
@@ -1228,9 +2874,7 @@ class HaShoppingListImproved extends HTMLElement {
             }, delay);
         };
 
-        this.sendMessageTimer = null;
         this._updateTimesTimeout = null;
-        this._sendMessageDelay = 30; // 30 Seconds
 
         console.log(
             "%cImproved Shopping List Card %cv" + version,
@@ -1246,11 +2890,26 @@ class HaShoppingListImproved extends HTMLElement {
         if(!this._firstStartDone){
             this._firstStartDone = true;
 		    this._refresh();
+            this._eanDatabaseLoadPromise = this._loadEanDatabase();
+            this._eanDatabaseLoadPromise.finally(() => {
+                this._eanDatabaseLoadPromise = null;
+                this._loadEanScanQueue();
+                if (this._showEanDatabaseBadge) this._renderList();
+                if (this._isEanTransferReceiving()) {
+                    this._scheduleEanTransferStartupChecks();
+                }
+            });
         }
     }
-    
+
 	setConfig(config){
 	    this._config = config || {};
+
+        // A configuration change must not leave delayed messages from the
+        // previous channel setup behind.
+        for (const timer of this._notificationTimers.values()) clearTimeout(timer);
+        this._notificationTimers.clear();
+        this._pendingNotificationChanges.clear();
 
         // Entity
         const entity = config.entity || getDefaultShoppingListEntity(document.querySelector("home-assistant")?.hass);
@@ -1272,6 +2931,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showInputMask         = (config.show_input_mask === false) ? false : true;
         this._subText               = (config.sub_text === undefined) ? translate("editor.defaults.sub_text") : config.sub_text;
         this._showQuantityOne       = (config.show_quantity_one === true) ? true : false;
+        this._shoppingOfferOnlyEnabled = config.shopping_offer_only_enabled !== false;
         this._allowLocalChips       = (config.local_chips === false) ? false : true;
         this._chipPosition          = ["bottom", "right", "full", "auto", "auto_panel", "none"].includes(config.chips_position) ? config.chips_position : "auto";
 		this._chipWidth             = (["full", "auto_panel"].includes(this._chipPosition) && typeof config.chips_width === "number") ? `${config.chips_width}px` : "300px";
@@ -1279,15 +2939,27 @@ class HaShoppingListImproved extends HTMLElement {
 		this._catFontSize           = config.cat_font_size   || 16; // Standard: 16px
         this._chipFontSize          = config.chip_font_size  || 12; // Standard: 12px
         this._titleFontSize         = config.title_font_size || 16; // Standard: 16px
-        this._chipColor             = config.chip_color      || "rgba(100,100,100,0.3)";
-        this._chipColorDefault      = config.chip_color_default || "rgba(100,100,255,0.3)";
-		this._chipGlobalColor		= config.chip_color_global || "rgba(100,100,100,0.3)";
-		this._chipColorDish 		= config.chip_color_dish || "#745E3D";
+        const configuredCssColor = (value) =>
+            typeof value === "string" && value.trim() ? value.trim() : "";
+        const configuredRgbColor = (value) => {
+            if (!Array.isArray(value) || value.length !== 3) return "";
+            const channels = value.map(Number);
+            if (channels.some(channel => !Number.isFinite(channel) || channel < 0 || channel > 255)) return "";
+            return `rgb(${channels.map(channel => Math.round(channel)).join(", ")})`;
+        };
+        const configuredColor = (cssValue, rgbValue, fallback) =>
+            configuredCssColor(cssValue) || configuredRgbColor(rgbValue) || fallback;
+
+        this._chipColor             = configuredColor(config.chip_color, config.chip_color_rgb, "rgba(100,100,100,0.3)");
+        this._chipColorDefault      = configuredColor(config.chip_color_default, config.chip_color_default_rgb, "rgba(100,100,255,0.3)");
+		this._chipGlobalColor		= configuredColor(config.chip_color_global, config.chip_color_global_rgb, "rgba(100,100,100,0.3)");
+		this._chipColorDish 		= configuredColor(config.chip_color_dish, config.chip_color_dish_rgb, "#745E3D");
         this._chipMergeMode         = ["combined", "standard_first", "browser_first", "global_combined", "global_only"].includes(config.chip_merge) ? config.chip_merge : "combined";
         this._chipsWithCatColor     = (config.chips_with_cat_color === false) ? false : true;
-        this._highlightColor        = config.highlight_color || "#D9534F";
+        this._highlightColor        = configuredColor(config.highlight_color, config.highlight_color_rgb, "#D9534F");
         this._showCatPopUp          = (config.show_cat_popup === false) ? false : true;
         this._showCatCount          = (config.show_cat_count === false) ? false : true;
+        this._hideCatCountAllDone   = (config.hide_cat_count_all_done === true);
         this._showCatNextDue        = (config.show_cat_next_due === false) ? false : true;
         this._doubleSizedIcon       = (config.cat_double_sized_icon === false) ? false : true;
         this._showCatExclamation    = (config.show_cat_exclamation_mark === false) ? false : true;
@@ -1295,6 +2967,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showExportButton      = (config.show_export_button === true) ? true : false;
         this._showExportButtonPdf   = (config.show_export_button_pdf === true) ? true : false;
         this._showAdminButton       = (config.show_admin_button === false) ? false : true;
+        this._adminButtonAdminOnly  = config.admin_button_admin_only === true;
         this._showMessageButton     = (config.show_message_button === true) ? true : false;
         this._showClearButton       = (config.show_clear_button === false) ? false : true;
         this._longLivedToken        = config.longlived_token || "";
@@ -1305,12 +2978,43 @@ class HaShoppingListImproved extends HTMLElement {
 		this._categoryFile          = config.category_file || "";
         this._allowDynamicCats      = (config.allow_dynamic_categories === true) ? true : false;
         this._listReloadTime        = Math.min(Math.max(config.list_reload_time || 10, 1), 3600) * 1000; // in seconds, min 1s, max 1h
+        const legacyNotificationMode = config.notify_on_change === true
+            ? (config.notify_on_change_all === true ? "change_and_full" : "change")
+            : "off";
+        const notificationModes = ["off", "change", "full", "change_and_full"];
+        const notificationMode = (value, fallback) => notificationModes.includes(value) ? value : fallback;
+        const notificationDelay = (value, fallback = 0) => {
+            const number = Number(value ?? fallback);
+            return Number.isFinite(number) ? Math.min(Math.max(number, 0), 300) : fallback;
+        };
+
+        // The legacy notification settings remain runtime fallbacks so existing cards
+        // keep their exact behavior until a channel-specific option is saved.
         this._notifyEntity          = config.notify_entity || "";
-        this._notifyOnChangeEna     = (config.notify_on_change === true) ? true : false;
-        this._notifyOnChangeAll     = (config.notify_on_change_all === true) ? true : false;
-        this._notifyOnDone          = (config.notify_on_done === true) ? true : false;
-        this._sendMessageDelay      = config.notify_on_change_time || 0;
-        this._notifyEntitySMTP      = config.notify_entity_smtp || "";
+        this._notifyChangeMode      = notificationMode(config.notify_change_mode, legacyNotificationMode);
+        this._notifyIncludeManual   = config.notify_include_manual !== false;
+        this._notifyOnDone          = config.notify_on_done === true;
+        this._notifyDelay           = notificationDelay(config.notify_delay, config.notify_on_change_time || 0);
+        this._notifyFormat          = ["plain", "html"].includes(config.notify_format)
+            ? config.notify_format
+            : "html";
+
+        this._ntfyEntity            = config.ntfy_entity || "";
+        this._ntfyChangeMode        = notificationMode(config.ntfy_change_mode, "off");
+        this._ntfyIncludeManual     = config.ntfy_include_manual !== false;
+        this._ntfyOnDone            = config.ntfy_on_done === true;
+        this._ntfyDelay             = notificationDelay(config.ntfy_delay, 0);
+        this._ntfyFormat            = ["plain", "markdown"].includes(config.ntfy_format)
+            ? config.ntfy_format
+            : "markdown";
+
+        this._emailNotifyService    = config.notify_entity_smtp || "";
+        this._emailChangeMode       = notificationMode(config.email_change_mode, legacyNotificationMode);
+        this._emailIncludeManual    = config.email_include_manual !== false;
+        this._emailOnDone           = config.email_on_done !== undefined
+            ? config.email_on_done === true
+            : config.notify_on_done === true;
+        this._emailDelay            = notificationDelay(config.email_delay, config.notify_on_change_time || 0);
         this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
         this._showCategoryAddAll    = (config.show_category_add_all === true) ? true : false;
         this._dishesConfirmAdd      = (config.dishes_confirm_add === false) ? false : true;
@@ -1321,7 +3025,7 @@ class HaShoppingListImproved extends HTMLElement {
         const validSortModes        = ["alpha", "manual", "none", "due"];
         const configuredSortMode    = validSortModes.includes(config.sort_mode) ? config.sort_mode : null;
         this._sortMode              = configuredSortMode || (config.sort_items === false ? "none" : "alpha"); // sort_mode is the new option.
-        this._sortItems             = this._sortMode === "alpha";                                             // sort_items is kept only for backwards compatibility with older configurations and will be removed later.
+        // sort_items remains supported as an input fallback for older configurations.
         const validTodoFilters      = ["all", "today", "overdue", "overdue_include_today", "upcoming", "dated", "undated"];
         this._validTodoFilters      = validTodoFilters;
         this._todoFilterDefault     = validTodoFilters.includes(config.todo_filter) ? config.todo_filter : "all";
@@ -1333,7 +3037,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._showDescriptions      = (config.show_descriptions === true) ? true : false;
         this._ownCss                = (config.own_css || "").toString();
         debugMode                   = config.debug_mode === true;
-        
+
         const allowedModes = [
             // 1 Cat
             "local_only", "standard_only", // old
@@ -1390,12 +3094,93 @@ class HaShoppingListImproved extends HTMLElement {
         ];
 
         this._categoryMergeMode     = allowedModes.includes(config.category_merge_mode) ? config.category_merge_mode : "local_only";
+        this._categoryDisplay       = ["grouped", "hidden_category_order", "hidden_global_order"].includes(config.category_display)
+            ? config.category_display
+            : "grouped";
         this._showQrScanButton      = (config.show_qrscan_button === true) ? true : false;
-		this._mode                  = (config.mode === "todo") ? "todo" : "shopping";
+		this._mode                  = ["shopping", "todo", "inventory"].includes(config.mode) ? config.mode : "shopping";
+        this._inventoryDefaultAction = ["none", "add", "remove", "register", "correct"].includes(config.inventory_default_action)
+            ? config.inventory_default_action : "none";
+        this._inventoryModeTimeout = Math.min(3600, Math.max(0, Math.floor(Number(config.inventory_mode_timeout) || 0)));
+        this._inventoryMarkAboveMinimum = ["green", "none"].includes(config.inventory_mark_above_minimum)
+            ? config.inventory_mark_above_minimum : "none";
+        this._inventoryMarkAtMinimum = ["orange", "red", "green", "none"].includes(config.inventory_mark_at_minimum)
+            ? config.inventory_mark_at_minimum : "none";
+        this._inventoryMarkBelowMinimum = ["orange", "red", "none"].includes(config.inventory_mark_below_minimum)
+            ? config.inventory_mark_below_minimum : "orange";
+        this._inventoryMarkZero = ["red", "none"].includes(config.inventory_mark_zero)
+            ? config.inventory_mark_zero
+            : (config.inventory_highlight_zero === false ? "none" : "red");
+        this._inventoryGroupVariants = config.inventory_group_variants !== false;
+        this._inventoryShowProductDetails = config.inventory_show_product_details !== false;
+        this._inventoryShowCategoryMinimumStatus = config.inventory_show_category_minimum_status !== false;
+        this._inventoryShowHidden = false;
+        this._inventoryFilter = "all";
+        this._inventoryFeedbackTimer = null;
+        this._lastInventoryBooking = null;
+        this._inventoryUndoBusy = false;
+
+        this._eanScannerMac         = String(config.ean_scanner_mac || "").trim();
+        this._eanDatabaseEntity     = String(config.ean_database_entity || "").trim();
+        this._showEanBrand          = (config.show_ean_brand === true);
+        this._showEanQuantity       = (config.show_ean_quantity === true);
+        this._eanCreateChip         = (config.ean_create_chip === true);
+        this._listScriptEnabled     = (config.list_script_enabled === true);
+        this._listScriptEntity      = String(config.list_script_entity || "").trim();
+        this._eanScriptEnabled      = (config.ean_script_enabled === true);
+        this._eanScriptEntity       = String(config.ean_script_entity || "").trim();
+        this._eanRemoveModeEnabled  = (config.ean_remove_mode === true);
+        this._eanDatabaseSuggestions = (config.ean_database_suggestions === true);
+        this._showEanDatabaseBadge = (config.show_ean_database_badge === true);
+        this._eanTransferMode = ["send", "receive", "send_receive"].includes(config.ean_transfer_mode)
+            ? config.ean_transfer_mode
+            : "disabled";
+        this._eanTransferEntity = String(config.ean_transfer_entity || "").trim();
+        this._eanTransferTargetEntity = String(config.ean_transfer_target_entity || "").trim();
+        this._eanTransferActions = ["add", "remove", "both"].includes(config.ean_transfer_actions)
+            ? config.ean_transfer_actions
+            : "both";
+        this._eanTransferRemoveBehavior = ["one_to_one", "minimum", "off"].includes(config.ean_transfer_remove_behavior)
+            ? config.ean_transfer_remove_behavior
+            : "one_to_one";
+        this._eanTransferDefaultMinimumStock = (
+            config.ean_transfer_default_minimum_stock !== undefined &&
+            config.ean_transfer_default_minimum_stock !== null &&
+            config.ean_transfer_default_minimum_stock !== "" &&
+            Number.isInteger(Number(config.ean_transfer_default_minimum_stock)) &&
+            Number(config.ean_transfer_default_minimum_stock) >= 0
+        ) ? Number(config.ean_transfer_default_minimum_stock) : null;
+        this._eanTransferNonEan = ["one_to_one", "minimum", "ask", "off"].includes(config.ean_transfer_non_ean)
+            ? config.ean_transfer_non_ean
+            : "off";
+        this._eanTransferGroupedAsName = config.ean_transfer_grouped_as_name === true;
+
+        if (
+            !["shopping", "inventory"].includes(this._mode) ||
+            (this._eanScanMode === "database" && !this._eanDatabaseEntity) ||
+            (this._eanScanMode === "shopping_remove" && !this._eanRemoveModeEnabled)
+        ) {
+            this._eanScanMode = "shopping";
+        }
+        if (this._mode === "inventory") {
+            this._eanScanMode = `inventory_${this._inventoryDefaultAction}`;
+            if (this._eanScanMode === "inventory_register" && !this._eanDatabaseEntity) {
+                this._eanScanMode = "inventory_none";
+            }
+            this._showClearButton = false;
+        }
+        this._clearInventoryModeResetTimer();
+
         this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
         this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
         this._todoYellowH           = config.todo_yellow_h || 10;   // Hours   10 Minutes
         this._todoYellowS           = config.todo_yellow_s || 120;  // Date only 2 hours
+        this._todoDefaultAction = ["remove", "next", "now", "edit", "delete", "done"].includes(config.todo_default_action)
+            ? config.todo_default_action
+            : "done";
+        this._todoActionBehavior = ["menu", "click_menu_long_default", "click_default_long_menu"].includes(config.todo_action_behavior)
+            ? config.todo_action_behavior
+            : "menu";
 
         // Hide Quantity Selection, bottom buttons in To-Do Mode
         if (this._mode === "todo") {
@@ -1421,14 +3206,14 @@ class HaShoppingListImproved extends HTMLElement {
         } else {
             this._defaultChips = [];
         }
-        
+
         // parse categories
 		if (config.categories) {
 			this._categories = this._parseCategories(config.categories);
 		} else {
 			this._categories = [];
 		}
-		
+
 		// parse dishes _parseDishes(dishesArray)
 		if (config.dishes) {
 			this._dishes = this._parseDishes(config.dishes);
@@ -1439,7 +3224,7 @@ class HaShoppingListImproved extends HTMLElement {
         // load Global Chips
         this._globalChips = [];
         this._loadGlobalChipsFromFile();
-		
+
 		// load Global Categories
 		this._globalCategories = [];
         this._loadGlobalCategoriesFromFile();
@@ -1449,16 +3234,25 @@ class HaShoppingListImproved extends HTMLElement {
         this._loadLocalEANFromFile();
     }
 
-    // Start / Restart Send Message Timer
-    _resetSendMessageTimer() {
-        if (this.sendMessageTimer) {
-            clearTimeout(this.sendMessageTimer);
+    // Restart one channel's debounce timer without delaying the other channels.
+    _scheduleNotification(channel, info = "") {
+        if (info && info.trim()) {
+            const pending = this._pendingNotificationChanges.get(channel.id) || [];
+            pending.push(info.trim());
+            this._pendingNotificationChanges.set(channel.id, pending);
         }
 
-        this.sendMessageTimer = setTimeout(() => {
-            this.sendMessageTimer = null;
-            this._sendMessage();
-        }, this._sendMessageDelay * 1000);
+        const activeTimer = this._notificationTimers.get(channel.id);
+        if (activeTimer) clearTimeout(activeTimer);
+
+        const timer = setTimeout(async () => {
+            this._notificationTimers.delete(channel.id);
+            const pending = this._pendingNotificationChanges.get(channel.id) || [];
+            this._pendingNotificationChanges.delete(channel.id);
+            await this._sendNotificationChannel(channel, pending.join("\n"), channel.mode);
+        }, channel.delay * 1000);
+
+        this._notificationTimers.set(channel.id, timer);
     }
 
     // Global Chips
@@ -1485,7 +3279,7 @@ class HaShoppingListImproved extends HTMLElement {
             console.warn("[ha-shopping-list-improved] Unable to load global chips:", err);
         }
     }
-	
+
     // Local EAN
     async _loadLocalEANFromFile() {
         if (!this._eanFile || !this._eanFile.trim()) {
@@ -1622,7 +3416,8 @@ class HaShoppingListImproved extends HTMLElement {
                                 mode: "dropdown",
                                 options: [
                                     { value: "shopping", label: translate("editor.options.mode.shopping") },
-                                    { value: "todo",     label: translate("editor.options.mode.todo") }
+                                    { value: "todo", label: translate("editor.options.mode.todo") },
+                                    { value: "inventory", label: translate("editor.options.mode.inventory") }
                                 ]
                             }
                         },
@@ -1630,49 +3425,193 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "title", selector: { text: {} }, default: ""},
                     { name: "title_icon", selector: { icon: {} }, default: ""},
-                    { name: "show_title_info", selector: { boolean: {} }, default: true },
-                    { name: "show_title_info_icon", selector: { boolean: {} }, default: true },
-                    { name: "show_title_exclamation_mark", selector: { boolean: {} }, default: true },
+                    { name: "sub_text", selector: { text: {} }, default: " "},
                     {
                         name: "input_row_position",
-                        selector: {
-                            select: {
-                                mode: "dropdown",
-                                options: [
-                                    { value: "top", label: translate("editor.options.inputrow.top") },
-                                    { value: "bottom", label: translate("editor.options.inputrow.bottom") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "top", label: translate("editor.options.inputrow.top") },
+                            { value: "bottom", label: translate("editor.options.inputrow.bottom") }
+                        ] } },
                         default: "top"
                     },
                     {
                         name: "option_row_position",
-                        selector: {
-                            select: {
-                                mode: "dropdown",
-                                options: [
-                                    { value: "top", label: translate("editor.options.inputrow.top") },
-                                    { value: "bottom", label: translate("editor.options.inputrow.bottom") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "top", label: translate("editor.options.inputrow.top") },
+                            { value: "bottom", label: translate("editor.options.inputrow.bottom") }
+                        ] } },
                         default: "bottom"
                     },
-                    { name: "show_quantity_box", selector: { boolean: {} }, default: true },
                     { name: "show_input_mask", selector: { boolean: {} }, default: true },
                     { name: "show_submit_button", selector: { boolean: {} }, default: true },
                     { name: "show_qrscan_button", selector: { boolean: {} }, default: false },
                     { name: "show_admin_button", selector: { boolean: {} }, default: true },
-                    { name: "show_message_button", selector: { boolean: {} }, default: false },
-                    { name: "show_clear_button", selector: { boolean: {} }, default: true },
-                    { name: "sub_text", selector: { text: {} }, default: " "},
+                    { name: "admin_button_admin_only", selector: { boolean: {} }, default: false },
                     { name: "bubble_card", selector: { boolean: {} }, default: false },
                     { name: "debug_mode", selector: { boolean: {} }, default: false }
                 ]
             },
 
-            // Item Options
+            // Shopping List Mode
+            {
+                type: 'expandable',
+                label: 'shopping_mode.options',
+                icon: 'mdi:cart-outline',
+                schema: [
+                    { name: "show_quantity_one", selector: { boolean: {} }, default: false },
+                    { name: "shopping_offer_only_enabled", selector: { boolean: {} }, default: true },
+                    { name: "ean_remove_mode", selector: { boolean: {} }, default: false },
+                    {
+                        type: 'expandable',
+                        label: 'dishes.options',
+                        icon: 'mdi:food-fork-drink',
+                        schema: [
+                            { name: "dishes_confirm_add", selector: { boolean: {} }, default: true },
+                            {
+                                name: "dishes",
+                                required: false,
+                                selector: {
+                                    object: {
+                                        properties: {
+                                            "category1": { type: "string", name: "Only a placeholder" },
+                                            "items1": { type: "text", name: "to let HA fall back to yaml mode" }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            // To-do Mode
+            {
+                type: 'expandable',
+                label: 'todo_mode.options',
+                icon: 'mdi:calendar-check-outline',
+                schema: [
+                    { name: "show_title_info", selector: { boolean: {} }, default: true },
+                    { name: "show_title_info_icon", selector: { boolean: {} }, default: true },
+                    { name: "show_title_exclamation_mark", selector: { boolean: {} }, default: true },
+                    {
+                        name: "todo_filter",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "all", label: translate("editor.options.todo_filter.all") },
+                            { value: "today", label: translate("editor.options.todo_filter.today") },
+                            { value: "overdue", label: translate("editor.options.todo_filter.overdue") },
+                            { value: "overdue_include_today", label: translate("editor.options.todo_filter.overdue_include_today") },
+                            { value: "upcoming", label: translate("editor.options.todo_filter.upcoming") },
+                            { value: "dated", label: translate("editor.options.todo_filter.dated") },
+                            { value: "undated", label: translate("editor.options.todo_filter.undated") }
+                        ] } },
+                        default: "all"
+                    },
+                    { name: "show_todo_filter_menu", selector: { boolean: {} }, default: false },
+                    { name: "show_cat_next_due", selector: { boolean: {} }, default: true },
+                    { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
+                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
+                    {
+                        name: "todo_default_action",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "remove", label: translate("editor.options.todo_default_action.remove") },
+                            { value: "next", label: translate("editor.options.todo_default_action.next") },
+                            { value: "now", label: translate("editor.options.todo_default_action.now") },
+                            { value: "edit", label: translate("editor.options.todo_default_action.edit") },
+                            { value: "delete", label: translate("editor.options.todo_default_action.delete") },
+                            { value: "done", label: translate("editor.options.todo_default_action.done") }
+                        ] } },
+                        default: "done"
+                    },
+                    {
+                        name: "todo_action_behavior",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "menu", label: translate("editor.options.todo_action_behavior.menu") },
+                            { value: "click_menu_long_default", label: translate("editor.options.todo_action_behavior.click_menu_long_default") },
+                            { value: "click_default_long_menu", label: translate("editor.options.todo_action_behavior.click_default_long_menu") }
+                        ] } },
+                        default: "menu"
+                    },
+                    {
+                        type: 'expandable',
+                        label: 'todo_warning_thresholds',
+                        icon: 'mdi:alarm-light',
+                        schema: [
+                            { name: "todo_yellow_m", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 1440 },
+                            { name: "todo_yellow_d", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 120 },
+                            { name: "todo_yellow_h", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 10 },
+                            { name: "todo_yellow_s", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 120 }
+                        ]
+                    }
+                ]
+            },
+
+            // Inventory Mode
+            {
+                type: 'expandable',
+                label: 'inventory_mode.options',
+                icon: 'mdi:warehouse',
+                schema: [
+                    {
+                        name: "inventory_default_action",
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "none", label: translate("editor.options.inventory_default_action.none") },
+                            { value: "add", label: translate("editor.options.inventory_default_action.add") },
+                            { value: "remove", label: translate("editor.options.inventory_default_action.remove") },
+                            { value: "register", label: translate("editor.options.inventory_default_action.register") },
+                            { value: "correct", label: translate("editor.options.inventory_default_action.correct") }
+                        ] } },
+                        default: "none"
+                    },
+                    { name: "inventory_mode_timeout", selector: { number: { min: 0, max: 3600, step: 5, mode: "box" } }, default: 0 },
+                    { name: "inventory_group_variants", selector: { boolean: {} }, default: true },
+                    { name: "inventory_show_product_details", selector: { boolean: {} }, default: true },
+                    { name: "inventory_show_category_minimum_status", selector: { boolean: {} }, default: true },
+                    {
+                        type: 'expandable',
+                        label: 'inventory_stock_marking',
+                        icon: 'mdi:palette-swatch-outline',
+                        schema: [
+                            {
+                                name: "inventory_mark_above_minimum",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
+                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
+                                ] } },
+                                default: "none"
+                            },
+                            {
+                                name: "inventory_mark_at_minimum",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") },
+                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "green", label: translate("editor.options.inventory_mark.green") }
+                                ] } },
+                                default: "none"
+                            },
+                            {
+                                name: "inventory_mark_below_minimum",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "orange", label: translate("editor.options.inventory_mark.orange") },
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
+                                ] } },
+                                default: "orange"
+                            },
+                            {
+                                name: "inventory_mark_zero",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "red", label: translate("editor.options.inventory_mark.red") },
+                                    { value: "none", label: translate("editor.options.inventory_mark.none") }
+                                ] } },
+                                default: "red"
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            // Shared Item Options
             {
                 type: 'expandable',
                 label: 'item.options',
@@ -1680,100 +3619,183 @@ class HaShoppingListImproved extends HTMLElement {
                 schema: [
                     {
                         name: "sort_mode",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "alpha",  label: translate("editor.options.sort_mode.alpha") },
-                                    { value: "manual", label: translate("editor.options.sort_mode.manual") },
-                                    { value: "due",    label: translate("editor.options.sort_mode.due") },
-                                    { value: "none",   label: translate("editor.options.sort_mode.none") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "alpha", label: translate("editor.options.sort_mode.alpha") },
+                            { value: "manual", label: translate("editor.options.sort_mode.manual") },
+                            { value: "due", label: translate("editor.options.sort_mode.due") },
+                            { value: "none", label: translate("editor.options.sort_mode.none") }
+                        ] } },
                         default: "alpha"
                     },
                     {
-                        name: "todo_filter",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "all",                   label: translate("editor.options.todo_filter.all") },
-                                    { value: "today",                 label: translate("editor.options.todo_filter.today") },
-                                    { value: "overdue",               label: translate("editor.options.todo_filter.overdue") },
-                                    { value: "overdue_include_today", label: translate("editor.options.todo_filter.overdue_include_today") },
-                                    { value: "upcoming",              label: translate("editor.options.todo_filter.upcoming") },
-                                    { value: "dated",                 label: translate("editor.options.todo_filter.dated") },
-                                    { value: "undated",               label: translate("editor.options.todo_filter.undated") }
-                                ]
-                            }
-                        },
-                        default: "all"
-                    },
-                    { name: "show_todo_filter_menu", selector: { boolean: {} }, default: false },
-                    {
                         name: "quantity",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "beginning", label: translate("editor.options.quantity.beginning") },
-                                    { value: "end", label: translate("editor.options.quantity.end") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "beginning", label: translate("editor.options.quantity.beginning") },
+                            { value: "end", label: translate("editor.options.quantity.end") }
+                        ] } },
                         default: "end"
                     },
+                    { name: "show_quantity_box", selector: { boolean: {} }, default: true },
+                    { name: "show_plus_minus", selector: { boolean: {} }, default: true },
                     {
                         name: "acknowledged",
-                        selector: {
-                            select: {
-                                options: [
-                                    { value: "show", label: translate("editor.options.acknowledged.show") },
-                                    { value: "hide", label: translate("editor.options.acknowledged.hide") },
-                                    { value: "end", label: translate("editor.options.acknowledged.end") }
-                                ]
-                            }
-                        },
+                        selector: { select: { mode: "dropdown", options: [
+                            { value: "show", label: translate("editor.options.acknowledged.show") },
+                            { value: "hide", label: translate("editor.options.acknowledged.hide") },
+                            { value: "end", label: translate("editor.options.acknowledged.end") }
+                        ] } },
                         default: "show"
                     },
                     { name: "acknowledge_deletion", selector: { boolean: {} }, default: true },
-                    { name: "show_plus_minus", selector: { boolean: {} }, default: true },
-                    { name: "show_quantity_one", selector: { boolean: {} }, default: false },
+                    { name: "show_clear_button", selector: { boolean: {} }, default: true },
                     { name: "allow_filter", selector: { boolean: {} }, default: false },
                     { name: "allow_suggestions", selector: { boolean: {} }, default: false },
                     { name: "show_done_hidden_items_in_search", selector: { boolean: {} }, default: true },
                     { name: "capitalize_first_letter", selector: { boolean: {} }, default: false },
-                    { name: "show_descriptions", selector: { boolean: {} }, default: false },
+                    { name: "show_descriptions", selector: { boolean: {} }, default: false }
+                ]
+            },
+
+            // EAN Scanner
+            {
+                type: 'expandable',
+                label: 'ean_scanner.options',
+                icon: 'mdi:barcode-scan',
+                schema: [
+                    { name: "show_ean_brand", selector: { boolean: {} }, default: false },
+                    { name: "show_ean_quantity", selector: { boolean: {} }, default: false },
+                    { name: "ean_create_chip", selector: { boolean: {} }, default: false },
+                    { name: "ean_database_suggestions", selector: { boolean: {} }, default: false },
+                    { name: "show_ean_database_badge", selector: { boolean: {} }, default: false },
+                    { name: "ean_script_enabled", selector: { boolean: {} }, default: false },
+                    {
+                        name: "ean_script_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["script"]
+                            }
+                        }
+                    },
+                    {
+                        name: "ean_scanner_mac",
+                        selector: { text: {} },
+                        default: ""
+                    },
+                    {
+                        name: "ean_database_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["todo"]
+                            }
+                        }
+                    },
                     {
                         name: "ean_file",
                         selector: { text: {} },
                         default: ""
                     },
+                ]
+            },
+
+            // Sync / Transfer
+            {
+                type: 'expandable',
+                label: 'sync_transfer.options',
+                icon: 'mdi:swap-horizontal',
+                schema: [
+                    { name: "list_script_enabled", selector: { boolean: {} }, default: false },
                     {
-                        type: 'expandable',
-                        label: 'todo_warning_thresholds',
-                        icon: 'mdi:alarm-light',
-                        schema: [
-                            {
-                                name: "todo_yellow_m",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 1440
-                            },
-                            {
-                                name: "todo_yellow_d",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 120
-                            },
-                            {
-                                name: "todo_yellow_h",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 10
-                            },
-                            {
-                                name: "todo_yellow_s",
-                                selector: { number: { min: 1, max: 300000, step: 1 } },
-                                default: 120
+                        name: "list_script_entity",
+                        required: false,
+                        selector: { entity: { domain: ["script"] } }
+                    },
+                    {
+                        name: "ean_transfer_mode",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "disabled", label: translate("editor.options.ean_transfer_mode.disabled") },
+                                    { value: "send", label: translate("editor.options.ean_transfer_mode.send") },
+                                    { value: "receive", label: translate("editor.options.ean_transfer_mode.receive") },
+                                    { value: "send_receive", label: translate("editor.options.ean_transfer_mode.send_receive") }
+                                ]
                             }
-                        ]
+                        },
+                        default: "disabled"
+                    },
+                    {
+                        name: "ean_transfer_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["todo"]
+                            }
+                        }
+                    },
+                    {
+                        name: "ean_transfer_target_entity",
+                        required: false,
+                        selector: {
+                            entity: {
+                                domain: ["todo"]
+                            }
+                        }
+                    },
+                    {
+                        name: "ean_transfer_actions",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "add", label: translate("editor.options.ean_transfer_actions.add") },
+                                    { value: "remove", label: translate("editor.options.ean_transfer_actions.remove") },
+                                    { value: "both", label: translate("editor.options.ean_transfer_actions.both") }
+                                ]
+                            }
+                        },
+                        default: "both"
+                    },
+                    {
+                        name: "ean_transfer_remove_behavior",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "one_to_one", label: translate("editor.options.ean_transfer_remove_behavior.one_to_one") },
+                                    { value: "minimum", label: translate("editor.options.ean_transfer_remove_behavior.minimum") },
+                                    { value: "off", label: translate("editor.options.ean_transfer_remove_behavior.off") }
+                                ]
+                            }
+                        },
+                        default: "one_to_one"
+                    },
+                    {
+                        name: "ean_transfer_default_minimum_stock",
+                        required: false,
+                        selector: { number: { min: 0, step: 1, mode: "box" } }
+                    },
+                    {
+                        name: "ean_transfer_non_ean",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "one_to_one", label: translate("editor.options.ean_transfer_non_ean.one_to_one") },
+                                    { value: "minimum", label: translate("editor.options.ean_transfer_non_ean.minimum") },
+                                    { value: "ask", label: translate("editor.options.ean_transfer_non_ean.ask") },
+                                    { value: "off", label: translate("editor.options.ean_transfer_non_ean.off") }
+                                ]
+                            }
+                        },
+                        default: "off"
+                    },
+                    {
+                        name: "ean_transfer_grouped_as_name",
+                        selector: { boolean: {} },
+                        default: false
                     }
                 ]
             },
@@ -1822,6 +3844,7 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "chip_merge",
                         selector: {
                             select: {
+                                mode: "dropdown",
                                 options: [
                                     { value: "combined", label: translate("editor.options.chip_merge.combined") },
                                     { value: "standard_first", label: translate("editor.options.chip_merge.standard_first") },
@@ -1864,10 +3887,22 @@ class HaShoppingListImproved extends HTMLElement {
                     { name: "show_cat_popup", selector: { boolean: {} }, default: true },
                     { name: "show_cat_count", selector: { boolean: {} }, default: true },
                     { name: "hide_cat_count_all_done", selector: { boolean: {} }, default: false },
-                    { name: "show_cat_next_due", selector: { boolean: {} }, default: true },
-                    { name: "cat_double_sized_icon", selector: { boolean: {} }, default: true },
-                    { name: "show_cat_exclamation_mark", selector: { boolean: {} }, default: true },
-                    { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },    
+                    { name: "allow_dynamic_categories", selector: { boolean: {} }, default: false },
+                    {
+                        name: "category_display",
+                        label: translate("editor.labels.category_display"),
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [
+                                    { value: "grouped", label: translate("editor.options.category_display.grouped") },
+                                    { value: "hidden_category_order", label: translate("editor.options.category_display.hidden_category_order") },
+                                    { value: "hidden_global_order", label: translate("editor.options.category_display.hidden_global_order") }
+                                ]
+                            }
+                        },
+                        default: "grouped"
+                    },
                     {
                         name: "category_merge_mode",
                         label: translate("editor.labels.category_merge_mode"),
@@ -1939,28 +3974,6 @@ class HaShoppingListImproved extends HTMLElement {
                 ]
             },
 
-            // Dishes Options
-            {
-                type: 'expandable',
-                label: 'dishes.options',
-                icon: 'mdi:food-fork-drink',
-                schema: [
-                    { name: "dishes_confirm_add", selector: { boolean: {} }, default: true },
-                    {
-                        name: "dishes",
-                        required: false,
-                        selector: {
-                            object: {
-                                properties: {
-                                    "category1": { type: "string", name: "Only a placeholder" },
-                                    "items1": { type: "text", name: "to let HA fall back to yaml mode" }
-                                }
-                            }
-                        }
-                    }
-                ]
-            },
-
             // Font Sizes
             {
                 type: 'expandable',
@@ -1997,29 +4010,68 @@ class HaShoppingListImproved extends HTMLElement {
                 icon: 'mdi:format-color-fill',
                 schema: [
                     {
-                        name: "chip_color",
-                        selector: { text: {} },
-                        default: "rgba(100,100,100,0.3)"
-                    },
-                    {
-                        name: "chip_color_default",
-                        selector: { text: {} },
-                        default: "rgba(100,100,255,0.3)"  
-                    },
-                    {
-                        name: "chip_color_global",
-                        selector: { text: {} },
-                        default: "rgba(100,100,100,0.3)"
-                    },                    
-                    {
-                        name: "highlight_color",
-                        selector: { text: {} },
-                        default: "red"
-                    },
-                    {
-                        name: "chip_color_dish",
-                        selector: { text: {} },
-                        default: "rgba(100,100,100,0.3)"
+                        type: 'expandable',
+                        label: 'chip_colors',
+                        icon: 'mdi:palette-outline',
+                        schema: [
+                            {
+                                name: "chip_color_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                name: "chip_color_default_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                name: "chip_color_global_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                name: "chip_color_dish_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                name: "highlight_color_rgb",
+                                required: false,
+                                selector: { color_rgb: {} }
+                            },
+                            {
+                                type: 'expandable',
+                                label: 'expert_color_settings',
+                                icon: 'mdi:code-tags',
+                                schema: [
+                                    {
+                                        name: "chip_color",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,100,0.3)"
+                                    },
+                                    {
+                                        name: "chip_color_default",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,255,0.3)"
+                                    },
+                                    {
+                                        name: "chip_color_global",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,100,0.3)"
+                                    },
+                                    {
+                                        name: "chip_color_dish",
+                                        selector: { text: {} },
+                                        default: "rgba(100,100,100,0.3)"
+                                    },
+                                    {
+                                        name: "highlight_color",
+                                        selector: { text: {} },
+                                        default: "red"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
                         name: "own_css",
@@ -2041,7 +4093,7 @@ class HaShoppingListImproved extends HTMLElement {
                 type: 'expandable',
                 label: 'export.options',
                 icon: 'mdi:file-export',
-                schema: [           
+                schema: [
                     { name: "show_export_button_pdf", selector: { boolean: {} }, default: false },
                     { name: "show_export_button", selector: { boolean: {} }, default: false },
                     {
@@ -2062,29 +4114,115 @@ class HaShoppingListImproved extends HTMLElement {
                 type: 'expandable',
                 label: 'message.options',
                 icon: 'mdi:message-badge',
-                schema: [       
+                schema: [
+                    { name: "show_message_button", selector: { boolean: {} }, default: false },
                     {
-                        name: "notify_entity",
-                        required: false,
-                        selector: {
-                            entity: {
-                                domain: ["notify"] // only entities with domain "notify"
+                        type: 'expandable',
+                        label: 'notify.options',
+                        icon: 'mdi:message-text-outline',
+                        schema: [
+                            {
+                                name: "notify_entity",
+                                required: false,
+                                selector: { entity: { domain: ["notify"] } }
+                            },
+                            {
+                                name: "notify_change_mode",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "off", label: translate("editor.options.notification_mode.off") },
+                                    { value: "change", label: translate("editor.options.notification_mode.change") },
+                                    { value: "full", label: translate("editor.options.notification_mode.full") },
+                                    { value: "change_and_full", label: translate("editor.options.notification_mode.change_and_full") }
+                                ] } },
+                                default: "off"
+                            },
+                            { name: "notify_on_done", selector: { boolean: {} }, default: false },
+                            { name: "notify_include_manual", selector: { boolean: {} }, default: true },
+                            {
+                                name: "notify_format",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "plain", label: translate("editor.options.notification_format.plain") },
+                                    { value: "html", label: translate("editor.options.notification_format.html") }
+                                ] } },
+                                default: "plain"
+                            },
+                            {
+                                name: "notify_delay",
+                                selector: { number: { min: 0, max: 300, step: 1, mode: "box" } },
+                                default: 0
                             }
-                        }
+                        ]
                     },
                     {
-                        name: "notify_entity_smtp",
-                        required: false,
-                        selector: { text: {} },
+                        type: 'expandable',
+                        label: 'ntfy.options',
+                        icon: 'mdi:message-badge-outline',
+                        schema: [
+                            {
+                                name: "ntfy_entity",
+                                required: false,
+                                selector: {
+                                    entity: {
+                                        filter: [{ integration: "ntfy", domain: "notify" }]
+                                    }
+                                }
+                            },
+                            {
+                                name: "ntfy_change_mode",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "off", label: translate("editor.options.notification_mode.off") },
+                                    { value: "change", label: translate("editor.options.notification_mode.change") },
+                                    { value: "full", label: translate("editor.options.notification_mode.full") },
+                                    { value: "change_and_full", label: translate("editor.options.notification_mode.change_and_full") }
+                                ] } },
+                                default: "off"
+                            },
+                            { name: "ntfy_on_done", selector: { boolean: {} }, default: false },
+                            { name: "ntfy_include_manual", selector: { boolean: {} }, default: true },
+                            {
+                                name: "ntfy_format",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "plain", label: translate("editor.options.notification_format.plain") },
+                                    { value: "markdown", label: translate("editor.options.notification_format.markdown") }
+                                ] } },
+                                default: "markdown"
+                            },
+                            {
+                                name: "ntfy_delay",
+                                selector: { number: { min: 0, max: 300, step: 1, mode: "box" } },
+                                default: 0
+                            }
+                        ]
                     },
-                    { name: "notify_on_change", selector: { boolean: {} }, default: false },
-                    { name: "notify_on_change_all", selector: { boolean: {} }, default: false },
-                    { name: "notify_on_done", selector: { boolean: {} }, default: false },
                     {
-                        name: "notify_on_change_time",
-                        selector: { number: { min: 0, max: 300, step: 1 } },
-                        default: 0
-                    },
+                        type: 'expandable',
+                        label: 'email.options',
+                        icon: 'mdi:email-outline',
+                        schema: [
+                            {
+                                name: "notify_entity_smtp",
+                                required: false,
+                                selector: { text: {} }
+                            },
+                            {
+                                name: "email_change_mode",
+                                selector: { select: { mode: "dropdown", options: [
+                                    { value: "off", label: translate("editor.options.notification_mode.off") },
+                                    { value: "change", label: translate("editor.options.notification_mode.change") },
+                                    { value: "full", label: translate("editor.options.notification_mode.full") },
+                                    { value: "change_and_full", label: translate("editor.options.notification_mode.change_and_full") }
+                                ] } },
+                                default: "off"
+                            },
+                            { name: "email_on_done", selector: { boolean: {} }, default: false },
+                            { name: "email_include_manual", selector: { boolean: {} }, default: true },
+                            {
+                                name: "email_delay",
+                                selector: { number: { min: 0, max: 300, step: 1, mode: "box" } },
+                                default: 0
+                            }
+                        ]
+                    }
                 ]
             }
             ],
@@ -2105,8 +4243,10 @@ class HaShoppingListImproved extends HTMLElement {
             },
 
             assertConfig: (config) => {
-                if (config.notify_on_change_time !== undefined && isNaN(Number(config.notify_on_change_time))) {
-                    throw new Error('Configuration error: "notify_on_change_time" must be a valid number between 0 and 300.');
+                for (const key of ["notify_on_change_time", "notify_delay", "ntfy_delay", "email_delay"]) {
+                    if (config[key] !== undefined && isNaN(Number(config[key]))) {
+                        throw new Error(`Configuration error: "${key}" must be a valid number between 0 and 300.`);
+                    }
                 }
             }
         };
@@ -2116,14 +4256,14 @@ class HaShoppingListImproved extends HTMLElement {
         return 3;
     }
 
-    _supportsTodoDescription() {
-        const stateObj = this._hass?.states?.[this._entity];
+    _supportsTodoDescription(entityId = this._entity) {
+        const stateObj = this._hass?.states?.[entityId];
         const features = Number(stateObj?.attributes?.supported_features || 0);
         const supported = (features & TODO_FEATURE_SET_DESCRIPTION) !== 0;
 
         if (debugMode) {
             console.debug("[ha-shopping-list-improved][DEBUG] Description support:", {
-                entity: this._entity,
+                entity: entityId,
                 supported_features: features,
                 supports_description: supported,
                 friendly_name: stateObj?.attributes?.friendly_name
@@ -2134,6 +4274,12 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     connectedCallback() {
+        if (this._mode === "inventory") {
+            this._clearInventoryModeResetTimer();
+            this._eanScanMode = this._getInventoryDefaultScanMode();
+            this._clearLastInventoryBooking();
+        }
+
         // Shadow DOM - create only once
         if (!this._shadow) {
             this._shadow = this.attachShadow({ mode: 'open' });
@@ -2150,15 +4296,38 @@ class HaShoppingListImproved extends HTMLElement {
         this._renderSkeleton();
 
         // Subscribe HA WebSocket events, store unsubscribe functions
-        this._unsubEvents = [];
+        const subscriptions = [];
+        this._unsubEvents = subscriptions;
+
+        const registerUnsubscribe = (unsub) => {
+            if (typeof unsub !== "function") return;
+
+            if (this._unsubEvents === subscriptions) {
+                subscriptions.push(unsub);
+                return;
+            }
+
+            // The card was disconnected while the asynchronous subscription
+            // was still being established. Release it immediately so a later
+            // reconnect cannot leave two active listeners behind.
+            try {
+                unsub();
+            } catch (error) {
+                console.warn("[ha-shopping-list-improved] Late WS unsubscribe failed:", error);
+            }
+        };
 
         if (this._hass?.connection?.subscribeEvents) {
+            const canSubscribeProtectedEvents = this._hass?.user?.is_admin === true;
+
             const subscribe = async (eventType, handler) => {
                 try {
-                    const unsub = await this._hass.connection.subscribeEvents(handler, eventType);
-                    if (typeof unsub === "function") {
-                        this._unsubEvents.push(unsub);
-                    }
+                    const guardedHandler = (event) => {
+                        if (this._unsubEvents !== subscriptions) return;
+                        handler(event);
+                    };
+                    const unsub = await this._hass.connection.subscribeEvents(guardedHandler, eventType);
+                    registerUnsubscribe(unsub);
 
                     if(debugMode) console.debug("[ha-shopping-list-improved] WS subscribed:", eventType, this._entity);
                 } catch (e) {
@@ -2176,49 +4345,118 @@ class HaShoppingListImproved extends HTMLElement {
                 if (eventEntity === this._entity) {
                     this._scheduleRefresh(150, "state_changed", eventEntity);
                 }
-            });
 
-            subscribe("call_service", (event) => {
-                const data = event?.data || {};
-                const serviceData = data.service_data || {};
-                const eventEntity = serviceData.entity_id || data.target?.entity_id || null;
-
-                const watchedServices = ["add_item", "update_item", "remove_item", "remove_completed_items"];
-                if (data.domain !== "todo" || !watchedServices.includes(data.service)) {
-                    return;
-                }
-
-                const matchesEntity = Array.isArray(eventEntity)
-                    ? eventEntity.includes(this._entity)
-                    : eventEntity === this._entity;
-
-                if(debugMode) {
-                    console.info("[ha-shopping-list-improved] call_service event", {
-                        domain: data.domain,
-                        service: data.service,
-                        cardEntity: this._entity,
-                        eventEntity,
-                        matchesEntity,
-                        raw: data
+                if (!canSubscribeProtectedEvents) {
+                    this._handleEanScanStateChanged(event).catch((error) => {
+                        console.error("[ha-shopping-list-improved] Unable to process EAN scanner state:", error);
                     });
                 }
-
-                if (matchesEntity) {
-                    this._scheduleRefresh(300, "call_service", eventEntity);
-                }
             });
+
+            if (canSubscribeProtectedEvents) {
+                subscribe("call_service", (event) => {
+                    const data = event?.data || {};
+                    const serviceData = data.service_data || {};
+                    const eventEntity = serviceData.entity_id || data.target?.entity_id || null;
+
+                    const watchedServices = ["add_item", "update_item", "remove_item", "remove_completed_items"];
+                    if (data.domain !== "todo" || !watchedServices.includes(data.service)) {
+                        return;
+                    }
+
+                    const matchesEntity = Array.isArray(eventEntity)
+                        ? eventEntity.includes(this._entity)
+                        : eventEntity === this._entity;
+
+                    if(debugMode) {
+                        console.info("[ha-shopping-list-improved] call_service event", {
+                            domain: data.domain,
+                            service: data.service,
+                            cardEntity: this._entity,
+                            eventEntity,
+                            matchesEntity,
+                            raw: data
+                        });
+                    }
+
+                    if (matchesEntity) {
+                        this._scheduleRefresh(300, "call_service", eventEntity);
+                    }
+                });
+
+                subscribe("eyoyo_barcode_scanned", (event) => {
+                    this._handleEanScanEvent(event).catch((error) => {
+                        console.error("[ha-shopping-list-improved] Unable to process EAN scan event:", error);
+                    });
+                });
+            }
+        }
+
+        if (
+            this._eanDatabaseEntity &&
+            this._eanDatabaseEntity !== this._entity &&
+            this._supportsTodoDescription(this._eanDatabaseEntity) &&
+            this._hass?.connection?.subscribeMessage
+        ) {
+            this._hass.connection.subscribeMessage(
+                (message) => {
+                    if (this._unsubEvents !== subscriptions) return;
+                    if (Array.isArray(message?.items)) {
+                        this._eanDatabaseError = null;
+                        this._setEanDatabaseItems(message.items);
+                    }
+                },
+                {
+                    type: "todo/item/subscribe",
+                    entity_id: this._eanDatabaseEntity
+                }
+            ).then((unsub) => {
+                registerUnsubscribe(unsub);
+            }).catch((error) => {
+                console.warn("[ha-shopping-list-improved] EAN database subscription failed:", error);
+            });
+        }
+
+        if (
+            this._isEanTransferReceiving() &&
+            this._isEanTransferEntityUsable() &&
+            this._hass?.connection?.subscribeMessage
+        ) {
+            this._hass.connection.subscribeMessage(
+                (message) => {
+                    if (this._unsubEvents !== subscriptions) return;
+                    if (Array.isArray(message?.items)) {
+                        this._processEanTransferItems(message.items).catch((error) => {
+                            console.error("[ha-shopping-list-improved] ISL transfer processing failed:", error);
+                        });
+                    }
+                },
+                {
+                    type: "todo/item/subscribe",
+                    entity_id: this._eanTransferEntity
+                }
+            ).then((unsub) => {
+                registerUnsubscribe(unsub);
+            }).catch((error) => {
+                console.warn("[ha-shopping-list-improved] ISL transfer subscription failed:", error);
+            });
+            document.addEventListener('visibilitychange', this._onEanTransferVisibilityChange);
         }
 
         // Timer for ToDo Time till next due updates
         if(this._mode === "todo"){
             this._timeInterval = setInterval(() => {
                 this._updateTimes();
-            }, this._listReloadTime); // every xx seconds, standard --> 10 seconds            
+            }, this._listReloadTime); // every xx seconds, standard --> 10 seconds
         } else {
             // Check after 5 seconds once if not in ToDo mode
             this._updateTimesTimeout = setTimeout(() => {
                 this._updateTimes();
             }, 5000);
+        }
+
+        if (this._isEanTransferReceiving()) {
+            this._scheduleEanTransferStartupChecks();
         }
     }
 
@@ -2227,8 +4465,10 @@ class HaShoppingListImproved extends HTMLElement {
             console.error("Error during scanner cleanup:", err);
         });
 
-        if (Array.isArray(this._unsubEvents)) {
-            for (const unsub of this._unsubEvents) {
+        const subscriptions = this._unsubEvents;
+        this._unsubEvents = null;
+        if (Array.isArray(subscriptions)) {
+            for (const unsub of subscriptions) {
                 if (typeof unsub === "function") {
                     try {
                         unsub();
@@ -2237,12 +4477,6 @@ class HaShoppingListImproved extends HTMLElement {
                     }
                 }
             }
-        } else if (typeof this._unsubEvents === "function") {
-            try {
-                this._unsubEvents();
-            } catch(e) {
-                console.warn("[ha-shopping-list-improved] WS unsubscribe failed:", e);
-            }
         }
 
         if (this._timeInterval) {
@@ -2250,10 +4484,9 @@ class HaShoppingListImproved extends HTMLElement {
             this._timeInterval = null;
         }
 
-        if (this.sendMessageTimer) {
-            clearTimeout(this.sendMessageTimer);
-            this.sendMessageTimer = null;
-        }
+        for (const timer of this._notificationTimers.values()) clearTimeout(timer);
+        this._notificationTimers.clear();
+        this._pendingNotificationChanges.clear();
 
         if (this._updateTimesTimeout) {
             clearTimeout(this._updateTimesTimeout);
@@ -2264,21 +4497,2997 @@ class HaShoppingListImproved extends HTMLElement {
             clearTimeout(this._refreshDebounceTimer);
             this._refreshDebounceTimer = null;
         }
+        // Ignore responses from refresh requests that started before the card
+        // left the dashboard view.
+        this._refreshRequestId += 1;
+
+        if (this._eanLongPressTimer) {
+            clearTimeout(this._eanLongPressTimer);
+            this._eanLongPressTimer = null;
+        }
+
+        if (this._inventoryFeedbackTimer) {
+            clearTimeout(this._inventoryFeedbackTimer);
+            this._inventoryFeedbackTimer = null;
+        }
+
+        this._clearInventoryModeResetTimer();
+
+        if (Array.isArray(this._eanTransferStartupTimers)) {
+            this._eanTransferStartupTimers.forEach(timer => clearTimeout(timer));
+            this._eanTransferStartupTimers = [];
+        }
+        if (this._eanTransferRerunTimer) {
+            clearTimeout(this._eanTransferRerunTimer);
+            this._eanTransferRerunTimer = null;
+        }
 
         window.removeEventListener('resize', this._onBubbleResize);
         window.removeEventListener('resize', this._onPositionResize);
+        document.removeEventListener('visibilitychange', this._onEanTransferVisibilityChange);
 
-        this._unsubEvents = null;
+        this._eanTransferRerunRequested = false;
         this._firstStartDone = false;
+    }
+
+    _getEanScanCardId() {
+        return `${this._mode || "shopping"}::${this._entity || ""}`;
+    }
+
+    _loadEanScanDeviceSettings() {
+        try {
+            const stored = localStorage.getItem(EAN_SCAN_DEVICE_STORAGE_KEY);
+            if (!stored) return {};
+
+            const settings = JSON.parse(stored);
+            if (settings && typeof settings === "object" && !Array.isArray(settings)) {
+                return settings;
+            }
+
+            localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, "{}");
+            return {};
+        } catch {
+            try {
+                localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, "{}");
+            } catch (_storageError) {
+                // The caller will keep EAN processing disabled if local storage is unavailable.
+            }
+            return {};
+        }
+    }
+
+    _isEanScanEnabledOnThisDevice() {
+        const settings = this._loadEanScanDeviceSettings();
+        return settings[this._getEanScanCardId()] === true;
+    }
+
+    _setEanScanEnabledOnThisDevice(enabled) {
+        const settings = this._loadEanScanDeviceSettings();
+        const cardId = this._getEanScanCardId();
+
+        if (enabled) {
+            settings[cardId] = true;
+        } else {
+            delete settings[cardId];
+        }
+
+        localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, JSON.stringify(settings));
+    }
+
+    _getEanScanQueueStorageKey() {
+        return `${EAN_SCAN_QUEUE_STORAGE_KEY}::${this._getEanScanCardId()}`;
+    }
+
+    _normalizeEanScanMode(mode) {
+        return ["shopping", "database", "shopping_remove", "inventory_none", "inventory_add", "inventory_remove", "inventory_register", "inventory_correct"].includes(mode)
+            ? mode
+            : "shopping";
+    }
+
+    _getInventoryDefaultScanMode() {
+        const configured = `inventory_${this._inventoryDefaultAction || "none"}`;
+        if (configured === "inventory_register" && !this._eanDatabaseEntity) return "inventory_none";
+        return this._normalizeEanScanMode(configured);
+    }
+
+    _clearInventoryModeResetTimer() {
+        if (this._inventoryModeResetTimer) {
+            clearInterval(this._inventoryModeResetTimer);
+            this._inventoryModeResetTimer = null;
+        }
+        this._inventoryModeResetDeadline = null;
+        this._updateInventoryModeButtonLabels();
+    }
+
+    _updateInventoryModeButtonLabels() {
+        if (!this._shadow || this._mode !== "inventory") return;
+        const currentAction = String(this._eanScanMode || "").replace(/^inventory_/, "");
+        const remaining = this._inventoryModeResetDeadline
+            ? Math.max(0, Math.ceil((this._inventoryModeResetDeadline - Date.now()) / 1000))
+            : null;
+        for (const action of ["add", "remove", "register", "correct"]) {
+            const label = this._shadow.querySelector(`[data-inventory-mode-label="${action}"]`);
+            if (!label) continue;
+            const base = translate(`ui.inventory.${action}`);
+            label.textContent = action === currentAction && remaining !== null
+                ? `${base} (${remaining})`
+                : base;
+        }
+    }
+
+    _restartInventoryModeResetTimer() {
+        if (this._inventoryModeResetTimer) {
+            clearInterval(this._inventoryModeResetTimer);
+            this._inventoryModeResetTimer = null;
+        }
+        this._inventoryModeResetDeadline = null;
+
+        const defaultMode = this._getInventoryDefaultScanMode();
+        if (
+            this._mode !== "inventory" ||
+            this._inventoryModeTimeout <= 0 ||
+            !String(this._eanScanMode || "").startsWith("inventory_") ||
+            this._eanScanMode === defaultMode
+        ) {
+            this._updateInventoryModeButtonLabels();
+            return;
+        }
+
+        this._inventoryModeResetDeadline = Date.now() + (this._inventoryModeTimeout * 1000);
+        const update = () => {
+            if (!this._inventoryModeResetDeadline) return;
+            if (Date.now() >= this._inventoryModeResetDeadline) {
+                if (this._inventoryModeResetTimer) clearInterval(this._inventoryModeResetTimer);
+                this._inventoryModeResetTimer = null;
+                this._inventoryModeResetDeadline = null;
+                this._setEanScanMode(defaultMode);
+                return;
+            }
+            this._updateInventoryModeButtonLabels();
+        };
+        update();
+        this._inventoryModeResetTimer = setInterval(update, 1000);
+    }
+
+    _getCurrentEanScanMode() {
+        return this._normalizeEanScanMode(
+            this._activeEanScanQueueItem?.scan_mode || this._eanScanMode
+        );
+    }
+
+    _setEanScanMode(mode) {
+        const previousMode = this._eanScanMode;
+        let nextMode = this._normalizeEanScanMode(mode);
+        if (nextMode === "database" && !this._eanDatabaseEntity) nextMode = "shopping";
+        const inventoryDatabaseMissing = nextMode === "inventory_register" && !this._eanDatabaseEntity;
+        if (inventoryDatabaseMissing) nextMode = "inventory_none";
+        if (nextMode === "shopping_remove" && !this._eanRemoveModeEnabled) nextMode = "shopping";
+        if (this._mode === "inventory" && nextMode === "shopping") nextMode = "inventory_none";
+        this._eanScanMode = nextMode;
+        if (previousMode && previousMode !== nextMode) this._clearLastInventoryBooking();
+        this._updateEanScanModeUi();
+        this._restartInventoryModeResetTimer();
+        if (inventoryDatabaseMissing) {
+            this._showInventoryNotice(translate("ui.inventory.register_database_required"));
+        }
+    }
+
+    _updateEanScanModeUi() {
+        const addBtn = this._shadow?.getElementById('addBtn');
+        const notice = this._shadow?.getElementById('eanDatabaseFillNotice');
+        const inventoryBar = this._shadow?.getElementById('inventoryModeBar');
+
+        if (addBtn) {
+            if (this._eanScanMode === "inventory_none") {
+                addBtn.textContent = translate("ui.inventory.select_mode_button");
+                addBtn.disabled = true;
+                addBtn.style.background = '';
+                addBtn.style.color = '';
+            } else if (this._eanScanMode === "inventory_remove") {
+                addBtn.textContent = translate("ui.inventory.remove");
+                addBtn.disabled = false;
+                addBtn.style.background = 'var(--warning-color, #ef7d32)';
+                addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "inventory_add") {
+                addBtn.textContent = translate("ui.inventory.add");
+                addBtn.disabled = false;
+                addBtn.style.background = 'var(--success-color, #2e7d32)';
+                addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "inventory_register") {
+                addBtn.textContent = translate("ui.inventory.register");
+                addBtn.disabled = false;
+                addBtn.style.background = 'var(--primary-color, #03A9F4)';
+                addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "inventory_correct") {
+                addBtn.textContent = translate("ui.inventory.correct");
+                addBtn.disabled = false;
+                addBtn.style.background = 'var(--accent-color, #8e5bb7)';
+                addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "shopping_remove") {
+                addBtn.disabled = false;
+                addBtn.textContent = translate("ui.ean.remove_mode_active");
+                addBtn.style.background = 'var(--warning-color, #f39c12)';
+                addBtn.style.color = 'white';
+            } else if (this._eanScanMode === "database") {
+                addBtn.disabled = false;
+                addBtn.textContent = translate("ui.ean.database_fill_save");
+                addBtn.style.background = 'var(--primary-color, #03A9F4)';
+                addBtn.style.color = 'white';
+            } else {
+                addBtn.disabled = false;
+                addBtn.textContent = translate("editor.labels.add_button");
+                addBtn.style.background = '';
+                addBtn.style.color = '';
+            }
+        }
+
+        if (notice) {
+            notice.style.display = this._eanScanMode === "database" ? 'flex' : 'none';
+        }
+        if (inventoryBar) {
+            const action = this._eanScanMode === "inventory_add" ? "add"
+                : this._eanScanMode === "inventory_remove" ? "remove"
+                : this._eanScanMode === "inventory_register" ? "register"
+                : this._eanScanMode === "inventory_correct" ? "correct" : "none";
+            inventoryBar.style.borderLeftColor = action === "add"
+                ? 'var(--success-color, #2e7d32)'
+                : action === "remove" ? 'var(--warning-color, #ef7d32)'
+                : action === "register" ? 'var(--primary-color, #03A9F4)'
+                : action === "correct" ? 'var(--accent-color, #8e5bb7)' : 'var(--divider-color, #888)';
+            if (this._inventoryFeedbackTimer) clearTimeout(this._inventoryFeedbackTimer);
+            this._inventoryFeedbackTimer = null;
+            const status = this._shadow.getElementById('inventoryFeedback');
+            if (status) {
+                status.textContent = this._getInventoryModeStatusText();
+                status.title = status.textContent;
+                status.style.display = '';
+            }
+            for (const button of inventoryBar.querySelectorAll('[data-inventory-mode]')) {
+                button.setAttribute('aria-pressed', String(button.dataset.inventoryMode === action));
+            }
+            this._updateInventoryModeButtonLabels();
+        }
+    }
+
+    _getInventoryModeStatusText() {
+        if (this._eanScanMode === "inventory_add") return translate("ui.inventory.add_active");
+        if (this._eanScanMode === "inventory_remove") return translate("ui.inventory.remove_active");
+        if (this._eanScanMode === "inventory_register") return translate("ui.inventory.register_active");
+        if (this._eanScanMode === "inventory_correct") return translate("ui.inventory.correct_active");
+        return translate("ui.inventory.idle");
+    }
+
+    _loadEanScanQueue() {
+        const cardId = this._getEanScanCardId();
+        try {
+            const stored = JSON.parse(localStorage.getItem(this._getEanScanQueueStorageKey()) || "[]");
+            this._eanScanQueue = Array.isArray(stored)
+                ? stored.filter(item =>
+                    item &&
+                    /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(item.code || "")) &&
+                    Number(item.quantity) > 0
+                ).map(item => ({
+                    code: String(item.code),
+                    quantity: Math.max(1, Math.floor(Number(item.quantity))),
+                    source: item.source || null,
+                    address: item.address || null,
+                    createdAt: item.createdAt || new Date().toISOString(),
+                    transfer_id: typeof item.transfer_id === "string" ? item.transfer_id : null,
+                    transfer_source_applied: item.transfer_source_applied === true,
+                    transfer_source_quantity: Math.max(0, Math.floor(Number(item.transfer_source_quantity) || 0)),
+                    transfer_source_result: typeof item.transfer_source_result === "string" ? item.transfer_source_result : null,
+                    scan_mode: this._normalizeEanScanMode(item.scan_mode),
+                    // Queue records without an explicit flag must not reopen
+                    // automatically after a reload.
+                    deferred: item.deferred !== false
+                }))
+                : [];
+        } catch {
+            this._eanScanQueue = [];
+        }
+
+        this._eanScanQueueCardId = cardId;
+        this._saveEanScanQueue();
+    }
+
+    _saveEanScanQueue() {
+        try {
+            localStorage.setItem(this._getEanScanQueueStorageKey(), JSON.stringify(this._eanScanQueue || []));
+        } catch (error) {
+            console.warn("[ha-shopping-list-improved] Unable to save EAN scan queue:", error);
+        }
+        this._updateEanQueuePopupStatus();
+        this._updateInventoryQueueButton();
+    }
+
+    _getEanScanQueueCount() {
+        return (this._eanScanQueue || []).reduce(
+            (sum, item) => sum + Math.max(1, Math.floor(Number(item?.quantity) || 1)),
+            0
+        );
+    }
+
+    _updateInventoryQueueButton() {
+        const label = this._shadow?.getElementById('inventoryQueueLabel');
+        if (!label) return;
+
+        const count = this._getEanScanQueueCount();
+        label.textContent = count > 0
+            ? `${translate("ui.inventory.queue")} (${count})`
+            : translate("ui.inventory.queue");
+    }
+
+    _clearEanScanQueue() {
+        this._eanScanQueue = [];
+        this._eanQueuePaused = false;
+        this._saveEanScanQueue();
+    }
+
+    _enqueueEanScan(code, eventData = {}) {
+        if (
+            !Array.isArray(this._eanScanQueue) ||
+            this._eanScanQueueCardId !== this._getEanScanCardId()
+        ) {
+            this._loadEanScanQueue();
+        }
+
+        const scanMode = this._normalizeEanScanMode(eventData.scan_mode || this._eanScanMode);
+        let queued = this._eanScanQueue.find(item =>
+            item.code === code &&
+            this._normalizeEanScanMode(item.scan_mode) === scanMode &&
+            item.transfer_source_applied !== true
+        );
+        if (queued) {
+            queued.quantity += 1;
+            queued.deferred = false;
+        } else {
+            queued = {
+                code,
+                quantity: 1,
+                source: eventData.source || null,
+                address: eventData.address || null,
+                createdAt: new Date().toISOString(),
+                scan_mode: scanMode,
+                deferred: false
+            };
+            this._eanScanQueue.push(queued);
+        }
+
+        this._saveEanScanQueue();
+        return queued;
+    }
+
+    _updateEanQueuePopupStatus() {
+        if (!this._eanQueuePopupStatusEl || !this._activeEanScanQueueItem) return;
+
+        const remaining = Math.max(0, (this._eanScanQueue || [])
+            .filter(item => item !== this._activeEanScanQueueItem && item.deferred !== true)
+            .reduce((sum, item) => sum + Math.max(1, Number(item.quantity || 1)), 0));
+        this._eanQueuePopupStatusEl.textContent = translate("ui.ean.queue_status")
+            .replace("{quantity}", String(this._activeEanScanQueueItem.quantity || 1))
+            .replace("{count}", String(remaining));
+    }
+
+    async _getTodoItems(entityId) {
+        const response = await this._hass.connection.sendMessagePromise({
+            type: "call_service",
+            domain: "todo",
+            service: "get_items",
+            target: { entity_id: entityId },
+            id: Date.now(),
+            return_response: true
+        });
+
+        const entityData = response?.response?.[entityId];
+        if (!entityData || !Array.isArray(entityData.items)) {
+            throw new Error("No valid todo items returned");
+        }
+        return entityData.items;
+    }
+
+    _findTodoItemByName(items, productName, completed = false) {
+        const normalizedName = String(productName || '').trim().toLocaleLowerCase();
+        return (items || []).find(entry => {
+            const isCompleted = entry?.status === "completed";
+            return isCompleted === completed && this._getNameOnly(String(entry?.summary || entry?.name || ''))
+                .trim()
+                .toLocaleLowerCase() === normalizedName;
+        }) || null;
+    }
+
+    async _confirmTodoQuantity(entityId, productName, expectedQuantity, targetUid = null) {
+        const delays = [0, 100, 200, 350, 500, 750, 1000, 1500];
+        let lastError = null;
+        for (const delay of delays) {
+            if (delay > 0) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+            try {
+                const items = await this._getTodoItems(entityId);
+                const activeItem = targetUid
+                    ? items.find(item => item.uid === targetUid && item.status !== "completed") || null
+                    : this._findTodoItemByName(items, productName, false);
+                const matchingItem = activeItem || (this._mode === "inventory"
+                    ? (targetUid
+                        ? items.find(item => item.uid === targetUid) || null
+                        : this._findTodoItemByName(items, productName, true))
+                    : null);
+                if (targetUid && !matchingItem) continue;
+                const quantity = matchingItem
+                    ? Math.max(0, Number(this._getQuantity(matchingItem.summary || matchingItem.name)))
+                    : 0;
+                if (quantity >= expectedQuantity) return true;
+            } catch (error) {
+                lastError = error;
+            }
+        }
+        if (lastError) {
+            console.warn("[ha-shopping-list-improved] Target list confirmation failed:", lastError);
+        }
+        return false;
+    }
+
+    _isEanTransferSending() {
+        return this._eanTransferMode === "send" || this._eanTransferMode === "send_receive";
+    }
+
+    _isEanTransferReceiving() {
+        return ["shopping", "inventory"].includes(this._mode) &&
+            (this._eanTransferMode === "receive" || this._eanTransferMode === "send_receive");
+    }
+
+    _isEanTransferActionEnabled(operation) {
+        if (!this._isEanTransferSending()) return false;
+        if (operation === "shopping_add") {
+            return this._eanTransferActions === "add" || this._eanTransferActions === "both";
+        }
+        if (operation === "shopping_remove") {
+            return this._eanTransferActions === "remove" || this._eanTransferActions === "both";
+        }
+        return false;
+    }
+
+    _getAutomaticRemovalTransferDecision(product, remainingStock) {
+        if (!this._isEanTransferActionEnabled("shopping_remove")) return false;
+        if (product?.automaticTransferDisabled === true) return false;
+
+        if (product?.minimumStock !== null && product?.minimumStock !== undefined) {
+            return remainingStock <= Number(product.minimumStock);
+        }
+
+        if (this._eanTransferRemoveBehavior === "one_to_one") return true;
+        if (
+            this._eanTransferRemoveBehavior === "minimum" &&
+            this._eanTransferDefaultMinimumStock !== null
+        ) {
+            return remainingStock <= this._eanTransferDefaultMinimumStock;
+        }
+        return false;
+    }
+
+    _parseInventoryVariant(item) {
+        if (!item) return { ean: null, minimumStock: null, groupMinimumStock: null, legacy: true };
+        try {
+            const record = JSON.parse(String(item.description || ""));
+            if (
+                record?.schema === INVENTORY_VARIANT_SCHEMA &&
+                record?.type === INVENTORY_VARIANT_TYPE &&
+                (record.ean === null || /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(record.ean || "")))
+            ) {
+                const minimumStock = (
+                    record.ean === null &&
+                    record.minimumStock !== null &&
+                    record.minimumStock !== undefined &&
+                    record.minimumStock !== "" &&
+                    Number.isInteger(Number(record.minimumStock)) &&
+                    Number(record.minimumStock) >= 0
+                ) ? Number(record.minimumStock) : null;
+                const groupMinimumStock = (
+                    record.groupMinimumStock !== null &&
+                    record.groupMinimumStock !== undefined &&
+                    record.groupMinimumStock !== "" &&
+                    Number.isInteger(Number(record.groupMinimumStock)) &&
+                    Number(record.groupMinimumStock) >= 0
+                ) ? Number(record.groupMinimumStock) : null;
+                return {
+                    ean: record.ean === null ? null : String(record.ean),
+                    minimumStock,
+                    groupMinimumStock,
+                    legacy: false
+                };
+            }
+        } catch (_error) {
+            // Existing inventory descriptions are treated as the manual variant.
+        }
+        return { ean: null, minimumStock: null, groupMinimumStock: null, legacy: true };
+    }
+
+    _serializeInventoryVariant(ean = null, minimumStock = null, groupMinimumStock = null) {
+        const record = {
+            schema: INVENTORY_VARIANT_SCHEMA,
+            type: INVENTORY_VARIANT_TYPE,
+            ean: ean ? String(ean) : null
+        };
+        if (
+            !ean &&
+            minimumStock !== null &&
+            minimumStock !== "" &&
+            Number.isInteger(Number(minimumStock)) &&
+            Number(minimumStock) >= 0
+        ) {
+            record.minimumStock = Number(minimumStock);
+        }
+        if (
+            groupMinimumStock !== null &&
+            groupMinimumStock !== "" &&
+            Number.isInteger(Number(groupMinimumStock)) &&
+            Number(groupMinimumStock) >= 0
+        ) {
+            record.groupMinimumStock = Number(groupMinimumStock);
+        }
+        return JSON.stringify(record);
+    }
+
+    _canTrackInventoryVariants() {
+        return this._mode === "inventory" && this._supportsTodoDescription();
+    }
+
+    _inventoryItemMatchesName(item, productName) {
+        return this._normalizeEanDatabaseProductName(this._getNameOnly(item?.name || item?.summary || "")) ===
+            this._normalizeEanDatabaseProductName(productName);
+    }
+
+    _getInventoryVariantItems(productName, category = undefined, items = this._items) {
+        const normalizedCategory = category === undefined
+            ? undefined
+            : String(category || "none").trim().toLocaleLowerCase();
+        return (items || []).filter(item => {
+            if (!this._inventoryItemMatchesName(item, productName)) return false;
+            if (normalizedCategory === undefined) return true;
+            return String(this._getCategory(item.name || item.summary || "") || "none").trim().toLocaleLowerCase() === normalizedCategory;
+        });
+    }
+
+    _getInventoryGroupState(productName, category, items = this._items) {
+        const variants = this._getInventoryVariantItems(productName, category, items);
+        const values = [...new Set(variants
+            .map(item => this._parseInventoryVariant(item).groupMinimumStock)
+            .filter(value => Number.isInteger(value) && value >= 0))];
+        return {
+            variants,
+            stock: variants.reduce((sum, item) => sum + Math.max(0, Number(
+                this._getQuantity(item.name || item.summary || "") || 0
+            )), 0),
+            minimum: variants.length > 1 && values.length ? values[0] : null,
+            conflictingMinimums: variants.length > 1 && values.length > 1,
+            minimumValues: values
+        };
+    }
+
+    async _writeInventoryVariantMetadata(item, overrides = {}) {
+        const parsed = this._parseInventoryVariant(item);
+        await this._callListService({
+            type: "call_service",
+            domain: "todo",
+            service: "update_item",
+            target: { entity_id: this._entity },
+            service_data: {
+                item: item.id,
+                description: this._serializeInventoryVariant(
+                    Object.prototype.hasOwnProperty.call(overrides, "ean") ? overrides.ean : parsed.ean,
+                    Object.prototype.hasOwnProperty.call(overrides, "minimumStock") ? overrides.minimumStock : parsed.minimumStock,
+                    Object.prototype.hasOwnProperty.call(overrides, "groupMinimumStock")
+                        ? overrides.groupMinimumStock
+                        : parsed.groupMinimumStock
+                )
+            }
+        });
+    }
+
+    async _setInventoryGroupMinimum(productName, category, minimum, items = this._items) {
+        const variants = this._getInventoryVariantItems(productName, category, items);
+        const normalized = variants.length > 1 &&
+            minimum !== null &&
+            minimum !== undefined &&
+            minimum !== "" &&
+            Number.isInteger(Number(minimum)) &&
+            Number(minimum) >= 0
+            ? Number(minimum)
+            : null;
+        for (const variant of variants) {
+            if (this._parseInventoryVariant(variant).groupMinimumStock === normalized) continue;
+            await this._writeInventoryVariantMetadata(variant, { groupMinimumStock: normalized });
+        }
+        return normalized;
+    }
+
+    async _normalizeInventoryGroupMinimum(productName, category) {
+        const state = this._getInventoryGroupState(productName, category);
+        if (!state.variants.length) return null;
+        if (state.variants.length < 2) {
+            await this._setInventoryGroupMinimum(productName, category, null);
+            return null;
+        }
+        const minimum = state.minimumValues.length ? state.minimumValues[0] : null;
+        await this._setInventoryGroupMinimum(productName, category, minimum);
+        return minimum;
+    }
+
+    _findInventoryVariantItem(items, productName, ean = null, completed = null) {
+        const wantedEan = ean ? String(ean) : null;
+        return (items || []).find(item => {
+            const itemCompleted = item.complete === true || item.status === "completed";
+            const itemName = item.name || item.summary || "";
+            if (completed !== null && itemCompleted !== completed) return false;
+            if (!this._inventoryItemMatchesName({ name: itemName }, productName)) return false;
+            return this._parseInventoryVariant({ ...item, description: item.description || "" }).ean === wantedEan;
+        }) || null;
+    }
+
+    _inventoryVariantProduct(ean) {
+        return ean ? (this._eanDatabase?.get(String(ean)) || null) : null;
+    }
+
+    _inventoryVariantLabel(ean, showFullEan = false) {
+        if (!ean) return translate("ui.inventory.without_ean");
+        const product = this._inventoryVariantProduct(ean);
+        const details = [product?.originalName, product?.brand, product?.quantity]
+            .map(value => String(value || "").trim())
+            .filter((value, index, values) => value && values.indexOf(value) === index);
+        const eanLabel = showFullEan ? String(ean) : `…${String(ean).slice(-4)}`;
+        return details.length
+            ? `${details.join(" · ")} · EAN ${eanLabel}`
+            : `EAN ${eanLabel}`;
+    }
+
+    _inventoryVariantCompactLabel(ean) {
+        return ean ? `EAN ${String(ean)}` : translate("ui.inventory.without_ean");
+    }
+
+    _inventoryItemNeedsVariantIdentification(item) {
+        if (!item || item.inventoryGroup || item.inventoryVariantEan === undefined) return false;
+        const name = this._getNameOnly(item.name);
+        const category = this._getCategory(item.name) || null;
+        return this._getInventoryVariantItems(name, category).length > 1;
+    }
+
+    _buildInventoryDisplayItems(items) {
+        if (this._mode !== "inventory" || !this._inventoryGroupVariants || !this._canTrackInventoryVariants()) {
+            return (items || []).map(item => ({
+                ...item,
+                inventoryVariantEan: this._parseInventoryVariant(item).ean
+            }));
+        }
+
+        const groups = new Map();
+        for (const item of items || []) {
+            const name = this._getNameOnly(item.name);
+            const category = this._getCategory(item.name) || null;
+            const key = `${this._normalizeEanDatabaseProductName(name)}::${String(category || "none").trim().toLocaleLowerCase()}`;
+            if (!groups.has(key)) groups.set(key, { name, category, variants: [] });
+            groups.get(key).variants.push({
+                ...item,
+                inventoryVariantEan: this._parseInventoryVariant(item).ean
+            });
+        }
+
+        return [...groups.values()].map(group => {
+            if (group.variants.length === 1) return group.variants[0];
+            const quantity = group.variants.reduce((sum, item) => sum + this._getQuantity(item.name), 0);
+            let name = this._quantityPosition === "beginning"
+                ? `${quantity}× ${group.name}`
+                : `${group.name} (${quantity})`;
+            if (group.category) name = `@${group.category}@ ${name}`;
+            return {
+                name,
+                complete: group.variants.every(item => item.complete),
+                id: `inventory-group:${group.variants.map(item => item.id).join(":")}`,
+                due: null,
+                description: "",
+                inventoryGroup: true,
+                inventoryVariants: group.variants,
+                inventoryVariantEan: undefined
+            };
+        });
+    }
+
+    _getShoppingStockByName(productName, ean = undefined) {
+        const matchingItems = (this._items || []).filter(entry => this._inventoryItemMatchesName(entry, productName));
+        if (this._mode === "inventory") {
+            const selected = ean === undefined
+                ? matchingItems
+                : matchingItems.filter(item => this._parseInventoryVariant(item).ean === (ean ? String(ean) : null));
+            return selected.reduce((sum, item) => sum + Math.max(0, Number(this._getQuantity(item.name) || 0)), 0);
+        }
+        const item = matchingItems[0];
+        return item ? Math.max(1, Number(this._getQuantity(item.name) || 1)) : 0;
+    }
+
+    async _selectEanProductForRemoval(productName, products, allowWithoutEan = false, confirmLabel = null) {
+        if (!Array.isArray(products) || !products.length) return allowWithoutEan ? null : false;
+        if (products.length === 1) return products[0];
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.zIndex = '10001';
+            overlay.style.background = 'rgba(0,0,0,0.45)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+
+            const popup = document.createElement('div');
+            popup.style.width = 'min(460px, calc(100vw - 32px))';
+            popup.style.maxHeight = 'calc(100vh - 40px)';
+            popup.style.overflowY = 'auto';
+            popup.style.padding = '18px';
+            popup.style.boxSizing = 'border-box';
+            popup.style.borderRadius = '8px';
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+
+            const title = document.createElement('h3');
+            title.textContent = translate("ui.ean.transfer_choose_product").replace("{name}", productName);
+            title.style.margin = '0 0 14px';
+            popup.appendChild(title);
+
+            let selected = products[0];
+            const radioGroup = `ean-removal-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            products.forEach((product, index) => {
+                const label = document.createElement('label');
+                label.style.display = 'flex';
+                label.style.alignItems = 'flex-start';
+                label.style.gap = '8px';
+                label.style.padding = '8px 0';
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = radioGroup;
+                radio.checked = index === 0;
+                radio.addEventListener('change', () => { if (radio.checked) selected = product; });
+                const text = document.createElement('span');
+                text.textContent = [product.brand || product.originalName || product.name, product.quantity, product.ean]
+                    .filter(Boolean).join(' · ');
+                label.appendChild(radio);
+                label.appendChild(text);
+                popup.appendChild(label);
+            });
+
+            if (allowWithoutEan) {
+                const label = document.createElement('label');
+                label.style.display = 'flex';
+                label.style.gap = '8px';
+                label.style.padding = '8px 0';
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = radioGroup;
+                radio.addEventListener('change', () => { if (radio.checked) selected = null; });
+                const text = document.createElement('span');
+                text.textContent = translate("ui.ean.transfer_without_ean");
+                label.appendChild(radio);
+                label.appendChild(text);
+                popup.appendChild(label);
+            }
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.justifyContent = 'flex-end';
+            buttons.style.gap = '8px';
+            buttons.style.marginTop = '14px';
+            const close = result => {
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(result);
+            };
+            const onKeyDown = event => { if (event.key === 'Escape') close(false); };
+            const cancel = document.createElement('button');
+            cancel.textContent = translate("ui.common.cancel");
+            cancel.addEventListener('click', () => close(false));
+            const confirm = document.createElement('button');
+            confirm.textContent = confirmLabel || translate("ui.ean.transfer_remove");
+            confirm.style.background = 'var(--primary-color, #03A9F4)';
+            confirm.style.color = 'white';
+            confirm.addEventListener('click', () => close(selected));
+            [cancel, confirm].forEach(button => {
+                button.type = 'button';
+                button.style.border = 'none';
+                button.style.borderRadius = '4px';
+                button.style.padding = '8px 12px';
+                button.style.cursor = 'pointer';
+                buttons.appendChild(button);
+            });
+            popup.appendChild(buttons);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', event => { if (event.target === overlay) close(false); });
+            window.addEventListener('keydown', onKeyDown, true);
+        });
+    }
+
+    _isEanTransferEntityUsable(requireTarget = false) {
+        if (
+            !this._eanTransferEntity?.startsWith("todo.") ||
+            !this._hass?.states?.[this._eanTransferEntity] ||
+            !this._supportsTodoDescription(this._eanTransferEntity) ||
+            this._eanTransferEntity === this._entity ||
+            this._eanTransferEntity === this._eanDatabaseEntity
+        ) {
+            return false;
+        }
+
+        if (!requireTarget) return true;
+        return this._eanTransferTargetEntity?.startsWith("todo.") &&
+            Boolean(this._hass?.states?.[this._eanTransferTargetEntity]) &&
+            this._eanTransferTargetEntity !== this._entity &&
+            this._eanTransferTargetEntity !== this._eanTransferEntity &&
+            this._eanTransferTargetEntity !== this._eanDatabaseEntity;
+    }
+
+    _createEanTransferId() {
+        if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+        return `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    _getEanTransferProcessedStorageKey() {
+        return `${EAN_TRANSFER_PROCESSED_STORAGE_KEY}::${this._eanTransferEntity || ""}::${this._entity || ""}`;
+    }
+
+    _loadProcessedEanTransferIds() {
+        try {
+            const records = JSON.parse(localStorage.getItem(this._getEanTransferProcessedStorageKey()) || "[]");
+            return Array.isArray(records)
+                ? records.filter(entry => entry && typeof entry.id === "string").slice(-500)
+                : [];
+        } catch (_error) {
+            return [];
+        }
+    }
+
+    _isEanTransferProcessed(transferId) {
+        return this._loadProcessedEanTransferIds().some(entry => entry.id === transferId);
+    }
+
+    _markEanTransferProcessed(transferId) {
+        const records = this._loadProcessedEanTransferIds().filter(entry => entry.id !== transferId);
+        records.push({ id: transferId, processedAt: new Date().toISOString() });
+        try {
+            localStorage.setItem(
+                this._getEanTransferProcessedStorageKey(),
+                JSON.stringify(records.slice(-500))
+            );
+        } catch (error) {
+            console.warn("[ha-shopping-list-improved] Unable to store processed ISL transfer ID:", error);
+        }
+    }
+
+    _parseEanTransferItem(item) {
+        try {
+            const record = JSON.parse(item?.description || "");
+            if (
+                !record ||
+                record.schema !== EAN_TRANSFER_SCHEMA ||
+                typeof record.transferId !== "string" ||
+                !record.transferId.trim() ||
+                !record.sourceEntity?.startsWith("todo.") ||
+                !record.destinationEntity?.startsWith("todo.") ||
+                !["shopping_add", "shopping_remove"].includes(record.operation) ||
+                (record.ean !== null && record.ean !== undefined &&
+                    !/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(record.ean))) ||
+                !record.product ||
+                typeof record.product.name !== "string" ||
+                !record.product.name.trim()
+            ) {
+                return null;
+            }
+            return {
+                ...record,
+                uid: item.uid,
+                transferId: record.transferId.trim(),
+                ean: record.ean === null || record.ean === undefined ? null : String(record.ean),
+                quantity: Math.max(1, Math.floor(Number(record.quantity) || 1)),
+                status: ["source_pending", "pending", "processing", "completed", "failed"].includes(record.status)
+                    ? record.status
+                    : "pending",
+                product: {
+                    name: record.product.name.trim(),
+                    originalName: typeof record.product.originalName === "string" ? record.product.originalName.trim() || null : null,
+                    brand: typeof record.product.brand === "string" ? record.product.brand.trim() || null : null,
+                    quantity: typeof record.product.quantity === "string" ? record.product.quantity.trim() || null : null,
+                    imageUrl: typeof record.product.imageUrl === "string" ? record.product.imageUrl.trim() || null : null,
+                    category: typeof record.product.category === "string" ? record.product.category.trim() || null : null
+                }
+            };
+        } catch (_error) {
+            return null;
+        }
+    }
+
+    async _updateEanTransferRecord(record, updates) {
+        const next = { ...record, ...updates };
+        delete next.uid;
+        await this._hass.connection.sendMessagePromise({
+            type: "call_service",
+            domain: "todo",
+            service: "update_item",
+            target: { entity_id: this._eanTransferEntity },
+            service_data: {
+                item: record.uid,
+                rename: `${next.operation === "shopping_remove" ? "−" : "+"} ${next.product.name} → ${next.destinationEntity}`,
+                description: JSON.stringify(next)
+            }
+        });
+        return next;
+    }
+
+    async _deleteEanTransferItem(uid) {
+        await this._hass.connection.sendMessagePromise({
+            type: "call_service",
+            domain: "todo",
+            service: "remove_item",
+            target: { entity_id: this._eanTransferEntity },
+            service_data: { item: uid }
+        });
+    }
+
+    async _createEanTransfer(operation, ean, product, quantity = 1, options = {}) {
+        if (!this._isEanTransferEntityUsable(true)) {
+            await this.confirmPopup(translate("ui.ean.transfer_invalid_config"), true);
+            return false;
+        }
+
+        const queueItem = options.sourceOperation === "inventory_undo"
+            ? null
+            : this._activeEanScanQueueItem;
+        const normalizedEan = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(ean || ""))
+            ? String(ean)
+            : null;
+        const retryKey = `${operation}|${normalizedEan || String(product?.name || "").trim()}|${this._eanTransferTargetEntity}`;
+        const transferId = queueItem
+            ? (queueItem.transfer_id || this._eanTransferRetryIds.get(retryKey) || this._createEanTransferId())
+            : this._createEanTransferId();
+        if (queueItem) this._eanTransferRetryIds.set(retryKey, transferId);
+        if (queueItem && !queueItem.transfer_id) {
+            queueItem.transfer_id = transferId;
+            this._saveEanScanQueue();
+        }
+
+        try {
+            const existingItems = await this._getTodoItems(this._eanTransferEntity);
+            const alreadyStored = existingItems.some(item =>
+                this._parseEanTransferItem(item)?.transferId === transferId
+            );
+            if (alreadyStored) {
+                return transferId;
+            }
+
+            const record = {
+                schema: EAN_TRANSFER_SCHEMA,
+                transferId,
+                createdAt: new Date().toISOString(),
+                sourceEntity: this._entity,
+                sourceCardId: this._getEanScanCardId(),
+                destinationEntity: this._eanTransferTargetEntity,
+                operation,
+                sourceOperation: options.sourceOperation || operation,
+                ean: normalizedEan,
+                quantity: Math.max(1, Math.floor(Number(quantity) || 1)),
+                product: {
+                    name: String(product.name || "").trim(),
+                    originalName: product.originalName || null,
+                    brand: product.brand || null,
+                    quantity: product.quantity || null,
+                    imageUrl: product.imageUrl || null,
+                    category: product.category || null
+                },
+                status: options.status === "source_pending" ? "source_pending" : "pending",
+                attempts: 0
+            };
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "todo",
+                service: "add_item",
+                target: { entity_id: this._eanTransferEntity },
+                service_data: {
+                    item: `${operation === "shopping_remove" ? "−" : "+"} ${record.product.name} → ${record.destinationEntity}`,
+                    description: JSON.stringify(record)
+                }
+            });
+
+            const confirmedItems = await this._getTodoItems(this._eanTransferEntity);
+            const confirmed = confirmedItems.some(item =>
+                this._parseEanTransferItem(item)?.transferId === transferId
+            );
+            if (!confirmed) await this.confirmPopup(translate("ui.ean.transfer_send_failed"), true);
+            if (
+                confirmed &&
+                (options.status !== "source_pending" || Boolean(queueItem))
+            ) {
+                this._eanTransferRetryIds.delete(retryKey);
+            }
+            return confirmed ? transferId : false;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to create ISL transfer:", error);
+            await this.confirmPopup(translate("ui.ean.transfer_send_failed"), true);
+            return false;
+        }
+    }
+
+    async _activateEanRemovalTransfer(transferId, quantity, sourceResult) {
+        try {
+            const items = await this._getTodoItems(this._eanTransferEntity);
+            const record = items
+                .map(item => this._parseEanTransferItem(item))
+                .find(item => item?.transferId === transferId);
+            if (!record) return false;
+            if (["pending", "processing", "completed"].includes(record.status)) {
+                this._eanTransferRetryIds.delete(
+                    `${record.sourceOperation || "shopping_remove"}|${record.ean || record.product.name}|${record.destinationEntity}`
+                );
+                return true;
+            }
+            if (record.status !== "source_pending") return false;
+
+            await this._updateEanTransferRecord(record, {
+                status: "pending",
+                quantity: Math.max(1, Math.floor(Number(quantity) || 1)),
+                sourceAppliedAt: new Date().toISOString(),
+                sourceResult: sourceResult || "removed"
+            });
+            const confirmedItems = await this._getTodoItems(this._eanTransferEntity);
+            const confirmed = confirmedItems
+                .map(item => this._parseEanTransferItem(item))
+                .some(item => item?.transferId === transferId && item.status === "pending");
+            if (confirmed) {
+                this._eanTransferRetryIds.delete(
+                    `${record.sourceOperation || "shopping_remove"}|${record.ean || record.product.name}|${record.destinationEntity}`
+                );
+            }
+            return confirmed;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to activate ISL removal transfer:", error);
+            return false;
+        }
+    }
+
+    async _cancelEanTransfer(transferId) {
+        try {
+            const items = await this._getTodoItems(this._eanTransferEntity);
+            const record = items
+                .map(item => this._parseEanTransferItem(item))
+                .find(item => item?.transferId === transferId);
+            if (record?.uid && record.status === "source_pending") {
+                await this._deleteEanTransferItem(record.uid);
+            }
+            if (record) {
+                this._eanTransferRetryIds.delete(
+                    `${record.sourceOperation || record.operation}|${record.ean || record.product.name}|${record.destinationEntity}`
+                );
+            }
+        } catch (error) {
+            console.warn("[ha-shopping-list-improved] Unable to cancel ISL transfer:", error);
+        }
+    }
+
+    _scheduleEanTransferStartupChecks() {
+        if (!this._isEanTransferReceiving()) return;
+        if (!Array.isArray(this._eanTransferStartupTimers)) {
+            this._eanTransferStartupTimers = [];
+        }
+        this._eanTransferStartupTimers.forEach(timer => clearTimeout(timer));
+        this._eanTransferStartupTimers = [];
+
+        [0, 100, 300, 750, 1500, 3000].forEach(delay => {
+            const timer = setTimeout(() => {
+                this._eanTransferStartupTimers = this._eanTransferStartupTimers
+                    .filter(entry => entry !== timer);
+                if (!this.isConnected || !this._isEanTransferReceiving()) return;
+                this._loadAndProcessEanTransfers();
+            }, delay);
+            this._eanTransferStartupTimers.push(timer);
+        });
+    }
+
+    async _loadAndProcessEanTransfers() {
+        if (!this._isEanTransferReceiving() || !this._isEanTransferEntityUsable()) return;
+        if (!this._isVisibleForEanScan()) return;
+        try {
+            const items = await this._getTodoItems(this._eanTransferEntity);
+            await this._processEanTransferItems(items);
+        } catch (error) {
+            console.warn("[ha-shopping-list-improved] Unable to load ISL transfers:", error);
+        }
+    }
+
+    _scheduleEanTransferRerun(delay = 100) {
+        if (this._eanTransferRerunTimer) clearTimeout(this._eanTransferRerunTimer);
+        this._eanTransferRerunTimer = setTimeout(() => {
+            this._eanTransferRerunTimer = null;
+            if (this.isConnected && this._isEanTransferReceiving()) {
+                this._loadAndProcessEanTransfers();
+            }
+        }, delay);
+    }
+
+    _groupPendingEanTransfers(records) {
+        const batches = [];
+        for (const record of records) {
+            const key = record.operation === "shopping_add"
+                ? JSON.stringify([
+                    record.operation,
+                    record.ean || "",
+                    String(record.product?.name || "").trim().toLocaleLowerCase(),
+                    String(record.product?.category || "").trim().toLocaleLowerCase()
+                ])
+                : record.transferId;
+            const previous = batches[batches.length - 1];
+            if (previous?.key === key) {
+                previous.records.push(record);
+            } else {
+                batches.push({ key, records: [record] });
+            }
+        }
+        return batches;
+    }
+
+    async _cleanupEanTransferRecord(record) {
+        await this._deleteEanTransferItem(record.uid);
+        const remainingItems = await this._getTodoItems(this._eanTransferEntity);
+        return !remainingItems.some(item =>
+            this._parseEanTransferItem(item)?.transferId === record.transferId
+        );
+    }
+
+    async _claimEanTransferRecord(record) {
+        const claimToken = this._createEanTransferId();
+        await this._updateEanTransferRecord(record, {
+            status: "processing",
+            claimedBy: this._getEanScanCardId(),
+            claimToken,
+            claimedAt: new Date().toISOString(),
+            attempts: Math.max(0, Number(record.attempts) || 0) + 1
+        });
+
+        const verificationItems = await this._getTodoItems(this._eanTransferEntity);
+        const verified = verificationItems
+            .map(item => this._parseEanTransferItem(item))
+            .find(item => item?.transferId === record.transferId);
+        if (!verified || verified.status !== "processing" || verified.claimToken !== claimToken) {
+            return null;
+        }
+        return { ...verified, uid: verified.uid || record.uid };
+    }
+
+    async _resolveEanTransferProduct(record) {
+        const localProduct = record.ean
+            ? this._eanDatabase?.get(String(record.ean))
+            : null;
+        const product = localProduct || record.product;
+
+        if (record.ean && !localProduct && this._eanDatabaseEntity) {
+            const saved = await this._saveEanDatabaseProduct({
+                ean: String(record.ean),
+                name: product.name,
+                originalName: product.originalName,
+                brand: product.brand,
+                quantity: product.quantity,
+                imageUrl: product.imageUrl,
+                category: product.category
+            });
+            if (!saved) throw new Error("Unable to save transferred product in the EAN database");
+        }
+        return product;
+    }
+
+    async _completeEanTransferRecord(record, resultStatus) {
+        const completed = await this._updateEanTransferRecord(record, {
+            status: "completed",
+            completedAt: new Date().toISOString(),
+            result: resultStatus || "completed"
+        });
+        const completedItems = await this._getTodoItems(this._eanTransferEntity);
+        const completedRecord = completedItems
+            .map(item => this._parseEanTransferItem(item))
+            .find(item => item?.transferId === completed.transferId);
+        if (!completedRecord || completedRecord.status !== "completed") {
+            throw new Error("ISL transfer completion could not be confirmed");
+        }
+        if (!(await this._cleanupEanTransferRecord(record))) {
+            throw new Error("Completed ISL transfer remains in the transfer list");
+        }
+    }
+
+    async _markEanTransferBatchFailed(records, error) {
+        for (const record of records) {
+            if (!record?.uid || this._isEanTransferProcessed(record.transferId)) continue;
+            try {
+                await this._updateEanTransferRecord(record, {
+                    status: "failed",
+                    failedAt: new Date().toISOString(),
+                    error: error?.message || String(error)
+                });
+            } catch (updateError) {
+                console.warn("[ha-shopping-list-improved] Unable to mark ISL transfer as failed:", updateError);
+            }
+        }
+    }
+
+    async _processEanTransferBatch(records) {
+        const claimed = [];
+        for (const record of records) {
+            const claimedRecord = await this._claimEanTransferRecord(record);
+            if (claimedRecord) claimed.push(claimedRecord);
+        }
+        if (!claimed.length) return;
+
+        try {
+            const first = claimed[0];
+            const product = await this._resolveEanTransferProduct(first);
+            const totalQuantity = claimed.reduce((sum, record) => sum + record.quantity, 0);
+            const result = first.operation === "shopping_remove"
+                ? await this._removeShoppingQuantityByName(
+                    product.name, totalQuantity, this._canTrackInventoryVariants() ? (first.ean || null) : undefined
+                )
+                : await this._addShoppingQuantityByName(
+                    product.name, product.category, totalQuantity,
+                    this._canTrackInventoryVariants() ? (first.ean || null) : undefined
+                );
+            if (result?.status === "error") {
+                throw result.error || new Error("Target list update failed");
+            }
+
+            if (first.operation === "shopping_add") {
+                const expectedQuantity = Math.max(1, Number(result?.quantity) || totalQuantity);
+                const confirmed = await this._confirmTodoQuantity(
+                    this._entity,
+                    product.name,
+                    expectedQuantity,
+                    result?.targetUid || null
+                );
+                if (!confirmed) {
+                    throw new Error(
+                        `Target list did not confirm ${product.name} with quantity ${expectedQuantity}`
+                    );
+                }
+            }
+
+            // Store all IDs immediately after the confirmed target update. If cleanup is
+            // interrupted, the records are removed later without applying them twice.
+            claimed.forEach(record => this._markEanTransferProcessed(record.transferId));
+
+            for (const record of claimed) {
+                await this._runEanScript(
+                    record.sourceOperation === "inventory_undo"
+                        ? "transfer_undo_completed"
+                        : "transfer_completed",
+                    {
+                    ean: record.ean,
+                    name: product.name,
+                    brand: product.brand,
+                    productQuantity: product.quantity,
+                    scanQuantity: record.quantity,
+                    category: product.category,
+                    imageUrl: product.imageUrl,
+                    scanMode: record.sourceOperation === "shopping_remove" || record.sourceOperation === "inventory_undo"
+                        ? "shopping_remove"
+                        : "shopping",
+                    originalAction: record.sourceOperation,
+                    transferResult: record.sourceOperation === "inventory_undo" ? "reversal_completed" : "completed"
+                });
+            }
+
+            for (const record of claimed) {
+                try {
+                    await this._completeEanTransferRecord(record, result?.status);
+                } catch (error) {
+                    console.warn(
+                        "[ha-shopping-list-improved] Completed ISL transfer could not be removed:",
+                        record.transferId,
+                        error
+                    );
+                    await this.confirmPopup(translate("ui.ean.transfer_cleanup_failed"), true);
+                }
+            }
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] ISL transfer failed:", error);
+            await this._markEanTransferBatchFailed(claimed, error);
+            for (const record of claimed) {
+                await this._runEanScript("error", {
+                    ean: record.ean,
+                    name: record.product?.name,
+                    scanQuantity: record.quantity,
+                    error: error?.message || String(error)
+                });
+            }
+            await this.confirmPopup(translate("ui.ean.transfer_receive_failed"), true);
+        }
+    }
+
+    async _processEanTransferItems(items) {
+        if (this._eanTransferProcessing) {
+            this._eanTransferRerunRequested = true;
+            return;
+        }
+        if (!this._isEanTransferReceiving()) return;
+        if (!this._isVisibleForEanScan() || !this._isEanTransferEntityUsable()) return;
+
+        this._eanTransferProcessing = true;
+        this._eanTransferRerunRequested = false;
+        try {
+            if (this._eanDatabaseLoadPromise) await this._eanDatabaseLoadPromise;
+            const candidates = (items || [])
+                .map(item => this._parseEanTransferItem(item))
+                .filter(record => record && record.destinationEntity === this._entity)
+                .sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+
+            const pending = [];
+            for (const record of candidates) {
+                if (record.status === "completed" || this._isEanTransferProcessed(record.transferId)) {
+                    try {
+                        if (!(await this._cleanupEanTransferRecord(record))) {
+                            await this.confirmPopup(translate("ui.ean.transfer_cleanup_failed"), true);
+                        }
+                    } catch (error) {
+                        console.warn("[ha-shopping-list-improved] Completed ISL transfer could not be removed:", error);
+                        await this.confirmPopup(translate("ui.ean.transfer_cleanup_failed"), true);
+                    }
+                    continue;
+                }
+                if (record.status === "pending") pending.push(record);
+            }
+
+            for (const batch of this._groupPendingEanTransfers(pending)) {
+                await this._processEanTransferBatch(batch.records);
+            }
+        } finally {
+            this._eanTransferProcessing = false;
+            if (this._eanTransferRerunRequested) this._scheduleEanTransferRerun();
+        }
+    }
+
+    _normalizeEanDatabaseProductName(name) {
+        return String(name || '').normalize('NFKC').trim().toLocaleLowerCase();
+    }
+
+    _rebuildEanDatabaseNameIndex() {
+        const index = new Map();
+        for (const product of this._eanDatabase?.values() || []) {
+            const key = this._normalizeEanDatabaseProductName(product.name);
+            if (!key) continue;
+            if (!index.has(key)) index.set(key, []);
+            index.get(key).push(product);
+        }
+
+        for (const products of index.values()) {
+            products.sort((a, b) => {
+                const labelA = String(a.brand || a.name || '');
+                const labelB = String(b.brand || b.name || '');
+                return labelA.localeCompare(labelB, detectLanguage(), { sensitivity: 'base' }) ||
+                    String(a.ean || '').localeCompare(String(b.ean || ''));
+            });
+        }
+        this._eanDatabaseByName = index;
+    }
+
+    _getEanDatabaseEntriesByName(name) {
+        const key = this._normalizeEanDatabaseProductName(name);
+        return key ? [...(this._eanDatabaseByName?.get(key) || [])] : [];
+    }
+
+    _matchesSearchValues(values, query) {
+        const searchWords = this._removeDiacritics(String(query || '').trim().toLocaleLowerCase())
+            .split(/\s+/)
+            .filter(Boolean);
+        if (!searchWords.length) return true;
+
+        const normalizedValues = (Array.isArray(values) ? values : [values])
+            .filter(value => value !== null && value !== undefined && String(value).trim())
+            .map(value => this._removeDiacritics(String(value).toLocaleLowerCase()));
+
+        return searchWords.every(word => normalizedValues.some(value => value.includes(word)));
+    }
+
+    _getEanDatabaseSearchValuesByName(name) {
+        return this._getEanDatabaseEntriesByName(name)
+            .flatMap(product => [product.originalName, product.brand])
+            .filter(Boolean);
+    }
+
+    _setEanDatabaseItems(items) {
+        const database = new Map();
+        const invalidItems = [];
+
+        for (const item of items || []) {
+            try {
+                const record = JSON.parse(item.description || "");
+                if (
+                    !record ||
+                    record.schema !== EAN_DATABASE_SCHEMA ||
+                    !/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(record.ean || "")) ||
+                    typeof record.name !== "string" ||
+                    !record.name.trim() ||
+                    (record.originalName !== null && record.originalName !== undefined && typeof record.originalName !== "string") ||
+                    (record.category !== null && record.category !== undefined && typeof record.category !== "string") ||
+                    database.has(String(record.ean))
+                ) {
+                    throw new Error("Invalid EAN database record");
+                }
+
+                database.set(String(record.ean), {
+                    ...record,
+                    uid: item.uid,
+                    name: record.name.trim(),
+                    originalName: typeof record.originalName === "string" ? record.originalName.trim() || null : null,
+                    brand: typeof record.brand === "string" ? record.brand : null,
+                    quantity: typeof record.quantity === "string" ? record.quantity : null,
+                    imageUrl: typeof record.imageUrl === "string" ? record.imageUrl : null,
+                    category: typeof record.category === "string" ? record.category : null,
+                    minimumStock: (
+                        record.minimumStock !== null && record.minimumStock !== undefined && record.minimumStock !== "" &&
+                        Number.isInteger(Number(record.minimumStock)) && Number(record.minimumStock) >= 0
+                    ) ? Number(record.minimumStock) : null,
+                    automaticTransferDisabled: record.automaticTransferDisabled === true
+                });
+            } catch {
+                invalidItems.push({
+                    uid: item?.uid || null,
+                    summary: String(item?.summary || item?.name || "").trim(),
+                    description: String(item?.description || "")
+                });
+            }
+        }
+
+        this._eanDatabase = database;
+        this._rebuildEanDatabaseNameIndex();
+        this._eanDatabaseInvalidItems = invalidItems;
+        this._eanDatabaseInvalidCount = invalidItems.length;
+    }
+
+    async _loadEanDatabase() {
+        this._eanDatabase = new Map();
+        this._eanDatabaseByName = new Map();
+        this._eanDatabaseInvalidCount = 0;
+        this._eanDatabaseInvalidItems = [];
+        this._eanDatabaseError = null;
+
+        if (!this._eanDatabaseEntity || !this._hass) return;
+
+        if (
+            !this._eanDatabaseEntity.startsWith("todo.") ||
+            this._eanDatabaseEntity === this._entity ||
+            !this._hass.states?.[this._eanDatabaseEntity]
+        ) {
+            this._eanDatabaseError = "entity";
+            return;
+        }
+
+        if (!this._supportsTodoDescription(this._eanDatabaseEntity)) {
+            this._eanDatabaseError = "description";
+            return;
+        }
+
+        try {
+            const items = await this._getTodoItems(this._eanDatabaseEntity);
+            this._setEanDatabaseItems(items);
+        } catch (error) {
+            this._eanDatabaseError = "load";
+            console.warn("[ha-shopping-list-improved] Unable to load EAN database:", error);
+        }
+    }
+
+    async _saveEanDatabaseProduct(product) {
+        if (!this._eanDatabaseEntity) return true;
+        if (this._eanDatabaseError) return false;
+
+        const previous = this._eanDatabase.get(product.ean);
+        let normalizedCategory = product.category || null;
+        if (product._allowGroupCategoryChange !== true) {
+            const peer = this._getEanDatabaseEntriesByName(product.name)
+                .find(entry => String(entry.ean) !== String(product.ean));
+            if (peer) normalizedCategory = peer.category || null;
+        }
+        const normalizedOriginalName = product.originalName || previous?.originalName || null;
+        const normalizedBrand = product.brand || previous?.brand || null;
+        const normalizedQuantity = product.quantity || previous?.quantity || null;
+        const normalizedImageUrl = product.imageUrl || previous?.imageUrl || null;
+        const normalizedMinimumStock = Object.prototype.hasOwnProperty.call(product, "minimumStock")
+            ? (
+                product.minimumStock !== null &&
+                product.minimumStock !== "" &&
+                Number.isInteger(Number(product.minimumStock)) &&
+                Number(product.minimumStock) >= 0
+                    ? Number(product.minimumStock)
+                    : null
+            )
+            : (previous?.minimumStock ?? null);
+        const normalizedAutomaticTransferDisabled = Object.prototype.hasOwnProperty.call(product, "automaticTransferDisabled")
+            ? product.automaticTransferDisabled === true
+            : previous?.automaticTransferDisabled === true;
+        if (
+            previous &&
+            previous.name === product.name &&
+            (previous.originalName || null) === normalizedOriginalName &&
+            (previous.brand || null) === normalizedBrand &&
+            (previous.quantity || null) === normalizedQuantity &&
+            (previous.imageUrl || null) === normalizedImageUrl &&
+            (previous.category || null) === normalizedCategory &&
+            (previous.minimumStock ?? null) === normalizedMinimumStock &&
+            (previous.automaticTransferDisabled === true) === normalizedAutomaticTransferDisabled
+        ) {
+            return true;
+        }
+
+        const record = {
+            schema: EAN_DATABASE_SCHEMA,
+            ean: product.ean,
+            name: product.name,
+            originalName: normalizedOriginalName,
+            brand: normalizedBrand,
+            quantity: normalizedQuantity,
+            imageUrl: normalizedImageUrl,
+            category: normalizedCategory,
+            minimumStock: normalizedMinimumStock,
+            automaticTransferDisabled: normalizedAutomaticTransferDisabled,
+            sourceCardId: this._getEanScanCardId(),
+            sourceEntity: this._entity,
+            updatedAt: new Date().toISOString()
+        };
+        const summary = `${record.ean} · ${record.name}`;
+
+        try {
+            if (previous?.uid) {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._eanDatabaseEntity },
+                    service_data: {
+                        item: previous.uid,
+                        rename: summary,
+                        description: JSON.stringify(record)
+                    }
+                });
+                this._eanDatabase.set(record.ean, { ...record, uid: previous.uid });
+                this._rebuildEanDatabaseNameIndex();
+            } else {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "add_item",
+                    target: { entity_id: this._eanDatabaseEntity },
+                    service_data: {
+                        item: summary,
+                        description: JSON.stringify(record)
+                    }
+                });
+                await this._loadEanDatabase();
+            }
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to save EAN database product:", error);
+            return false;
+        }
+    }
+
+    async _deleteEanDatabaseItem(uid) {
+        if (!uid || !this._eanDatabaseEntity || this._eanDatabaseError) return false;
+
+        try {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "todo",
+                service: "remove_item",
+                target: { entity_id: this._eanDatabaseEntity },
+                service_data: { item: uid }
+            });
+            await this._loadEanDatabase();
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to delete EAN database item:", error);
+            return false;
+        }
+    }
+
+    async _showEanDatabaseManager(initialEan = null, navigation = {}) {
+        if (!this._eanDatabaseEntity || this._eanDatabaseError) return;
+
+        const onBack = typeof navigation === "function"
+            ? navigation
+            : navigation?.onBack;
+
+        await this._loadEanDatabase();
+        if (this._eanDatabaseError) {
+            await this.confirmPopup(this._eanDatabaseErrorMessage(), true);
+            return;
+        }
+
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'auto';
+            overlay.style.overflow = 'hidden';
+            overlay.style.overscrollBehavior = 'contain';
+
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.width = 'min(680px, 92vw)';
+            popup.style.maxHeight = '90vh';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+            popup.style.display = 'flex';
+            popup.style.flexDirection = 'column';
+            popup.style.overflow = 'hidden';
+
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.alignItems = 'center';
+            header.style.justifyContent = 'space-between';
+            header.style.gap = '12px';
+            header.style.padding = '16px';
+            header.style.borderBottom = '1px solid var(--divider-color, #ddd)';
+
+            const title = document.createElement('h2');
+            title.textContent = translate("ui.ean.database_manager_title");
+            title.style.margin = '0';
+            title.style.fontSize = '20px';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.textContent = '×';
+            closeBtn.setAttribute('aria-label', translate("ui.common.close"));
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = 'var(--primary-text-color, black)';
+            closeBtn.style.fontSize = '28px';
+            closeBtn.style.lineHeight = '1';
+            closeBtn.style.cursor = 'pointer';
+
+            const content = document.createElement('div');
+            content.style.padding = '16px';
+            content.style.overflowY = 'auto';
+            content.style.boxSizing = 'border-box';
+
+            const close = (result = true) => {
+                window.removeEventListener('keydown', escapeHandler, true);
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve(result);
+            };
+            const escapeHandler = (event) => {
+                if (event.key === 'Escape') {
+                    event.stopImmediatePropagation();
+                    close();
+                }
+            };
+
+            const styleButton = (button, primary = false, danger = false) => {
+                button.type = 'button';
+                button.style.border = 'none';
+                button.style.padding = '7px 12px';
+                button.style.borderRadius = '4px';
+                button.style.cursor = 'pointer';
+                button.style.background = danger
+                    ? 'var(--error-color, #c62828)'
+                    : primary
+                        ? 'var(--primary-color, #03A9F4)'
+                        : 'var(--secondary-background-color, #eee)';
+                button.style.color = primary || danger
+                    ? 'white'
+                    : 'var(--primary-text-color, black)';
+            };
+
+            const createInput = (labelText, value = '') => {
+                const wrapper = document.createElement('label');
+                wrapper.style.display = 'block';
+                wrapper.style.textAlign = 'left';
+                wrapper.style.fontSize = '12px';
+                wrapper.style.color = 'var(--secondary-text-color, #666)';
+
+                const label = document.createElement('span');
+                label.textContent = labelText;
+                label.style.display = 'block';
+                label.style.marginBottom = '4px';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = value || '';
+                input.style.width = '100%';
+                input.style.boxSizing = 'border-box';
+                input.style.padding = '9px 10px';
+                input.style.border = '1px solid var(--divider-color, #ccc)';
+                input.style.borderRadius = '4px';
+                input.style.background = 'var(--card-background-color, white)';
+                input.style.color = 'var(--primary-text-color, black)';
+
+                wrapper.appendChild(label);
+                wrapper.appendChild(input);
+                return { wrapper, input };
+            };
+
+            const createInfo = (labelText, value = '') => {
+                const wrapper = document.createElement('div');
+                wrapper.style.textAlign = 'left';
+
+                const label = document.createElement('div');
+                label.textContent = labelText;
+                label.style.marginBottom = '4px';
+                label.style.fontSize = '12px';
+                label.style.color = 'var(--secondary-text-color, #666)';
+
+                const text = document.createElement('div');
+                text.textContent = value || '—';
+                text.style.minHeight = '20px';
+                text.style.padding = '9px 0';
+                text.style.borderBottom = '1px solid var(--divider-color, #ccc)';
+                text.style.color = 'var(--primary-text-color, black)';
+                text.style.wordBreak = 'break-word';
+
+                wrapper.appendChild(label);
+                wrapper.appendChild(text);
+                return wrapper;
+            };
+
+            const renderProduct = (sourceRecord) => {
+                const record = { ...sourceRecord };
+                content.innerHTML = '';
+
+                const backBtn = document.createElement('button');
+                backBtn.textContent = `← ${translate("ui.ean.database_back")}`;
+                styleButton(backBtn);
+                backBtn.style.marginBottom = '14px';
+                backBtn.addEventListener('click', () => {
+                    if (typeof onBack !== "function") {
+                        renderList();
+                        return;
+                    }
+                    close(null);
+                    setTimeout(() => onBack(), 0);
+                });
+                content.appendChild(backBtn);
+
+                const editTitle = document.createElement('h3');
+                editTitle.textContent = translate("ui.ean.database_edit_title");
+                editTitle.style.margin = '0 0 14px';
+                content.appendChild(editTitle);
+
+                const groupCategories = [...new Set(this._getEanDatabaseEntriesByName(record.name)
+                    .map(product => String(product.category || "none").trim().toLocaleLowerCase()))];
+                if (groupCategories.length > 1) {
+                    const conflict = document.createElement('div');
+                    conflict.textContent = translate("ui.inventory.category_conflict").replace("{name}", record.name);
+                    conflict.style.cssText = 'margin:0 0 12px;padding:9px 10px;border-left:4px solid var(--warning-color,#e0a526);background:var(--secondary-background-color,#eee);font-size:13px;line-height:1.4;';
+                    content.appendChild(conflict);
+                }
+
+                const reloadBtn = document.createElement('button');
+                styleButton(reloadBtn);
+                reloadBtn.style.display = 'inline-flex';
+                reloadBtn.style.alignItems = 'center';
+                reloadBtn.style.gap = '7px';
+                reloadBtn.style.padding = '4px 0';
+                reloadBtn.style.marginBottom = '10px';
+                reloadBtn.style.background = 'transparent';
+                reloadBtn.style.color = 'var(--primary-color, #03A9F4)';
+                const reloadIcon = document.createElement('ha-icon');
+                reloadIcon.setAttribute('icon', 'mdi:refresh');
+                reloadIcon.style.width = '18px';
+                reloadIcon.style.height = '18px';
+                reloadIcon.style.setProperty('--mdc-icon-size', '18px');
+                const reloadText = document.createElement('span');
+                reloadText.textContent = translate("ui.ean.database_reload_off");
+                reloadBtn.appendChild(reloadIcon);
+                reloadBtn.appendChild(reloadText);
+                content.appendChild(reloadBtn);
+
+                const offStatus = document.createElement('div');
+                offStatus.style.marginBottom = '14px';
+                offStatus.style.fontSize = '13px';
+                content.appendChild(offStatus);
+
+                if (record.imageUrl) {
+                    const image = document.createElement('img');
+                    image.src = record.imageUrl;
+                    image.alt = record.name || '';
+                    image.loading = 'lazy';
+                    image.style.display = 'block';
+                    image.style.maxWidth = '180px';
+                    image.style.maxHeight = '180px';
+                    image.style.objectFit = 'contain';
+                    image.style.margin = '0 auto 16px';
+                    image.style.borderRadius = '4px';
+                    content.appendChild(image);
+                }
+
+                const fields = document.createElement('div');
+                fields.style.display = 'grid';
+                fields.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+                fields.style.gap = '12px';
+
+                const nameField = createInput(translate("ui.ean.database_name"), record.name);
+                const originalNameField = createInfo(
+                    translate("ui.ean.database_original_name"),
+                    record.originalName || ''
+                );
+                const eanField = createInfo(translate("ui.ean.database_ean"), record.ean);
+                const brandField = createInfo(translate("ui.ean.database_brand"), record.brand || '');
+                const quantityField = createInfo(translate("ui.ean.database_quantity"), record.quantity || '');
+
+                const categoryWrapper = document.createElement('label');
+                categoryWrapper.style.display = 'block';
+                categoryWrapper.style.textAlign = 'left';
+                categoryWrapper.style.fontSize = '12px';
+                categoryWrapper.style.color = 'var(--secondary-text-color, #666)';
+                const categoryLabel = document.createElement('span');
+                categoryLabel.textContent = translate("ui.ean.database_category");
+                categoryLabel.style.display = 'block';
+                categoryLabel.style.marginBottom = '4px';
+                const categorySelect = document.createElement('select');
+                categorySelect.style.width = '100%';
+                categorySelect.style.boxSizing = 'border-box';
+                categorySelect.style.padding = '9px 10px';
+                categorySelect.style.border = '1px solid var(--divider-color, #ccc)';
+                categorySelect.style.borderRadius = '4px';
+                categorySelect.style.background = 'var(--card-background-color, white)';
+                categorySelect.style.color = 'var(--primary-text-color, black)';
+
+                const categoryNames = [...new Set((this._categories || [])
+                    .map(category => String(category?.name || '').trim())
+                    .filter(Boolean))];
+                const currentCategory = String(record.category || '').trim();
+                if (currentCategory && !categoryNames.includes(currentCategory)) {
+                    categoryNames.push(currentCategory);
+                }
+                categoryNames.sort((a, b) => a.localeCompare(b, detectLanguage(), { sensitivity: 'base' }));
+
+                const noCategoryOption = document.createElement('option');
+                noCategoryOption.value = '';
+                noCategoryOption.textContent = translate("ui.common.no_cat");
+                categorySelect.appendChild(noCategoryOption);
+                categoryNames.forEach(categoryName => {
+                    const option = document.createElement('option');
+                    option.value = categoryName;
+                    option.textContent = categoryName;
+                    categorySelect.appendChild(option);
+                });
+                categorySelect.value = currentCategory;
+                categoryWrapper.appendChild(categoryLabel);
+                categoryWrapper.appendChild(categorySelect);
+
+                fields.appendChild(nameField.wrapper);
+                fields.appendChild(originalNameField);
+                fields.appendChild(eanField);
+                fields.appendChild(brandField);
+                fields.appendChild(categoryWrapper);
+                fields.appendChild(quantityField);
+                content.appendChild(fields);
+
+                const stockRow = document.createElement('div');
+                stockRow.style.display = 'grid';
+                stockRow.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+                stockRow.style.gap = '12px';
+                stockRow.style.alignItems = 'end';
+                stockRow.style.marginTop = '16px';
+
+                const currentStockField = createInput(
+                    translate("ui.ean.database_current_stock"),
+                    this._getShoppingStockByName(record.name, this._canTrackInventoryVariants() ? record.ean : undefined)
+                );
+                currentStockField.input.type = 'number';
+                currentStockField.input.min = '0';
+                currentStockField.input.step = '1';
+
+                const stockActionContainer = document.createElement('div');
+                stockActionContainer.style.display = 'flex';
+                stockActionContainer.style.alignItems = 'flex-end';
+                stockActionContainer.style.height = '100%';
+                stockRow.appendChild(currentStockField.wrapper);
+                stockRow.appendChild(stockActionContainer);
+                content.appendChild(stockRow);
+
+                const stockStatus = document.createElement('div');
+                stockStatus.style.display = 'none';
+                stockStatus.style.marginTop = '6px';
+                stockStatus.style.fontSize = '13px';
+                content.appendChild(stockStatus);
+
+                const manualTransferAvailable = this._isEanTransferEntityUsable(true);
+                const automaticRemovalTransferActive = manualTransferAvailable &&
+                    this._isEanTransferActionEnabled("shopping_remove");
+
+                const transferSection = document.createElement('div');
+                transferSection.style.marginTop = '18px';
+                transferSection.style.padding = '14px';
+                transferSection.style.border = '1px solid var(--divider-color, #ccc)';
+                transferSection.style.borderRadius = '6px';
+
+                const transferTitle = document.createElement('h4');
+                transferTitle.textContent = translate("ui.ean.database_transfer_title");
+                transferTitle.style.margin = '0 0 12px';
+                transferSection.appendChild(transferTitle);
+
+                const transferFields = document.createElement('div');
+                transferFields.style.display = 'grid';
+                transferFields.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+                transferFields.style.gap = '12px';
+
+                const minimumStockField = createInput(
+                    translate("ui.ean.database_minimum_stock"),
+                    record.minimumStock ?? ''
+                );
+                minimumStockField.input.type = 'number';
+                minimumStockField.input.min = '0';
+                minimumStockField.input.step = '1';
+
+                const transferDisabledLabel = document.createElement('label');
+                transferDisabledLabel.style.display = 'flex';
+                transferDisabledLabel.style.alignItems = 'center';
+                transferDisabledLabel.style.gap = '8px';
+                transferDisabledLabel.style.minHeight = '38px';
+                const transferDisabledInput = document.createElement('input');
+                transferDisabledInput.type = 'checkbox';
+                transferDisabledInput.checked = record.automaticTransferDisabled === true;
+                const transferDisabledText = document.createElement('span');
+                transferDisabledText.textContent = translate("ui.ean.database_transfer_disabled");
+                transferDisabledLabel.appendChild(transferDisabledInput);
+                transferDisabledLabel.appendChild(transferDisabledText);
+
+                const minimumHelp = document.createElement('div');
+                minimumHelp.textContent = translate("ui.ean.database_minimum_stock_help");
+                minimumHelp.style.marginTop = '7px';
+                minimumHelp.style.fontSize = '12px';
+                minimumHelp.style.color = 'var(--secondary-text-color, #666)';
+
+                if (automaticRemovalTransferActive) {
+                    transferFields.appendChild(minimumStockField.wrapper);
+                    transferFields.appendChild(transferDisabledLabel);
+                    transferSection.appendChild(transferFields);
+                    transferSection.appendChild(minimumHelp);
+                } else {
+                    const manualOnlyInfo = document.createElement('div');
+                    manualOnlyInfo.textContent = translate("ui.ean.database_manual_only");
+                    manualOnlyInfo.style.fontSize = '13px';
+                    manualOnlyInfo.style.color = 'var(--secondary-text-color, #666)';
+                    transferSection.appendChild(manualOnlyInfo);
+                }
+
+                const manualSendRow = document.createElement('div');
+                manualSendRow.style.display = 'grid';
+                manualSendRow.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+                manualSendRow.style.gap = '12px';
+                manualSendRow.style.alignItems = 'end';
+                manualSendRow.style.marginTop = '14px';
+
+                const manualSendField = createInput(
+                    translate("ui.ean.database_manual_send_quantity"),
+                    '1'
+                );
+                manualSendField.input.type = 'number';
+                manualSendField.input.min = '1';
+                manualSendField.input.step = '1';
+
+                const manualSendActionContainer = document.createElement('div');
+                manualSendActionContainer.style.display = 'flex';
+                manualSendActionContainer.style.alignItems = 'flex-end';
+                manualSendActionContainer.style.height = '100%';
+                manualSendRow.appendChild(manualSendField.wrapper);
+                manualSendRow.appendChild(manualSendActionContainer);
+                transferSection.appendChild(manualSendRow);
+                if (manualTransferAvailable) content.appendChild(transferSection);
+
+                const status = document.createElement('div');
+                status.style.minHeight = '20px';
+                status.style.marginTop = '12px';
+                status.style.fontSize = '13px';
+                content.appendChild(status);
+
+                const actions = document.createElement('div');
+                actions.style.display = 'flex';
+                actions.style.flexWrap = 'wrap';
+                actions.style.gap = '8px';
+                actions.style.marginTop = '8px';
+
+                const saveCurrentProduct = async (overrides = {}, messageTarget = status) => {
+                    const name = String(nameField.input.value || '').trim();
+                    if (!name) {
+                        messageTarget.textContent = translate("ui.ean.database_name_required");
+                        messageTarget.style.color = 'var(--error-color, #db4437)';
+                        return false;
+                    }
+                    const minimumText = String(minimumStockField.input.value || '').trim();
+                    const minimumStock = minimumText === '' ? null : Number(minimumText);
+                    if (minimumStock !== null && (!Number.isInteger(minimumStock) || minimumStock < 0)) {
+                        messageTarget.textContent = translate("ui.ean.database_number_invalid");
+                        messageTarget.style.color = 'var(--error-color, #db4437)';
+                        return false;
+                    }
+                    const nextCategory = categorySelect.value || null;
+                    const groupPeers = this._getEanDatabaseEntriesByName(record.name)
+                        .filter(product => product.ean !== record.ean);
+                    const categoryChanged = String(record.category || "").trim().toLocaleLowerCase() !==
+                        String(nextCategory || "").trim().toLocaleLowerCase();
+                    const sameGroupName = this._normalizeEanDatabaseProductName(name) ===
+                        this._normalizeEanDatabaseProductName(record.name);
+                    const categoryNeedsGroupSync = sameGroupName && groupPeers.some(peer =>
+                        String(peer.category || "").trim().toLocaleLowerCase() !==
+                        String(nextCategory || "").trim().toLocaleLowerCase()
+                    );
+                    if ((categoryChanged || categoryNeedsGroupSync) && sameGroupName && groupPeers.length) {
+                        const question = translate("ui.inventory.ean_category_confirm")
+                            .replace("{name}", record.name);
+                        if (!(await this.confirmPopup(question))) return false;
+                    }
+                    const saved = await this._saveEanDatabaseProduct({
+                        ...record,
+                        ...overrides,
+                        _allowGroupCategoryChange: (categoryChanged || categoryNeedsGroupSync) && sameGroupName,
+                        name,
+                        category: nextCategory,
+                        minimumStock,
+                        automaticTransferDisabled: transferDisabledInput.checked
+                    });
+                    if (!saved) {
+                        messageTarget.textContent = this._eanDatabaseErrorMessage("save");
+                        messageTarget.style.color = 'var(--error-color, #db4437)';
+                    }
+                    if (saved && (categoryChanged || categoryNeedsGroupSync) && sameGroupName) {
+                        for (const peer of groupPeers) {
+                            const peerSaved = await this._saveEanDatabaseProduct({
+                                ...peer,
+                                _allowGroupCategoryChange: true,
+                                category: nextCategory
+                            });
+                            if (!peerSaved) return false;
+                        }
+                        const inventoryUpdated = await this._updateCurrentInventoryGroupCategory(
+                            record.name, nextCategory || "none"
+                        );
+                        if (!inventoryUpdated) {
+                            await this._saveEanDatabaseProduct({
+                                ...record,
+                                _allowGroupCategoryChange: true
+                            });
+                            for (const peer of groupPeers) {
+                                await this._saveEanDatabaseProduct({
+                                    ...peer,
+                                    _allowGroupCategoryChange: true
+                                });
+                            }
+                            return false;
+                        }
+                    }
+                    if (saved) this._renderList();
+                    return saved;
+                };
+
+                const saveBtn = document.createElement('button');
+                saveBtn.textContent = translate("ui.ean.database_save");
+                styleButton(saveBtn, true);
+                saveBtn.addEventListener('click', async () => {
+                    saveBtn.disabled = true;
+                    const saved = await saveCurrentProduct();
+                    saveBtn.disabled = false;
+                    if (saved) renderList();
+                });
+
+                const correctStockBtn = document.createElement('button');
+                correctStockBtn.textContent = translate("ui.ean.database_set_stock");
+                styleButton(correctStockBtn);
+                correctStockBtn.style.width = '100%';
+                stockActionContainer.appendChild(correctStockBtn);
+                correctStockBtn.addEventListener('click', async () => {
+                    const stockText = String(currentStockField.input.value || '').trim();
+                    const value = Number(stockText);
+                    if (!stockText || !Number.isInteger(value) || value < 0) {
+                        stockStatus.textContent = translate("ui.ean.database_number_invalid");
+                        stockStatus.style.color = 'var(--error-color, #db4437)';
+                        stockStatus.style.display = 'block';
+                        return;
+                    }
+                    if (value > 0 && this._getShoppingStockByName(
+                        record.name, this._canTrackInventoryVariants() ? record.ean : undefined
+                    ) === 0) {
+                        const message = translate("ui.ean.database_create_stock_confirm")
+                            .replace("{name}", record.name)
+                            .replace("{quantity}", String(value));
+                        if (!(await this.confirmPopup(message))) return;
+                    }
+                    correctStockBtn.disabled = true;
+                    const result = await this._setShoppingQuantityByName(
+                        record.name, record.category, value,
+                        this._canTrackInventoryVariants() ? record.ean : undefined
+                    );
+                    correctStockBtn.disabled = false;
+                    if (result.status === "error") {
+                        stockStatus.textContent = result.error?.message || String(result.error || "");
+                        stockStatus.style.color = 'var(--error-color, #db4437)';
+                        stockStatus.style.display = 'block';
+                        return;
+                    }
+                    currentStockField.input.value = String(result.quantity);
+                    stockStatus.textContent = translate("ui.ean.database_stock_updated");
+                    stockStatus.style.color = 'var(--success-color, #2e7d32)';
+                    stockStatus.style.display = 'block';
+                });
+
+                const manualSendBtn = document.createElement('button');
+                manualSendBtn.textContent = translate("ui.ean.database_manual_send");
+                styleButton(manualSendBtn);
+                manualSendBtn.style.width = '100%';
+                manualSendActionContainer.appendChild(manualSendBtn);
+                manualSendBtn.addEventListener('click', async () => {
+                    const quantity = Number(manualSendField.input.value);
+                    if (!Number.isInteger(quantity) || quantity < 1) {
+                        status.textContent = translate("ui.ean.database_send_number_invalid");
+                        status.style.color = 'var(--error-color, #db4437)';
+                        return;
+                    }
+                    if (!this._isEanTransferEntityUsable(true)) {
+                        status.textContent = translate("ui.ean.database_transfer_unavailable");
+                        status.style.color = 'var(--error-color, #db4437)';
+                        return;
+                    }
+                    manualSendBtn.disabled = true;
+                    const transferId = await this._createEanTransfer(
+                        "shopping_add",
+                        record.ean,
+                        record,
+                        quantity,
+                        { sourceOperation: "manual_send" }
+                    );
+                    manualSendBtn.disabled = false;
+                    if (!transferId) return;
+                    await this._runEanScript("transfer_sent", {
+                        ean: record.ean,
+                        name: record.name,
+                        brand: record.brand,
+                        productQuantity: record.quantity,
+                        scanQuantity: quantity,
+                        category: record.category,
+                        imageUrl: record.imageUrl,
+                        scanMode: "shopping"
+                    });
+                    status.textContent = translate("ui.ean.database_manual_send_done");
+                    status.style.color = 'var(--success-color, #2e7d32)';
+                });
+
+                reloadBtn.addEventListener('click', async () => {
+                    reloadBtn.disabled = true;
+                    reloadIcon.setAttribute('icon', 'mdi:loading');
+                    offStatus.textContent = translate("ui.ean.database_loading_off");
+                    offStatus.style.color = 'var(--secondary-text-color, #666)';
+                    const offProduct = await this._checkEAN(record.ean, { openFactsOnly: true });
+                    reloadBtn.disabled = false;
+                    reloadIcon.setAttribute('icon', 'mdi:refresh');
+
+                    if (!offProduct) {
+                        offStatus.textContent = translate("ui.ean.database_off_not_found");
+                        offStatus.style.color = 'var(--error-color, #db4437)';
+                        return;
+                    }
+
+                    offStatus.innerHTML = '';
+                    const preview = document.createElement('div');
+                    preview.style.padding = '10px';
+                    preview.style.border = '1px solid var(--divider-color, #ccc)';
+                    preview.style.borderRadius = '4px';
+
+                    const previewTitle = document.createElement('strong');
+                    previewTitle.textContent = translate("ui.ean.database_off_preview");
+                    preview.appendChild(previewTitle);
+
+                    const previewValues = document.createElement('div');
+                    previewValues.style.display = 'grid';
+                    previewValues.style.gap = '5px';
+                    previewValues.style.marginTop = '8px';
+                    [
+                        [translate("ui.ean.database_original_name"), offProduct.name],
+                        [translate("ui.ean.database_brand"), offProduct.brand],
+                        [translate("ui.ean.database_quantity"), offProduct.quantity]
+                    ].forEach(([label, value]) => {
+                        const row = document.createElement('div');
+                        const labelEl = document.createElement('strong');
+                        labelEl.textContent = `${label}: `;
+                        const valueEl = document.createElement('span');
+                        valueEl.textContent = value || '—';
+                        row.appendChild(labelEl);
+                        row.appendChild(valueEl);
+                        previewValues.appendChild(row);
+                    });
+                    preview.appendChild(previewValues);
+
+                    const nameNote = document.createElement('div');
+                    nameNote.textContent = translate("ui.ean.database_off_name_preserved");
+                    nameNote.style.marginTop = '8px';
+                    nameNote.style.fontSize = '12px';
+                    nameNote.style.color = 'var(--secondary-text-color, #666)';
+                    preview.appendChild(nameNote);
+
+                    if (offProduct.imageUrl) {
+                        const previewImage = document.createElement('img');
+                        previewImage.src = offProduct.imageUrl;
+                        previewImage.alt = offProduct.name || '';
+                        previewImage.loading = 'lazy';
+                        previewImage.style.display = 'block';
+                        previewImage.style.maxWidth = '120px';
+                        previewImage.style.maxHeight = '120px';
+                        previewImage.style.objectFit = 'contain';
+                        previewImage.style.margin = '10px auto';
+                        preview.appendChild(previewImage);
+                    }
+
+                    const applyBtn = document.createElement('button');
+                    applyBtn.textContent = translate("ui.ean.database_apply_off");
+                    styleButton(applyBtn, true);
+                    applyBtn.style.marginTop = '8px';
+                    applyBtn.addEventListener('click', async () => {
+                        applyBtn.disabled = true;
+                        const saved = await saveCurrentProduct({
+                            originalName: offProduct.originalName || offProduct.name || null,
+                            brand: offProduct.brand || null,
+                            quantity: offProduct.quantity || null,
+                            imageUrl: offProduct.imageUrl || null
+                        }, offStatus);
+                        applyBtn.disabled = false;
+                        if (saved) renderList();
+                    });
+                    preview.appendChild(applyBtn);
+                    offStatus.appendChild(preview);
+                });
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = translate("ui.common.delete");
+                styleButton(deleteBtn, false, true);
+                deleteBtn.addEventListener('click', async () => {
+                    if (!(await this.confirmPopup(translate("ui.ean.database_delete_confirm")))) return;
+                    deleteBtn.disabled = true;
+                    const deleted = await this._deleteEanDatabaseItem(record.uid);
+                    if (deleted) renderList();
+                    else {
+                        deleteBtn.disabled = false;
+                        status.textContent = translate("ui.ean.database_delete_failed");
+                        status.style.color = 'var(--error-color, #db4437)';
+                    }
+                });
+
+                actions.appendChild(saveBtn);
+                actions.appendChild(deleteBtn);
+                content.appendChild(actions);
+            };
+
+            const renderList = () => {
+                content.innerHTML = '';
+
+                const fillModeBtn = document.createElement('button');
+                fillModeBtn.textContent = translate("ui.ean.database_fill_start");
+                styleButton(fillModeBtn, true);
+                fillModeBtn.style.marginBottom = '14px';
+                fillModeBtn.addEventListener('click', () => close("database"));
+                content.appendChild(fillModeBtn);
+
+                const controls = document.createElement('div');
+                controls.style.display = 'grid';
+                controls.style.gridTemplateColumns = 'minmax(0, 1fr) minmax(130px, auto)';
+                controls.style.gap = '10px';
+                controls.style.marginBottom = '14px';
+
+                const search = document.createElement('input');
+                search.type = 'search';
+                search.placeholder = translate("ui.ean.database_search");
+                search.style.minWidth = '0';
+                search.style.padding = '9px 10px';
+                search.style.border = '1px solid var(--divider-color, #ccc)';
+                search.style.borderRadius = '4px';
+                search.style.background = 'var(--card-background-color, white)';
+                search.style.color = 'var(--primary-text-color, black)';
+
+                const sort = document.createElement('select');
+                sort.setAttribute('aria-label', translate("ui.ean.database_sort"));
+                sort.style.padding = '9px 10px';
+                sort.style.border = '1px solid var(--divider-color, #ccc)';
+                sort.style.borderRadius = '4px';
+                sort.style.background = 'var(--card-background-color, white)';
+                sort.style.color = 'var(--primary-text-color, black)';
+                [
+                    ['name', translate("ui.ean.database_sort_name")],
+                    ['category', translate("ui.ean.database_sort_category")]
+                ].forEach(([value, label]) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = `${translate("ui.ean.database_sort")}: ${label}`;
+                    sort.appendChild(option);
+                });
+
+                controls.appendChild(search);
+                controls.appendChild(sort);
+                content.appendChild(controls);
+
+                const productList = document.createElement('div');
+                productList.style.display = 'flex';
+                productList.style.flexDirection = 'column';
+                productList.style.gap = '6px';
+                content.appendChild(productList);
+
+                const updateProducts = () => {
+                    const query = String(search.value || '').trim();
+                    const products = [...(this._eanDatabase?.values() || [])]
+                        .filter(product => {
+                            if (!query) return true;
+                            return this._matchesSearchValues([
+                                product.name,
+                                product.originalName,
+                                product.brand,
+                                product.category,
+                                product.ean
+                            ], query);
+                        })
+                        .sort((a, b) => {
+                            if (sort.value === 'category') {
+                                const categoryA = String(a.category || '').trim();
+                                const categoryB = String(b.category || '').trim();
+                                if (!categoryA && categoryB) return 1;
+                                if (categoryA && !categoryB) return -1;
+                                const categoryCompare = categoryA.localeCompare(
+                                    categoryB,
+                                    detectLanguage(),
+                                    { sensitivity: 'base' }
+                                );
+                                if (categoryCompare) return categoryCompare;
+                            }
+                            return String(a.name || '').localeCompare(
+                                String(b.name || ''),
+                                detectLanguage(),
+                                { sensitivity: 'base' }
+                            );
+                        });
+
+                    productList.innerHTML = '';
+                    if (!products.length) {
+                        const empty = document.createElement('div');
+                        empty.textContent = translate("ui.ean.database_no_products");
+                        empty.style.padding = '14px 4px';
+                        empty.style.color = 'var(--secondary-text-color, #666)';
+                        productList.appendChild(empty);
+                        return;
+                    }
+
+                    const appendProduct = (product) => {
+                        const row = document.createElement('button');
+                        row.type = 'button';
+                        row.style.width = '100%';
+                        row.style.padding = '10px';
+                        row.style.border = '1px solid var(--divider-color, #ddd)';
+                        row.style.borderRadius = '4px';
+                        row.style.background = 'var(--card-background-color, white)';
+                        row.style.color = 'var(--primary-text-color, black)';
+                        row.style.textAlign = 'left';
+                        row.style.cursor = 'pointer';
+
+                        const name = document.createElement('div');
+                        name.textContent = product.name;
+                        name.style.fontWeight = '600';
+
+                        const details = document.createElement('div');
+                        details.textContent = [
+                            product.category || translate("ui.ean.database_no_category"),
+                            product.brand,
+                            product.ean
+                        ]
+                            .filter(Boolean)
+                            .join(' · ');
+                        details.style.marginTop = '3px';
+                        details.style.fontSize = '12px';
+                        details.style.color = 'var(--secondary-text-color, #666)';
+
+                        row.appendChild(name);
+                        row.appendChild(details);
+                        row.addEventListener('click', () => renderProduct(product));
+                        productList.appendChild(row);
+                    };
+
+                    if (sort.value === 'category') {
+                        let previousCategory = null;
+                        products.forEach(product => {
+                            const category = String(product.category || '').trim();
+                            if (category !== previousCategory) {
+                                const categoryHeading = document.createElement('div');
+                                categoryHeading.textContent = category || translate("ui.ean.database_no_category");
+                                categoryHeading.style.margin = previousCategory === null ? '2px 0 2px' : '12px 0 2px';
+                                categoryHeading.style.padding = '6px 8px';
+                                categoryHeading.style.borderRadius = '4px';
+                                categoryHeading.style.background = 'var(--secondary-background-color, #eee)';
+                                categoryHeading.style.fontWeight = '600';
+                                productList.appendChild(categoryHeading);
+                                previousCategory = category;
+                            }
+                            appendProduct(product);
+                        });
+                    } else {
+                        products.forEach(appendProduct);
+                    }
+                };
+
+                search.addEventListener('input', updateProducts);
+                sort.addEventListener('change', updateProducts);
+                updateProducts();
+
+                const invalidItems = this._eanDatabaseInvalidItems || [];
+                if (invalidItems.length) {
+                    const invalidTitle = document.createElement('h3');
+                    invalidTitle.textContent = `${translate("ui.ean.database_invalid_title")} (${invalidItems.length})`;
+                    invalidTitle.style.margin = '20px 0 8px';
+                    invalidTitle.style.color = 'var(--error-color, #db4437)';
+                    content.appendChild(invalidTitle);
+
+                    invalidItems.forEach((item, index) => {
+                        const row = document.createElement('div');
+                        row.style.display = 'flex';
+                        row.style.alignItems = 'center';
+                        row.style.justifyContent = 'space-between';
+                        row.style.gap = '10px';
+                        row.style.padding = '9px 10px';
+                        row.style.marginBottom = '6px';
+                        row.style.border = '1px solid var(--error-color, #db4437)';
+                        row.style.borderRadius = '4px';
+
+                        const text = document.createElement('div');
+                        text.style.minWidth = '0';
+                        const summary = document.createElement('div');
+                        summary.textContent = item.summary || `${translate("ui.ean.database_invalid_entry")} ${index + 1}`;
+                        summary.style.fontWeight = '600';
+                        summary.style.overflow = 'hidden';
+                        summary.style.textOverflow = 'ellipsis';
+                        summary.style.whiteSpace = 'nowrap';
+                        text.appendChild(summary);
+
+                        const deleteInvalidBtn = document.createElement('button');
+                        deleteInvalidBtn.textContent = translate("ui.common.delete");
+                        deleteInvalidBtn.disabled = !item.uid;
+                        styleButton(deleteInvalidBtn, false, true);
+                        deleteInvalidBtn.addEventListener('click', async () => {
+                            if (!(await this.confirmPopup(translate("ui.ean.database_delete_confirm")))) return;
+                            deleteInvalidBtn.disabled = true;
+                            const deleted = await this._deleteEanDatabaseItem(item.uid);
+                            if (deleted) renderList();
+                            else {
+                                deleteInvalidBtn.disabled = false;
+                                await this.confirmPopup(translate("ui.ean.database_delete_failed"), true);
+                            }
+                        });
+
+                        row.appendChild(text);
+                        row.appendChild(deleteInvalidBtn);
+                        content.appendChild(row);
+                    });
+                }
+            };
+
+            header.appendChild(title);
+            header.appendChild(closeBtn);
+            popup.appendChild(header);
+            popup.appendChild(content);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+
+            closeBtn.addEventListener('click', () => close());
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close();
+            });
+            window.addEventListener('keydown', escapeHandler, true);
+            const initialProduct = initialEan
+                ? this._eanDatabase?.get(String(initialEan))
+                : null;
+            if (initialProduct) renderProduct(initialProduct);
+            else renderList();
+        });
+    }
+
+    _eanDatabaseErrorMessage(reason = this._eanDatabaseError) {
+        const reasonKey = reason === "description"
+            ? "ui.ean.database_reason_description"
+            : reason === "entity"
+                ? "ui.ean.database_reason_entity"
+                : reason === "save"
+                    ? "ui.ean.database_reason_save"
+                    : "ui.ean.database_reason_load";
+        return translate("ui.ean.database_unavailable").replace("{reason}", translate(reasonKey));
+    }
+
+    _showEanLookupFailedPopup(code) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '10000';
+
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.padding = '16px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.maxWidth = '380px';
+            popup.style.width = '90%';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+
+            const title = document.createElement('h3');
+            title.textContent = translate("ui.ean.lookup_failed_title");
+            title.style.margin = '0 0 8px 0';
+
+            const message = document.createElement('div');
+            message.textContent = translate("ui.ean.lookup_failed_text").replace("{ean}", code);
+            message.style.marginBottom = '16px';
+            message.style.lineHeight = '1.4';
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.flexWrap = 'wrap';
+            buttons.style.gap = '8px';
+
+            const addButton = (translationKey, action, primary = false) => {
+                const button = document.createElement('button');
+                button.textContent = translate(translationKey);
+                button.style.padding = '7px 12px';
+                button.style.cursor = 'pointer';
+                if (primary) {
+                    button.style.background = 'var(--primary-color, #03A9F4)';
+                    button.style.color = 'white';
+                }
+                button.addEventListener('click', () => {
+                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                    resolve(action);
+                });
+                buttons.appendChild(button);
+            };
+
+            addButton("ui.ean.lookup_retry", "retry", true);
+            addButton("ui.ean.lookup_manual", "manual");
+            addButton("ui.ean.lookup_later", "later");
+            addButton("ui.ean.lookup_discard", "discard");
+
+            popup.appendChild(title);
+            popup.appendChild(message);
+            popup.appendChild(buttons);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    _showEanQueueSummaryPopup(count) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.4)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '10000';
+
+            const popup = document.createElement('div');
+            popup.style.background = 'var(--card-background-color, white)';
+            popup.style.color = 'var(--primary-text-color, black)';
+            popup.style.padding = '16px';
+            popup.style.borderRadius = '8px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            popup.style.maxWidth = '380px';
+            popup.style.width = '90%';
+            popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
+
+            const message = document.createElement('div');
+            message.textContent = count === 1
+                ? translate("ui.ean.queue_summary_one")
+                : translate("ui.ean.queue_summary").replace("{count}", String(count));
+            message.style.fontWeight = '600';
+            message.style.marginBottom = '8px';
+
+            const hint = document.createElement('div');
+            hint.textContent = translate("ui.ean.queue_admin_hint");
+            hint.style.fontSize = '12px';
+            hint.style.lineHeight = '1.4';
+            hint.style.color = 'var(--secondary-text-color, #666)';
+            hint.style.marginBottom = '16px';
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.gap = '8px';
+
+            const processNow = document.createElement('button');
+            processNow.textContent = translate("ui.ean.queue_process_now");
+            processNow.style.padding = '7px 12px';
+            processNow.style.cursor = 'pointer';
+            processNow.style.background = 'var(--primary-color, #03A9F4)';
+            processNow.style.color = 'white';
+            processNow.addEventListener('click', () => {
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve("now");
+            });
+
+            const later = document.createElement('button');
+            later.textContent = translate("ui.ean.queue_keep_later");
+            later.style.padding = '7px 12px';
+            later.style.cursor = 'pointer';
+            later.addEventListener('click', () => {
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                resolve("later");
+            });
+
+            buttons.appendChild(processNow);
+            buttons.appendChild(later);
+            popup.appendChild(message);
+            popup.appendChild(hint);
+            popup.appendChild(buttons);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    async _processEanScanQueue(force = false) {
+        if (this._eanQueueProcessing || this._eanQueuePaused) return;
+        if (!Array.isArray(this._eanScanQueue) || this._eanScanQueue.length === 0) return;
+        if (!this._inputEl || !this._qtyEl) return;
+        if (!force && (!this._isEanScanEnabledOnThisDevice() || !this._isVisibleForEanScan())) return;
+
+        this._eanQueueProcessing = true;
+        try {
+            if (this._eanDatabaseLoadPromise) {
+                await this._eanDatabaseLoadPromise;
+            }
+
+            if (this._eanDatabaseEntity && this._eanDatabaseError) {
+                await this._runEanScript("error", {
+                    error: this._eanDatabaseErrorMessage()
+                });
+                await this.confirmPopup(this._eanDatabaseErrorMessage(), true);
+                this._eanQueuePaused = true;
+                return;
+            }
+
+            if (this._eanDatabaseInvalidCount > 0 && !this._eanDatabaseWarningShown) {
+                this._eanDatabaseWarningShown = true;
+                await this.confirmPopup(
+                    translate("ui.ean.database_invalid").replace("{count}", String(this._eanDatabaseInvalidCount)),
+                    true
+                );
+            }
+
+            let processAnotherPass = true;
+            while (processAnotherPass && !this._eanQueuePaused) {
+                processAnotherPass = false;
+                let deferredThisPass = 0;
+
+                while (!this._eanQueuePaused) {
+                    let itemIndex = this._eanScanQueue.findIndex(item => {
+                        const mode = this._normalizeEanScanMode(item.scan_mode);
+                        return item.deferred !== true && (mode === "database" || mode === "inventory_register");
+                    });
+                    if (itemIndex < 0) {
+                        itemIndex = this._eanScanQueue.findIndex(item => item.deferred !== true);
+                    }
+                    if (itemIndex < 0) break;
+
+                    const item = this._eanScanQueue[itemIndex];
+                    this._activeEanScanQueueItem = item;
+                    this._inputEl.value = item.code;
+                    this._qtyEl.value = String(item.quantity);
+                    this._eanQueueAction = null;
+
+                    const added = await this._onAdd();
+                    if (!added) {
+                        if (this._eanQueueAction === "discard") {
+                            await this._runEanScript("product_discarded", {
+                                queueItem: item,
+                                ean: item.code,
+                                scanQuantity: item.quantity
+                            });
+                            this._eanScanQueue.splice(itemIndex, 1);
+                            this._saveEanScanQueue();
+                            this._inputEl.value = '';
+                            this._qtyEl.value = '';
+                            continue;
+                        }
+
+                        item.deferred = true;
+                        await this._runEanScript("product_deferred", {
+                            queueItem: item,
+                            ean: item.code,
+                            scanQuantity: item.quantity
+                        });
+                        deferredThisPass += Math.max(1, Number(item.quantity) || 1);
+                        this._saveEanScanQueue();
+                        this._inputEl.value = '';
+                        this._qtyEl.value = '';
+                        continue;
+                    }
+
+                    const processedQuantity = Math.max(1, Number(this._activeEanScanProcessedQuantity || item.quantity));
+                    item.quantity -= processedQuantity;
+                    if (item.quantity <= 0) {
+                        this._eanScanQueue.splice(itemIndex, 1);
+                    }
+                    this._saveEanScanQueue();
+                }
+
+                if (deferredThisPass > 0 && !this._eanQueuePaused) {
+                    const deferredCount = this._eanScanQueue
+                        .filter(item => item.deferred === true)
+                        .reduce((sum, item) => sum + Math.max(1, Number(item.quantity) || 1), 0);
+                    const action = await this._showEanQueueSummaryPopup(deferredCount);
+
+                    if (action === "now") {
+                        this._eanScanQueue.forEach(item => {
+                            item.deferred = false;
+                        });
+                        this._saveEanScanQueue();
+                        processAnotherPass = true;
+                    }
+                }
+            }
+        } finally {
+            this._activeEanScanQueueItem = null;
+            this._activeEanScanProcessedQuantity = null;
+            this._eanQueuePopupStatusEl = null;
+            this._eanQueueProcessing = false;
+            // Scan processing can finish after the service event refresh has
+            // already rendered with the temporary EAN filter still active.
+            // Refresh once more after the input has been cleared.
+            this._scheduleRefresh(300, "ean_queue_finished", this._entity);
+        }
+    }
+
+    _normalizeBluetoothAddress(address) {
+        return String(address || "").trim().replace(/[^0-9a-f]/gi, "").toUpperCase();
+    }
+
+    async _runEanScript(status, data = {}) {
+        if (!this._eanScriptEnabled) return;
+        if (!this._eanScriptEntity?.startsWith("script.")) return;
+        if (!this._hass?.connection) return;
+
+        const queueItem = data.queueItem || this._activeEanScanQueueItem || null;
+        const variables = {
+            status: String(status || ""),
+            ean: String(data.ean ?? queueItem?.code ?? ""),
+            name: String(data.name ?? ""),
+            brand: String(data.brand ?? ""),
+            product_quantity: String(data.productQuantity ?? ""),
+            scan_quantity: Math.max(1, Number(data.scanQuantity ?? queueItem?.quantity ?? 1) || 1),
+            category: String(data.category ?? ""),
+            image_url: String(data.imageUrl ?? ""),
+            list_entity: String(this._entity || ""),
+            scanner_address: String(data.scannerAddress ?? queueItem?.address ?? ""),
+            scanner_source: String(data.scannerSource ?? queueItem?.source ?? ""),
+            scan_mode: this._normalizeEanScanMode(
+                data.scanMode ?? queueItem?.scan_mode ?? this._eanScanMode
+            ),
+            card_id: this._getEanScanCardId(),
+            stock_before: Number.isFinite(Number(data.stockBefore)) ? Number(data.stockBefore) : "",
+            stock_after: Number.isFinite(Number(data.stockAfter)) ? Number(data.stockAfter) : "",
+            original_action: String(data.originalAction ?? ""),
+            transfer_result: String(data.transferResult ?? ""),
+            action: String(data.action ?? ""),
+            error: String(data.error ?? "")
+        };
+
+        await this._callConfiguredScript(this._eanScriptEntity, variables, "EAN");
+    }
+
+    async _callConfiguredScript(entity, variables, label) {
+        if (!entity?.startsWith("script.") || !this._hass?.connection) return;
+        try {
+            await this._hass.connection.sendMessagePromise({
+                type: "call_service",
+                domain: "script",
+                service: "turn_on",
+                target: { entity_id: entity },
+                service_data: { variables }
+            });
+        } catch (error) {
+            console.warn(`[ha-shopping-list-improved] Unable to run ${label} script for status ${variables.status}:`, error);
+        }
+    }
+
+    async _runListScript(status, item, previousItem = null, extraVariables = {}) {
+        if (!this._listScriptEnabled) return;
+        if (!this._listScriptEntity?.startsWith("script.")) return;
+        const rawName = String(item?.summary ?? item?.name ?? "");
+        const name = this._getNameOnly(rawName);
+        const variant = this._mode === "inventory" ? this._parseInventoryVariant(item) : null;
+        const products = this._mode === "todo" ? [] : this._getEanDatabaseEntriesByName(name);
+        // An explicit manual inventory variant must not inherit another variant's EAN.
+        const ean = item?.ean || (variant && !variant.legacy
+            ? variant.ean
+            : products.length === 1 ? products[0].ean : null);
+        const variables = {
+            status,
+            name,
+            category: String(this._getCategory(rawName) || ""),
+            quantity: status === "item_removed" ? 0 : this._mode === "todo" ? 1 : this._getQuantity(rawName),
+            list_entity: this._entity,
+            mode: this._mode,
+            ean: ean || "",
+            is_ean: Boolean(ean) || (variant && !variant.legacy ? Boolean(variant.ean) : products.length > 0),
+            offer_only: this._mode === "shopping" && this._isOfferOnly(rawName),
+            action: status
+        };
+        if (previousItem) {
+            const previousName = String(previousItem.summary ?? previousItem.name ?? "");
+            variables.previous_quantity = this._mode === "todo" ? 1 : this._getQuantity(previousName);
+            if (status === "item_renamed") variables.previous_name = this._getNameOnly(previousName);
+        }
+        Object.assign(variables, extraVariables);
+        await this._callConfiguredScript(this._listScriptEntity, variables, "list changes");
+    }
+
+    async _callListService(message, options = {}) {
+        const data = message.service_data || {};
+        const enabled = !options.suppressListScript && this._listScriptEnabled && this._listScriptEntity?.startsWith("script.");
+        const watched = enabled && message.type === "call_service" && message.domain === "todo" &&
+            message.target?.entity_id === this._entity && (
+                ["add_item", "remove_item", "remove_completed_items"].includes(message.service) ||
+                (message.service === "update_item" && typeof data.rename === "string")
+            );
+        let previousItems = [];
+        let canReport = watched;
+        if (watched && message.service !== "add_item") {
+            try {
+                // Read the actual list, including hidden/completed variants, rather than stale rendered rows.
+                previousItems = await this._getTodoItems(this._entity);
+            } catch (error) {
+                canReport = false;
+                console.warn("[ha-shopping-list-improved] Unable to read previous list state for script output:", error);
+            }
+        }
+
+        const result = await this._hass.connection.sendMessagePromise(message);
+        if (!canReport) return result;
+        try {
+            if (message.service === "add_item") {
+                await this._runListScript("item_added", { summary: data.item, description: data.description, ean: options.ean });
+            } else if (message.service === "remove_completed_items") {
+                for (const item of previousItems.filter(entry => entry.status === "completed")) {
+                    await this._runListScript("item_removed", item, item);
+                }
+            } else {
+                const previous = previousItems.find(entry => entry.uid === data.item || entry.summary === data.item);
+                if (!previous) return result;
+                if (message.service === "remove_item") {
+                    await this._runListScript("item_removed", previous, previous);
+                } else {
+                    const next = { ...previous, summary: data.rename, description: data.description ?? previous.description, ean: options.ean };
+                    const oldName = this._getNameOnly(previous.summary);
+                    const newName = this._getNameOnly(next.summary);
+                    if (previous.status === "completed" && data.status === "needs_action" && this._mode !== "inventory") {
+                        await this._runListScript("item_added", next);
+                    } else {
+                        if (oldName !== newName) await this._runListScript("item_renamed", next, previous);
+                        if (this._mode !== "todo" && this._getQuantity(previous.summary) !== this._getQuantity(next.summary)) {
+                            await this._runListScript("quantity_changed", next, previous);
+                        }
+                        if (
+                            this._mode === "shopping" &&
+                            this._isOfferOnly(previous.summary) !== this._isOfferOnly(next.summary)
+                        ) {
+                            await this._runListScript("offer_only_changed", next, previous, {
+                                previous_offer_only: this._isOfferOnly(previous.summary)
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            // Script output must never turn a successful list update into a failed booking.
+            console.warn("[ha-shopping-list-improved] Unable to report list change:", error);
+        }
+        return result;
+    }
+
+    _isVisibleForEanScan() {
+        if (!this.isConnected || document.visibilityState === "hidden") return false;
+
+        const rect = this.getBoundingClientRect();
+        return rect.width > 0
+            && rect.height > 0
+            && rect.bottom > 0
+            && rect.right > 0
+            && rect.top < window.innerHeight
+            && rect.left < window.innerWidth;
+    }
+
+    async _handleEanScanStateChanged(event) {
+        const eventEntity = event?.data?.entity_id || "";
+        const oldState = event?.data?.old_state;
+        const newState = event?.data?.new_state;
+        const oldAttributes = oldState?.attributes || {};
+        const newAttributes = newState?.attributes || {};
+
+        if (!eventEntity.startsWith("sensor.") || !oldState || !newState) return;
+        if (!newAttributes.address || !newAttributes.last_scanned_at) return;
+        if (newAttributes.last_scanned_at === oldAttributes.last_scanned_at) return;
+
+        await this._handleEanScanEvent({
+            data: {
+                code: newState.state,
+                source: "sensor_state",
+                address: newAttributes.address
+            }
+        });
+    }
+
+    async _handleEanScanEvent(event) {
+        if (!["shopping", "inventory"].includes(this._mode)) return;
+        if (!this._isEanScanEnabledOnThisDevice()) return;
+        if (!this._isVisibleForEanScan()) return;
+
+        const configuredAddress = this._normalizeBluetoothAddress(this._eanScannerMac);
+        const eventAddress = this._normalizeBluetoothAddress(event?.data?.address);
+        if (configuredAddress.length !== 12 || configuredAddress !== eventAddress) return;
+
+        const rawCode = event?.data?.code;
+        const code = rawCode === undefined || rawCode === null
+            ? ""
+            : String(rawCode).trim();
+
+        if (this._handleInventoryControlCode(code)) return;
+        if (this._mode === "inventory" && this._eanScanMode === "inventory_none") {
+            this._showInventoryNotice(translate("ui.inventory.select_mode"));
+            return;
+        }
+
+        if (!/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(code)) {
+            if (debugMode) {
+                console.warn("[ha-shopping-list-improved][DEBUG] Ignored invalid EAN scan event:", event);
+            }
+            return;
+        }
+
+        if (!this._inputEl || !this._qtyEl) {
+            console.warn("[ha-shopping-list-improved] EAN scan ignored because the input elements are unavailable.");
+            return;
+        }
+
+        if (debugMode) {
+            console.info("[ha-shopping-list-improved][DEBUG] Processing EAN scan event:", {
+                code,
+                source: event?.data?.source || null,
+                address: event?.data?.address || null,
+                entity: this._entity
+            });
+        }
+
+        const scanMode = this._normalizeEanScanMode(this._eanScanMode);
+        const queuedItem = this._enqueueEanScan(code, {
+            ...(event?.data || {}),
+            scan_mode: scanMode
+        });
+        await this._runEanScript("scan_received", {
+            queueItem: queuedItem,
+            ean: code,
+            scanQuantity: 1,
+            scanMode,
+            scannerAddress: event?.data?.address,
+            scannerSource: event?.data?.source
+        });
+        this._eanQueuePaused = false;
+        await this._processEanScanQueue();
     }
 
     _updateTimes() {
         if(!this._items || this._items.length === 0) {
-            if(debugMode) console.debug("[ha-shopping-list-improved] Runninng _refresh() because there were no items for:", this._entity);
+            if(debugMode) console.debug("[ha-shopping-list-improved] Running _refresh() because there were no items for:", this._entity);
             this._refresh(); // if the items are not loaded, try to refresh from HA
         } else {
             if(debugMode) console.debug("[ha-shopping-list-improved] List rendered");
-            this._renderList(); // render list to update time displays in ToDo mode            
+            this._renderList(); // render list to update time displays in ToDo mode
         }
     }
 
@@ -2361,10 +7570,10 @@ class HaShoppingListImproved extends HTMLElement {
                 color
             });
         }
-        if(debugMode) console.debug(`Categories builded: `, categories);
+        if(debugMode) console.debug(`Categories built: `, categories);
         return categories;
     }
-	
+
 	_parseDishes(dishesArray) {
         const dishes = [];
 
@@ -2390,6 +7599,8 @@ class HaShoppingListImproved extends HTMLElement {
         const style = document.createElement('style');
         // _chipPosition = "auto" | "bottom" | "right" | "auto_panel"
         const containerClass = `list-history-container ${this._chipPosition}`;
+        const showAdminButton = this._showAdminButton &&
+            (!this._adminButtonAdminOnly || this._hass.user?.is_admin === true);
 
         style.textContent = `
             :host { font-family: var(--font-family, Roboto, Noto, sans-serif); display:block; }
@@ -2404,8 +7615,10 @@ class HaShoppingListImproved extends HTMLElement {
             .suggestion-item:last-child { border-bottom:none; }
             .suggestion-item:hover, .suggestion-item.active { background:var(--primary-color, #03a9f4); color:#fff; }
             .suggestion-item .suggestion-category { font-size:11px; opacity:0.7; margin-left:8px; }
+            .suggestion-item .suggestion-ean { display:inline-flex; align-items:center; gap:2px; margin-left:8px; font-size:10px; opacity:0.75; vertical-align:middle; }
+            .suggestion-item .suggestion-ean ha-icon { width:15px; height:15px; --mdc-icon-size:15px; }
 
-            input[type="text"]{ flex:1; padding:8px; border-radius:4px; border:1px solid var(--divider-color);} 
+            input[type="text"]{ flex:1; padding:8px; border-radius:4px; border:1px solid var(--divider-color);}
             select { padding:6px; border-radius:4px; }
             .quantityselect { padding:8px; border-radius:4px; border:1px solid var(--divider-color); width:40px; }
             button { padding:6px 10px; border-radius:6px; border:none; cursor:pointer; }
@@ -2499,7 +7712,7 @@ class HaShoppingListImproved extends HTMLElement {
                     flex-wrap: nowrap;
                 }
             }
-			
+
 			/* Auto Panel: Chips right if size > 700px, otherwise bottom */
 			@media (min-width: 700px) {
 				.list-history-container.auto_panel {
@@ -2634,6 +7847,62 @@ class HaShoppingListImproved extends HTMLElement {
                 transition: background 0.3s;
             }
 
+            .inventory-mode-bar, .inventory-filter-bar {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin: 8px 0;
+                padding: 8px;
+                border-radius: 6px;
+                background: var(--secondary-background-color, rgba(100,100,100,0.12));
+            }
+            .inventory-mode-bar { border-left: 4px solid var(--divider-color, #888); }
+            .inventory-mode-bar button, .inventory-filter-bar button {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 5px 8px;
+                border: 1px solid var(--divider-color, #888);
+                border-radius: 6px;
+                background: var(--card-background-color, #fff);
+                color: var(--primary-text-color);
+                cursor: pointer;
+            }
+            .inventory-mode-bar button[aria-pressed="true"] {
+                background: var(--primary-color, #03A9F4);
+                color: white;
+            }
+            .inventory-filter-bar button[aria-pressed="true"] {
+                border-color: var(--primary-color, #03A9F4);
+                color: var(--primary-color, #03A9F4);
+            }
+            .inventory-mode-bar ha-icon, .inventory-filter-bar ha-icon {
+                --mdc-icon-size: 17px;
+                width: 17px;
+                height: 17px;
+            }
+            .inventory-mode-bar [data-inventory-mode-label] { font-variant-numeric: tabular-nums; }
+            .inventory-feedback {
+                flex-basis: 100%;
+                box-sizing: border-box;
+                min-height: 2.3em;
+                margin-top: 2px;
+                padding: 6px 10px;
+                border-radius: 6px;
+                background: var(--secondary-background-color, rgba(100,100,100,0.12));
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            @media (max-width: 480px) {
+                .inventory-feedback .inventory-undo-text { display: none; }
+            }
+            .inventory-stock-red { border-left: 3px solid var(--error-color, #db4437); }
+            .inventory-stock-orange { border-left: 3px solid var(--warning-color, #e0a526); }
+            .inventory-stock-green { border-left: 3px solid var(--success-color, #2e7d32); }
+            .inventory-zero { border-left: 3px solid var(--error-color, #db4437); }
+            .inventory-zero .name { color: var(--error-color, #db4437); }
+            .inventory-minimum { border-left: 3px solid var(--warning-color, #e0a526); }
             ${this._ownCss}
         `;
 
@@ -2651,6 +7920,16 @@ class HaShoppingListImproved extends HTMLElement {
                 </div>
 
                 <div id="collapsible">
+                    ${this._mode === "inventory" ? `
+                        <div id="inventoryModeBar" class="inventory-mode-bar">
+                            <button type="button" data-inventory-mode="add"><ha-icon icon="mdi:package-variant-plus"></ha-icon><span data-inventory-mode-label="add">${translate("ui.inventory.add")}</span></button>
+                            <button type="button" data-inventory-mode="remove"><ha-icon icon="mdi:package-variant-minus"></ha-icon><span data-inventory-mode-label="remove">${translate("ui.inventory.remove")}</span></button>
+                            <button type="button" data-inventory-mode="register"><ha-icon icon="mdi:package-variant"></ha-icon><span data-inventory-mode-label="register">${translate("ui.inventory.register")}</span></button>
+                            <button type="button" data-inventory-mode="correct"><ha-icon icon="mdi:pencil-box-outline"></ha-icon><span data-inventory-mode-label="correct">${translate("ui.inventory.correct")}</span></button>
+                            <button type="button" id="inventoryCodesBtn" title="${translate("ui.inventory.controls")}" aria-label="${translate("ui.inventory.controls")}"><ha-icon icon="mdi:qrcode"></ha-icon></button>
+                            <div id="inventoryFeedback" class="inventory-feedback" role="status" aria-live="polite">${this._getInventoryModeStatusText()}</div>
+                        </div>
+                    ` : ``}
                     <div id="inputRow" class="input-row ${this._showInputMask ? '' : 'hidden'}">
                         ${this._showQuantitySelection
                         ?   `
@@ -2675,9 +7954,26 @@ class HaShoppingListImproved extends HTMLElement {
                         "></ha-icon>
                         <div id="suggestions" class="suggestions-container"></div>
                     </div>
+                    <div id="eanDatabaseFillNotice" style="display:none; align-items:flex-start; justify-content:space-between; gap:12px; margin:8px 0; padding:10px 12px; border-radius:6px; background:var(--secondary-background-color, #eee); border-left:4px solid var(--primary-color, #03A9F4);">
+                        <div>
+                            <div style="font-weight:600;">${translate("ui.ean.database_fill_active")}</div>
+                            <div style="font-size:12px; line-height:1.4; margin-top:3px;">${translate("ui.ean.database_fill_help")}</div>
+                        </div>
+                        <button id="eanDatabaseFillEndBtn" type="button" style="flex-shrink:0; padding:6px 10px; cursor:pointer;">${translate("ui.ean.database_fill_end")}</button>
+                    </div>
                     <div id="subText" class="small">
                         ${this._subText }
                     </div>
+                    ${this._mode === "inventory" ? `
+                        <div class="inventory-filter-bar">
+                            <button type="button" id="inventoryFilterBtn" aria-label="${translate("ui.inventory.filter.all")}"><ha-icon icon="mdi:filter-variant"></ha-icon><span id="inventoryFilterLabel">${translate("ui.inventory.filter.all")}</span> ▾</button>
+                            <button type="button" id="inventoryHiddenBtn" title="${translate("ui.inventory.hidden")}" aria-label="${translate("ui.inventory.hidden")}"><ha-icon icon="mdi:eye-off-outline"></ha-icon></button>
+                            <button type="button" id="inventoryGroupBtn" title="${translate("ui.inventory.group_variants")}" aria-label="${translate("ui.inventory.group_variants")}" aria-pressed="${String(this._inventoryGroupVariants)}"><ha-icon icon="mdi:layers-triple-outline"></ha-icon></button>
+                            <button type="button" id="inventoryDetailsBtn" title="${translate("ui.inventory.product_details")}" aria-label="${translate("ui.inventory.product_details")}" aria-pressed="${String(this._inventoryShowProductDetails)}"><ha-icon icon="mdi:text-box-outline"></ha-icon></button>
+                            <button type="button" class="inventory-filter-secondary" id="inventoryDatabaseBtn" title="${translate("ui.inventory.database")}" aria-label="${translate("ui.inventory.database")}"><ha-icon icon="mdi:database"></ha-icon><span>${translate("ui.inventory.database_short")}</span></button>
+                            <button type="button" class="inventory-filter-secondary" id="inventoryQueueBtn" title="${translate("ui.inventory.queue")}" aria-label="${translate("ui.inventory.queue")}"><ha-icon icon="mdi:format-list-checks"></ha-icon><span id="inventoryQueueLabel">${translate("ui.inventory.queue")}</span></button>
+                        </div>
+                    ` : ``}
 
                     <div id="containerClass" class="${containerClass}">
                         <div id="inputPosition" class="input-position">
@@ -2699,7 +7995,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                         <div id="optionRowRight" style="display:flex; justify-content:flex-end; align-items:center; gap:6px;">
                             ${this._showMessageButton   ? `<button id="msgBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2709;&#xFE0F;</button> ` : ``}
-                            ${this._showAdminButton     ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
+                            ${showAdminButton           ? `<button id="adminBtn" style="font-size:18px; background:none; border:none; cursor:pointer;">&#x2699;&#xFE0F;</button> ` : ``}
                             ${this._showExportButtonPdf ? `<button id="pdfBtn">${translate("ui.common.export_pdf")}</button>`  : ``}
                             ${this._showExportButton    ? `<button id="downloadBtn">${translate("ui.common.export")}</button>` : ``}
                             ${this._showClearButton     ? `<button id="clearBtn">${translate("editor.labels.clear_button")}</button>` : ``}
@@ -2711,22 +8007,46 @@ class HaShoppingListImproved extends HTMLElement {
 
         this._shadow.appendChild(style);
 
-        this._shadow.getElementById('addBtn').addEventListener('click', this._onAdd);
+        const addBtn = this._shadow.getElementById('addBtn');
+        const clearEanLongPress = () => {
+            if (this._eanLongPressTimer) clearTimeout(this._eanLongPressTimer);
+            this._eanLongPressTimer = null;
+            addBtn.style.filter = '';
+        };
 
-/*
-        this._shadow.getElementById('itemInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') this._onAdd(); });
-        this._shadow.getElementById('itemInput').addEventListener('input', (e) => { 
-            if (this._allowFilter) {
-                this._renderList(); // to apply the filter while typing
+        addBtn.addEventListener('click', () => {
+            if (this._eanLongPressTriggered) {
+                this._eanLongPressTriggered = false;
+                return;
             }
-            if (this._allowFilterChips) {
-                this._renderHistory(); // to search in chips as well
+            if (this._eanScanMode === "shopping_remove") {
+                this._setEanScanMode("shopping");
+                return;
             }
-            if (this._capitalizeFirst && e.target.value.length > 0) {
-                e.target.value = e.target.value[0].toUpperCase() + e.target.value.slice(1);
-            }
+            this._onAdd();
         });
-*/
+
+        if (this._eanRemoveModeEnabled && this._mode === "shopping") {
+            addBtn.addEventListener('pointerdown', () => {
+                clearEanLongPress();
+                addBtn.style.filter = 'brightness(0.8)';
+                this._eanLongPressTimer = setTimeout(() => {
+                    this._eanLongPressTimer = null;
+                    this._eanLongPressTriggered = true;
+                    addBtn.style.filter = '';
+                    this._setEanScanMode("shopping_remove");
+                    navigator.vibrate?.(40);
+                }, 1000);
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(eventName => {
+                addBtn.addEventListener(eventName, clearEanLongPress);
+            });
+            addBtn.addEventListener('contextmenu', event => event.preventDefault());
+        }
+
+		this._shadow.getElementById('eanDatabaseFillEndBtn')?.addEventListener('click', () => {
+            this._setEanScanMode("shopping");
+        });
 
         this._shadow.getElementById('itemInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -2768,11 +8088,46 @@ class HaShoppingListImproved extends HTMLElement {
 		if (this._showQrScanButton)    this._shadow.getElementById('qrScanBtn').addEventListener('click', () => this._startScan());
         if (this._title)               this._shadow.getElementById('cardtitle').addEventListener('click', () => this._collapse());
         if (this._title)               this._shadow.getElementById('cardtitledesc').addEventListener('click', () => this._collapse());
-        if (this._showAdminButton)     this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
+        if (showAdminButton)           this._shadow.getElementById('adminBtn').addEventListener('click', () => this._adminOptions());
         if (this._showMessageButton)   this._shadow.getElementById('msgBtn').addEventListener('click', () => this._notifyButtonPressed());
         if (this._mode === "todo" && this._showTodoFilterMenu) {
             this._shadow.getElementById('todoFilterBtn')?.addEventListener('click', () => this._openTodoFilterPopup());
             this._updateTodoFilterButton();
+        }
+        if (this._mode === "inventory") {
+            this._shadow.querySelectorAll('[data-inventory-mode]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const action = button.dataset.inventoryMode;
+                    this._setEanScanMode(this._eanScanMode === `inventory_${action}`
+                        ? 'inventory_none' : `inventory_${action}`);
+                });
+            });
+            this._shadow.getElementById('inventoryFilterBtn')?.addEventListener('click', event => {
+                this._openInventoryFilterPopup(event.currentTarget);
+            });
+            this._shadow.getElementById('inventoryHiddenBtn')?.addEventListener('click', event => {
+                this._inventoryShowHidden = !this._inventoryShowHidden;
+                event.currentTarget.setAttribute('aria-pressed', String(this._inventoryShowHidden));
+                this._renderList();
+            });
+            this._shadow.getElementById('inventoryGroupBtn')?.addEventListener('click', event => {
+                this._inventoryGroupVariants = !this._inventoryGroupVariants;
+                event.currentTarget.setAttribute('aria-pressed', String(this._inventoryGroupVariants));
+                this._renderList();
+            });
+            this._shadow.getElementById('inventoryDetailsBtn')?.addEventListener('click', event => {
+                this._inventoryShowProductDetails = !this._inventoryShowProductDetails;
+                event.currentTarget.setAttribute('aria-pressed', String(this._inventoryShowProductDetails));
+                this._renderList();
+            });
+            this._shadow.getElementById('inventoryDatabaseBtn')?.addEventListener('click', () => {
+                if (this._eanDatabaseEntity) this._showEanDatabaseManager();
+            });
+            this._shadow.getElementById('inventoryQueueBtn')?.addEventListener('click', () => {
+                this._showInventoryQueuePopup();
+            });
+            this._updateInventoryQueueButton();
+            this._shadow.getElementById('inventoryCodesBtn')?.addEventListener('click', () => this._showInventoryControlCodes());
         }
 
         this._listEl             = this._shadow.getElementById('list');
@@ -2784,8 +8139,10 @@ class HaShoppingListImproved extends HTMLElement {
         this._titleAlertDesc     = this._shadow.getElementById('titlealertdesc');
         this._titleAlertDescIcon = this._shadow.getElementById('titleicondesc');
 
+        this._updateEanScanModeUi();
+
         this._renderHistory();
-		
+
         // Bubble Card WorkAround
         if(this._bubbleCardMode){
             this._onBubbleResize();
@@ -2801,6 +8158,10 @@ class HaShoppingListImproved extends HTMLElement {
 
     // Admin Options Popup
     async _adminOptions() {
+        if (!this._eanQueueProcessing) {
+            this._loadEanScanQueue();
+        }
+
         return new Promise((resolve) => {
             // Overlay
             const overlay = document.createElement('div');
@@ -2831,6 +8192,8 @@ class HaShoppingListImproved extends HTMLElement {
             popup.style.display = 'flex';
             popup.style.flexDirection = 'column';
             popup.style.gap = '20px';
+            popup.style.maxHeight = '90vh';
+            popup.style.overflowY = 'auto';
 
             // Title
             const title = document.createElement('h2');
@@ -2909,8 +8272,7 @@ class HaShoppingListImproved extends HTMLElement {
             block1DeleteBtn.style.cursor = 'pointer';
 
             block1DeleteBtn.addEventListener('click', async () => {
-
-            if (!this.confirmPopup(translate("ui.admin.options.browser_chips_delete_con"))) return;
+                if (!(await this.confirmPopup(translate("ui.admin.options.browser_chips_delete_con")))) return;
                 // Clear history array and localStorage, update textarea
                 this._previous = [];
                 this._saveHistory();
@@ -3108,6 +8470,213 @@ class HaShoppingListImproved extends HTMLElement {
             popup.appendChild(block2Container);
             popup.appendChild(block3Container);
 
+            // Process EAN scans on this browser/device
+            const eanScanContainer = document.createElement('div');
+            eanScanContainer.style.textAlign = 'left';
+
+            const eanScanControl = document.createElement('label');
+            eanScanControl.style.display = 'flex';
+            eanScanControl.style.alignItems = 'center';
+            eanScanControl.style.gap = '8px';
+            eanScanControl.style.fontWeight = '600';
+            eanScanControl.style.cursor = 'pointer';
+
+            const eanScanCheckbox = document.createElement('input');
+            eanScanCheckbox.type = 'checkbox';
+
+            eanScanCheckbox.checked = this._isEanScanEnabledOnThisDevice();
+
+            const eanScanLabel = document.createElement('span');
+            eanScanLabel.textContent = translate("ui.admin.options.process_ean_scans");
+
+            const eanScanHelp = document.createElement('div');
+            eanScanHelp.textContent = translate("ui.admin.options.process_ean_scans_help");
+            eanScanHelp.style.marginTop = '6px';
+            eanScanHelp.style.fontSize = '12px';
+            eanScanHelp.style.lineHeight = '1.4';
+            eanScanHelp.style.color = 'var(--secondary-text-color, #666)';
+
+            const eanScannerMac = document.createElement('div');
+            eanScannerMac.textContent = `${translate("ui.admin.options.ean_scanner_mac")} ${this._eanScannerMac || '—'}`;
+            eanScannerMac.style.marginTop = '6px';
+            eanScannerMac.style.fontSize = '12px';
+            eanScannerMac.style.lineHeight = '1.4';
+            eanScannerMac.style.color = 'var(--secondary-text-color, #666)';
+
+            const eanScannerMacWarning = document.createElement('div');
+            eanScannerMacWarning.textContent = translate("ui.admin.options.ean_scanner_mac_missing");
+            eanScannerMacWarning.style.marginTop = '6px';
+            eanScannerMacWarning.style.fontSize = '12px';
+            eanScannerMacWarning.style.fontWeight = '600';
+            eanScannerMacWarning.style.lineHeight = '1.4';
+            eanScannerMacWarning.style.color = 'var(--error-color, #db4437)';
+
+            const updateEanScannerMacWarning = () => {
+                eanScannerMacWarning.style.display = eanScanCheckbox.checked && !this._eanScannerMac
+                    ? 'block'
+                    : 'none';
+            };
+            updateEanScannerMacWarning();
+
+            eanScanCheckbox.addEventListener('change', () => {
+                try {
+                    this._setEanScanEnabledOnThisDevice(eanScanCheckbox.checked);
+                    updateEanScannerMacWarning();
+                } catch (error) {
+                    eanScanCheckbox.checked = !eanScanCheckbox.checked;
+                    console.warn('[ha-shopping-list-improved] Unable to save EAN scan device setting:', error);
+                }
+            });
+
+            eanScanControl.appendChild(eanScanCheckbox);
+            eanScanControl.appendChild(eanScanLabel);
+            eanScanContainer.appendChild(eanScanControl);
+            eanScanContainer.appendChild(eanScanHelp);
+            eanScanContainer.appendChild(eanScannerMac);
+            eanScanContainer.appendChild(eanScannerMacWarning);
+
+            if (this._eanDatabaseEntity) {
+                const databaseStatus = document.createElement('div');
+                databaseStatus.style.marginTop = '8px';
+                databaseStatus.style.fontSize = '12px';
+                databaseStatus.style.lineHeight = '1.4';
+
+                if (this._eanDatabaseError) {
+                    databaseStatus.textContent = this._eanDatabaseErrorMessage();
+                    databaseStatus.style.color = 'var(--error-color, #db4437)';
+                    databaseStatus.style.fontWeight = '600';
+                } else {
+                    databaseStatus.style.display = 'flex';
+                    databaseStatus.style.alignItems = 'center';
+                    databaseStatus.style.flexWrap = 'wrap';
+                    databaseStatus.style.gap = '6px';
+
+                    const databaseLabel = document.createElement('span');
+                    databaseLabel.textContent = translate("ui.admin.options.ean_database_status");
+                    databaseLabel.style.color = 'var(--secondary-text-color, #666)';
+
+                    const databaseProductsBtn = document.createElement('button');
+                    databaseProductsBtn.type = 'button';
+                    databaseProductsBtn.style.padding = '4px 9px';
+                    databaseProductsBtn.style.border = '1px solid var(--primary-color, #03A9F4)';
+                    databaseProductsBtn.style.borderRadius = '4px';
+                    databaseProductsBtn.style.background = 'transparent';
+                    databaseProductsBtn.style.color = 'var(--primary-color, #03A9F4)';
+                    databaseProductsBtn.style.cursor = 'pointer';
+
+                    const databaseInvalidBtn = document.createElement('button');
+                    databaseInvalidBtn.type = 'button';
+                    databaseInvalidBtn.style.padding = '4px 9px';
+                    databaseInvalidBtn.style.border = '1px solid var(--error-color, #db4437)';
+                    databaseInvalidBtn.style.borderRadius = '4px';
+                    databaseInvalidBtn.style.background = 'transparent';
+                    databaseInvalidBtn.style.color = 'var(--error-color, #db4437)';
+                    databaseInvalidBtn.style.cursor = 'pointer';
+
+                    const updateDatabaseButtons = () => {
+                        databaseProductsBtn.textContent = translate("ui.admin.options.ean_database_products")
+                            .replace("{count}", String(this._eanDatabase?.size || 0));
+                        databaseInvalidBtn.textContent = translate("ui.admin.options.ean_database_invalid")
+                            .replace("{count}", String(this._eanDatabaseInvalidCount || 0));
+                        databaseInvalidBtn.style.display = this._eanDatabaseInvalidCount > 0
+                            ? 'inline-block'
+                            : 'none';
+                    };
+
+                    const openDatabaseManager = async () => {
+                        const action = await this._showEanDatabaseManager();
+                        updateDatabaseButtons();
+                        if (action === "database") {
+                            if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                            this._setEanScanMode("database");
+                            resolve(true);
+                        }
+                    };
+
+                    databaseProductsBtn.addEventListener('click', openDatabaseManager);
+                    databaseInvalidBtn.addEventListener('click', openDatabaseManager);
+                    updateDatabaseButtons();
+
+                    databaseStatus.appendChild(databaseLabel);
+                    databaseStatus.appendChild(databaseProductsBtn);
+                    databaseStatus.appendChild(databaseInvalidBtn);
+                }
+                eanScanContainer.appendChild(databaseStatus);
+            }
+
+            const queueLabel = document.createElement('div');
+            queueLabel.textContent = translate("ui.admin.options.ean_queue");
+            queueLabel.style.marginTop = '12px';
+            queueLabel.style.fontWeight = '600';
+            eanScanContainer.appendChild(queueLabel);
+
+            const queueStatus = document.createElement('div');
+            queueStatus.style.marginTop = '4px';
+            queueStatus.style.fontSize = '12px';
+            queueStatus.style.color = 'var(--secondary-text-color, #666)';
+            eanScanContainer.appendChild(queueStatus);
+
+            const queueModeStatus = document.createElement('div');
+            queueModeStatus.style.marginTop = '2px';
+            queueModeStatus.style.fontSize = '12px';
+            queueModeStatus.style.color = 'var(--secondary-text-color, #666)';
+            eanScanContainer.appendChild(queueModeStatus);
+
+            const updateQueueStatus = () => {
+                const counts = { shopping: 0, database: 0, shopping_remove: 0, inventory_add: 0, inventory_remove: 0, inventory_register: 0, inventory_correct: 0, inventory_none: 0 };
+                (this._eanScanQueue || []).forEach(item => {
+                    const mode = this._normalizeEanScanMode(item.scan_mode);
+                    counts[mode] += Math.max(1, Number(item.quantity || 1));
+                });
+                const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+                queueStatus.textContent = translate("ui.admin.options.ean_queue_pending")
+                    .replace("{count}", String(total));
+                queueModeStatus.textContent = [
+                    translate("ui.admin.options.ean_queue_shopping").replace("{count}", String(counts.shopping + counts.inventory_add)),
+                    translate("ui.admin.options.ean_queue_database").replace("{count}", String(counts.database + counts.inventory_register)),
+                    translate("ui.admin.options.ean_queue_remove").replace("{count}", String(counts.shopping_remove + counts.inventory_remove)),
+                    `${translate("ui.inventory.queue_mode.correct")}: ${counts.inventory_correct}`
+                ].join(' · ');
+            };
+            updateQueueStatus();
+
+            const queueButtons = document.createElement('div');
+            queueButtons.style.display = 'flex';
+            queueButtons.style.gap = '8px';
+            queueButtons.style.marginTop = '6px';
+
+            const processQueueBtn = document.createElement('button');
+            processQueueBtn.textContent = translate("ui.admin.options.ean_queue_process");
+            processQueueBtn.disabled = !this._eanScanQueue?.length;
+            processQueueBtn.style.padding = '6px 12px';
+            processQueueBtn.style.cursor = 'pointer';
+            processQueueBtn.addEventListener('click', () => {
+                this._eanQueuePaused = false;
+                (this._eanScanQueue || []).forEach(item => {
+                    item.deferred = false;
+                });
+                this._saveEanScanQueue();
+                if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                this._processEanScanQueue(true);
+            });
+
+            const clearQueueBtn = document.createElement('button');
+            clearQueueBtn.textContent = translate("ui.admin.options.ean_queue_clear");
+            clearQueueBtn.disabled = !this._eanScanQueue?.length;
+            clearQueueBtn.style.padding = '6px 12px';
+            clearQueueBtn.style.cursor = 'pointer';
+            clearQueueBtn.addEventListener('click', () => {
+                this._clearEanScanQueue();
+                updateQueueStatus();
+                processQueueBtn.disabled = true;
+                clearQueueBtn.disabled = true;
+            });
+
+            queueButtons.appendChild(processQueueBtn);
+            queueButtons.appendChild(clearQueueBtn);
+            eanScanContainer.appendChild(queueButtons);
+            popup.appendChild(eanScanContainer);
+
             // --- Fill Browser Chips ---
             const browserChips = this._loadHistory();
             if (Array.isArray(browserChips)) {
@@ -3282,8 +8851,20 @@ class HaShoppingListImproved extends HTMLElement {
                 block3Textarea.value = formattedManualItems || "";
             };
 
-            let includeDefined = false;
+            const includeDefined = false;
             computeManualItems(includeDefined);
+
+            let closed = false;
+            const escapeHandler = (event) => {
+                if (event.key === "Escape") close(null);
+            };
+            const close = (result) => {
+                if (closed) return;
+                closed = true;
+                window.removeEventListener('keydown', escapeHandler);
+                overlay.remove();
+                resolve(result);
+            };
 
             // Close Button
             const closeBtn = document.createElement('button');
@@ -3295,10 +8876,7 @@ class HaShoppingListImproved extends HTMLElement {
             closeBtn.style.cursor = 'pointer';
             closeBtn.style.marginTop = '10px';
 
-            closeBtn.addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                resolve(true);
-            });
+            closeBtn.addEventListener('click', () => close(true));
 
             popup.appendChild(closeBtn);
 
@@ -3309,19 +8887,12 @@ class HaShoppingListImproved extends HTMLElement {
             // Close on overlay click outside popup
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
-                    document.body.removeChild(overlay);
-                    resolve(null);
+                    close(null);
                 }
             });
 
             // Close on ESC key
-            window.addEventListener('keydown', function handler(e) {
-                if (e.key === "Escape") {
-                    window.removeEventListener('keydown', handler);
-                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
-                    resolve(null);
-                }
-            });
+            window.addEventListener('keydown', escapeHandler);
         });
     }
 
@@ -3341,7 +8912,7 @@ class HaShoppingListImproved extends HTMLElement {
                 inputRow.remove();
                 listEl.insertAdjacentElement('afterend', inputRow);
             }
-            } else if (chipPosition === 'right' || chipPosition === 'panel' 
+            } else if (chipPosition === 'right' || chipPosition === 'panel'
                     || (chipPosition === 'auto_panel' && windowWidth >= 700)
                     || (chipPosition === 'auto' && windowWidth >= 700)) {
                 if (inputRow.parentElement === container) {
@@ -3369,86 +8940,277 @@ class HaShoppingListImproved extends HTMLElement {
         subText.insertAdjacentElement('beforebegin', optionRow);
     }
 
-	// EAN
-	async _checkEAN(text) {
-        // 1st localEAN check - EAN-8, UPC (12), EAN-13 er GS1-14
-        const eanRegexL = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
-        if (!eanRegexL.test(text)) {
-            return { name: text, brands: null, imageUrl: null };
+
+
+// EAN
+async _checkEAN(text, options = {}) {
+
+    // EAN-8, UPC-12, EAN-13 or GS1-14
+    const eanRegexLocal = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/;
+
+    if (!eanRegexLocal.test(text)) {
+        return {
+            name: text,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category: null
+        };
+    }
+
+    const openFactsOnly = options?.openFactsOnly === true;
+
+    if (!openFactsOnly) {
+        // ---------------------------------------------------------
+        // 1. Check the configured Home Assistant EAN database
+        // ---------------------------------------------------------
+
+        const databaseEntry = this._eanDatabase?.get(text);
+        if (databaseEntry) {
+            return {
+                name: databaseEntry.name,
+                originalName: databaseEntry.originalName || null,
+                brand: databaseEntry.brand || null,
+                quantity: databaseEntry.quantity || null,
+                imageUrl: databaseEntry.imageUrl || null,
+                category: databaseEntry.category || null,
+                minimumStock: databaseEntry.minimumStock ?? null,
+                automaticTransferDisabled: databaseEntry.automaticTransferDisabled === true,
+                nameIsFinal: true
+            };
         }
+
+        // ---------------------------------------------------------
+        // 2. Check local EAN file
+        // ---------------------------------------------------------
 
         if (this._localEAN && Array.isArray(this._localEAN)) {
             const localEntry = this._localEAN.find(entry => entry.ean === text);
+
             if (localEntry) {
-                if (debugMode) console.log("[EAN] Local entry found:", localEntry);
+                if (debugMode) {
+                    console.log("[EAN] Local entry found:", localEntry);
+                }
+
                 return {
                     name: localEntry.name,
-                    brands: null,
-                    imageUrl: null
+                    originalName: null,
+                    brand: null,
+                    quantity: null,
+                    imageUrl: null,
+                    category: null
                 };
             }
         }
+    }
 
-        // 2nd internet EAN check
-        const eanRegex = /^\d{13}$/;
-        if (!eanRegex.test(text)) {
-            return { name: text, brands: null, imageUrl: null };
-        }        
+    // ---------------------------------------------------------
+    // 3. Universal Open Facts lookup (food, pet food, beauty and products)
+    // Internet lookup currently only for EAN-13
+    // ---------------------------------------------------------
 
-        const url = `https://world.openfoodfacts.org/api/v2/product/${text}.json`;
+    const eanRegexOnline = /^\d{13}$/;
 
-        try {
-            const response = await fetch(url, {
+    if (!eanRegexOnline.test(text)) {
+        if (openFactsOnly) return null;
+        return {
+            name: text,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category: null
+        };
+    }
+
+    const fields = [
+        "product_name",
+        "product_name_en",
+        "brands",
+        "quantity",
+        "product_quantity",
+        "product_quantity_unit",
+        "image_front_thumb_url",
+        "product_type"
+    ];
+
+    const lang = detectLanguage();
+    const productLanguage = String(lang || "en").split("-")[0].toLowerCase();
+
+    if (productLanguage !== "en") {
+        fields.push(`product_name_${productLanguage}`);
+    }
+
+    const url =
+        `https://world.openfoodfacts.org/api/v3/product/${text}.json` +
+        `?product_type=all&fields=${encodeURIComponent(fields.join(","))}`;
+
+    try {
+
+        const response = await fetch(url, {
             headers: {
                 "Accept": "application/json",
-                "User-Agent": "Home Assistant - Custom Card (Improved Shopping List v2.2.0)"
+                "User-Agent": `ha-shopping-list-improved/${version}`
             }
-            });
+        });
 
-            if (!response.ok) {
-                console.error(`HTTP error: ${response.status}`);
-                return false;
-            }
-
-            const data = await response.json();
-
-            if (data.status === 1 && data.product) {
-            const p = data.product;
-
-            const lang = detectLanguage();
-
-            // Productname: local language -> English -> common Name
-            const name =
-                p[`product_name_${lang}`]?.trim() ||
-                p.product_name_en?.trim() ||
-                p.product_name?.trim() ||
-                false;
-
-            const brands = p.brands?.trim() || false;
-            let imageUrl = p.image_front_thumb_url || false;
-
-            if (debugMode) console.log("[Product]", { name, brands, imageUrl });
-
-            return { name, brands, imageUrl };
-            }
-
-            return null;
-
-        } catch (error) {
-            console.error("Error trying EAN request :", error);
+        if (!response.ok) {
+            console.error(`[EAN] Open Facts HTTP error: ${response.status}`);
             return null;
         }
-	}
 
-	// QR-Scanner
+        const data = await response.json();
+
+        if (!data.product) {
+            return null;
+        }
+
+        const p = data.product;
+
+        // -----------------------------------------------------
+        // Product name
+        // Local language -> English -> default product name
+        // -----------------------------------------------------
+
+        const name =
+            p[`product_name_${productLanguage}`]?.trim() ||
+            p.product_name_en?.trim() ||
+            p.product_name?.trim() ||
+            false;
+
+        if (!name) {
+            return null;
+        }
+
+        // Decode simple HTML entities sometimes contained in OFF
+        const decodeHtml = (value) => {
+            if (!value) return value;
+
+            const textarea = document.createElement("textarea");
+            textarea.innerHTML = value;
+
+            return textarea.value;
+        };
+
+        const cleanName = decodeHtml(name);
+
+        // -----------------------------------------------------
+        // Brand
+        // OFF may contain several/doubled brands.
+        // Use the first usable brand.
+        // -----------------------------------------------------
+
+        let brand = null;
+
+        if (p.brands && typeof p.brands === "string") {
+            brand = p.brands
+                .split(",")
+                .map(value => value.trim())
+                .filter(Boolean)[0] || null;
+        }
+
+        brand = decodeHtml(brand);
+
+        // -----------------------------------------------------
+        // Quantity
+        // Prefer OFF's quantity string.
+        // Fall back to numeric quantity + unit.
+        // -----------------------------------------------------
+
+        let quantity = null;
+
+        if (p.quantity && typeof p.quantity === "string") {
+            quantity = p.quantity.trim();
+        } else if (
+            p.product_quantity !== undefined &&
+            p.product_quantity !== null &&
+            p.product_quantity_unit
+        ) {
+            quantity =
+                `${p.product_quantity} ${p.product_quantity_unit}`;
+        }
+
+        // -----------------------------------------------------
+        // Format quantity
+        // Examples:
+        // 1.25l  -> 1,25 l
+        // 500ml  -> 500 ml
+        // 425g   -> 425 g
+        // -----------------------------------------------------
+
+        if (quantity) {
+
+            quantity = quantity
+                .trim()
+
+                // Add space between number and unit
+                .replace(
+                    /(\d)\s*(ml|cl|dl|l|mg|g|kg)\b/gi,
+                    "$1 $2"
+                )
+
+                // German decimal separator
+                .replace(
+                    /(\d)\.(\d)/g,
+                    "$1,$2"
+                )
+
+                // Normalize units
+                .replace(/\bML\b/gi, "ml")
+                .replace(/\bCL\b/gi, "cl")
+                .replace(/\bDL\b/gi, "dl")
+                .replace(/\bL\b/g, "l")
+                .replace(/\bMG\b/gi, "mg")
+                .replace(/\bG\b/g, "g")
+                .replace(/\bKG\b/gi, "kg");
+
+            if (/unknown/i.test(quantity)) quantity = null;
+        }
+
+        const imageUrl =
+            p.image_front_thumb_url || null;
+
+        if (debugMode) {
+            console.log("[EAN] Open Facts product:", {
+                ean: text,
+                productType: p.product_type || null,
+                name: cleanName,
+                brand,
+                quantity,
+                imageUrl
+            });
+        }
+
+        return {
+            name: cleanName,
+            originalName: cleanName,
+            brand,
+            quantity,
+            imageUrl,
+            category: null
+        };
+
+    } catch (error) {
+
+        console.error(
+            "[EAN] Error while requesting Open Facts:",
+            error
+        );
+
+        return null;
+    }
+}
+
+		// QR-Scanner
 	async _onScanSuccess(decodedText, decodedResult) {
 		if (this._addingBusyQR) {
 			if (debugMode) console.warn("[ha-shopping-list-improved][DEBUG] Scan ignored to avoid duplicates");
 			return;
 		}
-		
+
 		await this._stopScan();
-		
+
 		this._addingBusyQR = true;
 
 		if (debugMode) console.log(`Scan result: ${decodedText}`, decodedResult);
@@ -3459,6 +9221,7 @@ class HaShoppingListImproved extends HTMLElement {
 			.filter(line => line);
 
 		for (const line of lines) {
+            if (this._handleInventoryControlCode(line)) continue;
 			const quantity = this._getQuantity(line);
 			const name = this._getNameOnly(line);
 
@@ -3474,6 +9237,17 @@ class HaShoppingListImproved extends HTMLElement {
 	async _startScan() {
         if (this._scannerStarting || this._html5QrCodeScanner) {
             if (debugMode) console.warn("Scanner already running or starting");
+            return;
+        }
+
+        const hostname = String(window.location?.hostname || '').toLowerCase();
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+        if (window.isSecureContext !== true && !isLocalhost) {
+            await this.confirmPopup(translate("ui.qr.secure_context_required"), true);
+            return;
+        }
+        if (!navigator.mediaDevices?.getUserMedia) {
+            await this.confirmPopup(translate("ui.qr.camera_unavailable"), true);
             return;
         }
 
@@ -3502,6 +9276,7 @@ class HaShoppingListImproved extends HTMLElement {
 			wrapperDiv.style.maxWidth = "90vw";
 			document.body.appendChild(wrapperDiv);
 		}
+        this._wrapperDiv = wrapperDiv;
 
 		// Scanner-Div
 		let scannerDiv = document.getElementById(scannerDivId);
@@ -3512,7 +9287,6 @@ class HaShoppingListImproved extends HTMLElement {
 			scannerDiv.style.maxWidth = "90vw";
 			wrapperDiv.appendChild(scannerDiv);
 		}
-
 		// Close-Button
 		if (!document.getElementById("qr-close-btn-styles")) {
 			const style = document.createElement("style");
@@ -3551,41 +9325,74 @@ class HaShoppingListImproved extends HTMLElement {
                 this._stopScan().catch(err => {
                     console.error("Error during scanner cleanup:", err);
                 });
-            }; 
+            };
 
 			wrapperDiv.appendChild(closeButton);
 		}
 
 		// load Html5QrcodeScanner
-		if (!window.Html5QrcodeScanner && !window._html5QrcodeLoading) {
-			window._html5QrcodeLoading = true;
-			await new Promise((resolve, reject) => {
-				const script = document.createElement("script");
-				script.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
-				script.onload = resolve;
-				script.onerror = reject;
-				document.head.appendChild(script);
-			});
+		if (!window.Html5QrcodeScanner) {
+            if (!window._html5QrcodeLoadPromise) {
+                window._html5QrcodeLoadPromise = new Promise((resolve, reject) => {
+                    const script = document.createElement("script");
+                    script.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error("Unable to load html5-qrcode"));
+                    document.head.appendChild(script);
+                });
+            }
+            try {
+                await window._html5QrcodeLoadPromise;
+            } catch (error) {
+                console.error("Unable to load Html5QrcodeScanner:", error);
+                window._html5QrcodeLoadPromise = null;
+                if (!this._scannerStarting || !this._wrapperDiv?.isConnected) return;
+                await this._stopScan();
+                await this.confirmPopup(translate("ui.qr.library_load_failed"), true);
+                return;
+            }
+            window._html5QrcodeLoadPromise = null;
 		}
+
+        if (!this._scannerStarting || !this._wrapperDiv?.isConnected) return;
 
 		if (!window.Html5QrcodeScanner) {
 			console.error("Html5QrcodeScanner class not found!");
+			await this._stopScan();
+			await this.confirmPopup(translate("ui.qr.library_load_failed"), true);
 			return;
 		}
 
         try {
-            await navigator.mediaDevices.getUserMedia({
+            const permissionStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: "environment" }
             });
+            permissionStream.getTracks().forEach(track => track.stop());
+            if (!this._scannerStarting || !this._wrapperDiv?.isConnected) return;
         } catch (err) {
             console.error("Camera permission error:", err);
-            this._scannerStarting = false;
+            if (!this._scannerStarting || !this._wrapperDiv?.isConnected) return;
+            await this._stopScan();
+            await this.confirmPopup(translate("ui.qr.camera_unavailable"), true);
             return;
         }
 
 		// start QR-Scanner
-		const html5QrCodeScanner = new window.Html5QrcodeScanner(scannerDivId, {fps: 10, qrbox: 250, showTorchButton: true }, false);
-		html5QrCodeScanner.render(decodedText => this._onScanSuccess(decodedText));
+		let html5QrCodeScanner;
+        try {
+            html5QrCodeScanner = new window.Html5QrcodeScanner(
+                scannerDivId,
+                { fps: 10, qrbox: 250, showTorchButton: true },
+                false
+            );
+            this._html5QrCodeScanner = html5QrCodeScanner;
+            html5QrCodeScanner.render(decodedText => this._onScanSuccess(decodedText));
+        } catch (error) {
+            console.error("Unable to start Html5QrcodeScanner:", error);
+            await this._stopScan();
+            await this.confirmPopup(translate("ui.qr.camera_unavailable"), true);
+            return;
+        }
 
         // wait till rendering is finished
         setTimeout(() => {
@@ -3602,15 +9409,15 @@ class HaShoppingListImproved extends HTMLElement {
                 scanFileLink.style.fontSize = "20px";
                 scanFileLink.style.fontWeight = "bold";
             }
-            
+
             const scanFileSpan = document.getElementById("html5-qrcode-anchor-scan-type-change");
             if (scanFileSpan) {
                 scanFileSpan.style.fontSize = "20px";
-                scanFileSpan.style.fontWeight = "bold"; 
+                scanFileSpan.style.fontWeight = "bold";
                 scanFileSpan.className = "qr-close-btn";
                 scanFileSpan.style.textDecoration = "none";
                 scanFileSpan.style.display = "inline-flex";
-                scanFileSpan.style.alignItems = "center"; 
+                scanFileSpan.style.alignItems = "center";
                 scanFileSpan.style.justifyContent = "center";
                 scanFileSpan.style.height = "36px";
                 scanFileSpan.style.padding = "0 16px";
@@ -3651,8 +9458,8 @@ class HaShoppingListImproved extends HTMLElement {
                     cameraStart.style.padding = "0 16px";
                     cameraStart.className = "qr-close-btn";
                 }
-            }	
-            
+            }
+
             const btn = scannerDiv.querySelector("button");
             if (btn) {
                 // html5-qrcode-anchor-scan-type-change
@@ -3660,7 +9467,7 @@ class HaShoppingListImproved extends HTMLElement {
                 btn.style.padding = "10px 20px";
                 btn.style.borderRadius = "8px";
                 btn.className = "qr-close-btn";
-                
+
                 //btn.style.display = "inline-flex";
                 btn.style.alignItems = "center";
                 btn.style.justifyContent = "center";
@@ -3674,12 +9481,9 @@ class HaShoppingListImproved extends HTMLElement {
         });
 
 		this._html5QrCodeScanner = html5QrCodeScanner;
-		this._scannerDiv = scannerDiv;
-		this._wrapperDiv = wrapperDiv;
 	}
 
     async _stopScan() {
-
         if (this._stoppingScanner) {
             return;
         }
@@ -3691,35 +9495,23 @@ class HaShoppingListImproved extends HTMLElement {
             this._observer = null;
         }
 
-        if (!this._html5QrCodeScanner) {
-            this._scannerStarting = false;
-            this._stoppingScanner = false;
-            return;
-        }
-
         try {
-
-            await this._html5QrCodeScanner.clear();
-
-            if (debugMode) {
-                console.log("QR-Scanner stopped.");
+            if (this._html5QrCodeScanner) {
+                await this._html5QrCodeScanner.clear();
+                if (debugMode) console.log("QR-Scanner stopped.");
             }
-
         } catch (err) {
-
             console.error(
                 "Error while stopping Html5QrcodeScanner:",
                 err
             );
-
         } finally {
+            const wrapperDiv = this._wrapperDiv || (
+                this._entity ? document.getElementById(`qr-wrapper-${this._entity}`) : null
+            );
+            wrapperDiv?.remove();
+            this._wrapperDiv = null;
 
-            if (this._wrapperDiv) {
-                this._wrapperDiv.remove();
-                this._wrapperDiv = null;
-            }
-
-            this._scannerDiv = null;
             this._html5QrCodeScanner = null;
 
             this._scannerStarting = false;
@@ -3730,6 +9522,21 @@ class HaShoppingListImproved extends HTMLElement {
     async _refresh() {
 		if (!this._hass) return;
         if(debugMode) console.debug("[ha-shopping-list-improved] _refresh() called");
+
+        const requestId = ++this._refreshRequestId;
+        const requestedEntity = this._entity;
+
+        const retryLatestRefresh = (reason) => {
+            if (requestId !== this._refreshRequestId || requestedEntity !== this._entity) return;
+            this._refreshFailureCount += 1;
+            if (this._refreshFailureCount <= 3) {
+                this._scheduleRefresh(
+                    250 * this._refreshFailureCount,
+                    reason,
+                    requestedEntity
+                );
+            }
+        };
 
         try {
             const msg = {
@@ -3743,16 +9550,23 @@ class HaShoppingListImproved extends HTMLElement {
 
             const wsResponse = await this._hass.connection.sendMessagePromise(msg);
 
+            // A newer refresh has already started. Its result is authoritative,
+            // regardless of the order in which Home Assistant answers.
+            if (requestId !== this._refreshRequestId || requestedEntity !== this._entity) return false;
+
             if (debugMode) console.debug("[ha-shopping-list-improved] Raw WS response:", wsResponse);
 
             const entityData = wsResponse.response?.[this._entity];
 
             if (!entityData || !Array.isArray(entityData.items)) {
                 console.warn("[ha-shopping-list-improved] No valid todo items found in entity:", this._entity);
-                this._items = [];
-                this._renderList();
-                return;
+                // Keep the last valid list visible. A short-lived invalid
+                // response must not replace it with an empty card.
+                retryLatestRefresh("invalid_todo_response");
+                return false;
             }
+
+            this._refreshFailureCount = 0;
 
             if (debugMode) console.debug("[ha-shopping-list-improved] Extracted todo items:", entityData.items);
 
@@ -3787,23 +9601,16 @@ class HaShoppingListImproved extends HTMLElement {
             }
 
             if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded Items:", this._items.map(i => i.name));
-            
-            /*
-            if (this._acknowledgedMode === "hide") {
-                this._items = this._items.filter(i => !i.complete);
-            } else if (this._acknowledgedMode === "end") {
-                const done = this._items.filter(i => i.complete);
-                const notDone = this._items.filter(i => !i.complete);
-                this._items = [...notDone, ...done];
-            }    
-            */ 
-            
             // after we have the items, extract dynamic categories from items
             this._addDynamicCategories(this._items);
 
             this._renderList();
+            return true;
         } catch (err) {
+            if (requestId !== this._refreshRequestId || requestedEntity !== this._entity) return false;
             console.error("[ha-shopping-list-improved]: unable to load items via API", err);
+            retryLatestRefresh("todo_refresh_error");
+            return false;
         }
     }
 
@@ -3813,6 +9620,1673 @@ class HaShoppingListImproved extends HTMLElement {
 
         const isHidden = container.classList.toggle("hidden");
         localStorage.setItem(storageKey, isHidden ? "true" : "false");
+    }
+
+    _showHiddenCategoryItemsPopup(items) {
+        if (!Array.isArray(items) || !items.length) return;
+
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.zIndex = '10001';
+        overlay.style.background = 'rgba(0,0,0,0.45)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.padding = '20px';
+        overlay.style.boxSizing = 'border-box';
+
+        const popup = document.createElement('div');
+        popup.style.width = 'min(520px, 100%)';
+        popup.style.maxHeight = 'calc(100vh - 40px)';
+        popup.style.display = 'flex';
+        popup.style.flexDirection = 'column';
+        popup.style.background = 'var(--card-background-color, white)';
+        popup.style.color = 'var(--primary-text-color, black)';
+        popup.style.borderRadius = '8px';
+        popup.style.boxShadow = '0 8px 30px rgba(0,0,0,0.35)';
+
+        const header = document.createElement('div');
+        header.style.display = 'flex';
+        header.style.alignItems = 'center';
+        header.style.justifyContent = 'space-between';
+        header.style.gap = '12px';
+        header.style.padding = '16px 18px 10px';
+
+        const title = document.createElement('h3');
+        title.textContent = translate("ui.category.hidden_title");
+        title.style.margin = '0';
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.textContent = '×';
+        closeButton.title = translate("ui.common.close");
+        closeButton.style.border = 'none';
+        closeButton.style.background = 'transparent';
+        closeButton.style.color = 'var(--primary-text-color, black)';
+        closeButton.style.fontSize = '28px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.lineHeight = '1';
+        header.appendChild(title);
+        header.appendChild(closeButton);
+        popup.appendChild(header);
+
+        const help = document.createElement('div');
+        help.textContent = translate("ui.category.hidden_help");
+        help.style.padding = '0 18px 12px';
+        help.style.fontSize = '13px';
+        help.style.color = 'var(--secondary-text-color, #666)';
+        popup.appendChild(help);
+
+        const list = document.createElement('div');
+        list.style.flex = '1 1 auto';
+        list.style.minHeight = '0';
+        list.style.overflowY = 'auto';
+        list.style.padding = '0 18px 18px';
+
+        const grouped = new Map();
+        items.forEach(item => {
+            const category = this._getCategory(item.name) || translate("ui.todo.general");
+            if (!grouped.has(category)) grouped.set(category, []);
+            grouped.get(category).push(item);
+        });
+
+        [...grouped.entries()]
+            .sort(([categoryA], [categoryB]) =>
+                categoryA.localeCompare(categoryB, detectLanguage(), { sensitivity: 'base' })
+            )
+            .forEach(([category, categoryItems]) => {
+                const categoryTitle = document.createElement('div');
+                categoryTitle.textContent = category;
+                categoryTitle.style.fontWeight = '600';
+                categoryTitle.style.margin = '10px 0 4px';
+                list.appendChild(categoryTitle);
+
+                categoryItems
+                    .slice()
+                    .sort((a, b) => this._getNameOnly(a.name).localeCompare(
+                        this._getNameOnly(b.name),
+                        detectLanguage(),
+                        { sensitivity: 'base' }
+                    ))
+                    .forEach(item => {
+                        const row = document.createElement('div');
+                        row.style.display = 'flex';
+                        row.style.alignItems = 'center';
+                        row.style.justifyContent = 'space-between';
+                        row.style.gap = '10px';
+                        row.style.padding = '8px 0';
+                        row.style.borderBottom = '1px solid var(--divider-color, #ddd)';
+
+                        const itemName = document.createElement('span');
+                        const quantity = this._getQuantity(item.name);
+                        itemName.textContent = quantity > 1 || this._showQuantityOne
+                            ? (this._quantityPosition === 'beginning'
+                                ? `${quantity}× ${this._getNameOnly(item.name)}`
+                                : `${this._getNameOnly(item.name)} (${quantity})`)
+                            : this._getNameOnly(item.name);
+                        itemName.style.minWidth = '0';
+                        itemName.style.wordBreak = 'break-word';
+
+                        const editButton = document.createElement('button');
+                        editButton.type = 'button';
+                        editButton.title = translate("ui.common.edit_item");
+                        editButton.setAttribute('aria-label', editButton.title);
+                        editButton.style.display = 'inline-flex';
+                        editButton.style.alignItems = 'center';
+                        editButton.style.justifyContent = 'center';
+                        editButton.style.padding = '5px';
+                        editButton.style.border = 'none';
+                        editButton.style.background = 'transparent';
+                        editButton.style.color = 'var(--primary-color, #03A9F4)';
+                        editButton.style.cursor = 'pointer';
+                        const editIcon = document.createElement('ha-icon');
+                        editIcon.setAttribute('icon', 'mdi:pencil');
+                        editIcon.style.width = '18px';
+                        editIcon.style.height = '18px';
+                        editIcon.style.setProperty('--mdc-icon-size', '18px');
+                        editButton.appendChild(editIcon);
+                        editButton.addEventListener('click', async () => {
+                            close();
+                            await this._handleEditItem(item);
+                        });
+
+                        row.appendChild(itemName);
+                        row.appendChild(editButton);
+                        list.appendChild(row);
+                    });
+            });
+        popup.appendChild(list);
+        overlay.appendChild(popup);
+
+        const close = () => {
+            window.removeEventListener('keydown', onKeyDown, true);
+            overlay.remove();
+        };
+        const onKeyDown = event => {
+            if (event.key === 'Escape') close();
+        };
+        closeButton.addEventListener('click', close);
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) close();
+        });
+        window.addEventListener('keydown', onKeyDown, true);
+        document.body.appendChild(overlay);
+    }
+
+    _getInventoryVariantOptions(itemOrName, category = undefined) {
+        const name = typeof itemOrName === "string" ? itemOrName : this._getNameOnly(itemOrName?.name);
+        const effectiveCategory = category === undefined
+            ? (typeof itemOrName === "string" ? null : this._getCategory(itemOrName?.name))
+            : category;
+        const normalizedCategory = String(effectiveCategory || "none").toLocaleLowerCase();
+        const physicalItems = this._getInventoryVariantItems(name, effectiveCategory);
+        const options = new Map();
+
+        for (const product of this._getEanDatabaseEntriesByName(name)) {
+            const productCategory = String(product.category || "none").toLocaleLowerCase();
+            if (productCategory !== normalizedCategory) continue;
+            options.set(String(product.ean), {
+                ean: String(product.ean),
+                product,
+                item: null,
+                stock: 0,
+                minimum: this._getInventoryVariantMinimumStock(product.ean),
+                configuredMinimum: product.minimumStock ?? null
+            });
+        }
+        for (const physicalItem of physicalItems) {
+            const variantData = this._parseInventoryVariant(physicalItem);
+            const ean = variantData.ean;
+            const key = ean || "__manual__";
+            const existing = options.get(key) || {
+                ean,
+                product: this._inventoryVariantProduct(ean),
+                item: null,
+                stock: 0,
+                minimum: this._getInventoryVariantMinimumStock(ean, physicalItem),
+                configuredMinimum: ean ? null : variantData.minimumStock
+            };
+            existing.item = physicalItem;
+            existing.stock += this._getQuantity(physicalItem.name);
+            if (!ean) {
+                existing.configuredMinimum = variantData.minimumStock;
+                existing.minimum = this._getInventoryVariantMinimumStock(null, physicalItem);
+            }
+            options.set(key, existing);
+        }
+        if (!options.has("__manual__")) {
+            options.set("__manual__", {
+                ean: null,
+                product: null,
+                item: null,
+                stock: 0,
+                minimum: this._getInventoryVariantMinimumStock(null),
+                configuredMinimum: null
+            });
+        }
+        return [...options.values()].sort((a, b) => {
+            if (a.ean === null) return 1;
+            if (b.ean === null) return -1;
+            return this._inventoryVariantLabel(a.ean).localeCompare(
+                this._inventoryVariantLabel(b.ean), detectLanguage(), { sensitivity: "base" }
+            );
+        });
+    }
+
+    _selectInventoryVariant(item, action) {
+        if (!item?.inventoryGroup && item?.inventoryVariantEan !== undefined) {
+            const ean = item.inventoryVariantEan;
+            return Promise.resolve({
+                ean,
+                product: this._inventoryVariantProduct(ean),
+                item,
+                stock: this._getQuantity(item.name),
+                minimum: this._getInventoryVariantMinimumStock(ean, item),
+                configuredMinimum: ean ? null : this._parseInventoryVariant(item).minimumStock
+            });
+        }
+
+        const name = this._getNameOnly(item?.name);
+        const category = this._getCategory(item?.name) || null;
+        const options = this._getInventoryVariantOptions(name, category);
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(500px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+            const title = document.createElement('h3');
+            const titleKey = action === "add"
+                ? "ui.inventory.choose_variant_add"
+                : action === "correct"
+                    ? "ui.inventory.choose_variant_correct"
+                    : "ui.inventory.choose_variant_remove";
+            title.textContent = translate(titleKey).replace("{name}", name);
+            title.style.margin = '0 0 12px';
+            popup.appendChild(title);
+
+            const close = value => {
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(value);
+            };
+            const onKeyDown = event => {
+                if (event.key === 'Escape') close(false);
+            };
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.style.cssText = 'display:flex;width:100%;justify-content:space-between;gap:12px;padding:10px;margin:0 0 7px;border:1px solid var(--divider-color,#ccc);border-radius:6px;background:var(--secondary-background-color,#eee);color:inherit;text-align:left;cursor:pointer;';
+                const label = document.createElement('span');
+                label.textContent = this._inventoryVariantLabel(option.ean, true);
+                const values = document.createElement('span');
+                values.style.whiteSpace = 'nowrap';
+                values.style.color = 'var(--secondary-text-color,#666)';
+                values.textContent = option.minimum === null
+                    ? translate("ui.inventory.variant_stock").replace("{stock}", String(option.stock))
+                    : `${translate("ui.inventory.variant_stock").replace("{stock}", String(option.stock))} · ${translate("ui.inventory.variant_minimum").replace("{minimum}", String(option.minimum))}`;
+                button.appendChild(label);
+                button.appendChild(values);
+                button.addEventListener('click', () => close(option));
+                popup.appendChild(button);
+            });
+            const cancel = document.createElement('button');
+            cancel.type = 'button';
+            cancel.textContent = translate("ui.common.cancel");
+            cancel.style.cssText = 'margin-top:5px;padding:7px 12px;cursor:pointer;';
+            cancel.addEventListener('click', () => close(false));
+            popup.appendChild(cancel);
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close(false);
+            });
+            window.addEventListener('keydown', onKeyDown, true);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    async _changeInventoryVariant(name, category, option, change) {
+        if (!option || !change) return false;
+        if (change > 0) {
+            const result = await this._addShoppingQuantityByName(name, category, change, option.ean);
+            if (result.status === "error") return false;
+            this._showInventoryFeedback(name, result.previousQuantity, result.quantity, {
+                action: "inventory_add",
+                category,
+                transferId: null,
+                transferQuantity: 0,
+                product: option.product,
+                ean: option.ean
+            });
+            await this._notifyOnChange(`${translate("ui.message.quantity_increased")}: ${name} (${result.quantity})`);
+            return true;
+        }
+        return this._handleInventoryVariantMinus(name, category, option);
+    }
+
+    async _handleInventoryVariantMinus(name, category, option) {
+        const product = option?.product || this._inventoryVariantProduct(option?.ean) || null;
+        const ean = option?.ean || null;
+        const currentStock = this._getShoppingStockByName(name, ean);
+        if (currentStock === 0) {
+            const pseudoItem = option?.item || { name: this._formatInventoryItemName(name, category, 0) };
+            return this._sendInventoryItemWithoutStock(pseudoItem, product, ean);
+        }
+        const remainingStock = Math.max(0, currentStock - 1);
+        const groupState = this._getInventoryGroupState(name, category);
+        const isGrouped = groupState.variants.length > 1;
+        const remainingGroupStock = Math.max(0, groupState.stock - 1);
+        let transferWithoutEan = false;
+        let shouldTransfer = false;
+        if (this._isEanTransferActionEnabled("shopping_remove")) {
+            if (isGrouped && groupState.minimum !== null) {
+                shouldTransfer = product?.automaticTransferDisabled !== true &&
+                    remainingGroupStock <= groupState.minimum;
+            } else if (product) {
+                shouldTransfer = this._getAutomaticRemovalTransferDecision(product, remainingStock);
+            } else if (this._eanTransferNonEan === "one_to_one") {
+                transferWithoutEan = true;
+            } else if (this._eanTransferNonEan === "minimum") {
+                const minimum = this._getInventoryVariantMinimumStock(null, option?.item || null);
+                transferWithoutEan = minimum !== null && remainingStock <= minimum;
+            } else if (this._eanTransferNonEan === "ask") {
+                transferWithoutEan = await this.confirmPopup(
+                    translate("ui.ean.transfer_non_ean_question").replace("{name}", name)
+                );
+            }
+            shouldTransfer = shouldTransfer || transferWithoutEan;
+        }
+
+        const transferProduct = product || {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        };
+        const sendGroupIdentity = isGrouped && (groupState.minimum !== null || this._eanTransferGroupedAsName);
+        const effectiveTransferProduct = sendGroupIdentity ? {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        } : transferProduct;
+        const effectiveTransferEan = sendGroupIdentity ? null : ean;
+        let transferId = null;
+        if (shouldTransfer) {
+            transferId = await this._createEanTransfer(
+                "shopping_add", effectiveTransferEan, effectiveTransferProduct, 1,
+                { status: "source_pending", sourceOperation: "shopping_remove" }
+            );
+            if (!transferId) return false;
+        }
+
+        const removal = await this._removeShoppingQuantityByName(name, 1, ean);
+        if (["error", "not_found", "no_stock"].includes(removal.status)) {
+            if (transferId) await this._cancelEanTransfer(transferId);
+            return false;
+        }
+
+        const booking = {
+            action: "inventory_remove",
+            category,
+            transferId,
+            transferQuantity: transferId ? removal.removedQuantity : 0,
+            product: effectiveTransferProduct,
+            ean,
+            transferEan: effectiveTransferEan,
+            scriptData: {
+                ean: effectiveTransferEan || "",
+                brand: effectiveTransferProduct.brand,
+                productQuantity: effectiveTransferProduct.quantity,
+                category: effectiveTransferProduct.category,
+                imageUrl: effectiveTransferProduct.imageUrl,
+                scanMode: "inventory_remove"
+            }
+        };
+        if (transferId) {
+            let activated = await this._activateEanRemovalTransfer(transferId, removal.removedQuantity, removal.status);
+            if (!activated) activated = await this._activateEanRemovalTransfer(transferId, removal.removedQuantity, removal.status);
+            if (!activated) {
+                this._showInventoryFeedback(name, currentStock, removal.quantity, booking);
+                await this.confirmPopup(translate("ui.ean.transfer_send_failed"), true);
+                return false;
+            }
+            await this._runEanScript("transfer_sent", {
+                ean: effectiveTransferEan || "",
+                name,
+                brand: effectiveTransferProduct.brand,
+                productQuantity: effectiveTransferProduct.quantity,
+                scanQuantity: removal.removedQuantity,
+                category: effectiveTransferProduct.category,
+                imageUrl: effectiveTransferProduct.imageUrl,
+                scanMode: "shopping_remove"
+            });
+        }
+        this._showInventoryFeedback(name, currentStock, removal.quantity, booking);
+        await this._notifyOnChange(`${translate("ui.message.quantity_decreased")}: ${name} (${removal.quantity})`);
+        return true;
+    }
+
+    _showInventoryVariantStockPopup(item) {
+        if (!item) return;
+        const name = this._getNameOnly(item.name);
+        const category = this._getCategory(item.name) || null;
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+        const popup = document.createElement('div');
+        popup.style.cssText = 'width:min(480px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+        const title = document.createElement('h3');
+        title.textContent = translate("ui.inventory.variants_title").replace("{name}", name);
+        title.style.margin = '0 0 12px';
+        popup.appendChild(title);
+
+        const list = document.createElement('div');
+        const render = () => {
+            list.replaceChildren();
+            for (const option of this._getInventoryVariantOptions(name, category)) {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;flex-direction:column;gap:9px;padding:12px 0;border-bottom:1px solid var(--divider-color,#ddd);';
+                const label = document.createElement('div');
+                label.textContent = this._inventoryVariantLabel(option.ean, true);
+                label.style.fontWeight = '500';
+                row.appendChild(label);
+
+                const stockRow = document.createElement('div');
+                stockRow.style.cssText = 'display:grid;grid-template-columns:minmax(110px,1fr) auto;gap:8px;align-items:center;';
+                const stockLabel = document.createElement('span');
+                stockLabel.textContent = translate("ui.inventory.stock");
+                stockLabel.style.cssText = 'font-size:13px;color:var(--secondary-text-color,#666);';
+                const stockControls = document.createElement('div');
+                stockControls.style.cssText = 'display:grid;grid-template-columns:34px 58px 34px;gap:6px;align-items:center;';
+                const stockValue = document.createElement('div');
+                stockValue.textContent = String(option.stock);
+                stockValue.style.cssText = 'box-sizing:border-box;height:34px;padding:6px 8px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;';
+                const createStockButton = (symbol, change) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = symbol;
+                    button.style.cssText = 'width:34px;height:34px;font-size:18px;cursor:pointer;';
+                    button.addEventListener('click', async () => {
+                        button.disabled = true;
+                        try {
+                            await this._changeInventoryVariant(name, category, option, change);
+                            render();
+                        } finally {
+                            button.disabled = false;
+                        }
+                    });
+                    return button;
+                };
+                stockControls.appendChild(createStockButton('−', -1));
+                stockControls.appendChild(stockValue);
+                stockControls.appendChild(createStockButton('+', 1));
+                stockRow.appendChild(stockLabel);
+                stockRow.appendChild(stockControls);
+                row.appendChild(stockRow);
+
+                if (option.ean !== null) {
+                    const minimumLabel = document.createElement('div');
+                    minimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                    minimumLabel.style.cssText = 'font-size:13px;color:var(--secondary-text-color,#666);';
+                    const minimumRow = document.createElement('div');
+                    minimumRow.style.cssText = 'display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:center;';
+                    const minimumValue = document.createElement('input');
+                    minimumValue.type = 'text';
+                    minimumValue.readOnly = true;
+                    minimumValue.value = option.minimum === null ? '—' : String(option.minimum);
+                    minimumValue.style.cssText = 'box-sizing:border-box;width:76px;height:34px;padding:5px 8px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;';
+
+                    const editEanProduct = document.createElement('button');
+                    editEanProduct.type = 'button';
+                    editEanProduct.title = translate("ui.inventory.ean_minimum_edit");
+                    editEanProduct.disabled = !this._eanDatabaseEntity || !option.product;
+                    editEanProduct.style.cssText = 'box-sizing:border-box;width:100%;min-height:34px;padding:5px 7px;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:inherit;cursor:pointer;font-size:12px;white-space:normal;';
+                    const editEanIcon = document.createElement('ha-icon');
+                    editEanIcon.setAttribute('icon', 'mdi:pencil');
+                    editEanIcon.style.setProperty('--mdc-icon-size', '16px');
+                    const editEanText = document.createElement('span');
+                    editEanText.textContent = translate("ui.inventory.ean_product_edit");
+                    editEanProduct.appendChild(editEanIcon);
+                    editEanProduct.appendChild(editEanText);
+                    editEanProduct.addEventListener('click', () => {
+                        if (editEanProduct.disabled) return;
+                        overlay.remove();
+                        this._showEanDatabaseManager(option.ean, {
+                            onBack: () => this._showInventoryVariantStockPopup(item)
+                        });
+                    });
+                    minimumRow.appendChild(minimumValue);
+                    minimumRow.appendChild(editEanProduct);
+                    row.appendChild(minimumLabel);
+                    row.appendChild(minimumRow);
+                }
+                if (option.ean === null) {
+                    const minimumRow = document.createElement('div');
+                    minimumRow.style.cssText = 'display:flex;align-items:end;gap:8px;';
+                    const minimumField = document.createElement('label');
+                    minimumField.style.cssText = 'display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:3px;font-size:12px;color:var(--secondary-text-color,#666);';
+                    const minimumLabel = document.createElement('span');
+                    minimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                    const minimumInput = document.createElement('input');
+                    minimumInput.type = 'number';
+                    minimumInput.min = '0';
+                    minimumInput.step = '1';
+                    minimumInput.value = option.configuredMinimum ?? '';
+                    minimumInput.placeholder = this._eanTransferDefaultMinimumStock === null
+                        ? translate("ui.inventory.manual_minimum_none")
+                        : translate("ui.inventory.manual_minimum_default")
+                            .replace("{minimum}", String(this._eanTransferDefaultMinimumStock));
+                    minimumInput.style.cssText = 'box-sizing:border-box;width:100%;height:34px;padding:5px 8px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:var(--primary-text-color,inherit);';
+                    minimumField.appendChild(minimumLabel);
+                    minimumField.appendChild(minimumInput);
+
+                    const saveMinimum = document.createElement('button');
+                    saveMinimum.type = 'button';
+                    saveMinimum.title = translate("ui.inventory.manual_minimum_save");
+                    saveMinimum.setAttribute('aria-label', saveMinimum.title);
+                    saveMinimum.style.cssText = 'width:34px;height:34px;padding:5px;cursor:pointer;';
+                    const saveIcon = document.createElement('ha-icon');
+                    saveIcon.setAttribute('icon', 'mdi:content-save-outline');
+                    saveMinimum.appendChild(saveIcon);
+                    const save = async () => {
+                        const rawValue = minimumInput.value.trim();
+                        const value = rawValue === '' ? null : Number(rawValue);
+                        if (value !== null && (!Number.isInteger(value) || value < 0)) {
+                            minimumInput.reportValidity();
+                            return;
+                        }
+                        saveMinimum.disabled = true;
+                        minimumInput.disabled = true;
+                        const result = await this._setManualInventoryMinimumStock(name, category, value);
+                        if (result.status !== "error") render();
+                        else {
+                            saveMinimum.disabled = false;
+                            minimumInput.disabled = false;
+                        }
+                    };
+                    saveMinimum.addEventListener('click', save);
+                    minimumInput.addEventListener('keydown', event => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            save();
+                        }
+                    });
+                    minimumRow.appendChild(minimumField);
+                    minimumRow.appendChild(saveMinimum);
+                    row.appendChild(minimumRow);
+                }
+                list.appendChild(row);
+            }
+        };
+        render();
+        popup.appendChild(list);
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.textContent = translate("ui.common.close");
+        closeButton.style.cssText = 'margin-top:14px;padding:7px 12px;cursor:pointer;';
+        closeButton.addEventListener('click', () => overlay.remove());
+        popup.appendChild(closeButton);
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) overlay.remove();
+        });
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }
+
+    async _openInventoryCorrection(product, requestedEan = null, sourceWasEan = false) {
+        const normalizedEan = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(String(requestedEan || ""))
+            ? String(requestedEan)
+            : null;
+        let name = String(product?.name || "").trim();
+        const exactItem = normalizedEan
+            ? (this._items || []).find(item => this._parseInventoryVariant(item).ean === normalizedEan) || null
+            : null;
+        if (exactItem) name = this._getNameOnly(exactItem.name);
+        if (!name) return false;
+
+        let category = exactItem ? this._getCategory(exactItem.name) : (product?.category || null);
+        if (!category) {
+            const matchingItem = (this._items || []).find(item => this._inventoryItemMatchesName(item, name));
+            if (matchingItem) category = this._getCategory(matchingItem.name) || null;
+        }
+
+        let option = null;
+        if (normalizedEan) {
+            const databaseProduct = this._eanDatabase?.get(normalizedEan) || product || null;
+            option = {
+                ean: normalizedEan,
+                product: databaseProduct,
+                item: exactItem,
+                stock: this._getShoppingStockByName(name, normalizedEan),
+                minimum: this._getInventoryVariantMinimumStock(normalizedEan, exactItem),
+                configuredMinimum: databaseProduct?.minimumStock ?? null
+            };
+        } else {
+            const fakeItem = {
+                name: this._formatInventoryItemName(name, category, this._getShoppingStockByName(name)),
+                inventoryGroup: true
+            };
+            const options = this._getInventoryVariantOptions(name, category);
+            option = options.length === 1
+                ? options[0]
+                : await this._selectInventoryVariant(fakeItem, "correct");
+            if (!option) return false;
+        }
+
+        return this._showInventoryCorrectionPopup({
+            name,
+            category,
+            option,
+            sourceWasEan
+        });
+    }
+
+    _showInventoryCorrectionPopup({ name, category = null, option, sourceWasEan = false }) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10003;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+
+            const heading = document.createElement('h3');
+            heading.textContent = translate("ui.inventory.correction_title");
+            heading.style.margin = '0 0 12px';
+            popup.appendChild(heading);
+
+            const productName = document.createElement('div');
+            productName.textContent = name;
+            productName.style.cssText = 'font-size:18px;font-weight:600;margin-bottom:4px;';
+            popup.appendChild(productName);
+
+            const details = document.createElement('div');
+            details.textContent = option.ean
+                ? this._inventoryVariantLabel(option.ean, true)
+                : translate("ui.inventory.without_ean");
+            details.style.cssText = 'font-size:13px;color:var(--secondary-text-color,#666);margin-bottom:16px;';
+            popup.appendChild(details);
+
+            const stockGrid = document.createElement('div');
+            stockGrid.style.cssText = 'display:grid;grid-template-columns:minmax(120px,1fr) auto;gap:10px;align-items:center;margin-bottom:12px;';
+            const currentLabel = document.createElement('span');
+            currentLabel.textContent = translate("ui.inventory.correction_current");
+            const currentValue = document.createElement('strong');
+            currentValue.textContent = String(Math.max(0, Number(option.stock) || 0));
+            stockGrid.appendChild(currentLabel);
+            stockGrid.appendChild(currentValue);
+
+            const newLabel = document.createElement('span');
+            newLabel.textContent = translate("ui.inventory.correction_new");
+            const controls = document.createElement('div');
+            controls.style.cssText = 'display:grid;grid-template-columns:38px 80px 38px;gap:6px;align-items:center;';
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.min = '0';
+            quantityInput.step = '1';
+            quantityInput.value = String(Math.max(0, Number(option.stock) || 0));
+            quantityInput.style.cssText = 'box-sizing:border-box;width:80px;height:38px;padding:6px 8px;text-align:center;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:5px;';
+            const adjust = delta => {
+                const current = Math.max(0, Math.floor(Number(quantityInput.value) || 0));
+                quantityInput.value = String(Math.max(0, current + delta));
+            };
+            const minus = document.createElement('button');
+            minus.type = 'button';
+            minus.textContent = '−';
+            minus.style.cssText = 'height:38px;font-size:20px;cursor:pointer;';
+            minus.addEventListener('click', () => adjust(-1));
+            const plus = document.createElement('button');
+            plus.type = 'button';
+            plus.textContent = '+';
+            plus.style.cssText = 'height:38px;font-size:20px;cursor:pointer;';
+            plus.addEventListener('click', () => adjust(1));
+            controls.appendChild(minus);
+            controls.appendChild(quantityInput);
+            controls.appendChild(plus);
+            stockGrid.appendChild(newLabel);
+            stockGrid.appendChild(controls);
+            popup.appendChild(stockGrid);
+
+            const noTransfer = document.createElement('div');
+            noTransfer.textContent = translate("ui.inventory.correction_no_transfer");
+            noTransfer.style.cssText = 'padding:9px 11px;margin:8px 0 14px;border-left:4px solid var(--primary-color,#03A9F4);background:var(--secondary-background-color,rgba(100,100,100,.12));font-size:13px;line-height:1.4;';
+            popup.appendChild(noTransfer);
+
+            const status = document.createElement('div');
+            status.style.cssText = 'min-height:20px;margin:8px 0;font-size:13px;';
+
+            if (this._isEanTransferEntityUsable(true)) {
+                const transferBox = document.createElement('div');
+                transferBox.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;padding:12px;margin-bottom:10px;border:1px solid var(--divider-color,#ccc);border-radius:6px;';
+                const transferField = document.createElement('label');
+                transferField.style.cssText = 'display:flex;flex-direction:column;gap:5px;font-size:13px;';
+                const transferLabel = document.createElement('span');
+                transferLabel.textContent = translate("ui.inventory.correction_manual_transfer");
+                const transferQuantity = document.createElement('input');
+                transferQuantity.type = 'number';
+                transferQuantity.min = '1';
+                transferQuantity.step = '1';
+                transferQuantity.value = '1';
+                transferQuantity.style.cssText = 'box-sizing:border-box;width:100%;height:36px;padding:6px 8px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:5px;';
+                transferField.appendChild(transferLabel);
+                transferField.appendChild(transferQuantity);
+
+                const transferButton = document.createElement('button');
+                transferButton.type = 'button';
+                transferButton.textContent = translate("ui.ean.database_manual_send");
+                transferButton.style.cssText = 'min-height:36px;cursor:pointer;';
+                transferButton.addEventListener('click', async () => {
+                    const quantity = Number(transferQuantity.value);
+                    if (!Number.isInteger(quantity) || quantity < 1) {
+                        status.textContent = translate("ui.ean.database_send_number_invalid");
+                        status.style.color = 'var(--error-color,#db4437)';
+                        return;
+                    }
+                    transferButton.disabled = true;
+                    const transferProduct = option.product || {
+                        name,
+                        originalName: null,
+                        brand: null,
+                        quantity: null,
+                        imageUrl: null,
+                        category
+                    };
+                    const transferId = await this._createEanTransfer(
+                        "shopping_add", option.ean, { ...transferProduct, name, category }, quantity,
+                        { sourceOperation: "manual_send" }
+                    );
+                    transferButton.disabled = false;
+                    if (!transferId) return;
+                    await this._runEanScript("transfer_sent", {
+                        ean: option.ean || "",
+                        name,
+                        brand: transferProduct.brand,
+                        productQuantity: transferProduct.quantity,
+                        scanQuantity: quantity,
+                        category,
+                        imageUrl: transferProduct.imageUrl,
+                        scanMode: "inventory_correct",
+                        action: "inventory_manual_transfer"
+                    });
+                    await this._runListScript("inventory_manual_transfer", {
+                        summary: this._formatInventoryItemName(name, category, Number(option.stock) || 0),
+                        description: option.item?.description,
+                        ean: option.ean
+                    }, null, {
+                        transfer_quantity: quantity,
+                        target_entity: this._eanTransferTargetEntity
+                    });
+                    status.textContent = translate("ui.inventory.correction_manual_sent");
+                    status.style.color = 'var(--success-color,#2e7d32)';
+                });
+                transferBox.appendChild(transferField);
+                transferBox.appendChild(transferButton);
+                popup.appendChild(transferBox);
+            }
+
+            popup.appendChild(status);
+            const actions = document.createElement('div');
+            actions.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start;margin-top:8px;';
+            const styleActionButton = (button, primary = false) => {
+                button.type = 'button';
+                button.style.cssText = [
+                    'border:none',
+                    'border-radius:4px',
+                    'padding:8px 12px',
+                    'min-height:36px',
+                    'font:inherit',
+                    'cursor:pointer',
+                    `background:${primary ? 'var(--primary-color,#03A9F4)' : 'var(--secondary-background-color,#eee)'}`,
+                    `color:${primary ? 'var(--text-primary-color,#fff)' : 'var(--primary-text-color,#000)'}`
+                ].join(';');
+            };
+            let closed = false;
+            const close = result => {
+                if (closed) return;
+                closed = true;
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(result);
+            };
+            const onKeyDown = event => {
+                if (event.key === 'Escape') close(false);
+            };
+
+            const editButton = document.createElement('button');
+            editButton.textContent = translate("ui.inventory.correction_edit");
+            styleActionButton(editButton);
+            editButton.disabled = option.ean
+                ? (!this._eanDatabaseEntity || !this._eanDatabase?.has(String(option.ean)))
+                : !option.item;
+            editButton.addEventListener('click', () => {
+                if (editButton.disabled) return;
+                close(true);
+                if (option.ean) {
+                    this._showEanDatabaseManager(option.ean, {
+                        onBack: () => this._openInventoryCorrection(
+                            this._eanDatabase?.get(String(option.ean)) || option.product,
+                            option.ean,
+                            sourceWasEan
+                        )
+                    });
+                } else {
+                    this._handleEditItem(option.item);
+                }
+            });
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = translate("ui.common.cancel");
+            styleActionButton(cancelButton);
+            cancelButton.addEventListener('click', () => close(false));
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = translate("ui.inventory.correction_save");
+            styleActionButton(saveButton, true);
+            saveButton.addEventListener('click', async () => {
+                const nextQuantity = Number(quantityInput.value);
+                if (!Number.isInteger(nextQuantity) || nextQuantity < 0) {
+                    status.textContent = translate("ui.ean.database_number_invalid");
+                    status.style.color = 'var(--error-color,#db4437)';
+                    return;
+                }
+                const previousQuantity = this._getShoppingStockByName(name, option.ean);
+                saveButton.disabled = true;
+                const result = await this._setShoppingQuantityByName(
+                    name, category, nextQuantity, option.ean,
+                    { suppressListScript: true }
+                );
+                saveButton.disabled = false;
+                if (result.status === "error") {
+                    status.textContent = result.error?.message || String(result.error || "");
+                    status.style.color = 'var(--error-color,#db4437)';
+                    return;
+                }
+
+                const previousItem = {
+                    summary: this._formatInventoryItemName(name, category, previousQuantity),
+                    description: option.item?.description,
+                    ean: option.ean
+                };
+                const nextItem = {
+                    summary: this._formatInventoryItemName(name, category, result.quantity),
+                    description: option.item?.description,
+                    ean: option.ean
+                };
+                await this._runListScript("inventory_corrected", nextItem, previousItem, {
+                    quantity_before: previousQuantity,
+                    quantity_after: result.quantity,
+                    quantity_delta: result.quantity - previousQuantity
+                });
+                if (sourceWasEan) {
+                    const scriptProduct = option.product || {};
+                    await this._runEanScript("inventory_corrected", {
+                        ean: option.ean || "",
+                        name,
+                        brand: scriptProduct?.brand,
+                        productQuantity: scriptProduct?.quantity,
+                        scanQuantity: 1,
+                        category,
+                        imageUrl: scriptProduct?.imageUrl,
+                        scanMode: "inventory_correct",
+                        stockBefore: previousQuantity,
+                        stockAfter: result.quantity,
+                        action: "inventory_corrected"
+                    });
+                }
+                this._restartInventoryModeResetTimer();
+                close(true);
+                this._showInventoryNotice(
+                    translate("ui.inventory.correction_saved")
+                        .replace("{name}", name)
+                        .replace("{before}", String(previousQuantity))
+                        .replace("{after}", String(result.quantity))
+                );
+            });
+
+            actions.appendChild(saveButton);
+            actions.appendChild(editButton);
+            actions.appendChild(cancelButton);
+            popup.appendChild(actions);
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close(false);
+            });
+            window.addEventListener('keydown', onKeyDown, true);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+            quantityInput.focus();
+            quantityInput.select();
+        });
+    }
+
+    _getInventoryVariantMinimumStock(ean, item = null) {
+        if (!ean) {
+            const configuredMinimum = item ? this._parseInventoryVariant(item).minimumStock : null;
+            return configuredMinimum !== null
+                ? configuredMinimum
+                : (this._eanTransferDefaultMinimumStock ?? null);
+        }
+        const product = this._inventoryVariantProduct(ean);
+        if (product?.minimumStock !== null && product?.minimumStock !== undefined) {
+            return Number(product.minimumStock);
+        }
+        return this._eanTransferDefaultMinimumStock;
+    }
+
+    _getInventoryItemMinimumComparison(item) {
+        const itemName = this._getNameOnly(item?.name);
+        const itemCategory = this._getCategory(item?.name) || null;
+        const physicalGroup = this._getInventoryVariantItems(itemName, itemCategory);
+        const displayedVariants = item?.inventoryGroup ? item.inventoryVariants : [item];
+        const groupedVariants = physicalGroup.length > 1 ? physicalGroup : displayedVariants;
+
+        if ((groupedVariants || []).length > 1) {
+            const group = this._getInventoryGroupState(itemName, itemCategory, groupedVariants);
+            if (group.minimum !== null) {
+                return {
+                    hasMinimum: true,
+                    stock: group.stock,
+                    minimum: group.minimum,
+                    relation: group.stock < group.minimum
+                        ? "below"
+                        : group.stock === group.minimum ? "equal" : "above"
+                };
+            }
+        }
+
+        const comparisons = (displayedVariants || []).map(variant => {
+            const ean = variant.inventoryVariantEan !== undefined
+                ? variant.inventoryVariantEan
+                : this._parseInventoryVariant(variant).ean;
+            const minimum = this._getInventoryVariantMinimumStock(ean, variant);
+            const stock = this._getQuantity(variant.name);
+            if (minimum === null) return null;
+            return {
+                stock,
+                minimum,
+                relation: stock < minimum ? "below" : stock === minimum ? "equal" : "above"
+            };
+        }).filter(Boolean);
+
+        if (!comparisons.length) {
+            return { hasMinimum: false, stock: this._getQuantity(item?.name || ""), minimum: null, relation: "none" };
+        }
+        const representative = comparisons.find(entry => entry.relation === "below") ||
+            comparisons.find(entry => entry.relation === "equal") || comparisons[0];
+        return { hasMinimum: true, ...representative };
+    }
+
+    _isInventoryItemAtMinimum(item) {
+        const comparison = this._getInventoryItemMinimumComparison(item);
+        return comparison.hasMinimum && ["equal", "below"].includes(comparison.relation);
+    }
+
+    _isInventoryItemBelowMinimum(item) {
+        const comparison = this._getInventoryItemMinimumComparison(item);
+        return comparison.hasMinimum && comparison.relation === "below";
+    }
+
+    _countInventoryItemsBelowMinimum(items) {
+        if (this._mode !== "inventory") return 0;
+        const countedGroups = new Set();
+        let count = 0;
+
+        for (const item of items || []) {
+            const name = this._getNameOnly(item?.name || "");
+            const category = this._getCategory(item?.name || "") || null;
+            const group = this._getInventoryGroupState(name, category);
+            if (group.variants.length > 1 && group.minimum !== null) {
+                const key = `${this._normalizeEanDatabaseProductName(name)}::${String(category || "none").trim().toLocaleLowerCase()}`;
+                if (countedGroups.has(key)) continue;
+                countedGroups.add(key);
+                if (group.stock < group.minimum) count += 1;
+                continue;
+            }
+            if (this._isInventoryItemBelowMinimum(item)) count += 1;
+        }
+        return count;
+    }
+
+    _appendInventoryCategoryMinimumStatus(container, items) {
+        if (this._mode !== "inventory" || !this._inventoryShowCategoryMinimumStatus) return;
+        const count = this._countInventoryItemsBelowMinimum(items);
+        if (count < 1) return;
+
+        const status = document.createElement('div');
+        status.textContent = `· ${translate("ui.inventory.category_below_minimum").replace("{count}", String(count))}`;
+        status.style.marginLeft = '8px';
+        status.style.whiteSpace = 'nowrap';
+        status.style.color = 'var(--warning-color, #e0a526)';
+        container.appendChild(status);
+    }
+
+    async _offerInventoryCorrectionTransfer(previousName, currentName, category, previousQuantity, currentQuantity, ean = undefined) {
+        if (
+            this._mode !== "inventory" ||
+            !this._isEanTransferActionEnabled("shopping_remove") ||
+            !this._isEanTransferEntityUsable(true) ||
+            !Number.isInteger(previousQuantity) ||
+            !Number.isInteger(currentQuantity) ||
+            currentQuantity >= previousQuantity
+        ) {
+            return false;
+        }
+
+        const groupState = this._getInventoryGroupState(currentName, category);
+        const isGrouped = groupState.variants.length > 1;
+        const groupPreviousStock = groupState.stock + (previousQuantity - currentQuantity);
+        const usesGroupMinimum = isGrouped && groupState.minimum !== null;
+        if (
+            usesGroupMinimum &&
+            (groupPreviousStock <= groupState.minimum || groupState.stock > groupState.minimum)
+        ) {
+            return false;
+        }
+
+        const manualVariant = ean === null
+            ? (
+                this._findInventoryVariantItem(this._items, currentName, null, null) ||
+                this._findInventoryVariantItem(this._items, previousName, null, null)
+            )
+            : null;
+        if (ean === null && !usesGroupMinimum) {
+            const minimum = this._getInventoryVariantMinimumStock(null, manualVariant);
+            if (
+                this._eanTransferNonEan !== "minimum" ||
+                !Number.isInteger(minimum) ||
+                minimum < 0 ||
+                previousQuantity <= minimum ||
+                currentQuantity > minimum
+            ) {
+                return false;
+            }
+        }
+
+        const products = usesGroupMinimum || ean === null
+            ? []
+            : ean
+                ? [this._eanDatabase?.get(String(ean))].filter(Boolean)
+                : this._getEanDatabaseEntriesByName(previousName);
+        const candidates = products.filter(product => {
+            if (product.automaticTransferDisabled === true) return false;
+            const minimum = product.minimumStock !== null && product.minimumStock !== undefined
+                ? Number(product.minimumStock)
+                : (this._eanTransferRemoveBehavior === "minimum"
+                    ? this._eanTransferDefaultMinimumStock
+                    : null);
+            return Number.isInteger(minimum) && minimum >= 0 &&
+                previousQuantity > minimum && currentQuantity <= minimum;
+        });
+
+        let product = null;
+        if (usesGroupMinimum) {
+            product = null;
+        } else if (products.length) {
+            if (!candidates.length) return false;
+            product = candidates.length === 1
+                ? candidates[0]
+                : await this._selectEanProductForRemoval(
+                    currentName, candidates, false, translate("ui.inventory.send")
+                );
+            if (product === false) return false;
+        } else if (ean !== null) {
+            const minimum = this._eanTransferRemoveBehavior === "minimum"
+                ? this._eanTransferDefaultMinimumStock
+                : null;
+            if (
+                this._eanTransferNonEan === "off" ||
+                !Number.isInteger(minimum) ||
+                minimum < 0 ||
+                previousQuantity <= minimum ||
+                currentQuantity > minimum
+            ) {
+                return false;
+            }
+        }
+
+        const target = this._hass.states[this._eanTransferTargetEntity]?.attributes?.friendly_name
+            || this._eanTransferTargetEntity;
+        const question = translate("ui.inventory.correction_transfer_question")
+            .replace("{name}", currentName)
+            .replace("{target}", target);
+        if (!(await this.confirmPopup(question))) return false;
+
+        const sendGroupIdentity = usesGroupMinimum || (isGrouped && this._eanTransferGroupedAsName);
+        const transferProduct = sendGroupIdentity ? {
+            name: currentName,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category: category || null
+        } : {
+            ...(product || {}),
+            name: currentName,
+            originalName: product?.originalName || null,
+            brand: product?.brand || null,
+            quantity: product?.quantity || null,
+            imageUrl: product?.imageUrl || null,
+            category: category || product?.category || null
+        };
+        return this._createEanTransfer(
+            "shopping_add",
+            sendGroupIdentity ? null : (product?.ean || null),
+            transferProduct,
+            1,
+            { sourceOperation: "manual_correction" }
+        );
+    }
+
+    _clearLastInventoryBooking() {
+        this._lastInventoryBooking = null;
+    }
+
+    _showInventoryFeedback(name, before, after, booking = null) {
+        if (this._mode !== "inventory") return;
+        this._restartInventoryModeResetTimer();
+        const status = this._shadow?.getElementById('inventoryFeedback');
+        if (!status) return;
+        if (this._inventoryFeedbackTimer) clearTimeout(this._inventoryFeedbackTimer);
+        status.replaceChildren();
+        status.style.display = 'flex';
+        status.style.alignItems = 'center';
+        status.style.justifyContent = 'space-between';
+        status.style.gap = '8px';
+
+        let displayBefore = Number(before);
+        let displayAfter = Number(after);
+        if (booking && this._inventoryGroupVariants && this._canTrackInventoryVariants()) {
+            displayAfter = this._getShoppingStockByName(name);
+            displayBefore = displayAfter + (Number(before) - Number(after));
+        }
+        const message = translate("ui.inventory.stock_change")
+            .replace("{name}", name)
+            .replace("{before}", String(displayBefore))
+            .replace("{after}", String(displayAfter));
+        const text = document.createElement('span');
+        text.textContent = message;
+        text.style.minWidth = '0';
+        status.appendChild(text);
+        status.title = message;
+
+        const canUndo = booking && before !== after;
+        if (canUndo) {
+            this._lastInventoryBooking = {
+                ...booking,
+                name,
+                before: Number(before),
+                after: Number(after),
+                displayBefore,
+                displayAfter,
+                quantity: Math.abs(Number(after) - Number(before)),
+                expiresAt: Date.now() + 30000
+            };
+            const undoButton = document.createElement('button');
+            undoButton.type = 'button';
+            undoButton.title = translate("ui.inventory.undo");
+            undoButton.setAttribute('aria-label', undoButton.title);
+            undoButton.style.flexShrink = '0';
+            undoButton.style.padding = '3px 7px';
+            const undoIcon = document.createElement('ha-icon');
+            undoIcon.setAttribute('icon', 'mdi:undo-variant');
+            const undoText = document.createElement('span');
+            undoText.className = 'inventory-undo-text';
+            undoText.textContent = translate("ui.inventory.undo");
+            undoButton.appendChild(undoIcon);
+            undoButton.appendChild(undoText);
+            undoButton.addEventListener('click', () => this._undoLastInventoryBooking());
+            status.appendChild(undoButton);
+        } else {
+            this._clearLastInventoryBooking();
+        }
+
+        this._inventoryFeedbackTimer = setTimeout(() => {
+            this._clearLastInventoryBooking();
+            status.textContent = this._getInventoryModeStatusText();
+            status.title = status.textContent;
+            status.style.display = '';
+            this._inventoryFeedbackTimer = null;
+        }, canUndo ? 30000 : 4500);
+    }
+
+    _showInventoryNotice(message) {
+        if (this._mode !== "inventory") return;
+        const status = this._shadow?.getElementById('inventoryFeedback');
+        if (!status) return;
+        this._clearLastInventoryBooking();
+        status.textContent = message;
+        status.title = message;
+        status.style.display = '';
+        if (this._inventoryFeedbackTimer) clearTimeout(this._inventoryFeedbackTimer);
+        this._inventoryFeedbackTimer = setTimeout(() => {
+            status.textContent = this._getInventoryModeStatusText();
+            status.title = status.textContent;
+            this._inventoryFeedbackTimer = null;
+        }, 4500);
+    }
+
+    async _getInventoryUndoTransferState(transferId) {
+        if (!transferId) return "none";
+        if (!this._isEanTransferEntityUsable(true)) return "uncertain";
+        try {
+            const items = await this._getTodoItems(this._eanTransferEntity);
+            const record = items
+                .map(item => this._parseEanTransferItem(item))
+                .find(item => item?.transferId === transferId);
+            if (!record) return "uncertain";
+            if (!["source_pending", "pending"].includes(record.status)) return "uncertain";
+
+            await this._deleteEanTransferItem(record.uid);
+            const remaining = await this._getTodoItems(this._eanTransferEntity);
+            return remaining.some(item => this._parseEanTransferItem(item)?.transferId === transferId)
+                ? "uncertain"
+                : "cancelled";
+        } catch (error) {
+            console.warn("[ha-shopping-list-improved] Unable to cancel inventory undo transfer:", error);
+            return "uncertain";
+        }
+    }
+
+    _showInventoryUndoTransferChoice(booking) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;box-sizing:border-box;padding:18px;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+            const target = this._hass.states[this._eanTransferTargetEntity]?.attributes?.friendly_name
+                || this._eanTransferTargetEntity;
+            const text = document.createElement('div');
+            text.textContent = translate("ui.inventory.undo_transfer_question")
+                .replace("{before}", String(booking.displayAfter ?? booking.after))
+                .replace("{after}", String(booking.displayBefore ?? booking.before))
+                .replace("{target}", target);
+            text.style.lineHeight = '1.5';
+            text.style.marginBottom = '16px';
+
+            const buttons = document.createElement('div');
+            buttons.style.display = 'flex';
+            buttons.style.flexWrap = 'wrap';
+            buttons.style.gap = '8px';
+            const close = choice => {
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(choice);
+            };
+            const onKeyDown = event => {
+                if (event.key === 'Escape') close("cancel");
+            };
+            const choices = [
+                ["both", "ui.inventory.undo_both", true],
+                ["local", "ui.inventory.undo_local", false],
+                ["cancel", "ui.inventory.undo_cancel", false]
+            ];
+            choices.forEach(([value, key, primary]) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = translate(key);
+                button.style.padding = '8px 12px';
+                button.style.border = 'none';
+                button.style.borderRadius = '4px';
+                button.style.cursor = 'pointer';
+                if (primary) {
+                    button.style.background = 'var(--primary-color, #03A9F4)';
+                    button.style.color = 'white';
+                }
+                button.addEventListener('click', () => close(value));
+                buttons.appendChild(button);
+            });
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) close("cancel");
+            });
+            window.addEventListener('keydown', onKeyDown, true);
+            popup.appendChild(text);
+            popup.appendChild(buttons);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    async _undoLastInventoryBooking() {
+        const booking = this._lastInventoryBooking;
+        if (
+            this._mode !== "inventory" ||
+            this._inventoryUndoBusy ||
+            !booking ||
+            Date.now() > booking.expiresAt
+        ) {
+            return false;
+        }
+
+        this._inventoryUndoBusy = true;
+        const bookingProduct = booking.product || {
+            name: booking.name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category: booking.category || null
+        };
+        let transferResult = booking.transferId
+            ? await this._getInventoryUndoTransferState(booking.transferId)
+            : "none";
+        let reversalId = null;
+        let sendReversal = false;
+        let localRestored = false;
+
+        try {
+            if (transferResult === "uncertain") {
+                const choice = await this._showInventoryUndoTransferChoice(booking);
+                if (choice === "cancel") return false;
+                if (choice === "both") {
+                    sendReversal = true;
+                    transferResult = "reversal_requested";
+                } else {
+                    transferResult = "unchanged";
+                }
+            }
+
+            const restored = await this._setShoppingQuantityByName(
+                booking.name,
+                booking.category || null,
+                booking.before,
+                booking.ean || null
+            );
+            if (restored.status === "error") {
+                if (reversalId) await this._cancelEanTransfer(reversalId);
+                if (transferResult === "cancelled") {
+                    await this._createEanTransfer(
+                        "shopping_add", booking.transferEan ?? booking.ean ?? null, bookingProduct, booking.transferQuantity || 1,
+                        { sourceOperation: "shopping_remove" }
+                    );
+                }
+                throw restored.error || new Error("Inventory undo failed");
+            }
+            localRestored = true;
+
+            if (sendReversal) {
+                reversalId = await this._createEanTransfer(
+                    "shopping_remove",
+                    booking.transferEan ?? booking.ean ?? null,
+                    bookingProduct,
+                    booking.transferQuantity || booking.quantity || 1,
+                    { sourceOperation: "inventory_undo" }
+                );
+                if (!reversalId) throw new Error("Inventory undo transfer could not be created");
+                transferResult = "reversal_sent";
+                await this._runEanScript("transfer_undo_sent", {
+                    ...booking.scriptData,
+                    name: booking.name,
+                    scanQuantity: booking.transferQuantity || booking.quantity || 1,
+                    stockBefore: booking.after,
+                    stockAfter: booking.before,
+                    originalAction: booking.action,
+                    transferResult
+                });
+            } else if (transferResult === "cancelled") {
+                await this._runEanScript("transfer_undo_cancelled", {
+                    ...booking.scriptData,
+                    name: booking.name,
+                    scanQuantity: booking.transferQuantity || booking.quantity || 1,
+                    stockBefore: booking.after,
+                    stockAfter: booking.before,
+                    originalAction: booking.action,
+                    transferResult
+                });
+            }
+
+            this._clearLastInventoryBooking();
+            await this._runEanScript("inventory_undo_completed", {
+                ...booking.scriptData,
+                name: booking.name,
+                scanQuantity: booking.quantity || 1,
+                stockBefore: booking.after,
+                stockAfter: booking.before,
+                originalAction: booking.action,
+                transferResult
+            });
+            this._showInventoryNotice(translate("ui.inventory.undo_done")
+                .replace("{name}", booking.name)
+                .replace("{before}", String(booking.displayAfter ?? booking.after))
+                .replace("{after}", String(booking.displayBefore ?? booking.before)));
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory undo failed:", error);
+            await this._runEanScript("error", {
+                ...booking.scriptData,
+                name: booking.name,
+                stockBefore: booking.after,
+                stockAfter: booking.before,
+                originalAction: booking.action,
+                transferResult,
+                action: "inventory_undo",
+                error: error?.message || String(error)
+            });
+            this._clearLastInventoryBooking();
+            this._showInventoryNotice(translate(
+                localRestored ? "ui.inventory.undo_transfer_failed" : "ui.inventory.undo_failed"
+            ));
+            return localRestored;
+        } finally {
+            this._inventoryUndoBusy = false;
+        }
+    }
+
+    _handleInventoryControlCode(code) {
+        if (this._mode !== "inventory") return false;
+        const value = String(code || '').trim().toUpperCase();
+        const modes = {
+            'ISL:INVENTORY:ADD': 'inventory_add',
+            'ISL:INVENTORY:REMOVE': 'inventory_remove',
+            'ISL:INVENTORY:REGISTER': 'inventory_register',
+            'ISL:INVENTORY:CORRECT': 'inventory_correct'
+        };
+        if (!modes[value]) return false;
+        this._setEanScanMode(modes[value]);
+        return true;
+    }
+
+    _openInventoryFilterPopup(anchor = null) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:transparent;';
+        const popup = document.createElement('div');
+        popup.style.cssText = 'position:fixed;width:min(320px,calc(100vw - 16px));max-height:80vh;overflow:auto;background:var(--card-background-color,white);color:var(--primary-text-color);padding:12px;border:1px solid var(--divider-color,#ccc);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.28);box-sizing:border-box;';
+        for (const filter of ["all", "zero", "low", "minimum", "below_minimum"]) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = `${filter === this._inventoryFilter ? '✓ ' : ''}${translate(`ui.inventory.filter.${filter}`)}`;
+            button.style.cssText = 'display:block;width:100%;text-align:left;padding:10px;border:0;background:transparent;color:inherit;cursor:pointer;';
+            button.addEventListener('click', () => {
+                this._inventoryFilter = filter;
+                const label = this._shadow?.getElementById('inventoryFilterLabel');
+                if (label) label.textContent = translate(`ui.inventory.filter.${filter}`);
+                overlay.remove();
+                this._renderList();
+            });
+            popup.appendChild(button);
+        }
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) overlay.remove();
+        });
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+        const anchorRect = anchor?.getBoundingClientRect?.();
+        if (anchorRect) {
+            const margin = 8;
+            const popupWidth = Math.min(320, window.innerWidth - (margin * 2));
+            const left = Math.max(margin, Math.min(anchorRect.left, window.innerWidth - popupWidth - margin));
+            let top = anchorRect.bottom + 6;
+            if (top + popup.offsetHeight > window.innerHeight - margin) {
+                top = Math.max(margin, anchorRect.top - popup.offsetHeight - 6);
+            }
+            popup.style.left = `${left}px`;
+            popup.style.top = `${top}px`;
+        } else {
+            popup.style.left = '50%';
+            popup.style.top = '50%';
+            popup.style.transform = 'translate(-50%,-50%)';
+        }
+    }
+
+    _getInventoryQueueModeLabel(mode) {
+        const normalized = this._normalizeEanScanMode(mode);
+        const key = normalized === "database" ? "database"
+            : normalized === "shopping_remove" || normalized === "inventory_remove" ? "remove"
+            : normalized === "inventory_add" ? "add"
+            : normalized === "inventory_register" ? "register"
+            : normalized === "inventory_correct" ? "correct"
+            : normalized === "inventory_none" ? "none" : "shopping";
+        return translate(`ui.inventory.queue_mode.${key}`);
+    }
+
+    _showInventoryQueuePopup() {
+        if (!this._eanQueueProcessing && this._eanScanQueueCardId !== this._getEanScanCardId()) {
+            this._loadEanScanQueue();
+        }
+
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;';
+        const popup = document.createElement('div');
+        popup.style.cssText = 'width:min(520px,100%);max-height:90vh;overflow:auto;padding:18px;box-sizing:border-box;background:var(--card-background-color,white);color:var(--primary-text-color);border-radius:8px;';
+
+        const heading = document.createElement('h3');
+        heading.textContent = translate("ui.inventory.queue");
+        heading.style.margin = '0 0 12px';
+        popup.appendChild(heading);
+
+        const summary = document.createElement('div');
+        summary.style.cssText = 'font-size:13px;color:var(--secondary-text-color);margin-bottom:10px;';
+        popup.appendChild(summary);
+
+        const list = document.createElement('div');
+        list.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+        popup.appendChild(list);
+
+        const actions = document.createElement('div');
+        actions.style.cssText = 'display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:16px;';
+        const processButton = document.createElement('button');
+        processButton.type = 'button';
+        processButton.textContent = translate("ui.admin.options.ean_queue_process");
+        const clearButton = document.createElement('button');
+        clearButton.type = 'button';
+        clearButton.textContent = translate("ui.admin.options.ean_queue_clear");
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.textContent = translate("ui.common.close");
+        [processButton, clearButton, closeButton].forEach(button => {
+            button.style.cssText = 'padding:7px 12px;cursor:pointer;';
+            actions.appendChild(button);
+        });
+        popup.appendChild(actions);
+
+        const close = () => {
+            window.removeEventListener('keydown', onKeyDown, true);
+            overlay.remove();
+        };
+        const onKeyDown = event => { if (event.key === 'Escape') close(); };
+
+        const render = () => {
+            list.innerHTML = '';
+            const items = Array.isArray(this._eanScanQueue) ? this._eanScanQueue : [];
+            const total = items.reduce((sum, item) => sum + Math.max(1, Number(item.quantity || 1)), 0);
+            summary.textContent = translate("ui.admin.options.ean_queue_pending").replace("{count}", String(total));
+            processButton.disabled = items.length === 0;
+            clearButton.disabled = items.length === 0;
+
+            if (!items.length) {
+                const empty = document.createElement('div');
+                empty.textContent = translate("ui.inventory.queue_empty");
+                empty.style.cssText = 'padding:14px;border:1px solid var(--divider-color,#ccc);border-radius:6px;color:var(--secondary-text-color);';
+                list.appendChild(empty);
+                return;
+            }
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 12px;border:1px solid var(--divider-color,#ccc);border-radius:6px;';
+                const code = document.createElement('strong');
+                code.textContent = String(item.code || '');
+                code.style.wordBreak = 'break-all';
+                const mode = document.createElement('span');
+                mode.textContent = this._getInventoryQueueModeLabel(item.scan_mode);
+                mode.style.cssText = 'font-size:12px;color:var(--primary-color,#03A9F4);white-space:nowrap;';
+                const details = document.createElement('span');
+                const created = new Date(item.createdAt || '');
+                const createdText = Number.isNaN(created.getTime()) ? '' : created.toLocaleString();
+                details.textContent = [`${Math.max(1, Number(item.quantity || 1))} ×`, createdText]
+                    .filter(Boolean).join(' · ');
+                details.style.cssText = 'grid-column:1 / -1;font-size:12px;color:var(--secondary-text-color);';
+                row.appendChild(code);
+                row.appendChild(mode);
+                row.appendChild(details);
+                list.appendChild(row);
+            });
+        };
+
+        processButton.addEventListener('click', () => {
+            if (!this._eanScanQueue?.length) return;
+            this._eanQueuePaused = false;
+            this._eanScanQueue.forEach(item => { item.deferred = false; });
+            this._saveEanScanQueue();
+            close();
+            this._processEanScanQueue(true);
+        });
+        clearButton.addEventListener('click', async () => {
+            if (!this._eanScanQueue?.length) return;
+            if (!(await this.confirmPopup(translate("ui.inventory.queue_clear_confirm")))) return;
+            this._clearEanScanQueue();
+            render();
+        });
+        closeButton.addEventListener('click', close);
+        overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+        window.addEventListener('keydown', onKeyDown, true);
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+        render();
+    }
+
+    async _showInventoryControlCodes() {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;';
+        const popup = document.createElement('div');
+        popup.style.cssText = 'width:min(400px,100%);max-height:90vh;overflow:auto;padding:18px;background:var(--card-background-color,white);color:var(--primary-text-color);border-radius:8px;';
+
+        const heading = document.createElement('h3');
+        heading.textContent = translate("ui.inventory.controls");
+        heading.style.margin = '0 0 8px';
+        const help = document.createElement('p');
+        help.textContent = translate("ui.inventory.controls_help");
+        help.style.margin = '0 0 12px';
+        popup.appendChild(heading);
+        popup.appendChild(help);
+
+        const codes = [
+            { label: translate("ui.inventory.add"), text: 'ISL:INVENTORY:ADD' },
+            { label: translate("ui.inventory.remove"), text: 'ISL:INVENTORY:REMOVE' },
+            { label: translate("ui.inventory.register"), text: 'ISL:INVENTORY:REGISTER' },
+            { label: translate("ui.inventory.correct"), text: 'ISL:INVENTORY:CORRECT' }
+        ];
+        const holders = [];
+        for (const code of codes) {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:16px;margin:12px 0;flex-wrap:wrap;';
+            const holder = document.createElement('div');
+            holder.style.cssText = 'width:144px;height:144px;background:white;padding:2px;';
+            const caption = document.createElement('div');
+            caption.style.fontWeight = '600';
+            caption.textContent = code.label;
+            const value = document.createElement('code');
+            value.textContent = code.text;
+            value.style.cssText = 'display:block;font-size:12px;margin-top:5px;word-break:break-all;';
+            caption.appendChild(value);
+            row.appendChild(holder);
+            row.appendChild(caption);
+            popup.appendChild(row);
+            holders.push({ holder, text: code.text });
+        }
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.textContent = translate("ui.common.close");
+        closeBtn.style.cssText = 'padding:7px 12px;cursor:pointer;';
+        closeBtn.addEventListener('click', () => overlay.remove());
+        popup.appendChild(closeBtn);
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) overlay.remove();
+        });
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+
+        try {
+            if (!window.QRCode) {
+                if (!window._islQrCodeLoadPromise) {
+                    window._islQrCodeLoadPromise = new Promise((resolve, reject) => {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
+                    }).catch(error => {
+                        window._islQrCodeLoadPromise = null;
+                        throw error;
+                    });
+                }
+                await window._islQrCodeLoadPromise;
+            }
+            if (overlay.isConnected) {
+                holders.forEach(({ holder, text }) => new window.QRCode(holder, {
+                    text, width: 140, height: 140,
+                    colorDark: '#000000', colorLight: '#ffffff',
+                    correctLevel: window.QRCode.CorrectLevel.M
+                }));
+            }
+        } catch (error) {
+            console.warn('[ha-shopping-list-improved] Unable to display inventory control QR codes:', error);
+            holders.forEach(({ holder, text }) => {
+                holder.style.cssText = 'width:144px;min-height:60px;padding:8px;background:white;color:black;display:flex;align-items:center;word-break:break-all;font-size:12px;';
+                holder.textContent = text;
+            });
+        }
     }
 
     _renderList() {
@@ -3838,12 +11312,35 @@ class HaShoppingListImproved extends HTMLElement {
         let itemsToRender = this._filterTodoItemsByDue([...this._items]);
         let ack = this._config?.acknowledged;
 
+        if (this._mode === "inventory") {
+            itemsToRender = this._buildInventoryDisplayItems(itemsToRender);
+            if (!this._inventoryShowHidden) itemsToRender = itemsToRender.filter(item => !item.complete);
+            itemsToRender = itemsToRender.filter(item => {
+                const stock = this._getQuantity(item.name);
+                if (this._inventoryFilter === "zero") return stock === 0;
+                if (this._inventoryFilter === "low") return stock <= 1;
+                if (this._inventoryFilter === "minimum") return this._isInventoryItemAtMinimum(item);
+                if (this._inventoryFilter === "below_minimum") return this._isInventoryItemBelowMinimum(item);
+                return true;
+            });
+            ack = "show";
+        }
+
         // Filter list while typing
         let showHidden = false;
         if(this._allowFilter && this._inputEl && this._inputEl.value && this._inputEl.value.trim().length > 0) {
             // show also done items when filtering (if enabled) in this._showDoneItemsInSearch
             showHidden = this._showDoneItemsInSearch;
-            itemsToRender = itemsToRender.filter(i => i.name && i.name.trim().toLowerCase().includes(this._inputEl.value.trim().toLowerCase()));
+            const query = this._inputEl.value.trim();
+            itemsToRender = itemsToRender.filter(item => {
+                if (!item.name) return false;
+                const productName = this._getNameOnly(item.name);
+                return this._matchesSearchValues([
+                    item.name,
+                    productName,
+                    ...this._getEanDatabaseSearchValuesByName(productName)
+                ], query);
+            });
         }
 
         if (!showHidden) {
@@ -3858,6 +11355,66 @@ class HaShoppingListImproved extends HTMLElement {
             }
         }
 
+        const availableCategoryNames = new Set((this._categories || [])
+            .map(category => String(category?.name || '').trim().toLocaleLowerCase())
+            .filter(Boolean));
+        const itemsWithUnavailableCategory = itemsToRender.filter(item => {
+            const category = this._getCategory(item.name);
+            return category &&
+                category.toLocaleLowerCase() !== 'none' &&
+                !availableCategoryNames.has(category.toLocaleLowerCase());
+        });
+
+        if (itemsWithUnavailableCategory.length) {
+            const categoryNotice = document.createElement('li');
+            categoryNotice.classList.add('small');
+            categoryNotice.style.display = 'flex';
+            categoryNotice.style.flexDirection = 'row';
+            categoryNotice.style.alignItems = 'flex-start';
+            categoryNotice.style.gap = '6px';
+            categoryNotice.style.padding = '2px 8px 8px';
+            categoryNotice.style.color = 'var(--secondary-text-color)';
+
+            const categoryNoticeIcon = document.createElement('ha-icon');
+            categoryNoticeIcon.setAttribute('icon', 'mdi:information-outline');
+            categoryNoticeIcon.style.width = '16px';
+            categoryNoticeIcon.style.height = '16px';
+            categoryNoticeIcon.style.setProperty('--mdc-icon-size', '16px');
+            categoryNoticeIcon.style.flex = '0 0 auto';
+            categoryNoticeIcon.style.marginTop = '1px';
+
+            const categoryNoticeContent = document.createElement('span');
+            categoryNoticeContent.style.display = 'inline';
+
+            const categoryNoticeText = document.createElement('span');
+            categoryNoticeText.textContent = translate(
+                itemsWithUnavailableCategory.length === 1
+                    ? "ui.category.hidden_notice_one"
+                    : "ui.category.hidden_notice"
+            ).replace("{count}", String(itemsWithUnavailableCategory.length));
+
+            const categoryDetailsButton = document.createElement('button');
+            categoryDetailsButton.type = 'button';
+            categoryDetailsButton.textContent = translate("ui.category.hidden_details");
+            categoryDetailsButton.style.padding = '0';
+            categoryDetailsButton.style.border = 'none';
+            categoryDetailsButton.style.background = 'transparent';
+            categoryDetailsButton.style.color = 'var(--primary-color, #03A9F4)';
+            categoryDetailsButton.style.cursor = 'pointer';
+            categoryDetailsButton.style.font = 'inherit';
+            categoryDetailsButton.style.textDecoration = 'underline';
+            categoryDetailsButton.addEventListener('click', () => {
+                this._showHiddenCategoryItemsPopup(itemsWithUnavailableCategory);
+            });
+
+            categoryNotice.appendChild(categoryNoticeIcon);
+            categoryNoticeContent.appendChild(categoryNoticeText);
+            categoryNoticeContent.appendChild(document.createTextNode(' '));
+            categoryNoticeContent.appendChild(categoryDetailsButton);
+            categoryNotice.appendChild(categoryNoticeContent);
+            this._listEl.appendChild(categoryNotice);
+        }
+
         // Articles without category
         const uncategorized = itemsToRender.filter(i => {
             const nameOnly = this._getNameOnly(i.name);
@@ -3870,7 +11427,7 @@ class HaShoppingListImproved extends HTMLElement {
             if (categoryFromName) return false;
 
             // Check if in any category config
-            return !this._categories.some(c => 
+            return !this._categories.some(c =>
                 c.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())
             );
         });
@@ -3891,7 +11448,7 @@ class HaShoppingListImproved extends HTMLElement {
                 }).length;
 
                 const futureItemsWithDue = uncategorized
-                    .filter(i => !i.complete) 
+                    .filter(i => !i.complete)
                     .filter(i => i.due)
                     .map(i => ({
                         dueDate: new Date(i.due),
@@ -3924,7 +11481,7 @@ class HaShoppingListImproved extends HTMLElement {
             } else {
                 done = uncategorized.filter(i => i.complete).length;
             }
-            
+
             if(debugMode) console.log("WithOutCategory - Nearest Due Date (formatted):", nearestDueDate);
 
             const storageKey = `${this._entity}_category_no_category`;
@@ -3979,15 +11536,17 @@ class HaShoppingListImproved extends HTMLElement {
 
             if (this._showCatCount) {
                 const doneDiv = document.createElement('div');
-                doneDiv.textContent = `(${done}/${total})`;
+                doneDiv.textContent = this._mode === "inventory" ? `(${total})` : `(${done}/${total})`;
                 // Hide cat count if all done
-                if (this._hideCatCountAllDone && done === total) {
+                if (this._mode !== "inventory" && this._hideCatCountAllDone && done === total) {
                     doneDiv.textContent = '';
                 }
                 doneDiv.style.marginLeft = '8px';
                 doneDiv.style.whiteSpace = 'nowrap';
                 firstRow.appendChild(doneDiv);
             }
+
+            this._appendInventoryCategoryMinimumStatus(firstRow, uncategorized);
 
             if (this._mode === "todo" && done < total && this._showCatExclamation) {
                 const warningEl = document.createElement('span');
@@ -4037,6 +11596,7 @@ class HaShoppingListImproved extends HTMLElement {
             this._listEl.appendChild(liCat);
 
             const itemsContainer = document.createElement('div');
+            itemsContainer.classList.add('list-category-items');
             itemsContainer.style.margin = '4px 0 12px 0';
             itemsContainer.style.display = collapsed ? 'none' : 'block';
 
@@ -4046,8 +11606,8 @@ class HaShoppingListImproved extends HTMLElement {
             uncategorized.forEach(item => {
                 this._renderItem(item, itemsContainer);
 
-                let nameOnly = this._getNameOnly(item.name);
-                let qty = this._getQuantity(item.name);
+                const nameOnly = this._getNameOnly(item.name);
+                const qty = this._getQuantity(item.name);
                 let displayName = nameOnly;
 
                 if (qty > 1 || this._showQuantityOne) {
@@ -4098,11 +11658,11 @@ class HaShoppingListImproved extends HTMLElement {
                     }).length;
 
                     const futureItemsWithDue = catItems
-                        .filter(i => !i.complete) 
+                        .filter(i => !i.complete)
                         .filter(i => i.due)
-                        .map(i => ({ 
-                            dueDate: new Date(i.due), 
-                            dueString: i.due 
+                        .map(i => ({
+                            dueDate: new Date(i.due),
+                            dueString: i.due
                         }))
                         .filter(d => d.dueDate > now);
 
@@ -4185,9 +11745,9 @@ class HaShoppingListImproved extends HTMLElement {
 
                 if (this._showCatCount) {
                     const doneDiv = document.createElement('div');
-                    doneDiv.textContent = `(${done}/${total})`;
+                    doneDiv.textContent = this._mode === "inventory" ? `(${total})` : `(${done}/${total})`;
                     // Hide cat count if all done
-                    if (this._hideCatCountAllDone && done === total) {
+                    if (this._mode !== "inventory" && this._hideCatCountAllDone && done === total) {
                         doneDiv.textContent = '';
                     }
                     doneDiv.style.marginLeft = '8px';
@@ -4195,6 +11755,8 @@ class HaShoppingListImproved extends HTMLElement {
                     if (cat.color) doneDiv.style.color = cat.color;
                     firstRow.appendChild(doneDiv);
                 }
+
+                this._appendInventoryCategoryMinimumStatus(firstRow, catItems);
 
                 if (this._mode === "todo" && done < total && this._showCatExclamation) {
                     const warningEl = document.createElement('span');
@@ -4204,7 +11766,7 @@ class HaShoppingListImproved extends HTMLElement {
                 }
 
                 textContainer.appendChild(firstRow);
-                
+
                 if (this._mode === "todo" && nearestDueDate &&  this._showCatNextDue) {
                     const smallerFontSize = getSmallerFontSize(this._catFontSize, 0.8, 14);
 
@@ -4245,6 +11807,7 @@ class HaShoppingListImproved extends HTMLElement {
                 this._listEl.appendChild(liCat);
 
                 const itemsContainer = document.createElement('div');
+                itemsContainer.classList.add('list-category-items');
                 itemsContainer.style.margin = '4px 0 12px 0';
                 itemsContainer.style.display = collapsed ? 'none' : 'block';
 
@@ -4254,8 +11817,8 @@ class HaShoppingListImproved extends HTMLElement {
                 catItems.forEach(item => {
                     this._renderItem(item, itemsContainer, cat);
 
-                    let nameOnly = this._getNameOnly(item.name);
-                    let qty = this._getQuantity(item.name);
+                    const nameOnly = this._getNameOnly(item.name);
+                    const qty = this._getQuantity(item.name);
                     let displayName = nameOnly;
 
                     if (qty > 1 || this._showQuantityOne) {
@@ -4277,6 +11840,8 @@ class HaShoppingListImproved extends HTMLElement {
             }
         });
 
+        this._applyCategoryDisplay(itemsToRender);
+
         if (nearestDueDateGlobalObj) {
             if (this._showTitleInfo) {
                 if (this._showTitleInfoIcon) this._titleAlertDescIcon.classList.remove("hidden");
@@ -4289,21 +11854,57 @@ class HaShoppingListImproved extends HTMLElement {
 
                 if(debugMode) console.log("Next global due date: ", formattedGlobal);
 
-                this._titleAlertDesc.textContent = formattedGlobal;    
+                this._titleAlertDesc.textContent = formattedGlobal;
             }
         }
     }
 
+    _applyCategoryDisplay(itemsToRender) {
+        if (this._categoryDisplay === "grouped" || !this._listEl) return;
+
+        const directChildren = [...this._listEl.children];
+        const headers = directChildren.filter(element => element.matches('li.category-header'));
+        const categoryContainers = directChildren.filter(element => element.matches('div.list-category-items'));
+
+        if (this._categoryDisplay === "hidden_category_order") {
+            headers.forEach(header => {
+                header.style.display = 'none';
+            });
+            categoryContainers.forEach(container => {
+                container.style.display = 'block';
+                container.style.margin = '0';
+            });
+            return;
+        }
+
+        const renderedIds = new Set(
+            [...this._listEl.querySelectorAll('li[data-item-id]')]
+                .map(element => String(element.dataset.itemId || ''))
+                .filter(Boolean)
+        );
+        headers.forEach(header => header.remove());
+        categoryContainers.forEach(container => container.remove());
+
+        const flatContainer = document.createElement('div');
+        flatContainer.classList.add('list-category-items', 'list-category-items-flat');
+        flatContainer.style.margin = '0';
+        for (const item of itemsToRender || []) {
+            if (!renderedIds.has(String(item.id || ''))) continue;
+            this._renderItem(item, flatContainer);
+        }
+        if (flatContainer.childElementCount) this._listEl.appendChild(flatContainer);
+    }
+
     // Extract category, e.g. "@Obst@ 2× Apfel" -> "Obst"
     _getCategory(name) {
-        name = this._removeSortIndex(name);
+        name = this._removeSortIndex(this._stripOfferOnlyMarker(name));
         const match = name.match(/^@(.+?)@\s*/);
         return match ? match[1] : null;
     }
 
     // Extract Quantity, e.g. "@Obst@ 2× Apfel" -> 2, "Apfel (3)" -> 3
     _getQuantity(name) {
-        name = this._removeSortIndex(name);
+        name = this._removeSortIndex(this._stripOfferOnlyMarker(name));
         const nameWithoutCat = name.replace(/^@.+?@\s*/, '');
         const match = nameWithoutCat.match(/^(\d+)×\s*/) || nameWithoutCat.match(/\((\d+)\)$/);
         return match ? parseInt(match[1], 10) : 1;
@@ -4311,7 +11912,7 @@ class HaShoppingListImproved extends HTMLElement {
 
     // Extract the name without category and quantity
     _getNameOnly(name) {
-        let n = this._removeSortIndex(name);         // Sort Index
+        let n = this._removeSortIndex(this._stripOfferOnlyMarker(name)); // Metadata + sort index
         n = n.replace(/^@.+?@\s*/, '');              // Category
         n = n.replace(/^(\d+)×\s*/, '');             // Quantity beginning
         n = n.replace(/\s*\(\d+\)$/, '');            // Quantity end
@@ -4319,15 +11920,27 @@ class HaShoppingListImproved extends HTMLElement {
         return n.trim();
     }
 
+    _isOfferOnly(name) {
+        return String(name || '').toLocaleUpperCase().includes(SHOPPING_OFFER_ONLY_MARKER);
+    }
+
+    _stripOfferOnlyMarker(name) {
+        return String(name || '')
+            .replace(/\s*\[\[ISL:OFFER_ONLY\]\]\s*/gi, ' ')
+            .trim();
+    }
+
+    _setOfferOnlyMarker(name, enabled) {
+        const cleanName = this._stripOfferOnlyMarker(name);
+        return enabled && cleanName
+            ? `${cleanName} ${SHOPPING_OFFER_ONLY_MARKER}`
+            : cleanName;
+    }
+
     // Intervall (e. g. "23D" from {{23D}})
     _getInterval(name) {
         const match = name.match(/\{\{\s*(\d+\s*[HDM])\s*\}\}/);
         return match ? match[1].trim() : null;
-    }
-
-    // Remove only Intervall {{…}}
-    _removeInterval(name) {
-        return name.replace(/\s*\{\{.*?\}\}\s*$/, '').trim();
     }
 
     _getSortIndex(name) {
@@ -4347,7 +11960,11 @@ class HaShoppingListImproved extends HTMLElement {
 
     _preserveSortIndex(originalName, newName) {
         const sortIndex = this._getSortIndex(originalName);
-        return sortIndex ? this._applySortIndex(newName, sortIndex) : newName;
+        const withMetadata = this._setOfferOnlyMarker(
+            newName,
+            this._isOfferOnly(originalName) || this._isOfferOnly(newName)
+        );
+        return sortIndex ? this._applySortIndex(withMetadata, sortIndex) : withMetadata;
     }
 
     _isListFilterActive() {
@@ -4531,7 +12148,7 @@ class HaShoppingListImproved extends HTMLElement {
 
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
-    }   
+    }
 
     _parseTodoDueDate(due) {
         if (!due) return null;
@@ -4662,7 +12279,7 @@ class HaShoppingListImproved extends HTMLElement {
         if(debugMode) console.log("User locale for due date formatting:", userLocale);
         if(debugMode) console.log("User locale (hass) for due date formatting:", this._hass?.language);
         if(debugMode) console.log("User locale (navigator) for due date formatting:", navigator.language);
-        
+
         const uses12HourFormat = (locale) => {
             const dtf = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
             return dtf.resolvedOptions().hour12;
@@ -4698,7 +12315,7 @@ class HaShoppingListImproved extends HTMLElement {
      * available and fall back to a native `<textarea>` otherwise. The fallback
      * is styled with Home Assistant theme variables so it follows the active
      * theme as closely as possible and avoids hard-coded light/dark colors.
-     */ 
+     */
     _createDescriptionTextarea(value = "") {
         const label = translate("ui.common.description");
 
@@ -4770,10 +12387,13 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     // Edit PopUp for adding/editing items with category selection
-    async editItemPopup(item, mode = "edit", imageUrl = false) {
+    async editItemPopup(item, mode = "edit", imageUrl = false, eanProduct = null, options = {}) {
         let currentName;
         let due;
         let currentDescription = "";
+        const isEanQueuePopup = mode === "add" && Boolean(this._activeEanScanQueueItem);
+        const eanScanMode = this._getCurrentEanScanMode();
+        const isDatabaseEanPopup = mode === "add" && (eanScanMode === "database" || eanScanMode === "inventory_register");
 
         // check if item is object or string
         if (item && typeof item === 'object' && !Array.isArray(item)) {
@@ -4797,7 +12417,12 @@ class HaShoppingListImproved extends HTMLElement {
                 nameOnly = this._getNameOnly(currentName);
             }
 
-            // 2. If no explicit category, check if the item is assigned to a config category
+            // 2. Use the category stored with an EAN product.
+            if (!currentCategory && eanProduct?.category) {
+                currentCategory = eanProduct.category;
+            }
+
+            // 3. If no explicit or stored category exists, check the config categories.
             if (!currentCategory) {
                 const normalizedName = this._getNameOnly(nameOnly).toLowerCase();
 
@@ -4814,7 +12439,7 @@ class HaShoppingListImproved extends HTMLElement {
                 }
             }
 
-            // 3. If still no category, set to "none"
+            // 4. If still no category, set to "none"
             if (!currentCategory) {
                 currentCategory = "none";
             }
@@ -4845,6 +12470,55 @@ class HaShoppingListImproved extends HTMLElement {
             popup.style.fontFamily = 'var(--ha-card-font-family, Roboto, sans-serif)';
             popup.style.color = 'var(--primary-text-color, black)';
             popup.style.pointerEvents = 'auto';
+            popup.style.maxHeight = 'calc(100% - 32px)';
+            popup.style.overflowY = 'auto';
+            popup.style.overscrollBehaviorY = 'contain';
+            popup.style.webkitOverflowScrolling = 'touch';
+            popup.style.touchAction = 'pan-y';
+            popup.style.boxSizing = 'border-box';
+
+            // Keep touch and wheel scrolling inside the modal. Home Assistant's
+            // dashboard otherwise starts scrolling when the popup reaches an edge.
+            const canScrollInsidePopup = (target, deltaY) => {
+                let node = target?.nodeType === 1 ? target : popup;
+
+                while (node && popup.contains(node)) {
+                    const overflowY = window.getComputedStyle(node).overflowY;
+                    const canOverflow = node === popup || overflowY === 'auto' || overflowY === 'scroll';
+                    const maxScrollTop = node.scrollHeight - node.clientHeight;
+
+                    if (canOverflow && maxScrollTop > 1) {
+                        if (deltaY < 0 && node.scrollTop > 0) return true;
+                        if (deltaY > 0 && node.scrollTop < maxScrollTop - 1) return true;
+                    }
+
+                    if (node === popup) break;
+                    node = node.parentElement;
+                }
+
+                return false;
+            };
+
+            let previousTouchY = null;
+            overlay.addEventListener('touchstart', (event) => {
+                previousTouchY = event.touches[0]?.clientY ?? null;
+            }, { passive: true });
+            overlay.addEventListener('touchmove', (event) => {
+                const currentTouchY = event.touches[0]?.clientY;
+                if (currentTouchY === undefined || previousTouchY === null) return;
+
+                const deltaY = previousTouchY - currentTouchY;
+                previousTouchY = currentTouchY;
+                event.stopPropagation();
+                if (!canScrollInsidePopup(event.target, deltaY)) event.preventDefault();
+            }, { passive: false });
+            const resetTouchScroll = () => { previousTouchY = null; };
+            overlay.addEventListener('touchend', resetTouchScroll, { passive: true });
+            overlay.addEventListener('touchcancel', resetTouchScroll, { passive: true });
+            overlay.addEventListener('wheel', (event) => {
+                event.stopPropagation();
+                if (!canScrollInsidePopup(event.target, event.deltaY)) event.preventDefault();
+            }, { passive: false });
 
             // EAN Image
             if (imageUrl) {
@@ -4858,16 +12532,89 @@ class HaShoppingListImproved extends HTMLElement {
 
             // Label
             const label = document.createElement('p');
-            label.textContent = mode === "add"
-                ? translate("ui.common.add_item")
-                : translate("ui.common.edit_item");
+            label.textContent = isDatabaseEanPopup
+                ? translate("ui.ean.database_manager_title")
+                : mode === "add"
+                    ? translate("ui.common.add_item")
+                    : translate("ui.common.edit_item");
             label.style.marginBottom = '8px';
 
-            // Generate DisplayName with Quantity
+            let databaseModeNotice = null;
+            if (isDatabaseEanPopup) {
+                databaseModeNotice = document.createElement('div');
+                databaseModeNotice.textContent = options.eanDatabaseExisting
+                    ? translate("ui.ean.database_fill_existing")
+                    : translate("ui.ean.database_fill_new");
+                databaseModeNotice.style.marginBottom = '12px';
+                databaseModeNotice.style.padding = '8px 10px';
+                databaseModeNotice.style.borderRadius = '4px';
+                databaseModeNotice.style.background = 'var(--secondary-background-color, #eee)';
+                databaseModeNotice.style.fontSize = '12px';
+                databaseModeNotice.style.lineHeight = '1.4';
+                databaseModeNotice.style.textAlign = 'left';
+            }
+
+            let eanQueueStatus = null;
+            if (mode === "add" && this._activeEanScanQueueItem) {
+                eanQueueStatus = document.createElement('div');
+                eanQueueStatus.style.marginBottom = '12px';
+                eanQueueStatus.style.fontSize = '12px';
+                eanQueueStatus.style.color = 'var(--secondary-text-color, #666)';
+                this._eanQueuePopupStatusEl = eanQueueStatus;
+                this._updateEanQueuePopupStatus();
+            }
+
+            const isInventoryGroupEdit = this._mode === "inventory" && options.inventoryGroup === true;
+            const hasEditableQuantity = mode === "edit" && ["shopping", "inventory"].includes(this._mode) && !isInventoryGroupEdit;
+            const inventoryVariantData = this._mode === "inventory" && mode === "edit" && item && typeof item === "object"
+                ? this._parseInventoryVariant(item)
+                : null;
+            const isManualInventoryEdit = Boolean(
+                inventoryVariantData && inventoryVariantData.ean === null && !isInventoryGroupEdit
+            );
+            const isInventoryGroupMember = Boolean(
+                this._mode === "inventory" &&
+                mode === "edit" &&
+                !isInventoryGroupEdit &&
+                this._getInventoryVariantItems(
+                    this._getNameOnly(currentName),
+                    this._getCategory(currentName) || null
+                ).length > 1
+            );
+            if (mode === "edit" && this._mode === "inventory") {
+                label.textContent = !isInventoryGroupEdit && inventoryVariantData?.ean
+                    ? translate("ui.inventory.edit_ean_item")
+                    : translate("ui.common.edit_item");
+            }
+            if (
+                mode === "edit" &&
+                this._mode === "inventory" &&
+                (isInventoryGroupEdit || isInventoryGroupMember)
+            ) {
+                label.style.display = 'flex';
+                label.style.alignItems = 'center';
+                label.style.justifyContent = 'center';
+                label.style.flexWrap = 'wrap';
+                label.style.gap = '7px';
+                const groupedBadge = document.createElement('span');
+                groupedBadge.textContent = translate(
+                    isInventoryGroupEdit
+                        ? "ui.inventory.grouped_badge"
+                        : "ui.inventory.group_member_badge"
+                );
+                groupedBadge.style.cssText = `display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;background:${
+                    isInventoryGroupEdit
+                        ? 'var(--warning-color,#e0a526)'
+                        : 'var(--primary-color,#03A9F4)'
+                };color:${isInventoryGroupEdit ? '#111' : 'white'};font-size:11px;font-weight:700;line-height:1.3;letter-spacing:.02em;`;
+                label.appendChild(groupedBadge);
+            }
+
+            // Keep the quantity separate while editing shopping and inventory items.
             const qty = this._getQuantity(currentName);
 
             let displayName = this._getNameOnly(currentName);
-            if (qty > 1 || this._showQuantityOne) {
+            if (!hasEditableQuantity && (qty > 1 || this._showQuantityOne)) {
                 displayName = this._quantityPosition === "beginning"
                     ? `${qty}× ${displayName}`
                     : `${displayName} (${qty})`;
@@ -4885,8 +12632,410 @@ class HaShoppingListImproved extends HTMLElement {
             input.style.fontSize = '14px';
             input.style.boxSizing = 'border-box';
 
+            let eanNameControls = null;
+            let getEanBaseNameFromInput = null;
+
+            if ((isEanQueuePopup || isDatabaseEanPopup) && eanProduct) {
+                const brand = String(eanProduct.brand || '').trim();
+                const productQuantity = String(eanProduct.quantity || '').trim();
+                let baseName = String(eanProduct.name || displayName).trim();
+                const brandIncludedInName = Boolean(
+                    brand &&
+                    baseName.toLocaleLowerCase().includes(brand.toLocaleLowerCase())
+                );
+                const brandAvailable = Boolean(brand && !brandIncludedInName);
+                const nameIsFinal = eanProduct.nameIsFinal === true;
+                let includeBrand = !nameIsFinal && this._showEanBrand && brandAvailable;
+                let includeQuantity = !nameIsFinal && this._showEanQuantity && Boolean(productQuantity);
+                let brandWasAppended = false;
+
+                const composeName = () => {
+                    const parts = [baseName];
+                    brandWasAppended = Boolean(
+                        includeBrand &&
+                        brand &&
+                        !baseName.toLocaleLowerCase().includes(brand.toLocaleLowerCase())
+                    );
+                    if (brandWasAppended) parts.push(brand);
+                    if (includeQuantity && productQuantity) parts.push(productQuantity);
+                    return parts.filter(Boolean).join(' – ');
+                };
+
+                getEanBaseNameFromInput = () => {
+                    let value = String(input.value || '').trim();
+                    const quantitySuffix = ` – ${productQuantity}`;
+                    const brandSuffix = ` – ${brand}`;
+
+                    if (includeQuantity && productQuantity && value.endsWith(quantitySuffix)) {
+                        value = value.slice(0, -quantitySuffix.length).trim();
+                    }
+                    if (brandWasAppended && brand && value.endsWith(brandSuffix)) {
+                        value = value.slice(0, -brandSuffix.length).trim();
+                    }
+                    return value || baseName;
+                };
+
+                eanNameControls = document.createElement('div');
+                eanNameControls.style.display = 'flex';
+                eanNameControls.style.flexWrap = 'wrap';
+                eanNameControls.style.gap = '8px';
+                eanNameControls.style.margin = '-4px 0 12px';
+
+                const createToggle = (label, available, isActive, onToggle) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = label;
+                    button.disabled = !available;
+                    button.style.padding = '5px 10px';
+                    button.style.borderRadius = '16px';
+                    button.style.border = '1px solid var(--divider-color, #ccc)';
+                    button.style.cursor = available ? 'pointer' : 'default';
+
+                    const renderState = active => {
+                        button.dataset.active = active ? 'true' : 'false';
+                        button.style.background = active
+                            ? 'var(--primary-color, #03A9F4)'
+                            : 'var(--secondary-background-color, #eee)';
+                        button.style.color = active ? 'white' : 'var(--primary-text-color, black)';
+                        button.style.opacity = available || active ? '1' : '0.5';
+                    };
+
+                    renderState(isActive);
+                    button.addEventListener('click', () => {
+                        if (!available) return;
+                        baseName = getEanBaseNameFromInput();
+                        const active = onToggle();
+                        renderState(active);
+                        input.value = composeName();
+                    });
+                    eanNameControls.appendChild(button);
+                };
+
+                createToggle(
+                    translate("ui.ean.name_brand"),
+                    brandAvailable,
+                    brandIncludedInName || includeBrand,
+                    () => (includeBrand = !includeBrand)
+                );
+                createToggle(
+                    translate("ui.ean.name_quantity"),
+                    Boolean(productQuantity),
+                    includeQuantity,
+                    () => (includeQuantity = !includeQuantity)
+                );
+
+                if (brandIncludedInName) {
+                    const brandNote = document.createElement('div');
+                    brandNote.textContent = translate("ui.ean.brand_in_name")
+                        .replace("{brand}", brand);
+                    brandNote.style.flexBasis = '100%';
+                    brandNote.style.fontSize = '12px';
+                    brandNote.style.lineHeight = '1.4';
+                    brandNote.style.textAlign = 'left';
+                    brandNote.style.color = 'var(--secondary-text-color, #666)';
+                    eanNameControls.appendChild(brandNote);
+                }
+
+                input.value = composeName();
+            }
+
+            let quantityControls = null;
+            let quantityInput = null;
+            if (hasEditableQuantity) {
+                quantityControls = document.createElement('div');
+                quantityControls.style.display = 'flex';
+                quantityControls.style.alignItems = 'flex-end';
+                quantityControls.style.gap = '8px';
+                quantityControls.style.margin = '-2px 0 12px';
+
+                const quantityField = document.createElement('div');
+                quantityField.style.display = 'flex';
+                quantityField.style.flex = '1 1 auto';
+                quantityField.style.flexDirection = 'column';
+                quantityField.style.gap = '4px';
+                quantityField.style.textAlign = 'left';
+
+                const quantityLabel = document.createElement('span');
+                quantityLabel.textContent = translate(
+                    this._mode === "inventory" ? "ui.inventory.stock" : "ui.inventory.quantity"
+                );
+                quantityLabel.style.fontSize = '12px';
+                quantityLabel.style.color = 'var(--secondary-text-color, #666)';
+
+                const quantityRow = document.createElement('div');
+                quantityRow.style.display = 'flex';
+                quantityRow.style.alignItems = 'center';
+                quantityRow.style.gap = '6px';
+
+                const quantityMinimum = this._mode === "inventory" ? 0 : 1;
+                quantityInput = document.createElement('input');
+                quantityInput.type = 'text';
+                quantityInput.inputMode = 'numeric';
+                quantityInput.pattern = '[0-9]*';
+                quantityInput.required = true;
+                quantityInput.value = String(Math.max(quantityMinimum, qty));
+                quantityInput.style.width = '70px';
+                quantityInput.style.height = '34px';
+                quantityInput.style.boxSizing = 'border-box';
+                quantityInput.style.padding = '4px 8px';
+                quantityInput.style.border = '1px solid var(--divider-color, #ccc)';
+                quantityInput.style.borderRadius = '4px';
+                quantityInput.style.background = 'var(--card-background-color, white)';
+                quantityInput.style.color = 'var(--primary-text-color, black)';
+                quantityInput.style.textAlign = 'center';
+
+                const createQuantityButton = (iconName, title, change) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.title = title;
+                    button.setAttribute('aria-label', title);
+                    button.style.width = '34px';
+                    button.style.height = '34px';
+                    button.style.display = 'inline-flex';
+                    button.style.alignItems = 'center';
+                    button.style.justifyContent = 'center';
+                    button.style.padding = '0';
+                    button.style.border = '1px solid var(--divider-color, #ccc)';
+                    button.style.borderRadius = '4px';
+                    button.style.background = 'var(--secondary-background-color, #eee)';
+                    button.style.color = 'var(--primary-text-color, black)';
+                    button.style.cursor = 'pointer';
+                    const icon = document.createElement('ha-icon');
+                    icon.setAttribute('icon', iconName);
+                    icon.style.setProperty('--mdc-icon-size', '20px');
+                    button.appendChild(icon);
+                    button.addEventListener('click', () => {
+                        const current = Number.parseInt(quantityInput.value, 10);
+                        quantityInput.value = String(Math.max(
+                            quantityMinimum,
+                            (Number.isInteger(current) ? current : quantityMinimum) + change
+                        ));
+                    });
+                    return button;
+                };
+
+                quantityRow.appendChild(createQuantityButton(
+                    'mdi:minus', translate("editor.labels.minus_btn"), -1
+                ));
+                quantityRow.appendChild(quantityInput);
+                quantityRow.appendChild(createQuantityButton(
+                    'mdi:plus', translate("editor.labels.plus_btn"), 1
+                ));
+                quantityField.appendChild(quantityLabel);
+                quantityField.appendChild(quantityRow);
+                quantityControls.appendChild(quantityField);
+
+                const eanEntries = this._getEanDatabaseEntriesByName(this._getNameOnly(currentName));
+                if (eanEntries.length) {
+                    const eanButton = document.createElement('button');
+                    eanButton.type = 'button';
+                    eanButton.title = translate("ui.ean.database_entries_badge")
+                        .replace("{count}", String(eanEntries.length));
+                    eanButton.setAttribute('aria-label', eanButton.title);
+                    eanButton.style.height = '34px';
+                    eanButton.style.display = 'inline-flex';
+                    eanButton.style.alignItems = 'center';
+                    eanButton.style.gap = '3px';
+                    eanButton.style.padding = '0 8px';
+                    eanButton.style.border = '1px solid var(--divider-color, #ccc)';
+                    eanButton.style.borderRadius = '4px';
+                    eanButton.style.background = 'var(--secondary-background-color, #eee)';
+                    eanButton.style.color = 'var(--primary-color, #03A9F4)';
+                    eanButton.style.cursor = 'pointer';
+                    const eanIcon = document.createElement('ha-icon');
+                    eanIcon.setAttribute('icon', 'mdi:barcode');
+                    eanIcon.style.setProperty('--mdc-icon-size', '20px');
+                    eanButton.appendChild(eanIcon);
+                    if (eanEntries.length > 1) {
+                        const count = document.createElement('span');
+                        count.textContent = String(eanEntries.length);
+                        count.style.fontSize = '11px';
+                        eanButton.appendChild(count);
+                    }
+                    eanButton.addEventListener('click', () => {
+                        if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                        resolve(null);
+                        setTimeout(() => this._showEanDatabaseEntriesPopup(this._getNameOnly(currentName)), 0);
+                    });
+                    quantityControls.appendChild(eanButton);
+                }
+            }
+
+            let manualMinimumControls = null;
+            let manualMinimumInput = null;
+            if (isManualInventoryEdit) {
+                manualMinimumControls = document.createElement('label');
+                manualMinimumControls.style.cssText = 'display:flex;flex-direction:column;gap:4px;text-align:left;margin:-2px 0 12px;';
+                const manualMinimumLabel = document.createElement('span');
+                manualMinimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                manualMinimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);';
+                manualMinimumInput = document.createElement('input');
+                manualMinimumInput.type = 'number';
+                manualMinimumInput.min = '0';
+                manualMinimumInput.step = '1';
+                manualMinimumInput.value = inventoryVariantData.minimumStock ?? '';
+                manualMinimumInput.placeholder = this._eanTransferDefaultMinimumStock === null
+                    ? translate("ui.inventory.manual_minimum_none")
+                    : translate("ui.inventory.manual_minimum_default")
+                        .replace("{minimum}", String(this._eanTransferDefaultMinimumStock));
+                manualMinimumInput.style.cssText = 'box-sizing:border-box;width:100%;height:38px;padding:6px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:var(--primary-text-color,inherit);';
+                manualMinimumControls.appendChild(manualMinimumLabel);
+                manualMinimumControls.appendChild(manualMinimumInput);
+            }
+
+            let eanMinimumControls = null;
+            if (inventoryVariantData?.ean && !isInventoryGroupEdit) {
+                const variantEan = inventoryVariantData.ean;
+                const product = this._inventoryVariantProduct(variantEan);
+                const configuredMinimum = product?.minimumStock ?? null;
+                const effectiveMinimum = this._getInventoryVariantMinimumStock(variantEan, item);
+
+                eanMinimumControls = document.createElement('div');
+                eanMinimumControls.style.cssText = 'margin:-2px 0 12px;text-align:left;';
+                const minimumLabel = document.createElement('div');
+                minimumLabel.textContent = translate("ui.inventory.manual_minimum");
+                minimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);margin-bottom:4px;';
+                const minimumRow = document.createElement('div');
+                minimumRow.style.cssText = 'display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;align-items:center;';
+                const minimumValue = document.createElement('div');
+                minimumValue.textContent = effectiveMinimum === null ? '—' : String(effectiveMinimum);
+                minimumValue.title = configuredMinimum !== null
+                    ? translate("ui.inventory.ean_minimum_database_source")
+                    : effectiveMinimum !== null
+                        ? translate("ui.inventory.ean_minimum_card_default")
+                        : translate("ui.inventory.ean_minimum_not_set");
+                minimumValue.style.cssText = 'box-sizing:border-box;width:86px;height:38px;padding:8px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);text-align:center;user-select:none;';
+
+                const editMinimum = document.createElement('button');
+                editMinimum.type = 'button';
+                editMinimum.title = translate("ui.inventory.ean_minimum_edit");
+                editMinimum.setAttribute('aria-label', editMinimum.title);
+                editMinimum.disabled = !this._eanDatabaseEntity || !product;
+                editMinimum.style.cssText = 'box-sizing:border-box;width:100%;height:38px;padding:6px 10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--secondary-background-color,#eee);color:var(--primary-text-color,inherit);cursor:pointer;';
+                const editIcon = document.createElement('ha-icon');
+                editIcon.setAttribute('icon', 'mdi:pencil');
+                editIcon.style.setProperty('--mdc-icon-size', '19px');
+                const editText = document.createElement('span');
+                editText.textContent = translate("ui.inventory.ean_product_edit");
+                editMinimum.appendChild(editIcon);
+                editMinimum.appendChild(editText);
+                const openEanProductEditor = () => {
+                    if (editMinimum.disabled) return;
+                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                    resolve(null);
+                    setTimeout(() => this._showEanDatabaseManager(variantEan, {
+                        onBack: () => this._handleEditItem(item)
+                    }), 0);
+                };
+                editMinimum.addEventListener('click', openEanProductEditor);
+                if (!editMinimum.disabled) {
+                    minimumValue.setAttribute('role', 'button');
+                    minimumValue.tabIndex = 0;
+                    minimumValue.title = `${minimumValue.title} · ${translate("ui.inventory.ean_minimum_edit")}`;
+                    minimumValue.style.cursor = 'pointer';
+                    minimumValue.addEventListener('click', openEanProductEditor);
+                    minimumValue.addEventListener('keydown', event => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            openEanProductEditor();
+                        }
+                    });
+                }
+                minimumRow.appendChild(minimumValue);
+                minimumRow.appendChild(editMinimum);
+                eanMinimumControls.appendChild(minimumLabel);
+                eanMinimumControls.appendChild(minimumRow);
+            }
+
+            let inventoryGroupControls = null;
+            let inventoryGroupMinimumControls = null;
+            let inventoryGroupMinimumInput = null;
+            if (isInventoryGroupEdit) {
+                inventoryGroupControls = document.createElement('div');
+                inventoryGroupControls.style.display = 'flex';
+                inventoryGroupControls.style.alignItems = 'end';
+                inventoryGroupControls.style.gap = '8px';
+                inventoryGroupControls.style.margin = '-2px 0 12px';
+
+                const totalField = document.createElement('label');
+                totalField.style.display = 'flex';
+                totalField.style.flex = '1 1 auto';
+                totalField.style.flexDirection = 'column';
+                totalField.style.gap = '4px';
+                totalField.style.textAlign = 'left';
+                const totalLabel = document.createElement('span');
+                totalLabel.textContent = translate("ui.inventory.grouped_total");
+                totalLabel.style.fontSize = '12px';
+                totalLabel.style.color = 'var(--secondary-text-color, #666)';
+                const totalValue = document.createElement('div');
+                totalValue.textContent = String(qty);
+                totalValue.style.height = '34px';
+                totalValue.style.boxSizing = 'border-box';
+                totalValue.style.padding = '7px 10px';
+                totalValue.style.border = '1px solid var(--divider-color, #ccc)';
+                totalValue.style.borderRadius = '4px';
+                totalValue.style.background = 'var(--secondary-background-color, #eee)';
+                totalField.appendChild(totalLabel);
+                totalField.appendChild(totalValue);
+
+                const manageButton = document.createElement('button');
+                manageButton.type = 'button';
+                manageButton.textContent = translate("ui.inventory.manage_variants");
+                manageButton.style.height = '34px';
+                manageButton.style.padding = '0 10px';
+                manageButton.style.cursor = 'pointer';
+                manageButton.addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(null);
+                    setTimeout(() => this._showInventoryVariantStockPopup(options.inventoryGroupItem), 0);
+                });
+                inventoryGroupControls.appendChild(totalField);
+                inventoryGroupControls.appendChild(manageButton);
+
+                const groupState = this._getInventoryGroupState(
+                    this._getNameOnly(currentName),
+                    this._getCategory(currentName) || null,
+                    options.inventoryGroupItem?.inventoryVariants || this._items
+                );
+                inventoryGroupMinimumControls = document.createElement('label');
+                inventoryGroupMinimumControls.style.cssText = 'display:flex;flex-direction:column;gap:4px;text-align:left;margin:-2px 0 12px;';
+                const groupMinimumLabel = document.createElement('span');
+                groupMinimumLabel.textContent = translate("ui.inventory.group_minimum");
+                groupMinimumLabel.style.cssText = 'font-size:12px;color:var(--secondary-text-color,#666);';
+                inventoryGroupMinimumInput = document.createElement('input');
+                inventoryGroupMinimumInput.type = 'number';
+                inventoryGroupMinimumInput.min = '0';
+                inventoryGroupMinimumInput.step = '1';
+                inventoryGroupMinimumInput.value = groupState.minimum ?? '';
+                inventoryGroupMinimumInput.placeholder = translate("ui.inventory.manual_minimum_none");
+                inventoryGroupMinimumInput.style.cssText = 'box-sizing:border-box;width:100%;height:38px;padding:6px 9px;border:1px solid var(--divider-color,#ccc);border-radius:4px;background:var(--input-fill-color,var(--secondary-background-color,#eee));color:var(--primary-text-color,inherit);';
+                const groupMinimumHelp = document.createElement('span');
+                groupMinimumHelp.textContent = translate("ui.inventory.group_minimum_help");
+                groupMinimumHelp.style.cssText = 'font-size:11px;line-height:1.35;color:var(--secondary-text-color,#666);';
+                inventoryGroupMinimumControls.appendChild(groupMinimumLabel);
+                inventoryGroupMinimumControls.appendChild(inventoryGroupMinimumInput);
+                inventoryGroupMinimumControls.appendChild(groupMinimumHelp);
+            }
+
+            // Shopping-list-only metadata. It belongs to the visible list entry,
+            // not to an EAN product or inventory variant.
+            const supportsOfferOnly = this._mode === "shopping" && this._shoppingOfferOnlyEnabled && !isDatabaseEanPopup;
+            let offerOnlyContainer = null;
+            let offerOnlyInput = null;
+            if (supportsOfferOnly) {
+                offerOnlyContainer = document.createElement('label');
+                offerOnlyContainer.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;margin:-2px 0 12px;text-align:left;cursor:pointer;';
+                offerOnlyInput = document.createElement('input');
+                offerOnlyInput.type = 'checkbox';
+                offerOnlyInput.checked = this._isOfferOnly(currentName);
+                const offerOnlyText = document.createElement('span');
+                offerOnlyText.textContent = translate("ui.shopping.offer_only");
+                offerOnlyContainer.appendChild(offerOnlyInput);
+                offerOnlyContainer.appendChild(offerOnlyText);
+            }
+
             // Description Input, only if supported by the selected todo entity
-            const supportsDescription = this._supportsTodoDescription();
+            const supportsDescription = this._mode !== "inventory" && this._supportsTodoDescription();
             let descriptionContainer = null;
             let descriptionInput = null;
 
@@ -5076,6 +13225,7 @@ class HaShoppingListImproved extends HTMLElement {
 
             const leftButtons = document.createElement('div');
             leftButtons.style.display = 'flex';
+            leftButtons.style.flexWrap = 'wrap';
             leftButtons.style.gap = '12px';
             leftButtons.style.alignItems = 'center';
 
@@ -5085,7 +13235,11 @@ class HaShoppingListImproved extends HTMLElement {
 
             // OK and Cancel Buttons
             const okBtn = document.createElement('button');
-            okBtn.textContent = translate("ui.common.ok");
+            okBtn.textContent = isDatabaseEanPopup
+                ? translate("ui.ean.database_fill_save")
+                : isEanQueuePopup
+                    ? translate("ui.ean.add")
+                    : translate("ui.common.ok");
             okBtn.style.backgroundColor = 'var(--primary-color, #03A9F4)';
             okBtn.style.color = 'white';
             okBtn.style.border = 'none';
@@ -5094,7 +13248,9 @@ class HaShoppingListImproved extends HTMLElement {
             okBtn.style.cursor = 'pointer';
 
             const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = translate("ui.common.cancel");
+            cancelBtn.textContent = isEanQueuePopup
+                ? translate("ui.ean.lookup_later")
+                : translate("ui.common.cancel");
             cancelBtn.style.backgroundColor = 'var(--secondary-background-color, #eee)';
             cancelBtn.style.border = 'none';
             cancelBtn.style.padding = '6px 12px';
@@ -5103,6 +13259,19 @@ class HaShoppingListImproved extends HTMLElement {
 
             leftButtons.appendChild(okBtn);
             leftButtons.appendChild(cancelBtn);
+
+            let discardBtn = null;
+            if (isEanQueuePopup) {
+                discardBtn = document.createElement('button');
+                discardBtn.textContent = translate("ui.ean.lookup_discard");
+                discardBtn.style.backgroundColor = '#c62828';
+                discardBtn.style.color = 'white';
+                discardBtn.style.border = 'none';
+                discardBtn.style.padding = '6px 12px';
+                discardBtn.style.borderRadius = '4px';
+                discardBtn.style.cursor = 'pointer';
+                leftButtons.appendChild(discardBtn);
+            }
 
             // Delete Button only in edit mode
             if (mode === "edit") {
@@ -5131,17 +13300,26 @@ class HaShoppingListImproved extends HTMLElement {
 
             // Combine all
             popup.appendChild(label);
+            if (databaseModeNotice) popup.appendChild(databaseModeNotice);
+            if (eanQueueStatus) popup.appendChild(eanQueueStatus);
             popup.appendChild(input);
+            if (eanNameControls) popup.appendChild(eanNameControls);
+            if (quantityControls) popup.appendChild(quantityControls);
+            if (manualMinimumControls) popup.appendChild(manualMinimumControls);
+            if (eanMinimumControls) popup.appendChild(eanMinimumControls);
+            if (inventoryGroupControls) popup.appendChild(inventoryGroupControls);
+            if (inventoryGroupMinimumControls) popup.appendChild(inventoryGroupMinimumControls);
+            if (offerOnlyContainer) popup.appendChild(offerOnlyContainer);
             if (descriptionContainer) popup.appendChild(descriptionContainer);
             popup.appendChild(catContainer);
             if(this._allowDynamicCats) popup.appendChild(dynamicCategory);
-            
+
             // TooDo Mode
             let intervalInput;
             let intervalUnitSelect;
             let dueDateInput;
             let dueTimeInput;
-            let currentInterval = this._getInterval(currentName);// || "1D";
+            const currentInterval = this._getInterval(currentName);// || "1D";
 
             if (this._mode === "todo") {
                 const container = document.createElement('div');
@@ -5312,7 +13490,7 @@ class HaShoppingListImproved extends HTMLElement {
 					try {
 						localStorage.setItem('dueDateTimeData', JSON.stringify(copyObj));
 						if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Saved due date/time to localStorage:", copyObj);
-					} catch (e) {
+					} catch {
 						alert('Saving to localStorage failed');
 					}
 				});
@@ -5332,18 +13510,18 @@ class HaShoppingListImproved extends HTMLElement {
 							dueTimeInput.value = obj.time;
 							intervalInput.value = obj.intervalInput || '';
 							intervalUnitSelect.value = obj.intervalUnitSelect || '';
-							
+
 							if (obj.selectedCategory !== undefined) {
 								// select the chip - optically
 								selectCategoryChip(obj.selectedCategory);
 								selectedCategory = obj.selectedCategory;
-							}							
-							
+							}
+
 							if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Loaded due date/time from localStorage:", obj);
 						} else {
 							alert('Saved data in localStorage is invalid');
 						}
-					} catch(e) {
+					} catch {
 						alert('Failed to read/parse localStorage data');
 					}
 				});
@@ -5370,7 +13548,7 @@ class HaShoppingListImproved extends HTMLElement {
                                 dueTimeInput.value = `${hh}:${min}`;
                             }
                         }
-                    } catch (e) {
+                    } catch {
                         // Parsing error, use default empty values
                         dueDateInput.value = '';
                         dueTimeInput.value = '';
@@ -5387,6 +13565,11 @@ class HaShoppingListImproved extends HTMLElement {
             }
 
             popup.appendChild(btnContainer);
+            btnContainer.style.position = 'sticky';
+            btnContainer.style.bottom = '0';
+            btnContainer.style.padding = '8px 0';
+            btnContainer.style.background = 'var(--card-background-color, white)';
+            btnContainer.style.zIndex = '1';
             overlay.appendChild(popup);
             document.body.appendChild(overlay);
 
@@ -5399,18 +13582,77 @@ class HaShoppingListImproved extends HTMLElement {
             // Click outside = cancel
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
+                    if (this._activeEanScanQueueItem) return;
                     document.body.removeChild(overlay);
+                    if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                     resolve(null);
                 }
             });
 
             cancelBtn.addEventListener('click', () => {
+                if (isEanQueuePopup) this._eanQueueAction = "later";
                 document.body.removeChild(overlay);
+                if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
+                resolve(null);
+            });
+
+            discardBtn?.addEventListener('click', () => {
+                this._eanQueueAction = "discard";
+                document.body.removeChild(overlay);
+                if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                 resolve(null);
             });
 
             okBtn.addEventListener('click', () => {
                 let finalName = input.value.trim();
+                const eanProductName = getEanBaseNameFromInput
+                    ? getEanBaseNameFromInput()
+                    : null;
+
+                let editedQuantity = null;
+                if (hasEditableQuantity) {
+                    const quantityText = String(quantityInput.value ?? '').trim();
+                    editedQuantity = Number(quantityText);
+                    const minimum = this._mode === "inventory" ? 0 : 1;
+                    if (!quantityText || !Number.isInteger(editedQuantity) || editedQuantity < minimum) {
+                        quantityInput.focus();
+                        quantityInput.reportValidity?.();
+                        return;
+                    }
+                    if (this._mode === "inventory" || editedQuantity > 1 || this._showQuantityOne) {
+                        finalName = this._quantityPosition === "beginning"
+                            ? `${editedQuantity}× ${finalName}`
+                            : `${finalName} (${editedQuantity})`;
+                    }
+                }
+
+                let manualMinimumStock = undefined;
+                if (isManualInventoryEdit) {
+                    const minimumText = String(manualMinimumInput.value ?? '').trim();
+                    manualMinimumStock = minimumText === '' ? null : Number(minimumText);
+                    if (
+                        manualMinimumStock !== null &&
+                        (!Number.isInteger(manualMinimumStock) || manualMinimumStock < 0)
+                    ) {
+                        manualMinimumInput.focus();
+                        manualMinimumInput.reportValidity?.();
+                        return;
+                    }
+                }
+
+                let groupMinimumStock = undefined;
+                if (isInventoryGroupEdit) {
+                    const groupMinimumText = String(inventoryGroupMinimumInput?.value ?? '').trim();
+                    groupMinimumStock = groupMinimumText === '' ? null : Number(groupMinimumText);
+                    if (
+                        groupMinimumStock !== null &&
+                        (!Number.isInteger(groupMinimumStock) || groupMinimumStock < 0)
+                    ) {
+                        inventoryGroupMinimumInput.focus();
+                        inventoryGroupMinimumInput.reportValidity?.();
+                        return;
+                    }
+                }
 
                 if (this._allowDynamicCats && dynamicCategory.value.trim() && finalName && finalName.trim()) {
                     selectedCategory = dynamicCategory.value.trim();
@@ -5420,7 +13662,27 @@ class HaShoppingListImproved extends HTMLElement {
                     finalName = `@${selectedCategory}@ ${finalName}`;
                 }
 
-                let result = { name: finalName };
+                const result = { name: finalName };
+
+                if (offerOnlyInput) {
+                    result.offer_only = offerOnlyInput.checked;
+                    result.name = this._setOfferOnlyMarker(result.name, offerOnlyInput.checked);
+                }
+
+                if (hasEditableQuantity) {
+                    result.previous_quantity = qty;
+                    result.quantity = editedQuantity;
+                }
+                if (isManualInventoryEdit) {
+                    result.manual_minimum_stock = manualMinimumStock;
+                }
+                if (isInventoryGroupEdit) {
+                    result.group_minimum_stock = groupMinimumStock;
+                }
+
+                if (eanProductName) {
+                    result.eanProductName = eanProductName;
+                }
 
                 if (supportsDescription) {
                     const descriptionValue = descriptionInput?.value?.trim() || "";
@@ -5453,6 +13715,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                 if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] finalName", result.name);
                 document.body.removeChild(overlay);
+                if (this._eanQueuePopupStatusEl === eanQueueStatus) this._eanQueuePopupStatusEl = null;
                 resolve(result);
             });
 
@@ -5508,27 +13771,402 @@ class HaShoppingListImproved extends HTMLElement {
         }
     }
 
+    _showEanDatabaseEntriesPopup(productName) {
+        const products = this._getEanDatabaseEntriesByName(productName);
+        if (!products.length) return;
+
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.4)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+        overlay.style.pointerEvents = 'auto';
+
+        const popup = document.createElement('div');
+        popup.style.width = 'min(560px, 92vw)';
+        popup.style.maxHeight = '88vh';
+        popup.style.display = 'flex';
+        popup.style.flexDirection = 'column';
+        popup.style.overflow = 'hidden';
+        popup.style.padding = '0';
+        popup.style.borderRadius = '8px';
+        popup.style.background = 'var(--card-background-color, white)';
+        popup.style.color = 'var(--primary-text-color, black)';
+        popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+        const header = document.createElement('div');
+        header.style.display = 'flex';
+        header.style.alignItems = 'center';
+        header.style.justifyContent = 'space-between';
+        header.style.gap = '12px';
+        header.style.padding = '16px';
+        header.style.borderBottom = '1px solid var(--divider-color, #ddd)';
+
+        const title = document.createElement('h2');
+        title.textContent = translate("ui.ean.database_entries_title")
+            .replace("{name}", productName);
+        title.style.margin = '0';
+        title.style.fontSize = '20px';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.textContent = '×';
+        closeBtn.setAttribute('aria-label', translate("ui.common.close"));
+        closeBtn.style.padding = '0';
+        closeBtn.style.border = 'none';
+        closeBtn.style.background = 'transparent';
+        closeBtn.style.color = 'var(--primary-text-color, black)';
+        closeBtn.style.fontSize = '28px';
+        closeBtn.style.lineHeight = '1';
+        closeBtn.style.cursor = 'pointer';
+
+        const content = document.createElement('div');
+        content.style.padding = '16px';
+        content.style.overflowY = 'auto';
+
+        const close = () => {
+            window.removeEventListener('keydown', onKeyDown, true);
+            if (document.body.contains(overlay)) document.body.removeChild(overlay);
+        };
+        const onKeyDown = event => {
+            if (event.key === 'Escape') {
+                event.stopImmediatePropagation();
+                close();
+            }
+        };
+
+        const labels = {
+            originalName: translate("ui.ean.database_original_name"),
+            ean: translate("ui.ean.database_ean"),
+            brand: translate("ui.ean.database_brand"),
+            quantity: translate("ui.ean.database_quantity"),
+            category: translate("ui.ean.database_category")
+        };
+
+        const renderEntries = (updatedEan = null) => {
+            const products = this._getEanDatabaseEntriesByName(productName);
+            content.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.style.padding = '12px';
+                card.style.border = '1px solid var(--divider-color, #ddd)';
+                card.style.borderRadius = '6px';
+                card.style.marginBottom = index === products.length - 1 ? '0' : '10px';
+
+                const topRow = document.createElement('div');
+                topRow.style.display = 'flex';
+                topRow.style.alignItems = 'flex-start';
+                topRow.style.justifyContent = 'space-between';
+                topRow.style.gap = '10px';
+                topRow.style.marginBottom = '8px';
+
+                const heading = document.createElement('div');
+                heading.textContent = product.name;
+                heading.style.fontWeight = '600';
+                heading.style.minWidth = '0';
+                heading.style.wordBreak = 'break-word';
+                topRow.appendChild(heading);
+
+                const detailsLayout = document.createElement('div');
+                detailsLayout.style.display = 'grid';
+                detailsLayout.style.gridTemplateColumns = product.imageUrl
+                    ? 'minmax(0, 1fr) 84px'
+                    : 'minmax(0, 1fr)';
+                detailsLayout.style.columnGap = '12px';
+                detailsLayout.style.alignItems = 'start';
+
+                const infoColumn = document.createElement('div');
+                infoColumn.style.minWidth = '0';
+                detailsLayout.appendChild(infoColumn);
+
+                const appendInfoRow = (label, value, emphasize = false) => {
+                    if (!value) return null;
+                    const row = document.createElement('div');
+                    row.style.display = 'grid';
+                    row.style.gridTemplateColumns = 'minmax(145px, auto) minmax(0, 1fr)';
+                    row.style.gap = '10px';
+                    row.style.marginTop = '4px';
+                    row.style.fontSize = '13px';
+
+                    const labelEl = document.createElement('span');
+                    labelEl.textContent = `${label}:`;
+                    labelEl.style.color = 'var(--secondary-text-color, #666)';
+
+                    const valueEl = document.createElement('span');
+                    valueEl.textContent = String(value);
+                    valueEl.style.wordBreak = 'break-word';
+                    if (emphasize) valueEl.style.fontWeight = '600';
+
+                    row.appendChild(labelEl);
+                    row.appendChild(valueEl);
+                    infoColumn.appendChild(row);
+                    return row;
+                };
+
+                appendInfoRow(labels.originalName, product.originalName, true);
+                appendInfoRow(labels.ean, product.ean);
+                if (this._mode === "inventory") {
+                    appendInfoRow(
+                        translate("ui.inventory.stock"),
+                        String(this._getShoppingStockByName(product.name, product.ean))
+                    );
+                    const minimum = this._getInventoryVariantMinimumStock(product.ean);
+                    if (minimum !== null) {
+                        appendInfoRow(
+                            translate("ui.ean.database_minimum_stock"),
+                            String(minimum)
+                        );
+                    }
+                }
+                const actions = document.createElement('div');
+                actions.style.display = 'flex';
+                actions.style.justifyContent = 'flex-end';
+                actions.style.alignItems = 'center';
+                actions.style.gap = '4px';
+                actions.style.flexShrink = '0';
+
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.title = translate("ui.ean.database_entry_edit");
+                editBtn.setAttribute('aria-label', editBtn.title);
+                editBtn.style.display = 'inline-flex';
+                editBtn.style.alignItems = 'center';
+                editBtn.style.justifyContent = 'center';
+                editBtn.style.padding = '3px';
+                editBtn.style.border = 'none';
+                editBtn.style.background = 'transparent';
+                editBtn.style.color = 'var(--primary-color, #03A9F4)';
+                editBtn.style.cursor = 'pointer';
+
+                const editIcon = document.createElement('ha-icon');
+                editIcon.setAttribute('icon', 'mdi:pencil');
+                editIcon.style.width = '18px';
+                editIcon.style.height = '18px';
+                editIcon.style.setProperty('--mdc-icon-size', '18px');
+                editBtn.appendChild(editIcon);
+                editBtn.addEventListener('click', event => {
+                    event.stopPropagation();
+                    close();
+                    this._showEanDatabaseManager(product.ean, {
+                        onBack: () => this._showEanDatabaseEntriesPopup(productName)
+                    });
+                });
+
+                const refreshBtn = document.createElement('button');
+                refreshBtn.type = 'button';
+                refreshBtn.title = translate("ui.ean.database_entry_refresh");
+                refreshBtn.setAttribute('aria-label', refreshBtn.title);
+                refreshBtn.style.display = 'inline-flex';
+                refreshBtn.style.alignItems = 'center';
+                refreshBtn.style.justifyContent = 'center';
+                refreshBtn.style.padding = '3px';
+                refreshBtn.style.border = 'none';
+                refreshBtn.style.background = 'transparent';
+                refreshBtn.style.color = 'var(--primary-color, #03A9F4)';
+                refreshBtn.style.cursor = 'pointer';
+
+                const refreshIcon = document.createElement('ha-icon');
+                refreshIcon.setAttribute('icon', 'mdi:refresh');
+                refreshIcon.style.width = '18px';
+                refreshIcon.style.height = '18px';
+                refreshIcon.style.setProperty('--mdc-icon-size', '18px');
+                refreshBtn.appendChild(refreshIcon);
+
+                const offLink = document.createElement('a');
+                offLink.href = `https://world.openfoodfacts.org/product/${encodeURIComponent(product.ean)}?product_type=all`;
+                offLink.target = '_blank';
+                offLink.rel = 'noopener noreferrer';
+                offLink.title = translate("ui.ean.database_entry_open_off");
+                offLink.setAttribute('aria-label', offLink.title);
+                offLink.style.display = 'inline-flex';
+                offLink.style.alignItems = 'center';
+                offLink.style.justifyContent = 'center';
+                offLink.style.padding = '3px';
+                offLink.style.color = 'var(--primary-color, #03A9F4)';
+
+                const linkIcon = document.createElement('ha-icon');
+                linkIcon.setAttribute('icon', 'mdi:open-in-new');
+                linkIcon.style.width = '17px';
+                linkIcon.style.height = '17px';
+                linkIcon.style.setProperty('--mdc-icon-size', '17px');
+                offLink.appendChild(linkIcon);
+
+                const actionStatus = document.createElement('span');
+                actionStatus.style.display = 'none';
+                actionStatus.style.margin = '3px 0 5px 155px';
+                actionStatus.style.fontSize = '12px';
+                actionStatus.style.color = 'var(--secondary-text-color, #666)';
+                if (updatedEan === product.ean) {
+                    actionStatus.textContent = translate("ui.ean.database_entry_updated");
+                    actionStatus.style.color = 'var(--success-color, #2e7d32)';
+                    actionStatus.style.display = 'block';
+                }
+
+                refreshBtn.addEventListener('click', async event => {
+                    event.stopPropagation();
+                    refreshBtn.disabled = true;
+                    refreshIcon.setAttribute('icon', 'mdi:loading');
+                    actionStatus.textContent = translate("ui.ean.database_loading_off");
+                    actionStatus.style.color = 'var(--secondary-text-color, #666)';
+                    actionStatus.style.display = 'block';
+
+                    const offProduct = await this._checkEAN(product.ean, { openFactsOnly: true });
+                    if (!offProduct) {
+                        refreshBtn.disabled = false;
+                        refreshIcon.setAttribute('icon', 'mdi:refresh');
+                        actionStatus.textContent = translate("ui.ean.database_off_not_found");
+                        actionStatus.style.color = 'var(--error-color, #db4437)';
+                        actionStatus.style.display = 'block';
+                        return;
+                    }
+
+                    const saved = await this._saveEanDatabaseProduct({
+                        ...product,
+                        originalName: offProduct.originalName || offProduct.name || null,
+                        brand: offProduct.brand || null,
+                        quantity: offProduct.quantity || null,
+                        imageUrl: offProduct.imageUrl || null
+                    });
+
+                    if (!saved) {
+                        refreshBtn.disabled = false;
+                        refreshIcon.setAttribute('icon', 'mdi:refresh');
+                        actionStatus.textContent = this._eanDatabaseErrorMessage("save");
+                        actionStatus.style.color = 'var(--error-color, #db4437)';
+                        actionStatus.style.display = 'block';
+                        return;
+                    }
+
+                    renderEntries(product.ean);
+                });
+
+                actions.appendChild(editBtn);
+                actions.appendChild(refreshBtn);
+                actions.appendChild(offLink);
+                topRow.appendChild(actions);
+                card.appendChild(topRow);
+
+                appendInfoRow(labels.brand, product.brand);
+                appendInfoRow(labels.quantity, product.quantity);
+                appendInfoRow(labels.category, product.category);
+
+                if (product.imageUrl) {
+                    const productImage = document.createElement('img');
+                    productImage.src = product.imageUrl;
+                    productImage.alt = product.originalName || product.name || '';
+                    productImage.loading = 'lazy';
+                    productImage.style.display = 'block';
+                    productImage.style.width = '84px';
+                    productImage.style.height = '96px';
+                    productImage.style.objectFit = 'contain';
+                    productImage.style.justifySelf = 'end';
+                    productImage.style.marginTop = '4px';
+                    detailsLayout.appendChild(productImage);
+                }
+
+                card.appendChild(detailsLayout);
+                card.appendChild(actionStatus);
+
+                content.appendChild(card);
+            });
+        };
+
+        renderEntries();
+
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', event => {
+            if (event.target === overlay) close();
+        });
+        window.addEventListener('keydown', onKeyDown, true);
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        popup.appendChild(header);
+        popup.appendChild(content);
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+    }
+
+    _appendEanDatabaseBadge(container, productName) {
+        if (!this._showEanDatabaseBadge || !["shopping", "inventory"].includes(this._mode)) return;
+
+        const entries = this._getEanDatabaseEntriesByName(productName);
+        if (!entries.length) return;
+
+        const badge = document.createElement('button');
+        badge.type = 'button';
+        badge.title = translate("ui.ean.database_entries_badge")
+            .replace("{count}", String(entries.length));
+        badge.setAttribute('aria-label', badge.title);
+        badge.style.display = 'inline-flex';
+        badge.style.alignItems = 'center';
+        badge.style.gap = '2px';
+        badge.style.flexShrink = '0';
+        badge.style.padding = '1px 3px';
+        badge.style.border = 'none';
+        badge.style.background = 'transparent';
+        badge.style.color = 'var(--secondary-text-color, #666)';
+        badge.style.opacity = '0.72';
+        badge.style.cursor = 'pointer';
+
+        const icon = document.createElement('ha-icon');
+        icon.setAttribute('icon', 'mdi:barcode');
+        icon.style.width = '16px';
+        icon.style.height = '16px';
+        icon.style.setProperty('--mdc-icon-size', '16px');
+        badge.appendChild(icon);
+
+        if (entries.length > 1) {
+            const count = document.createElement('span');
+            count.textContent = String(entries.length);
+            count.style.fontSize = '10px';
+            badge.appendChild(count);
+        }
+
+        badge.addEventListener('click', event => {
+            event.stopPropagation();
+            this._showEanDatabaseEntriesPopup(productName);
+        });
+        badge.addEventListener('dblclick', event => event.stopPropagation());
+        container.appendChild(badge);
+    }
+
     _renderItem(item, parentEl) {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderItem() called");
 
         const li = document.createElement('li');
         li.dataset.name = item.name;
         li.dataset.itemId = item.id;
-        if (item.complete) li.classList.add('done', 'green');
+        if (item.complete && this._mode !== "inventory") li.classList.add('done', 'green');
 
         const left = document.createElement('div');
         left.className = 'left';
 
         // Complete Button
         const completeBtn = document.createElement('button');
-        completeBtn.innerHTML = item.complete ? '\u2714' : '\u2610';
-        completeBtn.title = translate("editor.labels.complete_btn");
+        completeBtn.innerHTML = this._mode === "inventory"
+            ? `<ha-icon icon="${item.complete ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}"></ha-icon>`
+            : item.complete ? '\u2714' : '\u2610';
+        completeBtn.title = this._mode === "inventory"
+            ? translate(item.complete ? "ui.inventory.unhide" : "ui.inventory.hide")
+            : this._mode === "todo"
+                ? translate("ui.todo.actions")
+                : translate("editor.labels.complete_btn");
+        completeBtn.setAttribute('aria-label', completeBtn.title);
         completeBtn.style.cursor = 'pointer';
         completeBtn.style.border = 'none';
         completeBtn.style.background = 'transparent';
         completeBtn.style.fontSize = '16px';
         completeBtn.style.marginRight = '8px';
-        completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
+        if (this._mode === "todo") {
+            this._bindTodoActionControl(completeBtn, item);
+        } else {
+            completeBtn.addEventListener('click', async () => { await this._toggleComplete(item); });
+        }
 
         // Name Span (Container)
         const nameSpan = document.createElement('div');
@@ -5537,14 +14175,34 @@ class HaShoppingListImproved extends HTMLElement {
         const nameOnly = this._getNameOnly(item.name);
         const qty = this._getQuantity(item.name);
         let displayName = nameOnly;
-        const descriptionText = (this._showDescriptions && item.description)
+        const descriptionText = (this._mode !== "inventory" && this._showDescriptions && item.description)
             ? item.description.trim()
             : "";
 
-        if (qty > 1 || this._showQuantityOne) {
+        if (this._mode === "inventory" || qty > 1 || this._showQuantityOne) {
             displayName = this._quantityPosition === "beginning"
                 ? `${qty}× ${nameOnly}`
                 : `${nameOnly} (${qty})`;
+        }
+
+        if (this._mode === "inventory") {
+            if (item.complete) li.style.opacity = '0.55';
+            const comparison = this._getInventoryItemMinimumComparison(item);
+            let marking = "none";
+            if (qty === 0) {
+                marking = this._inventoryMarkZero;
+            } else if (comparison.hasMinimum) {
+                if (comparison.relation === "below") marking = this._inventoryMarkBelowMinimum;
+                else if (comparison.relation === "equal") marking = this._inventoryMarkAtMinimum;
+                else if (comparison.relation === "above") marking = this._inventoryMarkAboveMinimum;
+            }
+            if (["red", "orange", "green"].includes(marking)) {
+                li.classList.add(`inventory-stock-${marking}`);
+            }
+            if (qty === 0 && marking === "red") li.classList.add('inventory-zero');
+            if (comparison.relation === "below" && marking === "orange") {
+                li.classList.add('inventory-minimum');
+            }
         }
 
         if (item.due && this._mode === "todo") {
@@ -5561,7 +14219,7 @@ class HaShoppingListImproved extends HTMLElement {
             nameDiv.style.flex = '1';
 
             // Interval
-            let interval = this._getInterval(item.name);
+            const interval = this._getInterval(item.name);
             const intervalText = interval ? `${interval}` : translate("ui.todo.interval_once");
             const intervalDiv = document.createElement('div');
             intervalDiv.textContent = intervalText;
@@ -5664,7 +14322,7 @@ class HaShoppingListImproved extends HTMLElement {
                     {value: minutes, unit: 'minute'},
                 ].filter(part => part.value > 0);
 
-                let displayParts = [];
+                const displayParts = [];
 
                 if (timeParts.length === 0) {
                     displayParts.push('0 Minuten');
@@ -5739,9 +14397,47 @@ class HaShoppingListImproved extends HTMLElement {
             nameSpan.appendChild(dueDiv);
         } else {
             // Shopping Mode
+            const nameRow = document.createElement('div');
+            nameRow.style.display = 'flex';
+            nameRow.style.alignItems = 'center';
+            nameRow.style.gap = '5px';
+
             const nameDiv = document.createElement('div');
             nameDiv.textContent = displayName;
-            nameSpan.appendChild(nameDiv);
+            nameDiv.style.minWidth = '0';
+            nameRow.appendChild(nameDiv);
+            if (this._mode === "shopping" && this._shoppingOfferOnlyEnabled && this._isOfferOnly(item.name)) {
+                const offerBadge = document.createElement('span');
+                offerBadge.title = translate("ui.shopping.offer_only");
+                offerBadge.setAttribute('aria-label', offerBadge.title);
+                offerBadge.style.cssText = 'display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:10px;background:var(--warning-color,#e0a526);color:#111;font-size:10px;font-weight:600;line-height:1.5;white-space:nowrap;';
+                const offerIcon = document.createElement('ha-icon');
+                offerIcon.setAttribute('icon', 'mdi:tag-outline');
+                offerIcon.style.cssText = 'display:inline-flex;width:12px;height:12px;flex:0 0 12px;';
+                offerIcon.style.setProperty('--mdc-icon-size', '12px');
+                const offerText = document.createElement('span');
+                offerText.textContent = translate("ui.shopping.offer_badge");
+                offerBadge.appendChild(offerIcon);
+                offerBadge.appendChild(offerText);
+                nameRow.appendChild(offerBadge);
+            }
+            this._appendEanDatabaseBadge(nameRow, nameOnly);
+            nameSpan.appendChild(nameRow);
+
+            if (
+                this._mode === "inventory" &&
+                !item.inventoryGroup &&
+                item.inventoryVariantEan !== undefined &&
+                (this._inventoryShowProductDetails || this._inventoryItemNeedsVariantIdentification(item))
+            ) {
+                const variantInfo = document.createElement('div');
+                variantInfo.className = 'item-description';
+                variantInfo.textContent = this._inventoryShowProductDetails
+                    ? this._inventoryVariantLabel(item.inventoryVariantEan, true)
+                    : this._inventoryVariantCompactLabel(item.inventoryVariantEan);
+                variantInfo.style.color = 'var(--secondary-text-color)';
+                nameSpan.appendChild(variantInfo);
+            }
 
             if (descriptionText) {
                 const descriptionDiv = document.createElement('div');
@@ -5774,12 +14470,22 @@ class HaShoppingListImproved extends HTMLElement {
             plusBtn._processing = true;
 
             try {
+                if (this._mode === "inventory") {
+                    const option = await this._selectInventoryVariant(item, "add");
+                    if (option) {
+                        await this._changeInventoryVariant(
+                            this._getNameOnly(item.name), this._getCategory(item.name) || null, option, 1
+                        );
+                    }
+                    plusBtn._processing = false;
+                    return;
+                }
                 const nameOnly = this._getNameOnly(item.name);
                 const category = this._getCategory(item.name);
-                let currentQty = this._getQuantity(item.name);
+                const currentQty = this._getQuantity(item.name);
                 const newQty = currentQty + 1;
 
-                const showQty = newQty > 1 || this._showQuantityOne;
+                const showQty = this._mode === "inventory" || newQty > 1 || this._showQuantityOne;
 
                 let formattedName = showQty
                     ? (this._quantityPosition === "beginning"
@@ -5793,7 +14499,7 @@ class HaShoppingListImproved extends HTMLElement {
 
                 formattedName = this._preserveSortIndex(item.name, formattedName);
 
-                await this._hass.connection.sendMessagePromise({
+                await this._callListService({
                     type: "call_service",
                     domain: "todo",
                     service: "update_item",
@@ -5802,6 +14508,14 @@ class HaShoppingListImproved extends HTMLElement {
                 });
 
                 await this._refresh();
+                this._showInventoryFeedback(nameOnly, currentQty, newQty, this._mode === "inventory" ? {
+                    action: "inventory_add",
+                    category,
+                    transferId: null,
+                    transferQuantity: 0,
+                    product: this._getEanDatabaseEntriesByName(nameOnly)[0] || null,
+                    ean: this._getEanDatabaseEntriesByName(nameOnly)[0]?.ean || null
+                } : null);
                 await this._notifyOnChange(translate("ui.message.quantity_increased") + ": " + nameOnly +  ` (${newQty})`);
             } catch (err) {
                 console.error('[ha-shopping-list-improved] Plus button failed', err);
@@ -5824,38 +14538,7 @@ class HaShoppingListImproved extends HTMLElement {
             minusBtn._processing = true;
 
             try {
-                const nameOnly = this._getNameOnly(item.name);
-                const category = this._getCategory(item.name);
-                let currentQty = this._getQuantity(item.name);
-
-                if (currentQty > 1) {
-                    const newQty = currentQty - 1;
-                    const showQty = newQty > 1 || this._showQuantityOne;
-
-                    let formattedName = showQty
-                        ? (this._quantityPosition === 'beginning'
-                            ? `${newQty}× ${nameOnly}`
-                            : `${nameOnly} (${newQty})`)
-                        : nameOnly;
-
-                    if (category) {
-                        formattedName = `@${category}@ ${formattedName}`;
-                    }
-
-                    formattedName = this._preserveSortIndex(item.name, formattedName);
-
-                    await this._hass.connection.sendMessagePromise({
-                        type: "call_service",
-                        domain: "todo",
-                        service: "update_item",
-                        target: { entity_id: this._entity },
-                        service_data: { item: item.id, rename: formattedName }
-                    });
-                    await this._refresh();
-                    await this._notifyOnChange(translate("ui.message.quantity_decreased") + ": " + nameOnly +  ` (${newQty})`);
-                } else {
-                    await this._removeItem(item);
-                }
+                await this._handleShoppingMinus(item);
             } catch (err) {
                 console.error('[ha-shopping-list-improved] Minus button failed', err);
             }
@@ -5863,12 +14546,12 @@ class HaShoppingListImproved extends HTMLElement {
             minusBtn._processing = false;
         });
 
-        if (this._showPlusMinus && this._mode === "shopping") {
+        if (this._showPlusMinus && ["shopping", "inventory"].includes(this._mode)) {
             actions.appendChild(plusBtn);
             actions.appendChild(minusBtn);
         }
 
-        if (this._canManualSort()) {
+        if (this._canManualSort() && !item.inventoryGroup) {
             const sortHandle = document.createElement('button');
             sortHandle.className = 'sort-handle';
             sortHandle.textContent = '⋮⋮';
@@ -5919,15 +14602,191 @@ class HaShoppingListImproved extends HTMLElement {
 
             actions.appendChild(sortHandle);
         }
-		
+
         li.appendChild(left);
         li.appendChild(actions);
         parentEl.appendChild(li);
     }
 
+    async _updateEanGroupIdentity(previousName, nextName, nextCategory) {
+        const products = this._getEanDatabaseEntriesByName(previousName);
+        for (const product of products) {
+            const saved = await this._saveEanDatabaseProduct({
+                ...product,
+                _allowGroupCategoryChange: true,
+                name: nextName,
+                category: nextCategory && nextCategory.toLocaleLowerCase() !== "none" ? nextCategory : null
+            });
+            if (!saved) return false;
+        }
+        return true;
+    }
+
+    async _updateCurrentInventoryGroupCategory(name, category) {
+        if (this._mode !== "inventory") return true;
+        const variants = this._getInventoryVariantItems(name);
+        const minimumValues = [...new Set(variants
+            .map(variant => this._parseInventoryVariant(variant).groupMinimumStock)
+            .filter(value => value !== null))];
+        let groupMinimum = minimumValues[0] ?? null;
+        if (minimumValues.length > 1) {
+            const choice = await this._chooseInventoryGroupMinimum(
+                minimumValues[0], minimumValues[1], name
+            );
+            if (!choice) return false;
+            groupMinimum = choice === "target" ? minimumValues[1] : minimumValues[0];
+        }
+        for (const variant of variants) {
+            const renamed = this._formatInventoryItemName(
+                this._getNameOnly(variant.name), category, this._getQuantity(variant.name), variant.name
+            );
+            const parsed = this._parseInventoryVariant(variant);
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: "update_item",
+                target: { entity_id: this._entity },
+                service_data: {
+                    item: variant.id,
+                    rename: renamed,
+                    description: this._serializeInventoryVariant(
+                        parsed.ean, parsed.minimumStock, groupMinimum
+                    )
+                }
+            });
+        }
+        if (variants.length) await this._refresh();
+        await this._normalizeInventoryGroupMinimum(name, category);
+        if (variants.length) await this._refresh();
+        return true;
+    }
+
+    _chooseInventoryGroupMinimum(sourceMinimum, targetMinimum, targetName) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:10005;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+            const popup = document.createElement('div');
+            popup.style.cssText = 'width:min(520px,calc(100vw - 32px));padding:18px;box-sizing:border-box;border-radius:8px;background:var(--card-background-color,white);color:var(--primary-text-color,black);';
+            const message = document.createElement('p');
+            message.textContent = translate("ui.inventory.group_minimum_conflict")
+                .replace("{target}", targetName)
+                .replace("{sourceMinimum}", String(sourceMinimum))
+                .replace("{targetMinimum}", String(targetMinimum));
+            message.style.cssText = 'margin:0 0 16px;line-height:1.45;';
+            popup.appendChild(message);
+            const buttons = document.createElement('div');
+            buttons.style.cssText = 'display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;';
+            const close = value => {
+                window.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(value);
+            };
+            const onKeyDown = event => { if (event.key === 'Escape') close(false); };
+            const addButton = (label, value, primary = false) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = label;
+                button.style.cssText = `padding:8px 12px;cursor:pointer;${primary ? 'background:var(--primary-color,#03A9F4);color:white;border:0;border-radius:4px;' : ''}`;
+                button.addEventListener('click', () => close(value));
+                buttons.appendChild(button);
+            };
+            addButton(translate("ui.inventory.group_minimum_use_source").replace("{minimum}", String(sourceMinimum)), "source", true);
+            addButton(translate("ui.inventory.group_minimum_use_target").replace("{minimum}", String(targetMinimum)), "target");
+            addButton(translate("ui.common.cancel"), false);
+            popup.appendChild(buttons);
+            overlay.addEventListener('click', event => { if (event.target === overlay) close(false); });
+            window.addEventListener('keydown', onKeyDown, true);
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    async _handleEditInventoryGroup(item) {
+        const previousName = this._getNameOnly(item.name);
+        const previousCategory = this._getCategory(item.name) || "none";
+        const sourceState = this._getInventoryGroupState(previousName, previousCategory, item.inventoryVariants || []);
+        const updated = await this.editItemPopup(item, "edit", false, null, {
+            inventoryGroup: true,
+            inventoryGroupItem: item
+        });
+        if (!updated) return;
+        if (updated === "__DELETE__" || updated?.name === "__DELETE__") {
+            await this._removeItem(item);
+            return;
+        }
+
+        const nextName = this._getNameOnly(updated.name);
+        const nextCategory = this._getCategory(updated.name) || "none";
+        if (!nextName) return;
+        let groupMinimum = Object.prototype.hasOwnProperty.call(updated, "group_minimum_stock")
+            ? updated.group_minimum_stock
+            : sourceState.minimum;
+        const identityChanged =
+            this._normalizeEanDatabaseProductName(previousName) !== this._normalizeEanDatabaseProductName(nextName) ||
+            previousCategory.toLocaleLowerCase() !== nextCategory.toLocaleLowerCase();
+        const sourceIds = new Set((item.inventoryVariants || []).map(variant => String(variant.id)));
+        const targetVariants = identityChanged
+            ? this._getInventoryVariantItems(nextName, nextCategory).filter(variant => !sourceIds.has(String(variant.id)))
+            : [];
+        const targetState = this._getInventoryGroupState(nextName, nextCategory, targetVariants);
+        if (
+            targetVariants.length > 1 &&
+            groupMinimum !== null &&
+            targetState.minimum !== null &&
+            groupMinimum !== targetState.minimum
+        ) {
+            const choice = await this._chooseInventoryGroupMinimum(groupMinimum, targetState.minimum, nextName);
+            if (!choice) return;
+            groupMinimum = choice === "target" ? targetState.minimum : groupMinimum;
+        } else if (groupMinimum === null && targetState.minimum !== null) {
+            groupMinimum = targetState.minimum;
+        }
+        if (nextCategory.toLocaleLowerCase() !== previousCategory.toLocaleLowerCase()) {
+            const question = translate("ui.inventory.group_category_confirm")
+                .replace("{name}", previousName)
+                .replace("{count}", String(item.inventoryVariants?.length || 0));
+            if (!(await this.confirmPopup(question))) return;
+        }
+
+        try {
+            for (const variant of item.inventoryVariants || []) {
+                const quantity = this._getQuantity(variant.name);
+                const renamed = this._formatInventoryItemName(nextName, nextCategory, quantity, variant.name);
+                const parsed = this._parseInventoryVariant(variant);
+                await this._callListService({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: {
+                        item: variant.id,
+                        rename: renamed,
+                        description: this._serializeInventoryVariant(parsed.ean, parsed.minimumStock, groupMinimum)
+                    }
+                });
+            }
+            for (const variant of targetVariants) {
+                await this._writeInventoryVariantMetadata(variant, { groupMinimumStock: groupMinimum });
+            }
+            await this._updateEanGroupIdentity(previousName, nextName, nextCategory);
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(nextName, nextCategory);
+            if (identityChanged) await this._normalizeInventoryGroupMinimum(previousName, previousCategory);
+            await this._refresh();
+            await this._notifyOnChange(`${translate("ui.message.edited")}: ${nextName}`);
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Unable to update inventory group:", error);
+        }
+    }
+
     // save edited item
     async _handleEditItem(item) {
         if(debugMode) console.debug('[ha-shopping-list-improved] due:', item.due);
+
+        if (this._mode === "inventory" && item.inventoryGroup) {
+            await this._handleEditInventoryGroup(item);
+            return;
+        }
 
         const updatedItem = await this.editItemPopup(item, "edit", false);
 
@@ -5935,6 +14794,10 @@ class HaShoppingListImproved extends HTMLElement {
         let dueDate = null;
         let dueDateTime = null;
         let description = undefined;
+        let previousQuantity = null;
+        let correctedQuantity = null;
+        let manualMinimumStock = undefined;
+        let offerOnly = undefined;
 
         if (updatedItem && typeof updatedItem === 'object' && !Array.isArray(updatedItem)) {
             newName = updatedItem.name || '';
@@ -5948,6 +14811,18 @@ class HaShoppingListImproved extends HTMLElement {
             if (Object.prototype.hasOwnProperty.call(updatedItem, "description")) {
                 description = updatedItem.description;
             }
+            if (Number.isInteger(updatedItem.previous_quantity)) {
+                previousQuantity = updatedItem.previous_quantity;
+            }
+            if (Number.isInteger(updatedItem.quantity)) {
+                correctedQuantity = updatedItem.quantity;
+            }
+            if (Object.prototype.hasOwnProperty.call(updatedItem, "manual_minimum_stock")) {
+                manualMinimumStock = updatedItem.manual_minimum_stock;
+            }
+            if (Object.prototype.hasOwnProperty.call(updatedItem, "offer_only")) {
+                offerOnly = updatedItem.offer_only === true;
+            }
         } else if (typeof updatedItem === 'string') {
             newName = updatedItem;
         }
@@ -5960,6 +14835,64 @@ class HaShoppingListImproved extends HTMLElement {
         }
 
         newName = this._preserveSortIndex(item.name, newName);
+        if (this._mode === "shopping" && offerOnly !== undefined) {
+            newName = this._setOfferOnlyMarker(newName, offerOnly);
+        }
+
+        const previousBaseName = this._getNameOnly(item.name);
+        const previousCategory = this._getCategory(item.name) || "none";
+        const nextCategory = this._getCategory(newName) || "none";
+        const nextBaseName = this._getNameOnly(newName);
+        const parsedInventoryVariant = this._mode === "inventory" ? this._parseInventoryVariant(item) : null;
+        const relatedVariants = this._mode === "inventory"
+            ? this._getInventoryVariantItems(previousBaseName, previousCategory)
+            : [];
+        const updateGroupCategory = this._mode === "inventory" &&
+            relatedVariants.length > 1 &&
+            previousCategory.toLocaleLowerCase() !== nextCategory.toLocaleLowerCase();
+        if (updateGroupCategory) {
+            const question = translate("ui.inventory.group_category_confirm")
+                .replace("{name}", previousBaseName)
+                .replace("{count}", String(relatedVariants.length));
+            if (!(await this.confirmPopup(question))) return;
+        }
+
+        const inventoryIdentityChanged = this._mode === "inventory" && (
+            this._normalizeEanDatabaseProductName(previousBaseName) !==
+                this._normalizeEanDatabaseProductName(nextBaseName) ||
+            previousCategory.toLocaleLowerCase() !== nextCategory.toLocaleLowerCase()
+        );
+        const movedVariants = updateGroupCategory ? relatedVariants : [item];
+        const movedIds = new Set(movedVariants.map(variant => String(variant.id)));
+        const sourceGroupState = this._mode === "inventory"
+            ? this._getInventoryGroupState(previousBaseName, previousCategory, relatedVariants)
+            : null;
+        const targetVariants = inventoryIdentityChanged
+            ? this._getInventoryVariantItems(nextBaseName, nextCategory)
+                .filter(variant => !movedIds.has(String(variant.id)))
+            : [];
+        const targetGroupState = this._mode === "inventory"
+            ? this._getInventoryGroupState(nextBaseName, nextCategory, targetVariants)
+            : null;
+        let movedGroupMinimum = parsedInventoryVariant?.groupMinimumStock ?? null;
+        if (updateGroupCategory) movedGroupMinimum = sourceGroupState?.minimum ?? null;
+        if (inventoryIdentityChanged && !updateGroupCategory) {
+            movedGroupMinimum = targetGroupState?.minimum ?? null;
+        } else if (inventoryIdentityChanged && targetGroupState?.minimum !== null) {
+            if (
+                movedGroupMinimum !== null &&
+                movedGroupMinimum !== targetGroupState.minimum &&
+                targetVariants.length > 1
+            ) {
+                const choice = await this._chooseInventoryGroupMinimum(
+                    movedGroupMinimum, targetGroupState.minimum, nextBaseName
+                );
+                if (!choice) return;
+                movedGroupMinimum = choice === "target" ? targetGroupState.minimum : movedGroupMinimum;
+            } else if (movedGroupMinimum === null) {
+                movedGroupMinimum = targetGroupState.minimum;
+            }
+        }
 
         // ServiceData
         const serviceData = {
@@ -5976,23 +14909,108 @@ class HaShoppingListImproved extends HTMLElement {
         if (this._supportsTodoDescription() && description !== undefined) {
             serviceData.description = description;
         }
+        if (
+            this._mode === "inventory" &&
+            manualMinimumStock !== undefined &&
+            parsedInventoryVariant.ean === null
+        ) {
+            serviceData.description = this._serializeInventoryVariant(
+                null, manualMinimumStock, movedGroupMinimum
+            );
+        } else if (this._mode === "inventory" && inventoryIdentityChanged) {
+            serviceData.description = this._serializeInventoryVariant(
+                parsedInventoryVariant.ean,
+                parsedInventoryVariant.minimumStock,
+                movedGroupMinimum
+            );
+        }
 
         if(debugMode) console.debug('[ha-shopping-list-improved] serviceData:', serviceData);
 
         try {
-            await this._hass.connection.sendMessagePromise({
+            await this._callListService({
                 type: "call_service",
                 domain: "todo",
                 service: "update_item",
                 target: { entity_id: this._entity },
                 service_data: serviceData,
             });
-            
+
+            if (updateGroupCategory) {
+                for (const variant of relatedVariants.filter(entry => entry.id !== item.id)) {
+                    const variantName = this._getNameOnly(variant.name);
+                    const renamed = this._formatInventoryItemName(
+                        variantName, nextCategory, this._getQuantity(variant.name), variant.name
+                    );
+                    const parsed = this._parseInventoryVariant(variant);
+                    await this._callListService({
+                        type: "call_service",
+                        domain: "todo",
+                        service: "update_item",
+                        target: { entity_id: this._entity },
+                        service_data: {
+                            item: variant.id,
+                            rename: renamed,
+                            description: this._serializeInventoryVariant(
+                                parsed.ean, parsed.minimumStock, movedGroupMinimum
+                            )
+                        }
+                    });
+                }
+                for (const variant of targetVariants) {
+                    await this._writeInventoryVariantMetadata(variant, {
+                        groupMinimumStock: movedGroupMinimum
+                    });
+                }
+                await this._updateEanGroupIdentity(previousBaseName, previousBaseName, nextCategory);
+            }
+
             const nameOnly = this._getNameOnly(newName);
             const newQty = this._getQuantity(newName);
+            if (this._mode === "inventory") {
+                const variantEan = this._parseInventoryVariant(item).ean;
+                const variantProduct = this._inventoryVariantProduct(variantEan);
+                if (variantProduct && (
+                    this._normalizeEanDatabaseProductName(variantProduct.name) !==
+                        this._normalizeEanDatabaseProductName(nameOnly) ||
+                    String(variantProduct.category || "none").trim().toLocaleLowerCase() !==
+                        String(nextCategory || "none").trim().toLocaleLowerCase()
+                )) {
+                    const saved = await this._saveEanDatabaseProduct({
+                        ...variantProduct,
+                        _allowGroupCategoryChange: true,
+                        name: nameOnly,
+                        category: nextCategory.toLocaleLowerCase() === "none" ? null : nextCategory
+                    });
+                    if (!saved) throw new Error("EAN product could not be updated after inventory edit");
+                }
+            }
 
             await this._refresh();
+            if (this._mode === "inventory" && inventoryIdentityChanged) {
+                await this._normalizeInventoryGroupMinimum(previousBaseName, previousCategory);
+                await this._normalizeInventoryGroupMinimum(nextBaseName, nextCategory);
+                await this._refresh();
+            }
+            if (
+                this._mode === "inventory" &&
+                previousQuantity !== null &&
+                correctedQuantity !== null &&
+                previousQuantity !== correctedQuantity
+            ) {
+                this._showInventoryFeedback(nameOnly, previousQuantity, correctedQuantity);
+            }
             await this._notifyOnChange(translate("ui.message.edited") + ": " + nameOnly +  ` (${newQty})`);
+            if (previousQuantity !== null && correctedQuantity !== null) {
+                await this._offerInventoryCorrectionTransfer(
+                    previousBaseName,
+                    nameOnly,
+                    this._getCategory(newName),
+                    previousQuantity,
+                    correctedQuantity,
+                    this._mode === "inventory" ? this._parseInventoryVariant(item).ean : undefined
+                );
+            }
         } catch (err) {
             console.error('[ha-shopping-list-improved] Unable to rename item:', err);
         }
@@ -6014,7 +15032,42 @@ class HaShoppingListImproved extends HTMLElement {
                 }
             }
         }
-        return items;
+
+        if (!this._eanDatabaseSuggestions || !this._eanDatabaseByName?.size) return items;
+
+        const uniqueItems = new Map();
+        items.forEach(item => {
+            const key = this._normalizeEanDatabaseProductName(item.name);
+            if (key && !uniqueItems.has(key)) uniqueItems.set(key, item);
+        });
+
+        for (const [key, products] of this._eanDatabaseByName.entries()) {
+            if (!products.length) continue;
+            const existing = uniqueItems.get(key);
+            if (existing) {
+                existing.fromEanDatabase = true;
+                existing.eanCount = products.length;
+                existing.eans = products.map(product => String(product.ean || '')).filter(Boolean);
+                existing.searchValues = products
+                    .flatMap(product => [product.originalName, product.brand])
+                    .filter(Boolean);
+                continue;
+            }
+
+            const product = products[0];
+            uniqueItems.set(key, {
+                name: product.name,
+                category: product.category || '',
+                fromEanDatabase: true,
+                eanCount: products.length,
+                eans: products.map(entry => String(entry.ean || '')).filter(Boolean),
+                searchValues: products
+                    .flatMap(entry => [entry.originalName, entry.brand])
+                    .filter(Boolean)
+            });
+        }
+
+        return [...uniqueItems.values()];
     }
 
     _updateSuggestions(query) {
@@ -6026,10 +15079,18 @@ class HaShoppingListImproved extends HTMLElement {
         }
 
         const allItems = this._getAllCategoryItems();
-        const searchWords = this._removeDiacritics(trimmed.toLowerCase()).split(/\s+/).filter(w => w.length > 0);
         const matches = allItems.filter(item => {
-            const normalized = this._removeDiacritics(item.name.toLowerCase());
-            return searchWords.every(word => normalized.includes(word));
+            const eans = Array.isArray(item.eans) ? item.eans : [];
+            const searchValues = Array.isArray(item.searchValues) ? item.searchValues : [];
+            const matchesQuery = this._matchesSearchValues([
+                item.name,
+                ...searchValues,
+                ...eans
+            ], trimmed);
+            if (matchesQuery) {
+                item.matchedEan = eans.find(ean => ean.includes(trimmed)) || null;
+            }
+            return matchesQuery;
         });
 
         if (matches.length === 0) {
@@ -6043,7 +15104,32 @@ class HaShoppingListImproved extends HTMLElement {
         for (const match of limited) {
             const div = document.createElement('div');
             div.classList.add('suggestion-item');
-            div.innerHTML = `${match.name}<span class="suggestion-category">${match.category}</span>`;
+
+            const name = document.createElement('span');
+            name.textContent = match.name;
+            div.appendChild(name);
+
+            if (match.category) {
+                const category = document.createElement('span');
+                category.className = 'suggestion-category';
+                category.textContent = match.category;
+                div.appendChild(category);
+            }
+
+            if (match.fromEanDatabase) {
+                const databaseMarker = document.createElement('span');
+                databaseMarker.className = 'suggestion-ean';
+                databaseMarker.title = translate("ui.ean.database_entries_badge")
+                    .replace("{count}", String(match.eanCount || 1));
+
+                const icon = document.createElement('ha-icon');
+                icon.setAttribute('icon', 'mdi:barcode');
+                databaseMarker.appendChild(icon);
+                if (match.eanCount > 1) {
+                    databaseMarker.appendChild(document.createTextNode(String(match.eanCount)));
+                }
+                div.appendChild(databaseMarker);
+            }
 
             // avoid blur before click, which would hide the suggestions before the click event fires
             div.addEventListener('mousedown', (e) => {
@@ -6052,7 +15138,11 @@ class HaShoppingListImproved extends HTMLElement {
 
             // click event on div to select suggestion
             div.addEventListener('click', () => {
-                this._selectSuggestion(match.name);
+                this._selectSuggestion(
+                    match.name,
+                    match.fromEanDatabase ? match.category : null,
+                    match.matchedEan || null
+                );
             });
 
             this._suggestionsEl.appendChild(div);
@@ -6060,10 +15150,200 @@ class HaShoppingListImproved extends HTMLElement {
         this._suggestionsEl.classList.add('visible');
     }
 
-    _selectSuggestion(name) {
+    _selectSuggestion(name, category = null, ean = null) {
         this._inputEl.value = name;
+        this._pendingSuggestionCategory = category || null;
+        this._pendingSuggestionEan = ean || null;
         this._hideSuggestions();
         this._onAdd();
+    }
+
+    _formatInventoryItemName(productName, category, quantity, previousName = null) {
+        let name = this._quantityPosition === 'beginning'
+            ? `${quantity}× ${productName}`
+            : `${productName} (${quantity})`;
+        if (category && String(category).toLocaleLowerCase() !== "none") name = `@${category}@ ${name}`;
+        return previousName ? this._preserveSortIndex(previousName, name) : name;
+    }
+
+    async _addInventoryVariantQuantity(productName, category = null, amount = 1, ean = null) {
+        const addQty = Math.max(1, Math.floor(Number(amount) || 1));
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const existing = this._findInventoryVariantItem(targetItems, productName, ean, null);
+            const existingName = String(existing?.summary || existing?.name || productName);
+            const existingMinimum = existing && !ean
+                ? this._parseInventoryVariant(existing).minimumStock
+                : null;
+            const existingGroupMinimum = existing
+                ? this._parseInventoryVariant(existing).groupMinimumStock
+                : this._getInventoryGroupState(productName, category, targetItems).minimum;
+            const currentQty = existing ? this._getQuantity(existingName) : 0;
+            const nextQuantity = currentQty + addQty;
+            const effectiveCategory = this._getCategory(existingName) || category;
+            const formattedName = this._formatInventoryItemName(
+                productName, effectiveCategory, nextQuantity, existingName
+            );
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: existing ? "update_item" : "add_item",
+                target: { entity_id: this._entity },
+                service_data: existing
+                    ? {
+                        item: existing.uid,
+                        rename: formattedName,
+                        description: this._serializeInventoryVariant(ean, existingMinimum, existingGroupMinimum)
+                    }
+                    : {
+                        item: formattedName,
+                        description: this._serializeInventoryVariant(ean, null, existingGroupMinimum)
+                    }
+            });
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(productName, effectiveCategory);
+            await this._refresh();
+            const refreshed = this._findInventoryVariantItem(this._items, productName, ean, null);
+            return {
+                status: existing ? "increased" : "added",
+                name: productName,
+                quantity: nextQuantity,
+                previousQuantity: currentQty,
+                targetUid: existing?.uid || refreshed?.id || null,
+                ean: ean || null
+            };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory variant add failed:", error);
+            return { status: "error", name: productName, quantity: 0, error };
+        }
+    }
+
+    async _removeInventoryVariantQuantity(productName, amount = 1, ean = null) {
+        const item = this._findInventoryVariantItem(this._items, productName, ean, null);
+        if (!item) return { status: "not_found", name: productName, quantity: 0, previousQuantity: 0, removedQuantity: 0 };
+        const currentQty = this._getQuantity(item.name);
+        if (currentQty === 0) return { status: "no_stock", name: productName, quantity: 0, previousQuantity: 0, removedQuantity: 0 };
+        const removeQty = Math.max(1, Math.floor(Number(amount) || 1));
+        const nextQuantity = Math.max(0, currentQty - removeQty);
+        const category = this._getCategory(item.name);
+        const formattedName = this._formatInventoryItemName(productName, category, nextQuantity, item.name);
+        try {
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: "update_item",
+                target: { entity_id: this._entity },
+                service_data: {
+                    item: item.id,
+                    rename: formattedName,
+                    description: this._serializeInventoryVariant(
+                        ean,
+                        !ean ? this._parseInventoryVariant(item).minimumStock : null,
+                        this._parseInventoryVariant(item).groupMinimumStock
+                    )
+                }
+            });
+            await this._refresh();
+            return {
+                status: "decreased",
+                name: productName,
+                quantity: nextQuantity,
+                previousQuantity: currentQty,
+                removedQuantity: Math.min(currentQty, removeQty),
+                ean: ean || null
+            };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory variant removal failed:", error);
+            return { status: "error", name: productName, quantity: currentQty, previousQuantity: currentQty, removedQuantity: 0, error };
+        }
+    }
+
+    async _setInventoryVariantQuantity(productName, category, quantity, ean = null, options = {}) {
+        const nextQuantity = Math.max(0, Math.floor(Number(quantity) || 0));
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const existing = this._findInventoryVariantItem(targetItems, productName, ean, null);
+            const existingName = String(existing?.summary || existing?.name || productName);
+            const existingMinimum = existing && !ean
+                ? this._parseInventoryVariant(existing).minimumStock
+                : null;
+            const effectiveCategory = category || this._getCategory(existingName);
+            const existingGroupMinimum = existing
+                ? this._parseInventoryVariant(existing).groupMinimumStock
+                : this._getInventoryGroupState(productName, effectiveCategory, targetItems).minimum;
+            const formattedName = this._formatInventoryItemName(
+                productName, effectiveCategory, nextQuantity, existing ? existingName : null
+            );
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: existing ? "update_item" : "add_item",
+                target: { entity_id: this._entity },
+                service_data: existing
+                    ? {
+                        item: existing.uid,
+                        rename: formattedName,
+                        description: this._serializeInventoryVariant(ean, existingMinimum, existingGroupMinimum)
+                    }
+                    : {
+                        item: formattedName,
+                        description: this._serializeInventoryVariant(ean, null, existingGroupMinimum)
+                    }
+            }, options);
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(productName, effectiveCategory);
+            await this._refresh();
+            return { status: "updated", quantity: nextQuantity, ean: ean || null };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Inventory variant correction failed:", error);
+            return { status: "error", quantity: this._getShoppingStockByName(productName, ean), error };
+        }
+    }
+
+    async _setManualInventoryMinimumStock(productName, category, minimumStock) {
+        const normalizedMinimum = (
+            minimumStock !== null &&
+            minimumStock !== "" &&
+            Number.isInteger(Number(minimumStock)) &&
+            Number(minimumStock) >= 0
+        ) ? Number(minimumStock) : null;
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const existing = this._findInventoryVariantItem(targetItems, productName, null, null);
+            if (!existing && normalizedMinimum === null) {
+                return { status: "unchanged", minimumStock: null };
+            }
+
+            const existingName = String(existing?.summary || existing?.name || productName);
+            const existingGroupMinimum = existing
+                ? this._parseInventoryVariant(existing).groupMinimumStock
+                : this._getInventoryGroupState(productName, category, targetItems).minimum;
+            const formattedName = existing
+                ? existingName
+                : this._formatInventoryItemName(productName, category, 0);
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: existing ? "update_item" : "add_item",
+                target: { entity_id: this._entity },
+                service_data: existing
+                    ? {
+                        item: existing.uid,
+                        description: this._serializeInventoryVariant(null, normalizedMinimum, existingGroupMinimum)
+                    }
+                    : {
+                        item: formattedName,
+                        description: this._serializeInventoryVariant(null, normalizedMinimum, existingGroupMinimum)
+                    }
+            });
+            await this._refresh();
+            await this._normalizeInventoryGroupMinimum(productName, category);
+            await this._refresh();
+            return { status: "updated", minimumStock: normalizedMinimum };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Manual inventory minimum update failed:", error);
+            return { status: "error", minimumStock: normalizedMinimum, error };
+        }
     }
 
     _hideSuggestions() {
@@ -6089,43 +15369,954 @@ class HaShoppingListImproved extends HTMLElement {
         items[newIndex].scrollIntoView({ block: 'nearest' });
     }
 
+    async _addShoppingQuantityByName(productName, category = null, amount = 1, ean = undefined) {
+        if (this._canTrackInventoryVariants()) {
+            return this._addInventoryVariantQuantity(productName, category, amount, ean === undefined ? null : ean);
+        }
+        const addQty = Math.max(1, Math.floor(Number(amount) || 1));
+
+        try {
+            const targetItems = await this._getTodoItems(this._entity);
+            const activeItem = this._findTodoItemByName(targetItems, productName, false);
+            const completedItem = activeItem
+                ? null
+                : this._findTodoItemByName(targetItems, productName, true);
+            const existing = activeItem || completedItem;
+
+            if (existing) {
+                const existingName = String(existing.summary || existing.name || productName);
+                const currentQty = this._mode === "inventory"
+                    ? this._getQuantity(existingName)
+                    : activeItem ? Math.max(1, Number(this._getQuantity(existingName) || 1)) : 0;
+                const newQty = currentQty + addQty;
+                const existingCategory = this._getCategory(existingName);
+                const effectiveCategory = (
+                    existingCategory && existingCategory.toLocaleLowerCase() !== "none"
+                ) ? existingCategory : category;
+                let finalName = this._mode === "inventory" || newQty > 1 || this._showQuantityOne
+                    ? (this._quantityPosition === 'beginning'
+                        ? `${newQty}× ${productName}`
+                        : `${productName} (${newQty})`)
+                    : productName;
+                if (effectiveCategory && effectiveCategory.toLocaleLowerCase() !== "none") {
+                    finalName = `@${effectiveCategory}@ ${finalName}`;
+                }
+                finalName = this._preserveSortIndex(existingName, finalName);
+
+                await this._callListService({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: {
+                        item: existing.uid,
+                        rename: finalName,
+                        ...(this._mode === "inventory" ? {} : { status: "needs_action" })
+                    }
+                });
+                await this._refresh();
+                this._showInventoryFeedback(productName, currentQty, newQty);
+                await this._notifyOnChange(`${translate("ui.message.quantity_increased")}: ${productName} (${newQty})`);
+                return {
+                    status: activeItem ? "increased" : "reactivated",
+                    name: productName,
+                    quantity: newQty,
+                    targetUid: existing.uid
+                };
+            }
+
+            let finalName = this._mode === "inventory" || addQty > 1 || this._showQuantityOne
+                ? (this._quantityPosition === 'beginning'
+                    ? `${addQty}× ${productName}`
+                    : `${productName} (${addQty})`)
+                : productName;
+            if (category && category.toLocaleLowerCase() !== "none") {
+                finalName = `@${category}@ ${finalName}`;
+            }
+
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: "add_item",
+                target: { entity_id: this._entity },
+                service_data: { item: finalName }
+            });
+            await this._refresh();
+            this._showInventoryFeedback(productName, 0, addQty);
+            await this._notifyOnChange(`${translate("ui.message.item_added")}: ${productName} (${addQty})`);
+            return { status: "added", name: productName, quantity: addQty, targetUid: null };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] ISL transfer add failed:", error);
+            return { status: "error", name: productName, quantity: 0, error };
+        }
+    }
+
+    async _removeShoppingQuantityByName(productName, amount = 1, ean = undefined) {
+        if (this._canTrackInventoryVariants()) {
+            return this._removeInventoryVariantQuantity(productName, amount, ean === undefined ? null : ean);
+        }
+        const normalizedName = String(productName || '').trim().toLocaleLowerCase();
+        const item = (this._items || []).find(entry =>
+            this._getNameOnly(entry.name).trim().toLocaleLowerCase() === normalizedName
+        );
+
+        if (!item) return { status: "not_found", name: productName, quantity: 0, previousQuantity: 0, removedQuantity: 0 };
+
+        const currentQty = this._mode === "inventory"
+            ? this._getQuantity(item.name)
+            : Math.max(1, Number(this._getQuantity(item.name) || 1));
+        const removeQty = Math.max(1, Math.floor(Number(amount) || 1));
+        const newQty = Math.max(0, currentQty - removeQty);
+
+        if (this._mode === "inventory" && currentQty === 0) {
+            return { status: "no_stock", name: productName, quantity: 0, previousQuantity: 0, removedQuantity: 0 };
+        }
+
+        try {
+            if (newQty > 0 || this._mode === "inventory") {
+                const category = this._getCategory(item.name);
+                const nameOnly = this._getNameOnly(item.name);
+                const showQty = this._mode === "inventory" || newQty > 1 || this._showQuantityOne;
+                let formattedName = showQty
+                    ? (this._quantityPosition === 'beginning'
+                        ? `${newQty}× ${nameOnly}`
+                        : `${nameOnly} (${newQty})`)
+                    : nameOnly;
+
+                if (category) formattedName = `@${category}@ ${formattedName}`;
+                formattedName = this._preserveSortIndex(item.name, formattedName);
+
+                await this._callListService({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: {
+                        item: item.id,
+                        rename: formattedName,
+                        ...(this._mode === "inventory" ? {} : { status: "needs_action" })
+                    }
+                });
+                await this._refresh();
+                this._showInventoryFeedback(nameOnly, currentQty, newQty);
+                await this._notifyOnChange(
+                    `${translate("ui.message.quantity_decreased")}: ${nameOnly} (${newQty})`
+                );
+                return { status: "decreased", name: nameOnly, quantity: newQty, previousQuantity: currentQty, removedQuantity: Math.min(currentQty, removeQty) };
+            }
+
+            await this._callListService({
+                type: "call_service",
+                domain: "todo",
+                service: "remove_item",
+                target: { entity_id: this._entity },
+                service_data: { item: item.id }
+            });
+            await this._refresh();
+            await this._notifyOnChange(`${translate("ui.message.item_removed")}: ${this._getNameOnly(item.name)}`);
+            return {
+                status: "removed",
+                name: this._getNameOnly(item.name),
+                quantity: 0,
+                previousQuantity: currentQty,
+                removedQuantity: Math.min(currentQty, removeQty)
+            };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] EAN removal failed:", error);
+            return { status: "error", name: productName, quantity: currentQty, previousQuantity: currentQty, removedQuantity: 0, error };
+        }
+    }
+
+    async _setShoppingQuantityByName(productName, category, quantity, ean = undefined, options = {}) {
+        if (this._canTrackInventoryVariants()) {
+            return this._setInventoryVariantQuantity(productName, category, quantity, ean === undefined ? null : ean, options);
+        }
+        const normalizedName = String(productName || '').trim().toLocaleLowerCase();
+        const item = (this._items || []).find(entry =>
+            this._getNameOnly(entry.name).trim().toLocaleLowerCase() === normalizedName
+        );
+        const nextQuantity = Math.max(0, Math.floor(Number(quantity) || 0));
+
+        try {
+            if (nextQuantity === 0 && this._mode !== "inventory") {
+                if (!item) return { status: "unchanged", quantity: 0 };
+                await this._callListService({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "remove_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: item.id }
+                }, options);
+            } else {
+                const effectiveCategory = category || (item ? this._getCategory(item.name) : null);
+                const showQty = this._mode === "inventory" || nextQuantity > 1 || this._showQuantityOne;
+                let formattedName = showQty
+                    ? (this._quantityPosition === 'beginning'
+                        ? `${nextQuantity}× ${productName}`
+                        : `${productName} (${nextQuantity})`)
+                    : productName;
+                if (effectiveCategory) formattedName = `@${effectiveCategory}@ ${formattedName}`;
+                if (item) formattedName = this._preserveSortIndex(item.name, formattedName);
+
+                await this._callListService({
+                    type: "call_service",
+                    domain: "todo",
+                    service: item ? "update_item" : "add_item",
+                    target: { entity_id: this._entity },
+                    service_data: item
+                        ? { item: item.id, rename: formattedName, ...(this._mode === "inventory" ? {} : { status: "needs_action" }) }
+                        : { item: formattedName }
+                }, options);
+            }
+            await this._refresh();
+            return { status: "updated", quantity: nextQuantity };
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Stock correction failed:", error);
+            return { status: "error", quantity: this._getShoppingStockByName(productName), error };
+        }
+    }
+
+    async _sendInventoryItemWithoutStock(item, forcedProduct = undefined, forcedEan = undefined) {
+        const name = this._getNameOnly(item.name);
+        if (!this._isEanTransferEntityUsable(true)) {
+            this._showInventoryNotice(translate("ui.inventory.no_stock").replace("{name}", name));
+            return false;
+        }
+
+        const target = this._hass.states[this._eanTransferTargetEntity]?.attributes?.friendly_name
+            || this._eanTransferTargetEntity;
+        const question = translate("ui.inventory.send_without_stock")
+            .replace("{name}", name)
+            .replace("{target}", target);
+        if (!(await this.confirmPopup(question))) return false;
+
+        const products = this._getEanDatabaseEntriesByName(name);
+        let product = forcedProduct !== undefined ? forcedProduct : (products[0] || null);
+        if (forcedProduct === undefined && products.length > 1) {
+            product = await this._selectEanProductForRemoval(name, products, true, translate("ui.inventory.send"));
+            if (product === false) return false;
+        }
+        const ean = forcedEan !== undefined ? forcedEan : (product?.ean || null);
+        const category = product?.category || this._getCategory(item.name) || null;
+        const groupState = this._getInventoryGroupState(name, category);
+        const sendGroupIdentity = groupState.variants.length > 1 && this._eanTransferGroupedAsName;
+
+        const transferProduct = sendGroupIdentity ? {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        } : {
+            ...(product || {}),
+            name,
+            category
+        };
+        const transferId = await this._createEanTransfer(
+            "shopping_add", sendGroupIdentity ? null : ean, transferProduct, 1,
+            { sourceOperation: "manual_send" }
+        );
+        if (!transferId) return false;
+
+        await this._runEanScript("transfer_sent", {
+            ean: sendGroupIdentity ? "" : (ean || ""),
+            name,
+            brand: transferProduct.brand || null,
+            productQuantity: transferProduct.quantity || null,
+            scanQuantity: 1,
+            category: transferProduct.category,
+            imageUrl: transferProduct.imageUrl || null,
+            scanMode: "inventory_remove"
+        });
+        this._showInventoryNotice(translate("ui.inventory.sent_without_stock")
+            .replace("{name}", name)
+            .replace("{target}", target));
+        return true;
+    }
+
+    async _handleShoppingMinus(item) {
+        if (this._mode === "inventory") {
+            const option = await this._selectInventoryVariant(item, "remove");
+            if (!option) return false;
+            return this._handleInventoryVariantMinus(
+                this._getNameOnly(item.name), this._getCategory(item.name) || null, option
+            );
+        }
+        const name = this._getNameOnly(item.name);
+        const category = this._getCategory(item.name) || null;
+        const currentStock = Math.max(1, Number(this._getQuantity(item.name) || 1));
+        const remainingStock = Math.max(0, currentStock - 1);
+
+        if (this._mode !== "inventory" && currentStock <= 1 && this._acknowledgeDeletion) {
+            const message = translate("editor.labels.confirm_remove").replace("{item}", name);
+            if (!(await this.confirmPopup(message))) return false;
+        }
+
+        let product = null;
+        let transferWithoutEan = false;
+        let shouldTransfer = false;
+
+        if (this._isEanTransferActionEnabled("shopping_remove")) {
+            const products = this._getEanDatabaseEntriesByName(name);
+            if (products.length > 1) {
+                const selected = await this._selectEanProductForRemoval(
+                    name,
+                    products,
+                    this._eanTransferNonEan !== "off"
+                );
+                if (selected === false) return false;
+                product = selected;
+                transferWithoutEan = selected === null;
+            } else if (products.length === 1) {
+                product = products[0];
+            } else if (this._eanTransferNonEan === "one_to_one") {
+                transferWithoutEan = true;
+            } else if (this._eanTransferNonEan === "ask") {
+                transferWithoutEan = await this.confirmPopup(
+                    translate("ui.ean.transfer_non_ean_question").replace("{name}", name)
+                );
+            }
+
+            shouldTransfer = transferWithoutEan || Boolean(
+                product && this._getAutomaticRemovalTransferDecision(product, remainingStock)
+            );
+        }
+
+        let transferId = null;
+        const transferProduct = product || {
+            name,
+            originalName: null,
+            brand: null,
+            quantity: null,
+            imageUrl: null,
+            category
+        };
+
+        if (shouldTransfer) {
+            transferId = await this._createEanTransfer(
+                "shopping_add",
+                product?.ean || null,
+                transferProduct,
+                1,
+                { status: "source_pending", sourceOperation: "shopping_remove" }
+            );
+            if (!transferId) return false;
+        }
+
+        const removal = await this._removeShoppingQuantityByName(name, 1);
+        if (removal.status === "error" || removal.status === "not_found" || removal.status === "no_stock") {
+            if (transferId) await this._cancelEanTransfer(transferId);
+            return false;
+        }
+
+        const inventoryBooking = this._mode === "inventory" ? {
+            action: "inventory_remove",
+            category,
+            transferId,
+            transferQuantity: transferId ? removal.removedQuantity : 0,
+            product: transferProduct,
+            ean: product?.ean || null,
+            scriptData: {
+                ean: product?.ean || "",
+                brand: transferProduct.brand,
+                productQuantity: transferProduct.quantity,
+                category: transferProduct.category,
+                imageUrl: transferProduct.imageUrl,
+                scanMode: "inventory_remove"
+            }
+        } : null;
+
+        if (transferId) {
+            let activated = await this._activateEanRemovalTransfer(
+                transferId,
+                removal.removedQuantity,
+                removal.status
+            );
+            if (!activated) {
+                activated = await this._activateEanRemovalTransfer(
+                    transferId,
+                    removal.removedQuantity,
+                    removal.status
+                );
+            }
+            if (!activated) {
+                if (inventoryBooking) {
+                    this._showInventoryFeedback(name, currentStock, removal.quantity, inventoryBooking);
+                }
+                await this.confirmPopup(translate("ui.ean.transfer_send_failed"), true);
+                return false;
+            }
+            await this._runEanScript("transfer_sent", {
+                ean: product?.ean || "",
+                name,
+                brand: transferProduct.brand,
+                productQuantity: transferProduct.quantity,
+                scanQuantity: removal.removedQuantity,
+                category: transferProduct.category,
+                imageUrl: transferProduct.imageUrl,
+                scanMode: "shopping_remove"
+            });
+        }
+        if (inventoryBooking) {
+            this._showInventoryFeedback(name, currentStock, removal.quantity, inventoryBooking);
+        }
+        return true;
+    }
+
     // add new item
     async _onAdd() {
         if (this._addingBusy) {
-            console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
-            return;
+            if (debugMode) console.debug("[ha-shopping-list-improved] Click ignored: busy (Add)");
+            return false;
         }
         this._addingBusy = true;
 
-        try {
+		try {
 			let inputName = this._inputEl.value.trim();
-			if (!inputName) return;
+			const suggestionCategory = this._pendingSuggestionCategory;
+			const suggestionEan = this._pendingSuggestionEan;
+			this._pendingSuggestionCategory = null;
+			this._pendingSuggestionEan = null;
+			if (!inputName) return false;
+            if (this._handleInventoryControlCode(inputName)) {
+                this._inputEl.value = '';
+                this._qtyEl.value = '';
+                return true;
+            }
+            const eanScanMode = this._getCurrentEanScanMode();
+            if (this._mode === "inventory" && eanScanMode === "inventory_none") {
+                this._showInventoryNotice(translate("ui.inventory.select_mode"));
+                return false;
+            }
 
-			// EAN check (13 digits)
+            const eanLookupInput = suggestionEan || inputName;
+            const eanCode = /^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(eanLookupInput)
+                ? eanLookupInput
+                : null;
+
 			let imageUrl = false;
-			let eanCheck = await this._checkEAN(inputName);
+			let eanCheck = await this._checkEAN(eanLookupInput);
+			let productFoundByLookup = Boolean(eanCheck);
 
 			if (!eanCheck) {
-				await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
-			  
-				this._addingBusy = false;
-				return;
-			} else {
-				if (eanCheck.brands) {
-					inputName = eanCheck.brands + " - " + eanCheck.name;
-				} else {
-					inputName = eanCheck.name;
+				if (!this._activeEanScanQueueItem && !["database", "inventory_register"].includes(eanScanMode)) {
+					await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
+					return false;
 				}
-				
+
+                await this._runEanScript("product_not_found", {
+                    ean: eanCode || inputName
+                });
+
+                while (!eanCheck) {
+                    const action = await this._showEanLookupFailedPopup(eanCode || inputName);
+
+                    if (action === "retry") {
+                        eanCheck = await this._checkEAN(inputName);
+                        productFoundByLookup = Boolean(eanCheck);
+                        continue;
+                    }
+
+                    if (action === "manual") {
+                        eanCheck = {
+                            name: eanCode || inputName,
+                            originalName: null,
+                            brand: null,
+                            quantity: null,
+                            imageUrl: null,
+                            category: null
+                        };
+                        break;
+                    }
+
+                    this._eanQueueAction = action;
+                    return false;
+                }
+            }
+
+			if (eanCheck) {
+				if (this._activeEanScanQueueItem && productFoundByLookup) {
+					await this._runEanScript("product_found", {
+						ean: eanCode || inputName,
+						name: eanCheck.name,
+						brand: eanCheck.brand,
+						productQuantity: eanCheck.quantity,
+						category: eanCheck.category,
+						imageUrl: eanCheck.imageUrl
+					});
+				}
+
+				const productParts = [eanCheck.name];
+                if (eanCheck.nameIsFinal !== true) {
+                    if (
+                        this._showEanBrand &&
+                        eanCheck.brand &&
+                        !String(eanCheck.name || "").toLocaleLowerCase().includes(
+                            String(eanCheck.brand).toLocaleLowerCase()
+                        )
+                    ) {
+                        productParts.push(eanCheck.brand);
+                    }
+                    if (this._showEanQuantity && eanCheck.quantity) productParts.push(eanCheck.quantity);
+                }
+
+                inputName = productParts.join(" – ");
 				imageUrl = eanCheck.imageUrl;
 
-				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Product name:", inputName);
-				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Brand:", eanCheck.brands);
-				if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Thumbnail URL:", imageUrl);
-			}
+                if (debugMode) {
+                    console.debug("[ha-shopping-list-improved][DEBUG] EAN product:", {
+                        name: eanCheck.name,
+                        brand: eanCheck.brand,
+                        quantity: eanCheck.quantity,
+                        finalName: inputName,
+                        imageUrl
+                    });
+                }
+				}
 
             let inputQty = parseInt(this._qtyEl.value, 10) || 1;
             const quantityPosition = this._quantityPosition; // "beginning" or "end"
+
+            if (this._activeEanScanQueueItem) {
+                inputQty = Math.max(1, Number(this._activeEanScanQueueItem.quantity || inputQty));
+                this._activeEanScanProcessedQuantity = inputQty;
+            }
+
+            if (eanScanMode === "inventory_correct") {
+                const correctionProduct = eanCode
+                    ? (this._eanDatabase?.get(eanCode) || eanCheck)
+                    : { ...eanCheck, name: this._getNameOnly(inputName) };
+                const corrected = await this._openInventoryCorrection(
+                    correctionProduct,
+                    eanCode,
+                    Boolean(eanCode)
+                );
+                if (corrected) {
+                    this._inputEl.value = '';
+                    this._qtyEl.value = '';
+                    this._hideSuggestions();
+                }
+                return corrected;
+            }
+
+            if (eanScanMode === "database" || eanScanMode === "inventory_register") {
+                if (!eanCode || !this._eanDatabaseEntity) {
+                    await this.confirmPopup(translate("editor.labels.alert_no_valid_ean"), true);
+                    return false;
+                }
+
+                const databaseEntryExists = this._eanDatabase?.has(eanCode) === true;
+                if (this._activeEanScanQueueItem) {
+                    await this._runEanScript("product_review_required", {
+                        ean: eanCode,
+                        name: eanCheck.name,
+                        brand: eanCheck.brand,
+                        productQuantity: eanCheck.quantity,
+                        category: eanCheck.category,
+                        imageUrl: eanCheck.imageUrl
+                    });
+                }
+
+                const updatedItem = await this.editItemPopup(
+                    inputName,
+                    "add",
+                    imageUrl,
+                    eanCheck,
+                    { eanDatabaseExisting: databaseEntryExists }
+                );
+                if (!updatedItem) return false;
+
+                const productName = String(
+                    this._getNameOnly(updatedItem.name) || eanCheck.name
+                ).trim();
+                let category = this._getCategory(updatedItem.name);
+                if (!category || category === "none") category = null;
+
+                const saved = await this._saveEanDatabaseProduct({
+                    ean: eanCode,
+                    name: productName,
+                    originalName: eanCheck.originalName,
+                    brand: eanCheck.brand,
+                    quantity: eanCheck.quantity,
+                    imageUrl: eanCheck.imageUrl,
+                    category
+                });
+
+                if (!saved) {
+                    await this._runEanScript("error", {
+                        ean: eanCode,
+                        name: productName,
+                        error: this._eanDatabaseErrorMessage("save")
+                    });
+                    await this.confirmPopup(this._eanDatabaseErrorMessage("save"), true);
+                    return false;
+                }
+
+                await this._runEanScript("database_product_saved", {
+                    ean: eanCode,
+                    name: productName,
+                    brand: eanCheck.brand,
+                    productQuantity: eanCheck.quantity,
+                    scanQuantity: inputQty,
+                    category,
+                    imageUrl: eanCheck.imageUrl
+                });
+
+                if (eanScanMode === "inventory_register") {
+                    const effectiveInventoryCategory = this._eanDatabase?.get(eanCode)?.category || category;
+                    const existingInventoryItem = this._canTrackInventoryVariants()
+                        ? this._findInventoryVariantItem(this._items, productName, eanCode, null)
+                        : (this._items || []).find(item => this._inventoryItemMatchesName(item, productName));
+                    if (existingInventoryItem) {
+                        this._showInventoryNotice(translate("ui.inventory.already_registered")
+                            .replace("{name}", productName)
+                            .replace("{quantity}", String(this._getQuantity(existingInventoryItem.name))));
+                    } else {
+                        const stockResult = await this._setShoppingQuantityByName(
+                            productName, effectiveInventoryCategory, 0, eanCode
+                        );
+                        if (stockResult.status === "error") {
+                            await this._runEanScript("error", {
+                                ean: eanCode,
+                                name: productName,
+                                error: stockResult.error?.message || String(stockResult.error || "")
+                            });
+                            return false;
+                        }
+                        this._showInventoryNotice(translate("ui.inventory.registered").replace("{name}", productName));
+                    }
+                    this._restartInventoryModeResetTimer();
+                }
+                this._inputEl.value = '';
+                this._qtyEl.value = '';
+                this._hideSuggestions();
+                return true;
+            }
+
+            if (eanScanMode === "shopping_remove" || eanScanMode === "inventory_remove") {
+                let removalProduct = eanCode ? (this._eanDatabase?.get(eanCode) || eanCheck) : null;
+                let transferWithoutEan = false;
+                if (!eanCode && this._isEanTransferActionEnabled("shopping_remove")) {
+                    const products = this._getEanDatabaseEntriesByName(eanCheck.name);
+                    if (this._mode === "inventory") {
+                        if (this._eanTransferNonEan === "one_to_one") {
+                            transferWithoutEan = true;
+                        } else if (this._eanTransferNonEan === "ask") {
+                            transferWithoutEan = await this.confirmPopup(
+                                translate("ui.ean.transfer_non_ean_question").replace("{name}", eanCheck.name)
+                            );
+                        }
+                    } else if (products.length > 1) {
+                        const selected = await this._selectEanProductForRemoval(
+                            eanCheck.name,
+                            products,
+                            this._eanTransferNonEan !== "off"
+                        );
+                        if (selected === false) return false;
+                        removalProduct = selected;
+                        transferWithoutEan = selected === null;
+                    } else if (products.length === 1) {
+                        removalProduct = products[0];
+                    } else if (this._eanTransferNonEan === "one_to_one") {
+                        transferWithoutEan = true;
+                    } else if (this._eanTransferNonEan === "ask") {
+                        transferWithoutEan = await this.confirmPopup(
+                            translate("ui.ean.transfer_non_ean_question").replace("{name}", eanCheck.name)
+                        );
+                    }
+                }
+                const removalEan = removalProduct?.ean || eanCode;
+                const currentStock = this._getShoppingStockByName(
+                    eanCheck.name,
+                    this._canTrackInventoryVariants() ? (removalEan || null) : undefined
+                );
+                const anticipatedRemainingStock = Math.max(0, currentStock - inputQty);
+                const inventoryRemovalItem = this._canTrackInventoryVariants()
+                    ? this._findInventoryVariantItem(this._items, eanCheck.name, removalEan || null, null)
+                    : null;
+                const inventoryRemovalCategory = this._getCategory(inventoryRemovalItem?.name || "") ||
+                    removalProduct?.category || eanCheck.category || null;
+                const inventoryGroupState = this._mode === "inventory"
+                    ? this._getInventoryGroupState(eanCheck.name, inventoryRemovalCategory)
+                    : { variants: [], stock: 0, minimum: null };
+                const isGroupedInventoryRemoval = inventoryGroupState.variants.length > 1;
+                const anticipatedGroupStock = Math.max(
+                    0,
+                    inventoryGroupState.stock - Math.min(inputQty, currentStock)
+                );
+                if (
+                    this._mode === "inventory" &&
+                    !removalEan &&
+                    !removalProduct &&
+                    this._eanTransferNonEan === "minimum"
+                ) {
+                    const manualVariant = this._findInventoryVariantItem(
+                        this._items, eanCheck.name, null, null
+                    );
+                    const minimum = this._getInventoryVariantMinimumStock(null, manualVariant);
+                    transferWithoutEan = minimum !== null && anticipatedRemainingStock <= minimum;
+                }
+                const groupMinimumTransfer = this._isEanTransferActionEnabled("shopping_remove") &&
+                    isGroupedInventoryRemoval &&
+                    inventoryGroupState.minimum !== null &&
+                    removalProduct?.automaticTransferDisabled !== true &&
+                    anticipatedGroupStock <= inventoryGroupState.minimum;
+                const shouldTransferRemoval = currentStock > 0 && (
+                    groupMinimumTransfer || transferWithoutEan || Boolean(
+                        removalProduct && this._getAutomaticRemovalTransferDecision(
+                            removalProduct,
+                            anticipatedRemainingStock
+                        )
+                    )
+                );
+                const sendGroupIdentity = isGroupedInventoryRemoval && (
+                    groupMinimumTransfer || this._eanTransferGroupedAsName
+                );
+                const removalTransferProduct = sendGroupIdentity ? {
+                    name: eanCheck.name,
+                    originalName: null,
+                    brand: null,
+                    quantity: null,
+                    imageUrl: null,
+                    category: inventoryRemovalCategory
+                } : {
+                    name: eanCheck.name,
+                    originalName: removalProduct?.originalName || eanCheck.originalName,
+                    brand: removalProduct?.brand || eanCheck.brand,
+                    quantity: removalProduct?.quantity || eanCheck.quantity,
+                    imageUrl: removalProduct?.imageUrl || eanCheck.imageUrl,
+                    category: removalProduct?.category || eanCheck.category
+                };
+                const removalTransferEan = sendGroupIdentity ? null : removalEan;
+
+                if (shouldTransferRemoval) {
+                    const transferId = await this._createEanTransfer(
+                        "shopping_add",
+                        removalTransferEan,
+                        removalTransferProduct,
+                        Math.min(inputQty, currentStock),
+                        {
+                            status: "source_pending",
+                            sourceOperation: "shopping_remove"
+                        }
+                    );
+                    if (!transferId) return false;
+
+                    const queueItem = this._activeEanScanQueueItem;
+                    let appliedRemoval = null;
+                    let sourceState = queueItem?.transfer_source_applied
+                        ? {
+                            quantity: queueItem.transfer_source_quantity,
+                            result: queueItem.transfer_source_result
+                        }
+                        : this._eanTransferSourceAppliedIds.get(transferId);
+
+                    if (!sourceState) {
+                        sourceState = { quantity: inputQty, result: null };
+                        this._eanTransferSourceAppliedIds.set(transferId, sourceState);
+                        if (queueItem) {
+                            queueItem.transfer_source_applied = true;
+                            queueItem.transfer_source_quantity = inputQty;
+                            queueItem.transfer_source_result = null;
+                            this._saveEanScanQueue();
+                        }
+
+                        const removal = await this._removeShoppingQuantityByName(
+                            eanCheck.name, inputQty, this._canTrackInventoryVariants() ? (removalEan || null) : undefined
+                        );
+                        if (removal.status === "error" || removal.status === "not_found" || removal.status === "no_stock") {
+                            this._eanTransferSourceAppliedIds.delete(transferId);
+                            if (queueItem) {
+                                queueItem.transfer_source_applied = false;
+                                queueItem.transfer_source_quantity = 0;
+                                queueItem.transfer_source_result = null;
+                                this._saveEanScanQueue();
+                            }
+                            await this._cancelEanTransfer(transferId);
+
+                            if (removal.status === "error") {
+                                await this._runEanScript("error", {
+                                    ean: removalEan,
+                                    name: eanCheck.name,
+                                    error: removal.error?.message || String(removal.error || "")
+                                });
+                                return false;
+                            }
+
+                            await this._runEanScript("product_not_in_list", {
+                                ean: removalEan,
+                                name: eanCheck.name,
+                                scanQuantity: inputQty
+                            });
+                            this._showInventoryNotice(removal.status === "no_stock"
+                                ? translate("ui.inventory.no_stock").replace("{name}", eanCheck.name)
+                                : translate("ui.ean.remove_not_found").replace("{name}", eanCheck.name));
+                            if (this._mode !== "inventory") await this.confirmPopup(
+                                translate("ui.ean.remove_not_found").replace("{name}", eanCheck.name), true
+                            );
+                            this._inputEl.value = '';
+                            this._qtyEl.value = '';
+                            this._hideSuggestions();
+                            if (this._allowFilter) this._renderList();
+                            if (this._allowFilterChips) this._renderHistory();
+                            return true;
+                        }
+
+                        appliedRemoval = removal;
+
+                        sourceState = {
+                            quantity: Math.max(1, Number(removal.removedQuantity || inputQty)),
+                            result: removal.status
+                        };
+                        this._eanTransferSourceAppliedIds.set(transferId, sourceState);
+                        if (queueItem) {
+                            queueItem.transfer_source_quantity = sourceState.quantity;
+                            queueItem.transfer_source_result = sourceState.result;
+                            this._saveEanScanQueue();
+                        }
+
+                        await this._runEanScript(
+                            removal.status === "removed" ? "product_removed" : "product_quantity_decreased",
+                            {
+                                ean: removalEan,
+                                name: removal.name,
+                                scanQuantity: sourceState.quantity
+                            }
+                        );
+                    }
+
+                    const showAppliedInventoryUndo = () => {
+                        if (this._mode !== "inventory" || !appliedRemoval) return;
+                        this._showInventoryFeedback(
+                            eanCheck.name,
+                            appliedRemoval.previousQuantity,
+                            appliedRemoval.quantity,
+                            {
+                                action: "inventory_remove",
+                                category: removalTransferProduct.category,
+                                transferId,
+                                transferQuantity: sourceState.quantity,
+                                product: removalTransferProduct,
+                                ean: removalEan || null,
+                                transferEan: removalTransferEan || null,
+                                scriptData: {
+                                    ean: removalTransferEan || "",
+                                    brand: removalTransferProduct.brand,
+                                    productQuantity: removalTransferProduct.quantity,
+                                    category: removalTransferProduct.category,
+                                    imageUrl: removalTransferProduct.imageUrl,
+                                    scanMode: "inventory_remove"
+                                }
+                            }
+                        );
+                    };
+
+                    const activated = await this._activateEanRemovalTransfer(
+                        transferId,
+                        sourceState.quantity,
+                        sourceState.result
+                    );
+                    if (!activated) {
+                        showAppliedInventoryUndo();
+                        await this.confirmPopup(translate("ui.ean.transfer_send_failed"), true);
+                        return false;
+                    }
+
+                    this._eanTransferSourceAppliedIds.delete(transferId);
+                    await this._runEanScript("transfer_sent", {
+                        ean: removalTransferEan || "",
+                        name: eanCheck.name,
+                        brand: removalTransferProduct.brand,
+                        productQuantity: removalTransferProduct.quantity,
+                        scanQuantity: sourceState.quantity,
+                        category: removalTransferProduct.category,
+                        imageUrl: removalTransferProduct.imageUrl,
+                        scanMode: "shopping_remove"
+                    });
+                    showAppliedInventoryUndo();
+                    this._inputEl.value = '';
+                    this._qtyEl.value = '';
+                    this._hideSuggestions();
+                    if (this._allowFilter) this._renderList();
+                    if (this._allowFilterChips) this._renderHistory();
+                    return true;
+                }
+
+                const removal = await this._removeShoppingQuantityByName(
+                    eanCheck.name, inputQty, this._canTrackInventoryVariants() ? (removalEan || null) : undefined
+                );
+                if (removal.status === "error") {
+                    await this._runEanScript("error", {
+                        ean: removalEan,
+                        name: eanCheck.name,
+                        error: removal.error?.message || String(removal.error || "")
+                    });
+                    return false;
+                }
+
+                if (removal.status === "not_found" || removal.status === "no_stock") {
+                    await this._runEanScript("product_not_in_list", {
+                        ean: removalEan,
+                        name: eanCheck.name,
+                        scanQuantity: inputQty
+                    });
+                    if (this._mode === "inventory") this._showInventoryNotice(
+                        translate(removal.status === "no_stock" ? "ui.inventory.no_stock" : "ui.ean.remove_not_found")
+                            .replace("{name}", eanCheck.name)
+                    );
+                    else await this.confirmPopup(
+                        translate("ui.ean.remove_not_found").replace("{name}", eanCheck.name), true
+                    );
+                } else {
+                    await this._runEanScript(
+                        removal.status === "removed" ? "product_removed" : "product_quantity_decreased",
+                        {
+                            ean: removalEan,
+                            name: removal.name,
+                            scanQuantity: inputQty
+                        }
+                    );
+                    if (this._mode === "inventory") {
+                        const transferProduct = removalProduct || {
+                            name: eanCheck.name,
+                            originalName: eanCheck.originalName,
+                            brand: eanCheck.brand,
+                            quantity: eanCheck.quantity,
+                            imageUrl: eanCheck.imageUrl,
+                            category: eanCheck.category
+                        };
+                        this._showInventoryFeedback(
+                            eanCheck.name,
+                            removal.previousQuantity,
+                            removal.quantity,
+                            {
+                                action: "inventory_remove",
+                                category: transferProduct.category,
+                                transferId: null,
+                                transferQuantity: 0,
+                                product: transferProduct,
+                                ean: removalEan || null,
+                                scriptData: {
+                                    ean: removalEan || "",
+                                    brand: transferProduct.brand,
+                                    productQuantity: transferProduct.quantity,
+                                    category: transferProduct.category,
+                                    imageUrl: transferProduct.imageUrl,
+                                    scanMode: "inventory_remove"
+                                }
+                            }
+                        );
+                    }
+                }
+
+                this._inputEl.value = '';
+                this._qtyEl.value = '';
+                this._hideSuggestions();
+                if (this._allowFilter) this._renderList();
+                if (this._allowFilterChips) this._renderHistory();
+                return true;
+            }
 
             if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Add:", inputName, "Quantity:", inputQty);
 
@@ -6134,7 +16325,11 @@ class HaShoppingListImproved extends HTMLElement {
             const nameOnly = this._getNameOnly(inputName);
 
             // Check if the item already exists
-            const existing = this._items.find(i => this._getNameOnly(i.name).toLowerCase() === nameOnly.toLowerCase());
+            const existing = this._canTrackInventoryVariants()
+                ? this._findInventoryVariantItem(this._items, nameOnly, eanCode || null, null)
+                : this._items.find(i =>
+                    this._getNameOnly(i.name).trim().toLocaleLowerCase() === nameOnly.toLocaleLowerCase()
+                );
 
             let assignedCategory = null;
 
@@ -6147,12 +16342,17 @@ class HaShoppingListImproved extends HTMLElement {
             }
 
             // 2. If there is an explicit category in the input, use it
-            const explicitCategory = this._getCategory(inputName);
+            const explicitCategory = this._getCategory(inputName) || suggestionCategory;
             if (explicitCategory) {
                 assignedCategory = explicitCategory;
             }
 
-            // 3. Only if no category is set yet, take the config category
+            // 3. Use a category learned by the EAN database.
+            if (!assignedCategory && eanCheck.category) {
+                assignedCategory = eanCheck.category;
+            }
+
+            // 4. Only if no category is set yet, take the config category
             if (!assignedCategory) { // <-- only check for null, 'none' remains
                 for (const cat of this._categories) {
                     if (cat.items.some(catItem => catItem.toLowerCase() === nameOnly.toLowerCase())) {
@@ -6162,16 +16362,26 @@ class HaShoppingListImproved extends HTMLElement {
                 }
             }
 
-            // 4. If still no category and popup enabled, ask the user
+            // 5. If still no category and popup enabled, ask the user
             let dueDate = null;
             let dueDateTime = null;
             let description = undefined;
             let interval = null;
+            let offerOnly = false;
+            let eanProductNameForDatabase = inputName;
             if (!existing && !assignedCategory && this._showCatPopUp) {
-                const updatedItem = await this.editItemPopup(inputName, "add", imageUrl);
+                if (this._activeEanScanQueueItem) {
+                    await this._runEanScript("product_review_required", {
+                        ean: eanCode || inputName,
+                        name: eanCheck.name,
+                        brand: eanCheck.brand,
+                        productQuantity: eanCheck.quantity,
+                        imageUrl: eanCheck.imageUrl
+                    });
+                }
+                const updatedItem = await this.editItemPopup(inputName, "add", imageUrl, eanCheck);
                 if (!updatedItem) {
-                    this._addingBusy = false;
-                    return;
+					return false;
                 }
 
                 let newName = '';
@@ -6187,7 +16397,9 @@ class HaShoppingListImproved extends HTMLElement {
                     if (Object.prototype.hasOwnProperty.call(updatedItem, "description")) {
                         description = updatedItem.description;
                     }
-
+                    if (Object.prototype.hasOwnProperty.call(updatedItem, "offer_only")) {
+                        offerOnly = updatedItem.offer_only === true;
+                    }
                     // intervall
                     interval = this._getInterval(updatedItem.name);
                     if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Create new --> interval:", interval);
@@ -6200,6 +16412,63 @@ class HaShoppingListImproved extends HTMLElement {
 
                 inputName = this._getNameOnly(newName);
                 assignedCategory = this._getCategory(newName);
+                eanProductNameForDatabase = inputName;
+            }
+
+            if (eanCode && this._eanDatabaseEntity) {
+                const saved = await this._saveEanDatabaseProduct({
+                    ean: eanCode,
+                    name: eanProductNameForDatabase,
+                    originalName: eanCheck.originalName,
+                    brand: eanCheck.brand,
+                    quantity: eanCheck.quantity,
+                    imageUrl: eanCheck.imageUrl,
+                    category: assignedCategory
+                });
+
+                if (!saved) {
+                    await this._runEanScript("error", {
+                        ean: eanCode,
+                        name: eanProductNameForDatabase,
+                        error: this._eanDatabaseErrorMessage("save")
+                    });
+                    await this.confirmPopup(this._eanDatabaseErrorMessage("save"), true);
+                    return false;
+                }
+                if (this._mode === "inventory") {
+                    assignedCategory = this._eanDatabase?.get(eanCode)?.category || assignedCategory;
+                }
+            }
+
+            if (this._mode !== "inventory" && eanCode && this._isEanTransferActionEnabled("shopping_add")) {
+                const transferred = await this._createEanTransfer(
+                    "shopping_add",
+                    eanCode,
+                    {
+                        name: inputName,
+                        originalName: eanCheck.originalName,
+                        brand: eanCheck.brand,
+                        quantity: eanCheck.quantity,
+                        imageUrl: eanCheck.imageUrl,
+                        category: assignedCategory
+                    },
+                    inputQty
+                );
+                if (!transferred) return false;
+                await this._runEanScript("transfer_sent", {
+                    ean: eanCode,
+                    name: inputName,
+                    brand: eanCheck.brand,
+                    productQuantity: eanCheck.quantity,
+                    scanQuantity: inputQty,
+                    category: assignedCategory,
+                    imageUrl: eanCheck.imageUrl,
+                    scanMode: "shopping"
+                });
+                this._inputEl.value = '';
+                this._qtyEl.value = '';
+                this._hideSuggestions();
+                return true;
             }
 
 			let finalName = inputName;
@@ -6213,14 +16482,14 @@ class HaShoppingListImproved extends HTMLElement {
                 // in todo mode --> return
                 if (this._mode === "todo") {
                     await this.confirmPopup(translate("ui.labels.alert_item_exists_todo").replace("{item}", nameOnly), true);
-                    
-                    this._addingBusy = false;
-                    return;
+					return false;
                 }
 
-				let currentQty = this._getQuantity(existing.name) || 1;
+				const currentQty = this._mode === "inventory"
+                    ? this._getQuantity(existing.name)
+                    : this._getQuantity(existing.name) || 1;
 				const newQty = currentQty + inputQty;
-				const showQty = newQty > 1 || this._showQuantityOne;
+				const showQty = this._mode === "inventory" || newQty > 1 || this._showQuantityOne;
 
 				if (showQty) {
 					if (quantityPosition === "beginning") {
@@ -6251,26 +16520,42 @@ class HaShoppingListImproved extends HTMLElement {
 						service_data: {
 							item: existing.id,
 							rename: finalName,
-                            status: "needs_action",
+                            ...(this._mode === "inventory" ? {} : { status: "needs_action" }),
+							...(this._mode === "inventory" && this._supportsTodoDescription()
+                                ? { description: this._serializeInventoryVariant(
+                                    eanCode || null,
+                                    !eanCode ? this._parseInventoryVariant(existing).minimumStock : null,
+                                    this._parseInventoryVariant(existing).groupMinimumStock
+                                ) }
+                                : {}),
 						},
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Updating existing item:", updateMsg);
-					await this._hass.connection.sendMessagePromise(updateMsg);
-				} catch (err) {
-					console.error("[ha-shopping-list-improved] Error while updating item:", err);
-				}
+					await this._callListService(updateMsg, { ean: eanCode || undefined });
+					} catch (err) {
+						console.error("[ha-shopping-list-improved] Error while updating item:", err);
+						await this._runEanScript("error", {
+							ean: eanCode,
+							name: inputName,
+							error: err?.message || String(err)
+						});
+						return false;
+					}
 			} else {
 				// New Item
-				if (inputQty > 1 || this._showQuantityOne) {
+				if (this._mode === "inventory" || inputQty > 1 || this._showQuantityOne) {
 					if (quantityPosition === "beginning") {
 						finalName = `${inputQty}× ${inputName}`;
 					} else {
 						finalName = `${inputName} (${inputQty})`;
 					}
 				}
-				if (assignedCategory) {
+                if (assignedCategory) {
 					finalName = `@${assignedCategory}@ ${finalName}${interval || ''}`;
 				}
+                if (this._mode === "shopping") {
+                    finalName = this._setOfferOnlyMarker(finalName, offerOnly);
+                }
 
                 msgNameOnly = inputName;
                 msgTask = translate("ui.message.item_added");
@@ -6281,13 +16566,21 @@ class HaShoppingListImproved extends HTMLElement {
                     item: finalName,
                 };
 
+                if (this._mode === "inventory" && this._supportsTodoDescription()) {
+                    serviceData.description = this._serializeInventoryVariant(
+                        eanCode || null,
+                        null,
+                        this._getInventoryGroupState(inputName, assignedCategory || null).minimum
+                    );
+                }
+
                 if (dueDateTime) {
                     serviceData.due_datetime = dueDateTime;
                 } else if (dueDate) {
                     serviceData.due_date = dueDate;
                 }
 
-                if (this._supportsTodoDescription() && description !== undefined) {
+                if (this._mode !== "inventory" && this._supportsTodoDescription() && description !== undefined) {
                     serviceData.description = description;
                 }
 
@@ -6300,24 +16593,160 @@ class HaShoppingListImproved extends HTMLElement {
 						service_data: serviceData,
 					};
 					if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
-					await this._hass.connection.sendMessagePromise(addMsg);
-				} catch (err) {
-					console.error("[ha-shopping-list-improved] Unable to add:", err);
-				}
+					await this._callListService(addMsg, { ean: eanCode || undefined });
+					} catch (err) {
+						console.error("[ha-shopping-list-improved] Unable to add:", err);
+						await this._runEanScript("error", {
+							ean: eanCode,
+							name: inputName,
+							error: err?.message || String(err)
+						});
+						return false;
+					}
 			}
 
-			this._addToHistory(inputName);
+            if (this._activeEanScanQueueItem) {
+                await this._runEanScript(
+                    existing ? "product_quantity_increased" : "product_added",
+                    {
+                        ean: eanCode,
+                        name: inputName,
+                        brand: eanCheck.brand,
+                        productQuantity: eanCheck.quantity,
+                        scanQuantity: inputQty,
+                        category: assignedCategory || (existing ? this._getCategory(existing.name) : ""),
+                        imageUrl: eanCheck.imageUrl
+                    }
+                );
+            }
+
+			if (!eanCode || this._eanCreateChip) {
+				this._addToHistory(inputName);
+			}
 			this._inputEl.value = '';
 			this._qtyEl.value = '';
             this._hideSuggestions();
-			await this._refresh();
+				await this._refresh();
+            const previousInventoryQuantity = existing ? this._getQuantity(existing.name) : 0;
+            const inventoryProduct = eanCode
+                ? (this._eanDatabase?.get(eanCode) || eanCheck)
+                : (this._getEanDatabaseEntriesByName(inputName)[0] || null);
+            this._showInventoryFeedback(
+                inputName,
+                previousInventoryQuantity,
+                msgQty,
+                this._mode === "inventory" ? {
+                    action: "inventory_add",
+                    category: assignedCategory || (existing ? this._getCategory(existing.name) : null),
+                    transferId: null,
+                    transferQuantity: 0,
+                    product: inventoryProduct,
+                    ean: inventoryProduct?.ean || eanCode || null,
+                    scriptData: {
+                        ean: inventoryProduct?.ean || eanCode || "",
+                        brand: inventoryProduct?.brand || eanCheck.brand,
+                        productQuantity: inventoryProduct?.quantity || eanCheck.quantity,
+                        category: assignedCategory || inventoryProduct?.category || "",
+                        imageUrl: inventoryProduct?.imageUrl || eanCheck.imageUrl,
+                        scanMode: "inventory_add"
+                    }
+                } : null
+            );
             await this._notifyOnChange(`${msgTask}: ${msgNameOnly} (${msgQty})`);
+            return true;
         } finally {
             this._addingBusy = false;
         }
     }
 
-    // ToDo Mode edit popup
+    _isTodoActionAvailable(item, action) {
+        const interval = this._getInterval(item?.name);
+        if (action === "now") return Boolean(interval);
+        if (action === "next" || action === "remove") {
+            return Boolean(interval && item?.due);
+        }
+        return ["edit", "delete", "done"].includes(action);
+    }
+
+    async _runConfiguredTodoAction(item, openMenu) {
+        if (openMenu) {
+            await this._confirmToDoPopup(item);
+            return;
+        }
+
+        const action = this._todoDefaultAction || "done";
+        if (!this._isTodoActionAvailable(item, action)) {
+            await this._confirmToDoPopup(item);
+            return;
+        }
+
+        await this._executeTodoAction(item, action, { fromMenu: false });
+    }
+
+    _bindTodoActionControl(button, item) {
+        let longPressTimer = null;
+        let suppressNextClick = false;
+        let processing = false;
+
+        const clearLongPressTimer = () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        };
+
+        button.addEventListener("pointerdown", (event) => {
+            if (event.button !== undefined && event.button !== 0) return;
+            if (this._todoActionBehavior === "menu") return;
+
+            clearLongPressTimer();
+            longPressTimer = setTimeout(async () => {
+                longPressTimer = null;
+                if (processing) return;
+                processing = true;
+                suppressNextClick = true;
+                setTimeout(() => { suppressNextClick = false; }, 1200);
+                try {
+                    const openMenu = this._todoActionBehavior === "click_default_long_menu";
+                    await this._runConfiguredTodoAction(item, openMenu);
+                } finally {
+                    processing = false;
+                }
+            }, 600);
+        });
+
+        for (const eventName of ["pointerup", "pointercancel", "pointerleave"]) {
+            button.addEventListener(eventName, () => {
+                clearLongPressTimer();
+                if (suppressNextClick) {
+                    setTimeout(() => { suppressNextClick = false; }, 800);
+                }
+            });
+        }
+
+        button.addEventListener("contextmenu", (event) => {
+            if (this._todoActionBehavior !== "menu") event.preventDefault();
+        });
+
+        button.addEventListener("click", async (event) => {
+            if (suppressNextClick) {
+                event.preventDefault();
+                suppressNextClick = false;
+                return;
+            }
+            if (processing) return;
+
+            processing = true;
+            try {
+                const openMenu = this._todoActionBehavior !== "click_default_long_menu";
+                await this._runConfiguredTodoAction(item, openMenu);
+            } finally {
+                processing = false;
+            }
+        });
+    }
+
+    // To-do mode action popup
     async _confirmToDoPopup(item) {
         // Overlay
         const overlay = document.createElement('div');
@@ -6363,9 +16792,6 @@ class HaShoppingListImproved extends HTMLElement {
         popup.appendChild(subMsg);
 
         // Radio Buttons
-        let interval = this._getInterval(item.name); // "2D", "1M", "3H"
-        let disabled = !interval;
-
         if(debugMode) console.debug("ITEM: ", item);
 
         let completedStatusSwitch = null;
@@ -6376,13 +16802,20 @@ class HaShoppingListImproved extends HTMLElement {
         }
 
         const options = [
-            { id: 'remove_due',   label: translate("ui.todo.remove_due"),   value: 'remove', disabled: disabled },
-            { id: 'next_due',     label: translate("ui.todo.next_due"),     value: 'next',   disabled: disabled, checked: !disabled },
-            { id: 'next_due_now', label: translate("ui.todo.next_due_now"), value: 'now',    disabled: disabled },
+            { id: 'remove_due',   label: translate("ui.todo.remove_due"),   value: 'remove', disabled: !this._isTodoActionAvailable(item, "remove") },
+            { id: 'next_due',     label: translate("ui.todo.next_due"),     value: 'next',   disabled: !this._isTodoActionAvailable(item, "next") },
+            { id: 'next_due_now', label: translate("ui.todo.next_due_now"), value: 'now',    disabled: !this._isTodoActionAvailable(item, "now") },
             { id: 'edit',         label: translate("ui.todo.edit"),         value: 'edit' },
-            { id: 'delete',       label: translate("ui.todo.delete"),       value: 'delete', checked: disabled },
+            { id: 'delete',       label: translate("ui.todo.delete"),       value: 'delete' },
             { id: 'done',         label: completedStatusSwitch,             value: 'done' },
         ];
+
+        const configuredDefault = options.find(option =>
+            option.value === this._todoDefaultAction && !option.disabled
+        );
+        const fallbackDefault = options.find(option => option.value === "next" && !option.disabled)
+            || options.find(option => option.value === "delete");
+        (configuredDefault || fallbackDefault).checked = true;
 
         const radioContainer = document.createElement('div');
         radioContainer.style.display = 'flex';
@@ -6441,206 +16874,8 @@ class HaShoppingListImproved extends HTMLElement {
 
         yesBtn.addEventListener('click', async () => {
             const selected = popup.querySelector('input[name="todo_action"]:checked')?.value || 'next';
-
-            let dueDate = null;
-            let dueDateTime = null;
-            let currentDue = item.due ? item.due : null; // ISO or YYYY-MM-DD
-            //let interval = this._getInterval(item.name); // "2D", "1M", "3H"
-
-            const isDateOnlyString = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s);
-
-            // Parse Interval like "2D", "3H", "1M"
-            function parseShortInterval(str) {
-                if (!str || typeof str !== 'string') return null;
-                const m = str.trim().match(/^(\d+)\s*([HDMhdm])$/);
-                if (!m) return null;
-                return { value: parseInt(m[1], 10), unit: m[2].toUpperCase() }; // unit in 'H'|'D'|'M'
-            }
-
-            // add interval to a JS Date object (mutates copy)
-            function addIntervalToDate(dateObj, value, unit) {
-                const d = new Date(dateObj.getTime());
-                if (unit === 'H') {
-                    d.setHours(d.getHours() + value);
-                } else if (unit === 'D') {
-                    d.setDate(d.getDate() + value);
-                } else if (unit === 'M') {
-                    d.setMonth(d.getMonth() + value);
-                }
-                return d;
-            }
-
-            // Format: YYYY-MM-DD
-            function formatDateOnly(d) {
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${y}-${m}-${day}`;
-            }
-
-            // Format: YYYY-MM-DD HH:MM:SS (local, without TZ)
-            function formatDateTime(d) {
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const hh = String(d.getHours()).padStart(2, '0');
-                const mm = String(d.getMinutes()).padStart(2, '0');
-                const ss = String(d.getSeconds()).padStart(2, '0');
-                return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
-            }
-
-            const parsed = parseShortInterval(interval); // {value, unit} or null
-
-            // rules
-            // if currentDue exists and date-only (YYYY-MM-DD)
-            const currentDueIsDateOnly = currentDue && isDateOnlyString(currentDue);
-
-            // if Intervall H is used and currentDue is date-only -> fallback to 1D
-            let effectiveInterval = parsed;
-            if (parsed) {
-                if (currentDueIsDateOnly && parsed.unit === 'H') {
-                    // use 1 day instead
-                    effectiveInterval = { value: 1, unit: 'D' };
-                }
-            }
-
-            const now = new Date();
-
-            if (selected === 'remove') {
-                // leave dueDate / dueDateTime null
-                dueDate = null;
-                dueDateTime = null;
-            } else if (selected === 'done') {
-                await this._toggleComplete(item, true);
-
-                document.body.removeChild(overlay);
-                return;
-            } else if (selected === 'next') {
-                // current due + interval
-                if (effectiveInterval && currentDue) {
-                    if (currentDueIsDateOnly) {
-                        // parse date-only into local midnight
-                        const [y, mm, dd] = currentDue.split('-').map(n => parseInt(n, 10));
-                        const base = new Date(y, mm - 1, dd, 0, 0, 0);
-                        let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
-
-                        while (next <= now) {
-                            next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
-                        }
-
-                        // if (D or M) use due_date
-                        if (effectiveInterval.unit === 'D' || effectiveInterval.unit === 'M') {
-                            dueDate = formatDateOnly(next);
-                        } else {
-                            // fallback: if H (shouldn't happen due to above), set datetime
-                            dueDateTime = formatDateTime(next);
-                        }
-                    } else {
-                        // currentDue has time (ISO)
-                        // create Date from ISO (handles offsets)
-                        const base = new Date(currentDue);
-                        let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
-
-                        while (next <= now) {
-                            next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
-                        }
-
-                        // set due_datetime
-                        dueDateTime = formatDateTime(next);
-                    }
-                } else {
-                    // no Intervall or no currentDue -> do nothing
-                }
-            } else if (selected === 'now') {
-                // now + Intervall
-                if (effectiveInterval) {
-                    const next = addIntervalToDate(now, effectiveInterval.value, effectiveInterval.unit);
-                    dueDateTime = formatDateTime(next);
-                }
-            } else if (selected === 'delete') {
-                // Delete Item
-                await this._removeItem(item);
-
-                document.body.removeChild(overlay);
-                return;
-            } else if (selected === 'edit') {
-                // Edit Item
-                await this._handleEditItem(item);
-
-                document.body.removeChild(overlay);
-                return;
-            }
-
-            // ServiceData
-            let serviceData = {
-                item: item.id,
-            };
-
-            if (dueDateTime) {
-                // "YYYY-MM-DD HH:MM:SS"
-                serviceData.due_datetime = dueDateTime;
-            } else if (dueDate) {
-                serviceData.due_date = dueDate;
-            }
-
-            try {
-                // as there is no option to set the due to an empty value we have to remove and readd the item
-                if(selected === 'remove') {
-                    const removeMsg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "remove_item",
-                        target: { entity_id: this._entity },
-                        service_data: {
-                            item: item.id
-                        }
-                    };
-
-                    if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", removeMsg);
-
-                    await this._hass.connection.sendMessagePromise(removeMsg);
-
-                    // Add the item again as a new item without due date
-                    // Service Data
-                    const serviceData = {
-                        item: item.name,
-                    };
-
-                    if (this._supportsTodoDescription() && item.description) {
-                        serviceData.description = item.description;
-                    }
-
-                    const addMsg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "add_item",
-                        target: { entity_id: this._entity },
-                        service_data: serviceData,
-                    };
-                    if (debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Adding new item WS message:", addMsg);
-                    await this._hass.connection.sendMessagePromise(addMsg);
-                    await this._refresh();
-                    await this._notifyOnChange();
-                } else {
-                    const msg = {
-                        type: "call_service",
-                        domain: "todo",
-                        service: "update_item",
-                        target: { entity_id: this._entity },
-                        service_data: serviceData,
-                    };
-
-                    if(debugMode) console.debug("[ha-shopping-list-improved] Sending toggleComplete WS message:", msg);
-
-                    await this._hass.connection.sendMessagePromise(msg);
-                    await this._refresh();
-                    await this._notifyOnChange();
-                }
-            } catch (err) {
-                console.error("[ha-shopping-list-improved] Update ToDo failed", err);
-            }
-
-            document.body.removeChild(overlay);
+            await this._executeTodoAction(item, selected, { fromMenu: true });
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
         });
 
         noBtn.addEventListener('click', () => {
@@ -6661,6 +16896,137 @@ class HaShoppingListImproved extends HTMLElement {
         document.body.appendChild(overlay);
     }
 
+    async _executeTodoAction(item, action, { fromMenu = false } = {}) {
+        if (!this._entity) return false;
+
+        if (action === "done") {
+            await this._toggleComplete(item, true);
+            return true;
+        }
+        if (action === "edit") {
+            await this._handleEditItem(item);
+            return true;
+        }
+        if (action === "delete") {
+            await this._removeItem(item, fromMenu);
+            return true;
+        }
+
+        const interval = this._getInterval(item.name);
+        const currentDue = item.due || null;
+        if (!interval || (action !== "now" && !currentDue)) return false;
+
+        const parseShortInterval = (value) => {
+            if (!value || typeof value !== "string") return null;
+            const match = value.trim().match(/^(\d+)\s*([HDMhdm])$/);
+            if (!match) return null;
+            return { value: parseInt(match[1], 10), unit: match[2].toUpperCase() };
+        };
+        const addIntervalToDate = (date, value, unit) => {
+            const result = new Date(date.getTime());
+            if (unit === "H") result.setHours(result.getHours() + value);
+            else if (unit === "D") result.setDate(result.getDate() + value);
+            else if (unit === "M") result.setMonth(result.getMonth() + value);
+            return result;
+        };
+        const formatDateOnly = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        };
+        const formatDateTime = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            const seconds = String(date.getSeconds()).padStart(2, "0");
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+
+        const parsed = parseShortInterval(interval);
+        if (!parsed) return false;
+
+        const isDateOnly = typeof currentDue === "string" && /^\d{4}-\d{2}-\d{2}$/.test(currentDue);
+        const effectiveInterval = isDateOnly && parsed.unit === "H"
+            ? { value: 1, unit: "D" }
+            : parsed;
+        const now = new Date();
+        let dueDate = null;
+        let dueDateTime = null;
+
+        if (action === "next") {
+            let base;
+            if (isDateOnly) {
+                const [year, month, day] = currentDue.split("-").map(Number);
+                base = new Date(year, month - 1, day, 0, 0, 0);
+            } else {
+                base = new Date(currentDue);
+            }
+            if (Number.isNaN(base.getTime())) return false;
+
+            let next = addIntervalToDate(base, effectiveInterval.value, effectiveInterval.unit);
+            while (next <= now) {
+                next = addIntervalToDate(next, effectiveInterval.value, effectiveInterval.unit);
+            }
+
+            if (isDateOnly && ["D", "M"].includes(effectiveInterval.unit)) {
+                dueDate = formatDateOnly(next);
+            } else {
+                dueDateTime = formatDateTime(next);
+            }
+        } else if (action === "now") {
+            const next = addIntervalToDate(now, effectiveInterval.value, effectiveInterval.unit);
+            dueDateTime = formatDateTime(next);
+        } else if (action !== "remove") {
+            return false;
+        }
+
+        try {
+            if (action === "remove") {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "remove_item",
+                    target: { entity_id: this._entity },
+                    service_data: { item: item.id }
+                });
+
+                const serviceData = { item: item.name };
+                if (this._supportsTodoDescription() && item.description) {
+                    serviceData.description = item.description;
+                }
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "add_item",
+                    target: { entity_id: this._entity },
+                    service_data: serviceData
+                });
+            } else {
+                const serviceData = { item: item.id };
+                if (dueDateTime) serviceData.due_datetime = dueDateTime;
+                else if (dueDate) serviceData.due_date = dueDate;
+
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "todo",
+                    service: "update_item",
+                    target: { entity_id: this._entity },
+                    service_data: serviceData
+                });
+            }
+
+            await this._refresh();
+            await this._notifyOnChange();
+            return true;
+        } catch (error) {
+            console.error("[ha-shopping-list-improved] Update To-do failed", error);
+            return false;
+        }
+    }
+
     async _toggleComplete(item, toggleInToDoMode = false) {
         if (!this._entity) return;
 
@@ -6672,6 +17038,20 @@ class HaShoppingListImproved extends HTMLElement {
 
         try {
             const newStatus = item.complete ? "needs_action" : "completed";
+
+            if (this._mode === "inventory" && item.inventoryGroup) {
+                for (const variant of item.inventoryVariants || []) {
+                    await this._hass.connection.sendMessagePromise({
+                        type: "call_service",
+                        domain: "todo",
+                        service: "update_item",
+                        target: { entity_id: this._entity },
+                        service_data: { item: variant.id, status: newStatus }
+                    });
+                }
+                await this._refresh();
+                return;
+            }
 
             const msg = {
                 type: "call_service",
@@ -6688,28 +17068,53 @@ class HaShoppingListImproved extends HTMLElement {
 
             await this._hass.connection.sendMessagePromise(msg);
             await this._refresh();
-            if(this._notifyOnDone) await this._notifyOnChange();
+            const statusMessage = newStatus === "completed"
+                ? translate("ui.message.item_completed")
+                : translate("ui.message.item_reopened");
+            await this._notifyOnChange(
+                `${statusMessage}: ${this._getNameOnly(item.name)} (${this._getQuantity(item.name)})`,
+                { isDone: true }
+            );
         } catch (err) {
             console.error("[ha-shopping-list-improved] Toggle complete failed", err);
         }
     }
 
-    async _removeItem(item) {
+    async _removeItem(item, returnToTodoMenu = true) {
         if (!this._entity) return;
 
 		const itemNameOnly = this._getNameOnly(item.name);
         const itemQtyOnly  = this._getQuantity(item.name);
-		const msgRemove = translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
-    
+		const inventoryCategory = this._mode === "inventory" ? (this._getCategory(item.name) || "none") : null;
+		const msgRemove = item.inventoryGroup
+            ? translate("ui.inventory.group_delete_confirm")
+                .replace("{name}", itemNameOnly)
+                .replace("{count}", String(item.inventoryVariants?.length || 0))
+            : translate("editor.labels.confirm_remove").replace("{item}", itemNameOnly);
+
         // show confirmation except when acknowledgeDeletion=false AND not todo
         if (this._mode === "todo" || this._acknowledgeDeletion) {
             if (!(await this.confirmPopup(msgRemove))) {
-                if (this._mode === "todo") await this._confirmToDoPopup(item);
+                if (this._mode === "todo" && returnToTodoMenu) await this._confirmToDoPopup(item);
                 return;
             }
         }
 
         try {
+            if (this._mode === "inventory" && item.inventoryGroup) {
+                for (const variant of item.inventoryVariants || []) {
+                    await this._callListService({
+                        type: "call_service",
+                        domain: "todo",
+                        service: "remove_item",
+                        target: { entity_id: this._entity },
+                        service_data: { item: variant.id }
+                    });
+                }
+                await this._refresh();
+                await this._notifyOnChange(`${translate("ui.message.item_removed")}: ${itemNameOnly} (${itemQtyOnly})`);
+                return;
+            }
             const msg = {
                 type: "call_service",
                 domain: "todo",
@@ -6722,8 +17127,12 @@ class HaShoppingListImproved extends HTMLElement {
 
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending removeItem WS message:", msg);
 
-            await this._hass.connection.sendMessagePromise(msg);
+            await this._callListService(msg);
             await this._refresh();
+            if (this._mode === "inventory") {
+                await this._normalizeInventoryGroupMinimum(itemNameOnly, inventoryCategory);
+                await this._refresh();
+            }
             await this._notifyOnChange(translate("ui.message.item_removed") + ": " + itemNameOnly +  ` (${itemQtyOnly})`);
         } catch (err) {
             console.error("[ha-shopping-list-improved] Remove failed", err);
@@ -6745,14 +17154,14 @@ class HaShoppingListImproved extends HTMLElement {
             };
 
             if(debugMode) console.debug("[ha-shopping-list-improved] Sending clearCompleted WS message:", msg);
-            await this._hass.connection.sendMessagePromise(msg);
+            await this._callListService(msg);
             await this._refresh();
             await this._notifyOnChange();
         } catch (err) {
             console.error("[ha-shopping-list-improved] Clear completed failed", err);
         }
     }
-	
+
     async confirmPopup(message, okOnly = false) {
         return new Promise((resolve) => {
             // Overlay
@@ -6766,7 +17175,10 @@ class HaShoppingListImproved extends HTMLElement {
             overlay.style.display = 'flex';
             overlay.style.alignItems = 'center';
             overlay.style.justifyContent = 'center';
-            overlay.style.zIndex = '9999';
+            // Confirmations can be opened from dialogs whose overlays use
+            // z-index values up to 10005. Keep the confirmation above the
+            // originating dialog so it remains visible and clickable.
+            overlay.style.zIndex = '11000';
             overlay.style.pointerEvents = 'auto';
 
             // Popup-Box
@@ -6984,11 +17396,11 @@ class HaShoppingListImproved extends HTMLElement {
 	_renderHistory() {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderHistory() called");
         if (!this._historyEl) {
-            console.warn("[ha-shopping-list-improved] _historyEl NOT found");
+            if (debugMode) console.debug("[ha-shopping-list-improved] History element not found");
             return;
         }
 
-        // collapable by title click
+        // Collapsible by title click.
         const storageKey = this._entity + "_collapsed";
         const stored = localStorage.getItem(storageKey);
 
@@ -7057,7 +17469,7 @@ class HaShoppingListImproved extends HTMLElement {
                 combined.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 break;
         }
-		
+
         combined.forEach(chipText => {
             if (this._chipPosition === 'none') return;
             const chip = document.createElement('div');
@@ -7117,39 +17529,39 @@ class HaShoppingListImproved extends HTMLElement {
             // Longpress to delete local History
             if (localChips.includes(chipText)) {
                 let timer;
-                chip.addEventListener('mousedown', e => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
-                chip.addEventListener('touchstart', e => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
-                chip.addEventListener('mouseup', e => { clearTimeout(timer); });
-                chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
-                chip.addEventListener('touchend', e => { clearTimeout(timer); });
+                chip.addEventListener('mousedown', () => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
+                chip.addEventListener('touchstart', () => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
+                chip.addEventListener('mouseup', () => { clearTimeout(timer); });
+                chip.addEventListener('mouseleave', () => { clearTimeout(timer); });
+                chip.addEventListener('touchend', () => { clearTimeout(timer); });
             } else {
                 let timer;
-				chip.addEventListener('mousedown', e => { 
+				chip.addEventListener('mousedown', () => {
 					timer = setTimeout(async () => {
 						await this.confirmPopup(
 							translate("editor.labels.alert_cannot_delete_standard"),
 							true
 						);
-					}, 5000); 
+					}, 5000);
 				});
 
-				chip.addEventListener('touchstart', e => { 
+				chip.addEventListener('touchstart', () => {
 					timer = setTimeout(async () => {
 						await this.confirmPopup(
 							translate("editor.labels.alert_cannot_delete_standard"),
 							true
 						);
-					}, 5000); 
+					}, 5000);
 				});
 
-                chip.addEventListener('mouseup', e => { clearTimeout(timer); });
-                chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
-                chip.addEventListener('touchend', e => { clearTimeout(timer); });
+                chip.addEventListener('mouseup', () => { clearTimeout(timer); });
+                chip.addEventListener('mouseleave', () => { clearTimeout(timer); });
+                chip.addEventListener('touchend', () => { clearTimeout(timer); });
             }
 
             this._historyEl.appendChild(chip);
         });
-		
+
         // Add dishes with selectable items
         const dishes = this._dishes || [];
 
@@ -7453,13 +17865,13 @@ class HaShoppingListImproved extends HTMLElement {
         const msgHistory = translate("editor.labels.confirm_remove_history").replace("{item}", name);
 		if (!(await this.confirmPopup(msgHistory))) return;
         const idx = this._previous.findIndex(x=> x.toLowerCase()===name.toLowerCase());
-        if (idx!==-1){ 
-            this._previous.splice(idx,1); 
-            this._saveHistory(); 
-            this._renderHistory(); 
+        if (idx!==-1){
+            this._previous.splice(idx,1);
+            this._saveHistory();
+            this._renderHistory();
         }
     }
-    
+
     // Export function
     _exportOfflineList() {
         const now = new Date();
@@ -7949,96 +18361,180 @@ class HaShoppingListImproved extends HTMLElement {
         return 'ha-shopping-list-improved-history-' + entityId;
     }
 
-    _loadHistory(){ 
-        try{ 
-            const raw = localStorage.getItem(this._storageKey()); 
-            return raw ? JSON.parse(raw) : []; 
-        } catch(e) { 
-            return []; 
-        } 
+    _loadHistory(){
+        try{
+            const raw = localStorage.getItem(this._storageKey());
+            return raw ? JSON.parse(raw) : [];
+        } catch {
+            return [];
+        }
     }
 
-    _saveHistory(){ 
-        try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){} 
+    _saveHistory(){
+        try {
+            localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0, 2000)));
+        } catch {
+            // Browser storage may be unavailable in private or restricted contexts.
+        }
     }
 
     async _notifyButtonPressed(){
-        if (this._mode !== "shopping") return; // not in ToDo Mode
-        if ((!this._notifyEntity || !this._notifyEntity.trim()) && (!this._notifyEntitySMTP || !this._notifyEntitySMTP.trim())) {
-            return;
-        }
-        await this._sendMessage();
-        this.confirmPopup(translate("ui.message.sent"), true);
+        if (this._mode !== "shopping" && this._mode !== "inventory") return; // not in ToDo Mode
+        const sent = await this._sendMessage("", { manual: true });
+        if (sent > 0) this.confirmPopup(translate("ui.message.sent"), true);
     }
 
-    async _notifyOnChange(info = ""){
-        if (this._notifyOnChangeEna !== true) return;
-        if (this._mode !== "shopping") return; // not in ToDo Mode
+    _notificationChannels() {
+        return [
+            {
+                id: "notify",
+                type: "notify",
+                target: this._notifyEntity,
+                mode: this._notifyChangeMode,
+                includeManual: this._notifyIncludeManual,
+                onDone: this._notifyOnDone,
+                delay: this._notifyDelay,
+                format: this._notifyFormat
+            },
+            {
+                id: "ntfy",
+                type: "ntfy",
+                target: this._ntfyEntity,
+                mode: this._ntfyChangeMode,
+                includeManual: this._ntfyIncludeManual,
+                onDone: this._ntfyOnDone,
+                delay: this._ntfyDelay,
+                format: this._ntfyFormat
+            },
+            {
+                id: "email",
+                type: "email",
+                target: this._emailNotifyService,
+                mode: this._emailChangeMode,
+                includeManual: this._emailIncludeManual,
+                onDone: this._emailOnDone,
+                delay: this._emailDelay,
+                format: "html"
+            }
+        ].filter(channel => typeof channel.target === "string" && channel.target.trim());
+    }
 
-        if(this._sendMessageDelay > 0){
-            this._resetSendMessageTimer();
-        }else{
-            await this._sendMessage(info);
+    async _notifyOnChange(info = "", { isDone = false } = {}){
+        if (this._mode !== "shopping" && this._mode !== "inventory") return; // not in ToDo Mode
+
+        const channels = this._notificationChannels().filter(channel =>
+            channel.mode !== "off" && (!isDone || channel.onDone)
+        );
+
+        for (const channel of channels) {
+            if (channel.delay > 0) {
+                this._scheduleNotification(channel, info);
+            } else {
+                await this._sendNotificationChannel(channel, info, channel.mode);
+            }
         }
     }
 
-    async _sendMessage(info = ""){
+    _notificationMessage(info = "", mode = "full") {
+        const change = typeof info === "string" ? info.trim() : "";
+        const full = (this._messageCache || "").trim();
+
+        if (mode === "change" && change) return change;
+        if (mode === "full") return full;
+        if (mode === "change_and_full" && change && full) return `${change}\n${full}`;
+        if (mode === "change_and_full" && change) return change;
+        return full;
+    }
+
+    _notificationPlainText(message = "") {
+        return String(message)
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p\s*>/gi, "\n")
+            .replace(/<\/div\s*>/gi, "\n")
+            .replace(/<\/?(?:b|u|s)>/gi, "")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
+    }
+
+    _notificationMarkdown(message = "") {
+        return this._notificationPlainText(
+            String(message)
+                .replace(/<b><u>(.*?)<\/u><\/b>/gis, "**$1**")
+                .replace(/<s>(.*?)<\/s>/gis, "~~$1~~")
+        );
+    }
+
+    async _sendNotificationChannel(channel, info = "", mode = "full") {
         if (!this._hass || !this._hass.connection) return;
-
-        if ((!this._notifyEntity || !this._notifyEntity.trim()) && (!this._notifyEntitySMTP || !this._notifyEntitySMTP.trim())) {
-            return;
-        }
-
-        if (this._mode !== "shopping") return; // not in ToDo Mode
-
-        // generate the message
-        let message = "";
-        if (info && info.trim()) {
-            message += `${info.trim()}`;
-        }
+        if (this._mode !== "shopping" && this._mode !== "inventory") return; // not in ToDo Mode
 
         const stateObj = this._hass.states[this._entity];
         const name = stateObj?.attributes?.friendly_name;
+        const richMessage = this._notificationMessage(info, mode);
+        if (!richMessage) return false;
 
-        if (this._notifyOnChangeAll && info && info.trim()){
-            message = `${info.trim()}\n${this._messageCache}`;
-        } else if (info && info.trim()){
-            message = `${info.trim()}`;
-        } else {
-            message = this._messageCache;
-        }
-        
-        // Standard Notification via 'real' notify 'send_message' service
-        if (this._notifyEntity && this._notifyEntity.trim()) {
-            await this._hass.connection.sendMessagePromise({
-                type: "call_service",
-                domain: "notify",
-                service: "send_message",
-                target: {
-                    entity_id: this._notifyEntity
-                },
-                service_data: {
-                    title: name,
-                    message: message
-                }
-            });
-        }
+        try {
+            if (channel.type === "notify") {
+                const message = channel.format === "plain"
+                    ? this._notificationPlainText(richMessage)
+                    : richMessage;
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "notify",
+                    service: "send_message",
+                    target: { entity_id: channel.target },
+                    service_data: { title: name, message }
+                });
+                return true;
+            }
 
-        //SMTP HTML Notification via custom notify service
-        if (this._notifyEntitySMTP && this._notifyEntitySMTP.trim()) {
-            await this._hass.connection.sendMessagePromise({
-                type: "call_service",
-                domain: "notify",
-                service: this._notifyEntitySMTP, //"email_notification", 
-                service_data: {
-                    title: name,
-                    message: "You have to enable HTML view",
-                    data: {
-                        html: message.replace(/\n/g, "<br>")
+            if (channel.type === "ntfy") {
+                const markdown = channel.format === "markdown";
+                const message = markdown
+                    ? this._notificationMarkdown(richMessage)
+                    : this._notificationPlainText(richMessage);
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "ntfy",
+                    service: "publish",
+                    target: { entity_id: channel.target },
+                    service_data: { title: name, message, markdown }
+                });
+                return true;
+            }
+
+            if (channel.type === "email") {
+                await this._hass.connection.sendMessagePromise({
+                    type: "call_service",
+                    domain: "notify",
+                    service: channel.target,
+                    service_data: {
+                        title: name,
+                        message: "You have to enable HTML view",
+                        data: { html: richMessage.replace(/\n/g, "<br>") }
                     }
-                }
-            });
+                });
+                return true;
+            }
+        } catch (err) {
+            console.error(`[ha-shopping-list-improved] Notification channel '${channel.id}' failed`, err);
         }
+        return false;
+    }
+
+    async _sendMessage(info = "", { manual = false } = {}){
+        if (!this._hass || !this._hass.connection) return 0;
+        if (this._mode !== "shopping" && this._mode !== "inventory") return 0;
+
+        const channels = this._notificationChannels().filter(channel =>
+            manual ? channel.includeManual : channel.mode !== "off"
+        );
+        let sent = 0;
+        for (const channel of channels) {
+            const mode = manual ? "full" : channel.mode;
+            if (await this._sendNotificationChannel(channel, info, mode)) sent += 1;
+        }
+        return sent;
     }
 
     _chipExistsInCategory(categories, name) {
@@ -8180,7 +18676,7 @@ function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
             const all = [...localCats, ...filterUnique(localCats, dynamicCats)];
             return sortByName(all);
         }
-        
+
         case "dynamic_local_sorted_total": {
             const all = [...dynamicCats, ...filterUnique(dynamicCats, localCats)];
             return sortByName(all);
@@ -8189,7 +18685,7 @@ function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
             const all = [...globalCats, ...filterUnique(globalCats, dynamicCats)];
             return sortByName(all);
         }
-        
+
         case "dynamic_global_sorted_total": {
             const all = [...dynamicCats, ...filterUnique(dynamicCats, globalCats)];
             return sortByName(all);
@@ -8322,9 +18818,9 @@ function mergeCategories(mergeMode, localCats, globalCats, dynamicCats) {
 customElements.define('ha-shopping-list-improved', HaShoppingListImproved);
 
 window.customCards = window.customCards || [];
-window.customCards.push({ 
-	type: 'ha-shopping-list-improved', 
-	name: 'Improved Shopping List', 
-	preview: true, 
+window.customCards.push({
+	type: 'ha-shopping-list-improved',
+	name: 'Improved Shopping List',
+	preview: true,
 	description: translate("card.description")
 });
