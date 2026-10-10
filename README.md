@@ -47,7 +47,7 @@ The card uses Home Assistant To-do entities as its storage. Changes remain visib
 - Optional scripts for structured EAN workflow events and successful list changes.
 - HTML and PDF export plus manual and automatic Home Assistant notifications.
 - Responsive chip layouts, Bubble Card support, configurable font sizes, colors, and custom CSS.
-- Built-in German, English, Spanish, and French translations with regional language fallback.
+- Complete German, English, and Spanish translations plus French translations with English fallback for missing text.
 
 Detailed behavior, requirements, examples, and every available option are maintained in the **[Wiki](https://github.com/Nisbo/ha-shopping-list-improved/wiki)**.
 

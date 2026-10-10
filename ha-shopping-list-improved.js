@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0-BETA-11.5";
+const version = "3.2.0";
 const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
@@ -350,6 +350,7 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Chip '{item}' aus History löschen?",
         "editor.labels.chip_highlighted"                : "Hervorgehobener Chip",
         "editor.labels.chip_standard"                   : "Standard-Chip",
+		"editor.labels.category_color"                  : "Kategoriefarbe",
 		"editor.labels.chip_global"						: "Globaler Chip",
         "editor.labels.alert_cannot_delete_standard"    : "Dieser Standard-Chip kann nicht gelöscht werden",
 		"editor.labels.alert_no_valid_ean"    			: "Keine gültige EAN oder Produkt gefunden!",
@@ -1105,6 +1106,7 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Delete chip '{item}' from history?",
         "editor.labels.chip_highlighted"                : "Highlighted Chip",
         "editor.labels.chip_standard"                   : "Standard chip",
+		"editor.labels.category_color"                  : "Category color",
 		"editor.labels.chip_global"						: "Global Chip",
         "editor.labels.alert_cannot_delete_standard"    : "This standard chip cannot be deleted",
 		"editor.labels.alert_no_valid_ean"    			: "No valid EAN or Product found!",
@@ -1854,6 +1856,7 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"                      : "¿Eliminar el chip '{item}' del historial?",
         "editor.labels.chip_highlighted"                            : "Chip destacado",
         "editor.labels.chip_standard"                               : "Chip estándar",
+        "editor.labels.category_color"                              : "Color de categoría",
         "editor.labels.chip_global"                                 : "Chip global",
         "editor.labels.alert_cannot_delete_standard"                : "Este chip estándar no se puede eliminar",
         "editor.labels.alert_no_valid_ean"                          : "¡No se encontró un EAN o producto válido!",
@@ -2357,6 +2360,7 @@ const TRANSLATIONS = {
         "editor.labels.confirm_remove_history"          : "Supprimer le chip « {item} » de l'historique ?",
         "editor.labels.chip_highlighted"                : "Chip mis en évidence",
         "editor.labels.chip_standard"                   : "Chip standard",
+        "editor.labels.category_color"                  : "Couleur de catégorie",
         "editor.labels.chip_global"                     : "Chip global",
         "editor.labels.alert_cannot_delete_standard"    : "Ce chip standard ne peut pas être supprimé",
         "editor.labels.alert_no_valid_ean"              : "Aucun code EAN ou produit valide trouvé !",
@@ -4542,7 +4546,7 @@ class HaShoppingListImproved extends HTMLElement {
 
             localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, "{}");
             return {};
-        } catch (error) {
+        } catch {
             try {
                 localStorage.setItem(EAN_SCAN_DEVICE_STORAGE_KEY, "{}");
             } catch (_storageError) {
@@ -4773,12 +4777,12 @@ class HaShoppingListImproved extends HTMLElement {
                     transfer_source_quantity: Math.max(0, Math.floor(Number(item.transfer_source_quantity) || 0)),
                     transfer_source_result: typeof item.transfer_source_result === "string" ? item.transfer_source_result : null,
                     scan_mode: this._normalizeEanScanMode(item.scan_mode),
-                    // Queues written before BETA-2.5 have no deferred flag and
-                    // must not open automatically after an update or reload.
+                    // Queue records without an explicit flag must not reopen
+                    // automatically after a reload.
                     deferred: item.deferred !== false
                 }))
                 : [];
-        } catch (error) {
+        } catch {
             this._eanScanQueue = [];
         }
 
@@ -5923,7 +5927,7 @@ class HaShoppingListImproved extends HTMLElement {
                     ) ? Number(record.minimumStock) : null,
                     automaticTransferDisabled: record.automaticTransferDisabled === true
                 });
-            } catch (error) {
+            } catch {
                 invalidItems.push({
                     uid: item?.uid || null,
                     summary: String(item?.summary || item?.name || "").trim(),
@@ -7479,7 +7483,7 @@ class HaShoppingListImproved extends HTMLElement {
 
     _updateTimes() {
         if(!this._items || this._items.length === 0) {
-            if(debugMode) console.debug("[ha-shopping-list-improved] Runninng _refresh() because there were no items for:", this._entity);
+            if(debugMode) console.debug("[ha-shopping-list-improved] Running _refresh() because there were no items for:", this._entity);
             this._refresh(); // if the items are not loaded, try to refresh from HA
         } else {
             if(debugMode) console.debug("[ha-shopping-list-improved] List rendered");
@@ -7566,7 +7570,7 @@ class HaShoppingListImproved extends HTMLElement {
                 color
             });
         }
-        if(debugMode) console.debug(`Categories builded: `, categories);
+        if(debugMode) console.debug(`Categories built: `, categories);
         return categories;
     }
 
@@ -8847,7 +8851,7 @@ class HaShoppingListImproved extends HTMLElement {
                 block3Textarea.value = formattedManualItems || "";
             };
 
-            let includeDefined = false;
+            const includeDefined = false;
             computeManualItems(includeDefined);
 
             let closed = false;
@@ -10198,7 +10202,7 @@ async _checkEAN(text, options = {}) {
             ? String(requestedEan)
             : null;
         let name = String(product?.name || "").trim();
-        let exactItem = normalizedEan
+        const exactItem = normalizedEan
             ? (this._items || []).find(item => this._parseInventoryVariant(item).ean === normalizedEan) || null
             : null;
         if (exactItem) name = this._getNameOnly(exactItem.name);
@@ -11602,8 +11606,8 @@ async _checkEAN(text, options = {}) {
             uncategorized.forEach(item => {
                 this._renderItem(item, itemsContainer);
 
-                let nameOnly = this._getNameOnly(item.name);
-                let qty = this._getQuantity(item.name);
+                const nameOnly = this._getNameOnly(item.name);
+                const qty = this._getQuantity(item.name);
                 let displayName = nameOnly;
 
                 if (qty > 1 || this._showQuantityOne) {
@@ -11813,8 +11817,8 @@ async _checkEAN(text, options = {}) {
                 catItems.forEach(item => {
                     this._renderItem(item, itemsContainer, cat);
 
-                    let nameOnly = this._getNameOnly(item.name);
-                    let qty = this._getQuantity(item.name);
+                    const nameOnly = this._getNameOnly(item.name);
+                    const qty = this._getQuantity(item.name);
                     let displayName = nameOnly;
 
                     if (qty > 1 || this._showQuantityOne) {
@@ -13315,7 +13319,7 @@ async _checkEAN(text, options = {}) {
             let intervalUnitSelect;
             let dueDateInput;
             let dueTimeInput;
-            let currentInterval = this._getInterval(currentName);// || "1D";
+            const currentInterval = this._getInterval(currentName);// || "1D";
 
             if (this._mode === "todo") {
                 const container = document.createElement('div');
@@ -13486,7 +13490,7 @@ async _checkEAN(text, options = {}) {
 					try {
 						localStorage.setItem('dueDateTimeData', JSON.stringify(copyObj));
 						if(debugMode) console.debug("[ha-shopping-list-improved][DEBUG] Saved due date/time to localStorage:", copyObj);
-					} catch (e) {
+					} catch {
 						alert('Saving to localStorage failed');
 					}
 				});
@@ -13517,7 +13521,7 @@ async _checkEAN(text, options = {}) {
 						} else {
 							alert('Saved data in localStorage is invalid');
 						}
-					} catch(e) {
+					} catch {
 						alert('Failed to read/parse localStorage data');
 					}
 				});
@@ -13544,7 +13548,7 @@ async _checkEAN(text, options = {}) {
                                 dueTimeInput.value = `${hh}:${min}`;
                             }
                         }
-                    } catch (e) {
+                    } catch {
                         // Parsing error, use default empty values
                         dueDateInput.value = '';
                         dueTimeInput.value = '';
@@ -13658,7 +13662,7 @@ async _checkEAN(text, options = {}) {
                     finalName = `@${selectedCategory}@ ${finalName}`;
                 }
 
-                let result = { name: finalName };
+                const result = { name: finalName };
 
                 if (offerOnlyInput) {
                     result.offer_only = offerOnlyInput.checked;
@@ -14215,7 +14219,7 @@ async _checkEAN(text, options = {}) {
             nameDiv.style.flex = '1';
 
             // Interval
-            let interval = this._getInterval(item.name);
+            const interval = this._getInterval(item.name);
             const intervalText = interval ? `${interval}` : translate("ui.todo.interval_once");
             const intervalDiv = document.createElement('div');
             intervalDiv.textContent = intervalText;
@@ -14318,7 +14322,7 @@ async _checkEAN(text, options = {}) {
                     {value: minutes, unit: 'minute'},
                 ].filter(part => part.value > 0);
 
-                let displayParts = [];
+                const displayParts = [];
 
                 if (timeParts.length === 0) {
                     displayParts.push('0 Minuten');
@@ -14478,7 +14482,7 @@ async _checkEAN(text, options = {}) {
                 }
                 const nameOnly = this._getNameOnly(item.name);
                 const category = this._getCategory(item.name);
-                let currentQty = this._getQuantity(item.name);
+                const currentQty = this._getQuantity(item.name);
                 const newQty = currentQty + 1;
 
                 const showQty = this._mode === "inventory" || newQty > 1 || this._showQuantityOne;
@@ -15763,7 +15767,7 @@ async _checkEAN(text, options = {}) {
     // add new item
     async _onAdd() {
         if (this._addingBusy) {
-            console.warn("[ha-shopping-list-improved][DEBUG] Click ignored: busy (Add)");
+            if (debugMode) console.debug("[ha-shopping-list-improved] Click ignored: busy (Add)");
             return false;
         }
         this._addingBusy = true;
@@ -16481,7 +16485,7 @@ async _checkEAN(text, options = {}) {
 					return false;
                 }
 
-				let currentQty = this._mode === "inventory"
+				const currentQty = this._mode === "inventory"
                     ? this._getQuantity(existing.name)
                     : this._getQuantity(existing.name) || 1;
 				const newQty = currentQty + inputQty;
@@ -17171,7 +17175,10 @@ async _checkEAN(text, options = {}) {
             overlay.style.display = 'flex';
             overlay.style.alignItems = 'center';
             overlay.style.justifyContent = 'center';
-            overlay.style.zIndex = '9999';
+            // Confirmations can be opened from dialogs whose overlays use
+            // z-index values up to 10005. Keep the confirmation above the
+            // originating dialog so it remains visible and clickable.
+            overlay.style.zIndex = '11000';
             overlay.style.pointerEvents = 'auto';
 
             // Popup-Box
@@ -17389,11 +17396,11 @@ async _checkEAN(text, options = {}) {
 	_renderHistory() {
         if(debugMode) console.info("[ha-shopping-list-improved] _renderHistory() called");
         if (!this._historyEl) {
-            console.warn("[ha-shopping-list-improved] _historyEl NOT found");
+            if (debugMode) console.debug("[ha-shopping-list-improved] History element not found");
             return;
         }
 
-        // collapable by title click
+        // Collapsible by title click.
         const storageKey = this._entity + "_collapsed";
         const stored = localStorage.getItem(storageKey);
 
@@ -17522,14 +17529,14 @@ async _checkEAN(text, options = {}) {
             // Longpress to delete local History
             if (localChips.includes(chipText)) {
                 let timer;
-                chip.addEventListener('mousedown', e => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
-                chip.addEventListener('touchstart', e => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
-                chip.addEventListener('mouseup', e => { clearTimeout(timer); });
-                chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
-                chip.addEventListener('touchend', e => { clearTimeout(timer); });
+                chip.addEventListener('mousedown', () => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
+                chip.addEventListener('touchstart', () => { timer = setTimeout(() => this._removeHistoryItem(chipText), 2000); });
+                chip.addEventListener('mouseup', () => { clearTimeout(timer); });
+                chip.addEventListener('mouseleave', () => { clearTimeout(timer); });
+                chip.addEventListener('touchend', () => { clearTimeout(timer); });
             } else {
                 let timer;
-				chip.addEventListener('mousedown', e => {
+				chip.addEventListener('mousedown', () => {
 					timer = setTimeout(async () => {
 						await this.confirmPopup(
 							translate("editor.labels.alert_cannot_delete_standard"),
@@ -17538,7 +17545,7 @@ async _checkEAN(text, options = {}) {
 					}, 5000);
 				});
 
-				chip.addEventListener('touchstart', e => {
+				chip.addEventListener('touchstart', () => {
 					timer = setTimeout(async () => {
 						await this.confirmPopup(
 							translate("editor.labels.alert_cannot_delete_standard"),
@@ -17547,9 +17554,9 @@ async _checkEAN(text, options = {}) {
 					}, 5000);
 				});
 
-                chip.addEventListener('mouseup', e => { clearTimeout(timer); });
-                chip.addEventListener('mouseleave', e => { clearTimeout(timer); });
-                chip.addEventListener('touchend', e => { clearTimeout(timer); });
+                chip.addEventListener('mouseup', () => { clearTimeout(timer); });
+                chip.addEventListener('mouseleave', () => { clearTimeout(timer); });
+                chip.addEventListener('touchend', () => { clearTimeout(timer); });
             }
 
             this._historyEl.appendChild(chip);
@@ -18358,13 +18365,17 @@ async _checkEAN(text, options = {}) {
         try{
             const raw = localStorage.getItem(this._storageKey());
             return raw ? JSON.parse(raw) : [];
-        } catch(e) {
+        } catch {
             return [];
         }
     }
 
     _saveHistory(){
-        try{ localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0,2000))); }catch(e){}
+        try {
+            localStorage.setItem(this._storageKey(), JSON.stringify(this._previous.slice(0, 2000)));
+        } catch {
+            // Browser storage may be unavailable in private or restricted contexts.
+        }
     }
 
     async _notifyButtonPressed(){
