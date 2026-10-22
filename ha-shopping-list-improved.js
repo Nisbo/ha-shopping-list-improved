@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0";
+const version = "3.2.1";
 const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
@@ -18166,7 +18166,7 @@ async _checkEAN(text, options = {}) {
         a.href = url;
         a.download = `shopping-list-offline-${entityId}.html`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
     }
 
     // PDF Export function
@@ -18320,7 +18320,7 @@ async _checkEAN(text, options = {}) {
         a.href = url;
         a.download = `shopping-list-${entityId}.pdf`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
 
         // Hex to RGB helper
         function hexToRgb(color) {
