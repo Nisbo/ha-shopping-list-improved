@@ -2913,6 +2913,9 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
 	setConfig(config){
+        // A new timeout, disabled feature or different list must cancel the old countdown.
+        this._clearCategoryChipCollapseTimer();
+        this._categoryChipContents = [];
 	    this._config = config || {};
 
         // A configuration change must not leave delayed messages from the
@@ -4622,8 +4625,13 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
     _collapseAllCategoryChips() {
-        this._categoryChipContents.forEach(({ storageKey, content }) => {
+        this._categoryChipContents.forEach(({ content }) => {
             content.style.display = 'none';
+        });
+        // Search hides some categories from the DOM, but their saved state must collapse too.
+        (this._categories || []).forEach(category => {
+            if (category.isDynamic || !Array.isArray(category.items) || category.items.length === 0) return;
+            const storageKey = this._entity + "_category_collapsed_" + (category.name || "default");
             localStorage.setItem(storageKey, "true");
         });
     }
