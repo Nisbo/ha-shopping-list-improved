@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.2.0";
+const version = "3.3.0";
 const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
@@ -423,6 +423,7 @@ const TRANSLATIONS = {
         "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Chips aus Kategorie-Items generieren",
         "editor.labels.show_category_add_all"           : "'Alle hinzufügen'-Chip anzeigen",
+        "editor.labels.category_chips_collapse_timeout" : "Kategorie-Chips automatisch einklappen (Sekunden)",
         "editor.labels.allow_filter"                    : "Filterung der Artikel erlauben",
         "editor.labels.allow_suggestions"               : "Vorschläge anzeigen",
         "editor.labels.show_done_hidden_items_in_search": "Erledigte (verborgene) Artikel anzeigen",
@@ -665,6 +666,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Sendet auch eine Benachrichtigung, wenn ein Artikel als erledigt markiert wurde. Achtung, dies kann zu vielen Benachrichtigungen führen, wenn viele Artikel während des Einkaufs als erledigt markiert werden.",
         "editor.helpers.show_category_chips"            : "Erzeugt automatisch Chips an Hand der zugewiesenen Artikel, die einer Kategorie zugewiesen wurden. Angezeigt werden diese als ein aus-/einklappbarer Chip, sofern die Kategorie mindestens einen Artikel enthält.",
         "editor.helpers.show_category_add_all"          : "Zeigt in aufgeklappten Kategorie-Chips einen 'Alle'-Chip an. Damit können alle Artikel der Kategorie über ein Auswahlfenster hinzugefügt werden.",
+        "editor.helpers.category_chips_collapse_timeout": "Klappt alle Kategorie-Chips nach dieser Zeit wieder ein. Jedes Aufklappen einer Kategorie startet den Countdown neu. 0 deaktiviert das automatische Einklappen.",
         "editor.helpers.allow_filter"                   : "Ermöglicht die Filterung der Artikel in der Liste über das Eingabefeld. Bei EAN-Artikeln werden auch der originale Produktname und die Marke durchsucht.",
         "editor.helpers.allow_suggestions"              : "Zeigt passende Artikel aus den konfigurierten Kategorien unter dem Eingabefeld an. Wenn zusätzlich „EAN-Datenbank in Suchvorschlägen verwenden“ aktiviert ist, werden auch gespeicherte Produktnamen, originale Produktnamen, Marken und EANs berücksichtigt.",
         "editor.helpers.show_done_hidden_items_in_search": "Bezieht im Einkaufslisten- und To-do-Modus erledigte oder ausgeblendete Einträge in die Suchergebnisse ein. Das Inventar verwendet eine eigene Ausblenden-Funktion.",
@@ -1179,6 +1181,7 @@ const TRANSLATIONS = {
         "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Generate chips from categorie items",
         "editor.labels.show_category_add_all"           : "Show 'Add all' chip",
+        "editor.labels.category_chips_collapse_timeout" : "Auto-collapse category chips (seconds)",
         "editor.labels.allow_filter"                    : "Allow filtering items",
         "editor.labels.allow_suggestions"               : "Allow suggestions",
         "editor.labels.show_done_hidden_items_in_search": "Show done (hidden) items in search results",
@@ -1420,6 +1423,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Also sends a notification when an item is marked as completed. Note: This may result in a large number of notifications if many items are marked as completed during shopping.",
         "editor.helpers.show_category_chips"            : "Automatically generates chips based on items assigned to a category. Each category is displayed as a collapsible chip, provided the category contains at least one item.",
         "editor.helpers.show_category_add_all"          : "Shows an 'All' chip inside expanded category chips. It opens a selection dialog so all or selected category items can be added at once.",
+        "editor.helpers.category_chips_collapse_timeout": "Collapses all category chips again after this period. Expanding a category restarts the countdown. 0 disables automatic collapsing.",
         "editor.helpers.allow_filter"                   : "Allows filtering of the items in the list via the input field. For EAN items, the original product name and brand are searched as well.",
         "editor.helpers.allow_suggestions"              : "Shows matching items from configured categories below the input. When Use EAN database in search suggestions is also enabled, saved product names, original product names, brands and EANs are included.",
         "editor.helpers.show_done_hidden_items_in_search": "Includes completed or hidden entries in search results in Shopping List and To-do modes. Inventory uses its own hidden-item function.",
@@ -1929,6 +1933,7 @@ const TRANSLATIONS = {
         "editor.options.notification_format.markdown"               : "Markdown",
         "editor.labels.show_category_chips"                         : "Generar chips a partir de elementos de categoría",
         "editor.labels.show_category_add_all"                       : "Mostrar chip 'Añadir todos'",
+        "editor.labels.category_chips_collapse_timeout"             : "Contraer automáticamente los chips de categoría (segundos)",
         "editor.labels.allow_filter"                                : "Permitir filtrar elementos",
         "editor.labels.allow_suggestions"                           : "Permitir sugerencias",
         "editor.labels.show_done_hidden_items_in_search"            : "Mostrar elementos completados (ocultos) en la búsqueda",
@@ -2155,6 +2160,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                             : "También envía una notificación cuando un elemento se marca como completado. Nota: Esto puede generar muchas notificaciones si se completan muchos elementos durante la compra.",
         "editor.helpers.show_category_chips"                        : "Genera automáticamente chips basados en los elementos asignados a una categoría. Cada categoría se muestra como un chip desplegable, siempre que contenga al menos un elemento.",
         "editor.helpers.show_category_add_all"                      : "Muestra un chip 'Todos' dentro de los chips de categoría expandidos. Abre un diálogo de selección para añadir todos o algunos elementos de la categoría a la vez.",
+        "editor.helpers.category_chips_collapse_timeout"            : "Contrae de nuevo todos los chips de categoría tras este periodo. Expandir una categoría reinicia la cuenta atrás. 0 desactiva el contraído automático.",
         "editor.helpers.allow_filter"                               : "Permite filtrar los elementos de la lista mediante el campo de entrada. Para artículos EAN también se buscan el nombre original del producto y la marca.",
         "editor.helpers.allow_suggestions"                          : "Muestra artículos coincidentes de las categorías configuradas. Si también se activa la base de datos EAN en las sugerencias, se incluyen nombres guardados y originales, marcas y EAN.",
         "editor.helpers.show_done_hidden_items_in_search"           : "Incluye elementos completados u ocultos en la búsqueda de Lista de la compra y Lista de tareas. Inventario usa su propia función de ocultación.",
@@ -2432,6 +2438,7 @@ const TRANSLATIONS = {
         "editor.options.notification_format.markdown"   : "Markdown",
         "editor.labels.show_category_chips"             : "Générer des chips à partir des articles de catégorie",
         "editor.labels.show_category_add_all"           : "Afficher le chip « Tout ajouter »",
+        "editor.labels.category_chips_collapse_timeout" : "Replier automatiquement les chips de catégorie (secondes)",
         "editor.labels.allow_filter"                    : "Autoriser le filtrage des articles",
         "editor.labels.allow_suggestions"               : "Autoriser les suggestions",
         "editor.labels.show_done_hidden_items_in_search": "Afficher les articles terminés masqués dans la recherche",
@@ -2632,6 +2639,7 @@ const TRANSLATIONS = {
         "editor.helpers.notify_on_done"                 : "Envoie également une notification lorsqu'un article est marqué comme terminé. Attention : cela peut générer beaucoup de notifications si de nombreux articles sont cochés lors des courses.",
         "editor.helpers.show_category_chips"            : "Génère automatiquement des chips à partir des articles assignés à une catégorie. Chaque catégorie est affichée comme un chip extensible si elle contient au moins un article.",
         "editor.helpers.show_category_add_all"          : "Affiche un chip « Tous » dans les chips de catégorie ouverts. Il ouvre une fenêtre de sélection permettant d'ajouter tous les articles de la catégorie ou seulement ceux sélectionnés.",
+        "editor.helpers.category_chips_collapse_timeout": "Replie à nouveau tous les chips de catégorie après cette durée. Ouvrir une catégorie relance le compte à rebours. 0 désactive le repli automatique.",
         "editor.helpers.allow_filter"                   : "Permet de filtrer les articles de la liste via le champ de saisie. Pour les articles EAN, le nom d’origine du produit et la marque sont également recherchés.",
         "editor.helpers.allow_suggestions"              : "Affiche des suggestions sous le champ de saisie lorsque le texte correspond à un article configuré dans une catégorie.",
         "editor.helpers.show_done_hidden_items_in_search": "Inclut les entrées terminées ou masquées dans la recherche en modes liste de courses et liste de tâches. L’inventaire utilise sa propre fonction.",
@@ -2837,6 +2845,8 @@ class HaShoppingListImproved extends HTMLElement {
         this._eanTransferStartupTimers = [];
         this._inventoryModeResetTimer = null;
         this._inventoryModeResetDeadline = null;
+        this._categoryChipCollapseTimer = null;
+        this._categoryChipContents = [];
 
         this._refreshDebounceTimer = null;
         this._refreshRequestId = 0;
@@ -2903,6 +2913,9 @@ class HaShoppingListImproved extends HTMLElement {
     }
 
 	setConfig(config){
+        // A new timeout, disabled feature or different list must cancel the old countdown.
+        this._clearCategoryChipCollapseTimer();
+        this._categoryChipContents = [];
 	    this._config = config || {};
 
         // A configuration change must not leave delayed messages from the
@@ -3017,6 +3030,7 @@ class HaShoppingListImproved extends HTMLElement {
         this._emailDelay            = notificationDelay(config.email_delay, config.notify_on_change_time || 0);
         this._showCategoryChips     = (config.show_category_chips === true) ? true : false;
         this._showCategoryAddAll    = (config.show_category_add_all === true) ? true : false;
+        this._categoryChipCollapseTimeout = Math.min(3600, Math.max(0, Math.floor(Number(config.category_chips_collapse_timeout) || 0)));
         this._dishesConfirmAdd      = (config.dishes_confirm_add === false) ? false : true;
         this._allowFilter           = (config.allow_filter === true) ? true : false;
         this._allowFilterChips      = (config.allow_filter_chips === true) ? true : false;
@@ -3970,7 +3984,8 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "category_file",
                         selector: { text: {} },
                         default: ""
-                    }
+                    },
+                    { name: "category_chips_collapse_timeout", selector: { number: { min: 0, max: 3600, step: 1, mode: "box" } }, default: 0 }
                 ]
             },
 
@@ -4497,6 +4512,7 @@ class HaShoppingListImproved extends HTMLElement {
             clearTimeout(this._refreshDebounceTimer);
             this._refreshDebounceTimer = null;
         }
+        this._clearCategoryChipCollapseTimer();
         // Ignore responses from refresh requests that started before the card
         // left the dashboard view.
         this._refreshRequestId += 1;
@@ -4588,6 +4604,36 @@ class HaShoppingListImproved extends HTMLElement {
         const configured = `inventory_${this._inventoryDefaultAction || "none"}`;
         if (configured === "inventory_register" && !this._eanDatabaseEntity) return "inventory_none";
         return this._normalizeEanScanMode(configured);
+    }
+
+    // Collapses all category chips after the configured time. Every expand restarts the countdown.
+    _restartCategoryChipCollapseTimer() {
+        this._clearCategoryChipCollapseTimer();
+        if (this._categoryChipCollapseTimeout <= 0) return;
+
+        this._categoryChipCollapseTimer = setTimeout(() => {
+            this._categoryChipCollapseTimer = null;
+            this._collapseAllCategoryChips();
+        }, this._categoryChipCollapseTimeout * 1000);
+    }
+
+    _clearCategoryChipCollapseTimer() {
+        if (this._categoryChipCollapseTimer) {
+            clearTimeout(this._categoryChipCollapseTimer);
+            this._categoryChipCollapseTimer = null;
+        }
+    }
+
+    _collapseAllCategoryChips() {
+        this._categoryChipContents.forEach(({ content }) => {
+            content.style.display = 'none';
+        });
+        // Search hides some categories from the DOM, but their saved state must collapse too.
+        (this._categories || []).forEach(category => {
+            if (category.isDynamic || !Array.isArray(category.items) || category.items.length === 0) return;
+            const storageKey = this._entity + "_category_collapsed_" + (category.name || "default");
+            localStorage.setItem(storageKey, "true");
+        });
     }
 
     _clearInventoryModeResetTimer() {
@@ -17728,6 +17774,8 @@ async _checkEAN(text, options = {}) {
                 );
             }
 
+            this._categoryChipContents = [];
+
             this._categories.forEach(category => {
                 if (!Array.isArray(category.items)) return;
                 if(category.isDynamic) return; // skip dynamic categories
@@ -17766,11 +17814,14 @@ async _checkEAN(text, options = {}) {
                 // Open Category if filter matches
                 if (openCatIfClosed) content.style.display = 'flex';
 
+                this._categoryChipContents.push({ storageKey, content });
+
                 // Click on Category-Chip to toggle
                 categoryChip.addEventListener('click', () => {
                     if (content.style.display === 'none') {
                         content.style.display = 'flex';
                         localStorage.setItem(storageKey, "false");
+                        this._restartCategoryChipCollapseTimer();
                     } else {
                         content.style.display = 'none';
                         localStorage.setItem(storageKey, "true");
@@ -17858,6 +17909,12 @@ async _checkEAN(text, options = {}) {
                 this._historyEl.appendChild(categoryChip);
                 this._historyEl.appendChild(content);
             });
+
+            // Categories restored as expanded (e.g. after a reload) also collapse after the timeout.
+            // A running countdown is kept, so re-renders do not postpone the collapse.
+            if (!this._categoryChipCollapseTimer && this._categoryChipContents.some(({ content }) => content.style.display !== 'none')) {
+                this._restartCategoryChipCollapseTimer();
+            }
         }
 	}
 
@@ -18166,7 +18223,7 @@ async _checkEAN(text, options = {}) {
         a.href = url;
         a.download = `shopping-list-offline-${entityId}.html`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
     }
 
     // PDF Export function
@@ -18320,7 +18377,7 @@ async _checkEAN(text, options = {}) {
         a.href = url;
         a.download = `shopping-list-${entityId}.pdf`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
 
         // Hex to RGB helper
         function hexToRgb(color) {
