@@ -3869,7 +3869,6 @@ class HaShoppingListImproved extends HTMLElement {
                     },
                     { name: "show_category_chips", selector: { boolean: {} }, default: false },
                     { name: "show_category_add_all", selector: { boolean: {} }, default: false },
-                    { name: "category_chips_collapse_timeout", selector: { number: { min: 0, max: 3600, step: 1, mode: "box" } }, default: 0 },
                     { name: "chips",           selector: { text: {} }, default: "" },
                     { name: "highlight_words", selector: { text: {} }, default: "" },
                     { name: "chips_with_cat_color", selector: { boolean: {} }, default: true },
@@ -3982,7 +3981,8 @@ class HaShoppingListImproved extends HTMLElement {
                         name: "category_file",
                         selector: { text: {} },
                         default: ""
-                    }
+                    },
+                    { name: "category_chips_collapse_timeout", selector: { number: { min: 0, max: 3600, step: 1, mode: "box" } }, default: 0 }
                 ]
             },
 
