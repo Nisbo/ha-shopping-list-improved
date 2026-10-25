@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.3.0-BETA-1";
+const version = "3.3.0";
 const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
