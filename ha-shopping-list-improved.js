@@ -1,5 +1,5 @@
 /* Improved Shopping List Card */
-const version = "3.3.0";
+const version = "3.4.0";
 const SHOPPING_OFFER_ONLY_MARKER = "[[ISL:OFFER_ONLY]]";
 /*
  * @description Improved Shopping List Card for Home Assistant.
@@ -617,6 +617,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_h"                   : "Warnschwelle für Intervalle in Stunden",
         "editor.labels.todo_yellow_s"                   : "Warnschwelle für fällige Aufgaben ohne Zeitangabe",
         "editor.labels.todo_warning_thresholds"         : "Warnschwellen",
+        "editor.labels.todo_date_only_end_of_day" : "Aufgaben ohne Uhrzeit erst nach Tagesende rot markieren",
         "editor.labels.show_title_info"                 : "Nächste Fälligkeit anzeigen",
         "editor.labels.show_title_info_icon"            : "Icon für nächste Fälligkeit anzeigen",
         "editor.labels.sort_mode"                       : "Sortierung",
@@ -628,11 +629,12 @@ const TRANSLATIONS = {
         "editor.helpers.todo_default_action"            : "Legt fest, welche Aktion je nach gewähltem Klickverhalten direkt ausgeführt wird. Ist sie für einen Eintrag nicht verfügbar, öffnet sich stattdessen das Aktionsmenü.",
         "editor.helpers.todo_action_behavior"           : "Legt fest, ob die Checkbox das Aktionsmenü öffnet oder die Standardaktion per Einfach- beziehungsweise Langklick ausführt. Ein Langklick dauert etwa 0,6 Sekunden.",
         "editor.helpers.show_todo_filter_menu"          : "Zeigt einen Filterbutton in der Buttonleiste an. Nutzer können den Filter dort vorübergehend ändern oder pro Liste im Browser speichern.",
-        "editor.helpers.todo_warning_thresholds"        : "Die Werte werden in Minuten angegeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden.",
-        "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden)",
-        "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden)",
-        "editor.helpers.todo_yellow_h"                  : "Warnschwelle für Intervalle in Stunden, definiert in Minuten (Standard: 10)",
-        "editor.helpers.todo_yellow_s"                  : "Warnschwelle für fällige Aufgaben ohne Zeitangabe, definiert in Minuten (Standard: 120 = 2 Stunden)",
+        "editor.helpers.todo_warning_thresholds"        : "Die Werte werden in Minuten angegeben und bestimmen, wann Aufgaben als „bald fällig“ markiert werden. 0 deaktiviert die orange Vorwarnung.",
+        "editor.helpers.todo_date_only_end_of_day" : "Nur für Aufgaben ohne Uhrzeit: Die rote Datumsmarkierung beginnt am nächsten lokalen Tagesbeginn. Termine mit Uhrzeit bleiben zeitgenau. Standard: aus.",
+        "editor.helpers.todo_yellow_m"                  : "Warnschwelle für Intervalle in Monaten, definiert in Minuten (Standard: 1440 = 24 Stunden) 0 deaktiviert die orange Vorwarnung.",
+        "editor.helpers.todo_yellow_d"                  : "Warnschwelle für Intervalle in Tagen, definiert in Minuten (Standard: 120 = 2 Stunden) 0 deaktiviert die orange Vorwarnung.",
+        "editor.helpers.todo_yellow_h"                  : "Warnschwelle für Intervalle in Stunden, definiert in Minuten (Standard: 10) 0 deaktiviert die orange Vorwarnung.",
+        "editor.helpers.todo_yellow_s"                  : "Warnschwelle für fällige Aufgaben ohne Zeitangabe, definiert in Minuten (Standard: 120 = 2 Stunden) 0 deaktiviert die orange Vorwarnung.",
         "editor.helpers.title"                          : "Der Titel für die Karte. Leerlassen, um ihn auszublenden",
         "editor.helpers.input_row_position"             : "Legt fest, ob die Eingabemaske (Anzahl, Artikel, Button) oberhalb oder unterhalb der Einträge angezeigt wird.",
         "editor.helpers.option_row_position"            : "Legt fest, ob die Buttonleiste (Export, Nachricht, Admin-Optionen) oben oder unten angezeigt wird.",
@@ -1374,6 +1376,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_h"                   : "Warning threshold for intervals in hours",
         "editor.labels.todo_yellow_s"                   : "Warning threshold for due dates without time",
         "editor.labels.todo_warning_thresholds"         : "Warning thresholds",
+        "editor.labels.todo_date_only_end_of_day" : "Mark date-only tasks red after the day ends",
         "editor.labels.show_title_info"                 : "Show next due date in ToDo mode",
         "editor.labels.show_title_info_icon"            : "Show icon for next due date",
         "editor.labels.sort_mode"                       : "Sort mode",
@@ -1385,11 +1388,12 @@ const TRANSLATIONS = {
         "editor.helpers.todo_default_action"            : "Selects the action executed directly by the configured click behavior. If it is unavailable for an item, the action menu opens instead.",
         "editor.helpers.todo_action_behavior"           : "Controls whether the checkbox opens the action menu or executes the default action on click or long press. A long press takes about 0.6 seconds.",
         "editor.helpers.show_todo_filter_menu"          : "Shows a filter button in the button row while in To-do mode. Users can temporarily change the filter there or remember it per list in the browser.",
-        "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”.",
-        "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours)",
-        "editor.helpers.todo_yellow_d"                  : "Warning threshold for intervals in days, defined in minutes (Default: 120 = 2 hours)",
-        "editor.helpers.todo_yellow_h"                  : "Warning threshold for intervals in hours, defined in minutes (Default: 10)",
-        "editor.helpers.todo_yellow_s"                  : "Warning threshold for due dates without time, defined in minutes (Default: 120 = 2 hours)",
+        "editor.helpers.todo_warning_thresholds"        : "Configuration of warning thresholds in ToDo mode. Values are specified in minutes and determine when tasks are marked as “due soon”. 0 disables the orange advance warning.",
+        "editor.helpers.todo_date_only_end_of_day" : "For tasks without a time: the red date indication starts at the next local midnight. Tasks with a time keep their exact deadline. Default: off.",
+        "editor.helpers.todo_yellow_m"                  : "Warning threshold for intervals in months, defined in minutes (Default: 1440 = 24 hours) 0 disables the orange advance warning.",
+        "editor.helpers.todo_yellow_d"                  : "Warning threshold for intervals in days, defined in minutes (Default: 120 = 2 hours) 0 disables the orange advance warning.",
+        "editor.helpers.todo_yellow_h"                  : "Warning threshold for intervals in hours, defined in minutes (Default: 10) 0 disables the orange advance warning.",
+        "editor.helpers.todo_yellow_s"                  : "Warning threshold for due dates without time, defined in minutes (Default: 120 = 2 hours) 0 disables the orange advance warning.",
         "editor.helpers.title"                          : "The title for the card. Leave empty to hide it",
         "editor.helpers.input_row_position"             : "Determines whether the input mask (quantity, item, button) is displayed above or below the entries.",
         "editor.helpers.option_row_position"            : "Determines whether the buttons (message, clear, export) are displayed top or bottom.",
@@ -2112,6 +2116,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_h"                               : "Umbral de advertencia para intervalos en horas",
         "editor.labels.todo_yellow_s"                               : "Umbral de advertencia para fechas de vencimiento sin hora",
         "editor.labels.todo_warning_thresholds"                     : "Umbrales de advertencia para modo de tareas pendientes",
+        "editor.labels.todo_date_only_end_of_day" : "Marcar en rojo las tareas sin hora solo al terminar el día",
         "editor.labels.show_title_info"                             : "Mostrar próxima fecha de vencimiento en modo de tareas pendientes",
         "editor.labels.show_title_info_icon"                        : "Mostrar icono de próxima fecha de vencimiento",
         "editor.labels.sort_mode"                                   : "Modo de ordenación",
@@ -2122,11 +2127,12 @@ const TRANSLATIONS = {
         "editor.helpers.todo_default_action"                        : "Selecciona la acción que se ejecuta directamente. Si no está disponible para un elemento, se abre el menú de acciones.",
         "editor.helpers.todo_action_behavior"                       : "Define si la casilla abre el menú o ejecuta la acción predeterminada con un clic o una pulsación larga de unos 0,6 segundos.",
         "editor.helpers.show_todo_filter_menu"                      : "Muestra un botón de filtro en la barra de botones en modo de tareas pendientes. Los usuarios pueden cambiar temporalmente el filtro allí o recordarlo por lista en el navegador.",
-        "editor.helpers.todo_warning_thresholds"                    : "Configuración de los umbrales de advertencia en modo de tareas pendientes. Los valores se especifican en minutos y determinan cuándo las tareas se marcan como 'próximas a vencer'.",
-        "editor.helpers.todo_yellow_m"                              : "Umbral de advertencia para intervalos en meses, definido en minutos (Por defecto: 1440 = 24 horas)",
-        "editor.helpers.todo_yellow_d"                              : "Umbral de advertencia para intervalos en días, definido en minutos (Por defecto: 120 = 2 horas)",
-        "editor.helpers.todo_yellow_h"                              : "Umbral de advertencia para intervalos en horas, definido en minutos (Por defecto: 10)",
-        "editor.helpers.todo_yellow_s"                              : "Umbral de advertencia para fechas de vencimiento sin hora, definido en minutos (Por defecto: 120 = 2 horas)",
+        "editor.helpers.todo_warning_thresholds"                    : "Configuración de los umbrales de advertencia en modo de tareas pendientes. Los valores se especifican en minutos y determinan cuándo las tareas se marcan como 'próximas a vencer'. 0 desactiva el aviso previo naranja.",
+        "editor.helpers.todo_date_only_end_of_day" : "Para tareas sin hora: la fecha se marca en rojo a partir de la siguiente medianoche local. Las tareas con hora mantienen su plazo exacto. Predeterminado: desactivado.",
+        "editor.helpers.todo_yellow_m"                              : "Umbral de advertencia para intervalos en meses, definido en minutos (Por defecto: 1440 = 24 horas) 0 desactiva el aviso previo naranja.",
+        "editor.helpers.todo_yellow_d"                              : "Umbral de advertencia para intervalos en días, definido en minutos (Por defecto: 120 = 2 horas) 0 desactiva el aviso previo naranja.",
+        "editor.helpers.todo_yellow_h"                              : "Umbral de advertencia para intervalos en horas, definido en minutos (Por defecto: 10) 0 desactiva el aviso previo naranja.",
+        "editor.helpers.todo_yellow_s"                              : "Umbral de advertencia para fechas de vencimiento sin hora, definido en minutos (Por defecto: 120 = 2 horas) 0 desactiva el aviso previo naranja.",
         "editor.helpers.title"                                      : "El título de la tarjeta. Déjalo vacío para ocultarlo",
         "editor.helpers.input_row_position"                         : "Determina si la máscara de entrada (cantidad, elemento, botón) se muestra arriba o abajo de las entradas.",
         "editor.helpers.option_row_position"                        : "Determina si los botones (mensaje, limpiar, exportar) se muestran arriba o abajo.",
@@ -2588,6 +2594,7 @@ const TRANSLATIONS = {
         "editor.labels.todo_yellow_h"                   : "Seuil d'alerte pour les intervalles en heures",
         "editor.labels.todo_yellow_s"                   : "Seuil d'alerte pour les échéances sans heure",
         "editor.labels.todo_warning_thresholds"         : "Seuils d'alerte pour le mode liste de choses à faire",
+        "editor.labels.todo_date_only_end_of_day" : "Afficher en rouge les tâches sans heure après la fin de la journée",
         "editor.labels.show_title_info"                 : "Afficher la prochaine échéance en mode liste de choses à faire",
         "editor.labels.show_title_info_icon"            : "Afficher l'icône pour la prochaine échéance",
         "editor.labels.sort_mode"                       : "Mode de tri",
@@ -2601,11 +2608,12 @@ const TRANSLATIONS = {
         "editor.helpers.show_todo_filter_menu"          : "Affiche un bouton de filtre dans la ligne de boutons en mode liste de choses à faire. Les utilisateurs peuvent changer temporairement le filtre ou le mémoriser par liste dans le navigateur.",
         "editor.helpers.dishes_confirm_add"             : "Si activé, un clic sur un plat ouvre une fenêtre de sélection. Si désactivé, tous les articles du plat sont ajoutés immédiatement.",
         "editor.helpers.debug_mode"                     : "Écrit des messages de diagnostic supplémentaires dans la console du navigateur. Doit normalement rester désactivé.",
-        "editor.helpers.todo_warning_thresholds"        : "Configuration des seuils d'avertissement en mode liste de choses à faire. Les valeurs sont spécifiées en minutes et déterminent quand les tâches sont marquées comme « bientôt à échéance ».",
-        "editor.helpers.todo_yellow_m"                  : "Seuil d'alerte pour les intervalles en mois, défini en minutes (défaut : 1440 = 24 heures)",
-        "editor.helpers.todo_yellow_d"                  : "Seuil d'alerte pour les intervalles en jours, défini en minutes (défaut : 120 = 2 heures)",
-        "editor.helpers.todo_yellow_h"                  : "Seuil d'alerte pour les intervalles en heures, défini en minutes (défaut : 10)",
-        "editor.helpers.todo_yellow_s"                  : "Seuil d'alerte pour les échéances sans heure précise, défini en minutes (défaut : 120 = 2 heures)",
+        "editor.helpers.todo_warning_thresholds"        : "Configuration des seuils d'avertissement en mode liste de choses à faire. Les valeurs sont spécifiées en minutes et déterminent quand les tâches sont marquées comme « bientôt à échéance ». 0 désactive l’avertissement orange préalable.",
+        "editor.helpers.todo_date_only_end_of_day" : "Pour les tâches sans heure : la date devient rouge à partir du minuit local suivant. Les tâches avec une heure conservent leur échéance exacte. Par défaut : désactivé.",
+        "editor.helpers.todo_yellow_m"                  : "Seuil d'alerte pour les intervalles en mois, défini en minutes (défaut : 1440 = 24 heures) 0 désactive l’avertissement orange préalable.",
+        "editor.helpers.todo_yellow_d"                  : "Seuil d'alerte pour les intervalles en jours, défini en minutes (défaut : 120 = 2 heures) 0 désactive l’avertissement orange préalable.",
+        "editor.helpers.todo_yellow_h"                  : "Seuil d'alerte pour les intervalles en heures, défini en minutes (défaut : 10) 0 désactive l’avertissement orange préalable.",
+        "editor.helpers.todo_yellow_s"                  : "Seuil d'alerte pour les échéances sans heure précise, défini en minutes (défaut : 120 = 2 heures) 0 désactive l’avertissement orange préalable.",
         "editor.helpers.title"                          : "Le titre de la carte. Laissez vide pour le masquer",
         "editor.helpers.input_row_position"             : "Détermine si le masque de saisie (quantité, article, bouton) est affiché au-dessus ou en dessous des entrées.",
         "editor.helpers.option_row_position"            : "Détermine si la ligne de boutons est affichée en haut ou en bas.",
@@ -3185,10 +3193,16 @@ class HaShoppingListImproved extends HTMLElement {
         }
         this._clearInventoryModeResetTimer();
 
-        this._todoYellowM           = config.todo_yellow_m || 1440; // Months. 24 hours
-        this._todoYellowD           = config.todo_yellow_d || 120;  // Days     2 hours
-        this._todoYellowH           = config.todo_yellow_h || 10;   // Hours   10 Minutes
-        this._todoYellowS           = config.todo_yellow_s || 120;  // Date only 2 hours
+        const todoWarningMinutes = (value, fallback) => {
+            if (!["number", "string"].includes(typeof value) || String(value).trim() === "") return fallback;
+            const minutes = Number(value);
+            return Number.isFinite(minutes) && minutes >= 0 ? minutes : fallback;
+        };
+        this._todoYellowM = todoWarningMinutes(config.todo_yellow_m, 1440);
+        this._todoYellowD = todoWarningMinutes(config.todo_yellow_d, 120);
+        this._todoYellowH = todoWarningMinutes(config.todo_yellow_h, 10);
+        this._todoYellowS = todoWarningMinutes(config.todo_yellow_s, 120);
+        this._todoDateOnlyEndOfDay = config.todo_date_only_end_of_day === true;
         this._todoDefaultAction = ["remove", "next", "now", "edit", "delete", "done"].includes(config.todo_default_action)
             ? config.todo_default_action
             : "done";
@@ -3550,10 +3564,11 @@ class HaShoppingListImproved extends HTMLElement {
                         label: 'todo_warning_thresholds',
                         icon: 'mdi:alarm-light',
                         schema: [
-                            { name: "todo_yellow_m", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 1440 },
-                            { name: "todo_yellow_d", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 120 },
-                            { name: "todo_yellow_h", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 10 },
-                            { name: "todo_yellow_s", selector: { number: { min: 1, max: 300000, step: 1 } }, default: 120 }
+                            { name: "todo_date_only_end_of_day", selector: { boolean: {} }, default: false },
+                            { name: "todo_yellow_m", selector: { number: { min: 0, max: 300000, step: 1 } }, default: 1440 },
+                            { name: "todo_yellow_d", selector: { number: { min: 0, max: 300000, step: 1 } }, default: 120 },
+                            { name: "todo_yellow_h", selector: { number: { min: 0, max: 300000, step: 1 } }, default: 10 },
+                            { name: "todo_yellow_s", selector: { number: { min: 0, max: 300000, step: 1 } }, default: 120 }
                         ]
                     }
                 ]
@@ -12212,6 +12227,15 @@ async _checkEAN(text, options = {}) {
         return Number.isNaN(parsed.getTime()) ? null : parsed;
     }
 
+    _getTodoWarningDate(due) {
+        const date = this._parseTodoDueDate(due);
+        if (date && this._todoDateOnlyEndOfDay && /^\d{4}-\d{2}-\d{2}$/.test(due)) {
+            // Advance a local calendar day so DST changes do not shift midnight.
+            date.setDate(date.getDate() + 1);
+        }
+        return date;
+    }
+
     _getTodoDueTimestamp(item) {
         const dueDate = this._parseTodoDueDate(item?.due);
         return dueDate ? dueDate.getTime() : null;
@@ -14286,7 +14310,7 @@ async _checkEAN(text, options = {}) {
             }
 
             // DueDate
-            const dueDate = new Date(item.due);
+            const dueDate = this._parseTodoDueDate(item.due) || new Date(NaN);
             const now = new Date();
 
             const formattedDate = this._formatDueDate(dueDate, item.due);
@@ -14319,7 +14343,8 @@ async _checkEAN(text, options = {}) {
             dueRight.style.marginLeft = '12px';
             dueRight.style.textAlign = 'right';
 
-            const diffMs = dueDate - now;
+            const warningDate = this._getTodoWarningDate(item.due);
+            const diffMs = warningDate ? warningDate - now : NaN;
 
             if (diffMs > 0) {
                 const msInMinute = 1000 * 60;
@@ -14395,40 +14420,21 @@ async _checkEAN(text, options = {}) {
 
                 dueRight.textContent = displayParts.join(' ');
 
-                let remainingMinutes = null;
+                const remainingMinutes = diffMs / (1000 * 60);
 
-                // if item.due is a date string without time, interpret as midnight
-                let dueDateTime = item.due ? new Date(item.due) : null;
-                if (dueDateTime) {
-                    // if time part is missing, set to midnight
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(item.due)) {
-                        dueDateTime = new Date(item.due + "T00:00:00");
-                    }
-                    const now = new Date();
-                    remainingMinutes = (dueDateTime - now) / (1000 * 60);
+                let orangeThreshold = null;
+                if (!interval) {
+                    orangeThreshold = this._todoYellowS;
+                } else if (interval.includes('D')) {
+                    orangeThreshold = this._todoYellowD;
+                } else if (interval.includes('H')) {
+                    orangeThreshold = this._todoYellowH;
+                } else if (interval.includes('M')) {
+                    orangeThreshold = this._todoYellowM;
                 }
 
-                if (remainingMinutes !== null) {
-                    let orangeThreshold = null;
-
-                    if (!interval) {
-                        orangeThreshold = this._todoYellowS;
-                    } else if (interval.includes('D')) {
-                        orangeThreshold = this._todoYellowD;
-                    } else if (interval.includes('H')) {
-                        orangeThreshold = this._todoYellowH;
-                    } else if (interval.includes('M')) {
-                        orangeThreshold = this._todoYellowM;
-                    }
-
-                    if (remainingMinutes > 0 && remainingMinutes <= orangeThreshold) {
-                        dueDiv.style.color = '#f0ad4e';
-                    } else if (remainingMinutes <= 0) {
-                        dueDiv.style.color = '#d9534f';
-                        dueRight.textContent = translate("ui.todo.due_label");
-                    } else {
-                        dueDiv.style.color = 'var(--secondary-text-color)';
-                    }
+                if (orangeThreshold > 0 && remainingMinutes <= orangeThreshold) {
+                    dueDiv.style.color = '#f0ad4e';
                 } else {
                     dueDiv.style.color = 'var(--secondary-text-color)';
                 }

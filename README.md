@@ -65,6 +65,29 @@ Manual installation and resource registration are described on the **[Installati
 
 Home Assistant **2026.6.0 or newer** is required.
 
+## To-do date colors
+
+From **3.4.0**, the visual editor's **To-do mode → Warning thresholds** section
+includes **Mark date-only tasks red after the day ends**. It is off by default.
+When enabled, tasks without a due time turn red at the next local midnight.
+Tasks with an explicit time still turn red when that time is reached. The
+original due date stays visible; the date filters and category counters retain
+their existing behavior.
+
+All four orange warning thresholds accept **0 to disable the orange advance
+warning** for that interval type. An omitted or empty value uses its normal
+default. For example, this keeps date-only tasks in the normal theme text color
+throughout their due date and turns them red only after the day ends:
+
+```yaml
+mode: todo
+todo_date_only_end_of_day: true
+todo_yellow_m: 0
+todo_yellow_d: 0
+todo_yellow_h: 0
+todo_yellow_s: 0
+```
+
 ## Documentation
 
 - [Getting started and installation](https://github.com/Nisbo/ha-shopping-list-improved/wiki/Installation)
