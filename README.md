@@ -1,3 +1,10 @@
+# ⚠️ Development Update
+
+Improved Shopping List has evolved into [HA List Manager](https://github.com/Nisbo/ha-list-manager), which includes an import feature for existing Improved Shopping List data.
+
+I will continue to maintain Improved Shopping List with bug fixes, while all new features will be developed exclusively in HA List Manager.
+
+
 # 🛒 Improved Shopping List Card
 
 `ha-shopping-list-improved`
